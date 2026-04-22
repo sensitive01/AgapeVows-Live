@@ -1,0 +1,116 @@
+/* Rich Text Editor Styling */
+.ql-editor {
+  min-height: 150px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.ql-container {
+  font-size: 14px;
+}
+
+.ql-editor.ql-blank::before {
+  color: #999;
+  font-style: italic;
+}
+
+/* Rich Text Display Styling */
+.rich-text-display {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.rich-text-display p {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.rich-text-display p:last-child {
+  margin-bottom: 0;
+}
+
+.rich-text-display ul,
+.rich-text-display ol {
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  margin-top: 0;
+}
+
+.rich-text-display li {
+  margin-bottom: 0.25rem;
+  line-height: 1.5;
+}
+
+.rich-text-display strong {
+  font-weight: 600;
+}
+
+.rich-text-display em {
+  font-style: italic;
+}
+
+.rich-text-display u {
+  text-decoration: underline;
+}
+
+.rich-text-display s {
+  text-decoration: line-through;
+}
+
+.rich-text-display a {
+  color: #0d6efd;
+  text-decoration: none;
+}
+
+.rich-text-display a:hover {
+  text-decoration: underline;
+}
+
+.rich-text-display h1,
+.rich-text-display h2,
+.rich-text-display h3 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.rich-text-display h1 {
+  font-size: 1.5rem;
+}
+
+.rich-text-display h2 {
+  font-size: 1.3rem;
+}
+
+.rich-text-display h3 {
+  font-size: 1.1rem;
+}
+
+/* Custom Quill Toolbar Styling */
+.ql-toolbar.ql-snow {
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem 0.25rem 0 0;
+  background-color: #f8f9fa;
+}
+
+.ql-container.ql-snow {
+  border: 1px solid #dee2e6;
+  border-top: none;
+  border-radius: 0 0 0.25rem 0.25rem;
+}
+
+/* Badge styling for skills */
+.badge.bg-light {
+  color: #212529;
+  border: 1px solid #dee2e6;
+}
+
+/* Show More/Less button styling */
+.btn-link.btn-sm {
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.btn-link.btn-sm:hover {
+  text-decoration: underline;
+}

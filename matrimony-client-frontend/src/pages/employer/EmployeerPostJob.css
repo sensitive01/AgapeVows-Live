@@ -1,0 +1,70 @@
+/* Scoped styles for Employer Post Job page */
+.employer-page {
+  /* Add any global overrides for employer pages here */
+}
+
+/* Ensure proper loading state */
+.employer-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Add scoping to all employer-specific styles */
+.employer-page .content {
+  min-height: calc(100vh - 200px);
+  padding: 20px 0;
+}
+
+/* Ensure modals are properly scoped */
+.employer-page .modal {
+  z-index: 1050;
+}
+
+/* Add any other employer-specific styles here */
+.employer-page .job-card {
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.employer-page .job-card:hover {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Ensure form controls are properly styled */
+.employer-page .form-control,
+.employer-page .form-select {
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+}
+
+/* Button styles */
+.employer-page .btn-primary {
+  background-color: #4e73df;
+  border-color: #4e73df;
+}
+
+.employer-page .btn-primary:hover {
+  background-color: #3a5ccc;
+  border-color: #3a5ccc;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .employer-page .content {
+    padding: 10px;
+  }
+  
+  .employer-page .d-flex {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

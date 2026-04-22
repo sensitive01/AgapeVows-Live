@@ -1,0 +1,26 @@
+
+@media (max-width: 768px) {
+
+  .profile-header {
+    flex-direction: column !important;
+    text-align: center;
+  }
+
+  .profile-img {
+    width: 90px !important;
+    height: 90px !important;
+  }
+
+  .edit-btn {
+    width: 100% !important;
+    text-align: center;
+  }
+
+  .db-profile {
+    padding: 15px !important;
+  }
+
+  .db-tit {
+    font-size: 20px !important;
+  }
+}

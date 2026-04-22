@@ -1,0 +1,112 @@
+/* Base Styles */
+.jobplugin__settings-menu {
+  width: 250px;
+  height: 100vh;
+  background: #fff;
+  /* box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); */
+  left: 0;
+  top: 0;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  padding: 20px 0;
+}
+
+/* Mobile Styles */
+.jobplugin__settings-menu.mobile {
+  transform: translateX(-100%);
+}
+
+.jobplugin__settings-menu.mobile.open {
+  transform: translateX(0);
+}
+
+.jobplugin__settings-close {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  display: block;
+}
+
+.jobplugin__settings-close span {
+  display: block;
+  width: 25px;
+  height: 2px;
+  margin: 5px 0;
+}
+
+.bg-primary {
+  background-color: #0066cc;
+}
+
+/* Menu Styles */
+#accordion {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  background: #FFF;
+  border-radius: 4px;
+}
+
+#accordion .shadow {
+  cursor: pointer;
+  display: block;
+  padding: 15px 15px 15px 42px;
+  color: #000;
+  font-size: 14px;
+  font-weight: 700;
+  border-bottom: 1px solid #063970;
+  position: relative;
+  transition: all 0.4s ease;
+  text-decoration: none;
+}
+
+#accordion li i {
+  position: absolute;
+  top: 16px;
+  left: 12px;
+  font-size: 18px;
+  color: #595959;
+  transition: all 0.4s ease;
+}
+
+.text-primary {
+  color: #0066cc !important;
+}
+
+#accordion li.open .shadow { 
+  color: #0066cc; 
+}
+
+#accordion li.open i { 
+  color: #0066cc; 
+}
+
+/* Submenu Styles */
+.submenu {
+  display: none;
+  font-size: 14px;
+  background: #f9f9f9;
+  list-style: none;
+}
+
+.submenu a {
+  color: #555;
+  text-decoration: none;
+  transition: all 0.2s;
+  display: block;
+}
+
+.submenu a:hover {
+  color: #0066cc;
+}
+
+/* Link hover effect */
+.shadow:hover {
+  color: #0066cc;
+}

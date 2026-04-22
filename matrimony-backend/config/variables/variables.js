@@ -1,0 +1,13 @@
+require("dotenv").config();
+
+module.exports = {
+  PORT: process.env.PORT || 3001,
+  MONGO_USERNAME: process.env.MONGO_USERNAME,
+  MONGO_PASSWORD: process.env.MONGO_PASSWORD,
+  MONGO_DATABASE_NAME: process.env.MONGO_DATABASE_NAME,
+  CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+  ADMIN_EMAIL_ID: process.env.ADMIN_EMAIL_ID,
+  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+};

@@ -1,0 +1,62 @@
+.ad-menu ul li .submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.ad-menu ul li .submenu.expanded {
+  max-height: 500px;
+}
+
+.submenu-arrow {
+  float: right;
+  margin-top: 2px;
+  transition: transform 0.3s ease;
+}
+
+.ad-menu ul li a.active .submenu-arrow {
+  transform: rotate(180deg);
+}
+
+.ad-menu ul li a {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.ad-menu ul li a:hover,
+.ad-menu ul li a.active {
+  background-color: #f0f0f0;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  background-color: #f9f9f9;
+  min-height: calc(100vh - 80px);
+}
+
+.admin-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main {
+  display: flex;
+  flex: 1;
+}
+
+.incon.row {
+  display: flex;
+  width: 100%;
+}
+
+.pan-lhs.ad-menu-main {
+  width: 250px;
+  background-color: #fff;
+  border-right: 1px solid #e0e0e0;
+  min-height: calc(100vh - 80px);
+}

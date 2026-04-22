@@ -1,0 +1,29 @@
+/* Add to your CSS file or style tag in UserDashboard */
+.jobplugin__main-holder {
+  margin-left: 300px; /* 280px sidebar + 20px gap */
+}
+
+@media (max-width: 768px) {
+  .jobplugin__main-holder {
+    margin-left: 0;
+  }
+}
+
+/* Add overlay for mobile */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}

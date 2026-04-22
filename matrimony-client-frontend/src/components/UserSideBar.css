@@ -1,0 +1,235 @@
+/* Dashboard Layout Styles */
+
+/* Sidebar Positioning - Top-Left */
+.db .container-fluid {
+  padding: 0;
+}
+
+.db .row {
+  margin: 0;
+  min-height: calc(100vh - 64px); /* Adjust based on your header height */
+}
+
+/* Sidebar Column */
+.col-md-3.col-lg-2.p-0 {
+  position: sticky;
+  top: 64px; /* Adjust based on your header height */
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+  background-color: #fff;
+  border-right: 1px solid #e5e5e5;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  z-index: 40;
+}
+
+/* Dashboard Content Area */
+.dashboard-content {
+  padding: 20px 30px;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 64px);
+}
+
+/* Profile Matches Section */
+.db-new-pro-main {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+
+.db-tit {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0;
+}
+
+/* Search Component Styling */
+.dashboard-search-component {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+
+/* Profile Card in Slider */
+.db-new-pro {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 0 10px;
+  text-align: center;
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.db-new-pro:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+}
+
+.db-new-pro img.profile {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.db-new-pro h5 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.db-new-pro .city,
+.db-new-pro .age {
+  font-size: 13px;
+  color: #666;
+  display: inline-block;
+}
+
+/* Online Status Indicator */
+.pro-ave {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.pro-ave-yes {
+  width: 12px;
+  height: 12px;
+  background-color: #28a745;
+  border-radius: 50%;
+  display: inline-block;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.3);
+}
+
+/* Full Click Area */
+.fclick {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+}
+
+/* Slider Customization */
+.slider {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.slider li {
+  outline: none;
+}
+
+/* Alert Styling */
+.alert {
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
+  color: #842029;
+}
+
+.alert-info {
+  background-color: #cff4fc;
+  border-color: #b6effb;
+  color: #055160;
+}
+
+/* Badge Styling */
+.badge.bg-primary {
+  background-color: #7b68ee !important;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  vertical-align: middle;
+}
+
+/* Loading Spinner */
+.spinner-border-sm {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-width: 0.15em;
+}
+
+/* Dashboard Widgets Row */
+.dashboard-content .row.mt-4 {
+  margin-top: 20px !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 991px) {
+  .col-md-3.col-lg-2.p-0 {
+    position: relative;
+    height: auto;
+    top: 0;
+    border-right: none;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .dashboard-content {
+    padding: 15px;
+  }
+
+  .db-new-pro img.profile {
+    height: 180px;
+  }
+}
+
+@media (max-width: 767px) {
+  .dashboard-content {
+    padding: 10px;
+  }
+
+  .db-new-pro {
+    margin: 0 5px;
+  }
+
+  .db-new-pro img.profile {
+    height: 150px;
+  }
+
+  .db-tit {
+    font-size: 18px;
+  }
+}
+
+/* Ensure smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for sidebar */
+.col-md-3.col-lg-2.p-0::-webkit-scrollbar {
+  width: 6px;
+}
+
+.col-md-3.col-lg-2.p-0::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.col-md-3.col-lg-2.p-0::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.col-md-3.col-lg-2.p-0::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "maxProfiles": 0,
+    "profilesViewedCount": 0,
+    "dailyLimit": 0,
+    "dailyViewedCount": 0,
+    "subscriptionValidFrom": "2026-03-11T10:13:21.275Z",
+    "subscriptionValidTo": "2026-06-11T10:13:21.275Z",
+    "subscriptionType": "Platinum",
+    "subscriptionAmount": 24999,
+    "subscriptionStatus": "Active",
+    "subscriptionTransactionDate": "2026-03-11T10:13:21.275Z",
+    "subscriptionTransactionId": "pay_SPshv7OO97d5TM",
+    "subscriptionOrderId": "AGV177066",
+    "isEmployeeAssisted": false,
+    "assistedEmployeeId": "",
+    "assistedEmployeeName": "",
+    "_id": "69b14041469f6f1799612ab6"
+  }
+]

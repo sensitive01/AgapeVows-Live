@@ -1,0 +1,229 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes blink {
+
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+  }
+
+  40% {}
+
+  40% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+
+
+/* userplansection */
+
+/* ALL CARDS DEFAULT WHITE */
+.pri-box {
+  background-color: #ffffff !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+}
+
+/* CENTER CARD */
+.pri-box-pop {
+  background-color: #ffffff !important;
+  border-radius: 30px !important;
+  overflow: visible !important;
+  
+  /* HEIGHT DIFFERENCE WITHOUT OVERLAP */
+  padding: 85px 20px !important;
+   position: relative;
+  z-index: 2;
+  margin-top: 120px; 
+ 
+  
+}
+
+.plans-main {
+  padding-top: 40px; /* gives breathing space above cards */
+}
+
+.pri-box-pop {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* Membership Badges */
+.membership-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #000;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0);
+  white-space: nowrap;
+  z-index: 5;
+  line-height: 1;
+}
+
+.dashboard-badge-wrapper {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 20;
+}
+
+.badge-premium {
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+  color: #000;
+}
+
+.badge-platinum {
+  background: linear-gradient(135deg, #e0e0e000 0%, #ffffff00 30%, #d1d1d132 50%, #ffffff5e 70%, #bdbdbd 100%);
+  background-size: 200% 200%;
+  color: #000;
+  border: 1px solid #999999;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 1px 3px rgba(255, 255, 255, 0.8);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+  position: relative;
+  overflow: hidden;
+  font-weight: 800;
+}
+
+.badge-platinum::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: shine-platinum 2s infinite linear;
+  transform: rotate(25deg);
+}
+
+@keyframes shine-platinum {
+  0% {
+    transform: translateX(-100%) translateY(-100%);
+  }
+
+  100% {
+    transform: translateX(100%) translateY(100%);
+  }
+}
+
+.badge-gold,
+.badge-golden {
+  background: linear-gradient(135deg, #ffd700 0%, #b8860b 50%, #ffd700 100%);
+  color: #000;
+  font-weight: 800;
+  border: 1px solid #d4af37;
+  box-shadow: 0 0 10px rgba(184, 134, 11, 0.4);
+  text-shadow: 0.5px 0.5px 0px rgba(255, 255, 255, 0.3);
+}
+
+.badge-mini {
+  padding: 2px 5px;
+  font-size: 9px;
+  border-radius: 3px;
+}
+
+.badge-icon {
+  font-size: 10px;
+}
+
+/* Minimal Badge Style (Text & Icon only) */
+.badge-minimal {
+  background: transparent !important;
+  color: #000 !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+  text-shadow: none !important;
+}
+
+.badge-minimal .badge-icon,
+.badge-minimal .badge-text {
+  color: #000 !important;
+}
+
+.badge-minimal::after {
+  display: none !important; /* Remove shine effect for platinum */
+}
+
+/* Consistent inner container for sections */
+.container {
+  width: 100%;
+  max-width: 1450px;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+
+.plans-main .container {
+  max-width: 1400px !important;
+  overflow: visible !important;
+}
+
+.plans-main {
+  overflow: visible !important;
+}
+
+
+
+/* Sticky Footer Support */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.min-h-screen {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Ensure the main content area grows to fill space */
+.min-h-screen > .pt-16, 
+.min-h-screen > main,
+.min-h-screen > div:not(.fixed) {
+  flex: 1 0 auto;
+}
+
+/* Specific fix for the general page layout used in many files */
+.login, .about, .contact, .faq, .events, .blogs {
+  flex: 1;
+}
+
+footer {
+  flex-shrink: 0;
+}
