@@ -16,20 +16,26 @@ const InfoRow = ({ label, value }) => {
     <div
       style={{
         display: "flex",
-        gap: "10px",
-        padding: "8px 0",
-        fontSize: "0.95rem",
-        borderBottom: "1px solid #f0f0f0",
+        flexDirection: "column",
+        gap: "4px",
+        padding: "10px 0",
+        borderBottom: "1px solid #f3f4f6",
       }}
     >
-      <span style={{ color: "#666", fontWeight: "500", minWidth: "150px" }}>
-        {label}:
+      <span style={{ 
+        color: "#6b7280", 
+        fontSize: "0.85rem", 
+        fontWeight: "500",
+        textTransform: "uppercase",
+        letterSpacing: "0.5px"
+      }}>
+        {label}
       </span>
       <span
         style={{
-          color: "#333",
+          color: "#1f2937",
+          fontSize: "1rem",
           fontWeight: "600",
-          flex: 1,
           wordBreak: "break-word",
         }}
       >
@@ -51,21 +57,32 @@ const ProfileSection = ({ title, icon, children }) => (
     >
       <h4
         style={{
-          marginBottom: "15px",
-          fontSize: "1.2rem",
-          fontWeight: "600",
-          color: "#333",
-          borderBottom: "2px solid #7c3aed",
-          paddingBottom: "10px",
+          marginBottom: "20px",
+          fontSize: "1.25rem",
+          fontWeight: "700",
+          color: "#1f2937",
+          paddingBottom: "12px",
           display: "flex",
           alignItems: "center",
-          gap: "10px",
+          gap: "12px",
+          position: "relative"
         }}
       >
-        <i className={`fa ${icon}`} style={{ color: "#7c3aed" }}></i>
+        <i className={`fa ${icon}`} style={{ color: "#7c3aed", fontSize: "1.1rem" }}></i>
         {title}
+        <span style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          width: "60px",
+          height: "4px",
+          background: "linear-gradient(90deg, #7c3aed, #9333ea)",
+          borderRadius: "2px"
+        }}></span>
       </h4>
-      <div style={{ display: "flex", flexDirection: "column" }}>{children}</div>
+      <div className="profile-section-grid">
+        {children}
+      </div>
     </div>
   </div>
 );
@@ -248,7 +265,8 @@ const UserProfilePage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await getUserProfile(userId);
+      const sanitizedId = (userId && userId.length > 24) ? userId.substring(0, 24) : userId;
+      const response = await getUserProfile(sanitizedId);
       if (response.status === 200) {
         setUserInfo(response.data.data);
       }
@@ -503,9 +521,6 @@ const UserProfilePage = () => {
     return age;
   };
 
-
-
-
   return (
     <div className="min-h-screen">
       {/* Fixed Header */}
@@ -667,7 +682,7 @@ const UserProfilePage = () => {
                           <h3
                             style={{
                               margin: "0 0 10px 0",
-                              fontSize: "clamp(1.3rem, 4vw, 2rem)", // ✅ responsive font
+                              fontSize: "clamp(1.3rem, 4vw, 2rem)",
                               fontWeight: "700",
                               color: "#333",
                               wordBreak: "break-word",
@@ -1155,16 +1170,20 @@ const UserProfilePage = () => {
 
                   {/* Partner Preferences Section */}
                   <ProfileSection title="Partner Preferences" icon="fa-heart">
-                    <div style={{ marginBottom: "10px" }}>
+                    <div className="grid-span-full" style={{ marginBottom: "10px" }}>
                       <h5
                         style={{
                           color: "#7c3aed",
-                          marginTop: "10px",
+                          marginTop: "20px",
                           marginBottom: "15px",
-                          fontWeight: "600",
-                          fontSize: "1.05rem",
+                          fontWeight: "700",
+                          fontSize: "1.1rem",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px"
                         }}
                       >
+                        <span style={{ width: "4px", height: "18px", background: "#7c3aed", borderRadius: "2px" }}></span>
                         Basic & Religious
                       </h5>
                     </div>
@@ -1218,15 +1237,19 @@ const UserProfilePage = () => {
                       value={userInfo?.partnerSpirituality}
                     />
 
-                    <div style={{ marginTop: "20px", marginBottom: "10px" }}>
+                    <div className="grid-span-full" style={{ marginTop: "30px", marginBottom: "10px" }}>
                       <h5
                         style={{
                           color: "#7c3aed",
                           marginBottom: "15px",
-                          fontWeight: "600",
-                          fontSize: "1.05rem",
+                          fontWeight: "700",
+                          fontSize: "1.1rem",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px"
                         }}
                       >
+                        <span style={{ width: "4px", height: "18px", background: "#7c3aed", borderRadius: "2px" }}></span>
                         Professional & Location
                       </h5>
                     </div>

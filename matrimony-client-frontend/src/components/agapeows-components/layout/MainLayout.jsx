@@ -32,7 +32,7 @@ export const SERVICE_CATEGORIES = [
 
 export const HELP_OPTIONS = [
   { title: "Help & Support", path: "/help-support" },
-  { title: "Report Your Issue", path: "/report-issue" },
+  { title: "Report an Issue", path: "/report-issue" },
 ];
 
 // ExploreDropdown Component - Redesigned as List
@@ -371,12 +371,10 @@ const MainLayout = () => {
 
               <button
                 onClick={() => handleNavigate("/user/events-page")}
-                className={`transition-all duration-200 font-medium py-2 ${location.pathname === "/user/events-page"
-                  ? "text-purple-600 font-bold border-b-2 border-purple-600"
-                  : "text-gray-800 hover:text-purple-600"
-                  }`}
+                className="nav-highlight-events relative"
               >
                 EVENTS
+                <span className="badge-hot">HOT</span>
               </button>
 
               <button
@@ -539,12 +537,15 @@ const MainLayout = () => {
                     handleNavigate("/user/events-page");
                     setIsMobileMenuOpen(false);
                   }}
-                  className={`text-left font-medium p-3 rounded-md transition-colors ${location.pathname === "/user/events-page"
+                  className={`w-full flex justify-between items-center font-medium p-3 rounded-md transition-colors ${location.pathname === "/user/events-page"
                     ? "text-purple-600 bg-purple-50"
                     : "text-gray-800 hover:text-purple-600 hover:bg-gray-50"
                     }`}
                 >
-                  EVENTS
+                  <span>EVENTS</span>
+                  <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold animate-pulse">
+                    HOT
+                  </span>
                 </button>
 
                 <button

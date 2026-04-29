@@ -213,7 +213,7 @@ const Footer = ({ paddingTop = '80px' }) => {
               <ul>
                 <li><Link to="/about-us">About Us</Link></li>
                 <li><Link to="/faq">FAQs</Link></li>
-                <li><Link to="/user/events-page">Events</Link></li>
+                <li><Link to="/user/events-page" style={{ display: 'flex', alignItems: 'center' }}>Events <span style={{ marginLeft: '8px', backgroundColor: '#ff4d4f', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '10px', fontWeight: 'bold', lineHeight: '1' }}>HOT</span></Link></li>
                 <li><Link to="/church-partner">Churches</Link></li>
                 <li><Link to="/privacy-policy">Privacy Policy</Link></li>
                 <li><Link to="/terms">Terms</Link></li>

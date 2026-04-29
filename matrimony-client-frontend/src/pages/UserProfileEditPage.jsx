@@ -731,16 +731,19 @@ const UserProfileEditPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showVisibilityOptions, setShowVisibilityOptions] = useState(false);
- const [videoFile, setVideoFile] = useState(null);
-const [videoPreview, setVideoPreview] = useState(""); // local preview or existing video URL
-const [deleteVideoFlag, setDeleteVideoFlag] = useState(false);
-const [existingVideoUrl, setExistingVideoUrl] = useState(""); // video stored in DB
+  const [videoFile, setVideoFile] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(""); // local preview or existing video URL
+  const [deleteVideoFlag, setDeleteVideoFlag] = useState(false);
+  const [existingVideoUrl, setExistingVideoUrl] = useState(""); // video stored in DB
 
   const [idProofFile, setIdProofFile] = useState(null);
   const [idProofPreview, setIdProofPreview] = useState(null);
   const [idVerificationStatus, setIdVerificationStatus] = useState("Pending");
   const [idProofDocument, setIdProofDocument] = useState("");
   const [isUploadingId, setIsUploadingId] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  console.log("UserProfileEdit: Component Body - formData.name:", formData?.name, "isLoading:", isLoading);
 
   // Hobbies options for checkboxes
   const hobbiesOptions = [
@@ -775,8 +778,8 @@ const [existingVideoUrl, setExistingVideoUrl] = useState(""); // video stored in
   const cityOptions =
     selectedCountryCode && selectedStateCode
       ? City.getCitiesOfState(selectedCountryCode, selectedStateCode).map(
-          (city) => city.name,
-        )
+        (city) => city.name,
+      )
       : [];
 
   // Handle country change
@@ -808,72 +811,37 @@ const [existingVideoUrl, setExistingVideoUrl] = useState(""); // video stored in
     setHasUnsavedChanges(true);
   };
 
-  // Handle city change - Auto-populate state and country
+  // Handle city change
   const handleCityChange = (e) => {
-    const cityName = e.target.value;
-    
-    if (!cityName) {
-      setFormData((prev) => ({
-        ...prev,
-        city: "",
-      }));
-      setHasUnsavedChanges(true);
-      return;
-    }
-
-    // Find the country and state for this city
-    let foundCountryCode = "";
-    let foundStateCode = "";
-    let foundCountryName = "";
-    let foundStateName = "";
-    let cityFound = false;
-
-    for (const country of allCountries) {
-      if (cityFound) break;
-      const states = State.getStatesOfCountry(country.isoCode);
-      
-      for (const state of states) {
-        if (cityFound) break;
-        const cities = City.getCitiesOfState(country.isoCode, state.isoCode);
-        const city = cities.find((c) => c.name.toLowerCase() === cityName.toLowerCase());
-        
-        if (city) {
-          foundCountryCode = country.isoCode;
-          foundStateCode = state.isoCode;
-          foundCountryName = country.name;
-          foundStateName = state.name;
-          cityFound = true;
-          break;
-        }
-      }
-    }
-
-    // Update form data with city, state, and country
+    setHasUnsavedChanges(true);
     setFormData((prev) => ({
       ...prev,
-      city: cityName,
-      state: foundStateName || prev.state,
-      citizenOf: foundCountryName || prev.citizenOf,
+      city: e.target.value,
     }));
-
-    // Update state codes for proper dropdown management
-    if (foundCountryCode) {
-      setSelectedCountryCode(foundCountryCode);
-    }
-    if (foundStateCode) {
-      setSelectedStateCode(foundStateCode);
-    }
-
-    setHasUnsavedChanges(true);
   };
-
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        const response = await getUserInfo(userId);
-        if (response.status === 200) {
-          const userData = response.data.data;
+      // Sanitize userId (truncate to 24 chars if mangled)
+      const rawId = userId?.trim() || "";
+      const sanitizedId = (rawId.length > 24) ? rawId.substring(0, 24) : rawId;
 
+      console.log("UserProfileEdit: Fetching data for ID:", sanitizedId);
+
+      if (!sanitizedId || sanitizedId === "undefined" || sanitizedId === "null" || (sanitizedId.length < 24 && !sanitizedId.startsWith("AGV"))) {
+        console.error("Invalid userId in UserProfileEditPage:", sanitizedId);
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await getUserInfo(sanitizedId);
+        console.log("UserProfileEdit: API Response received", response.status);
+
+        if (response.status === 200 && response.data?.data) {
+          const userData = response.data.data;
+          console.log("UserProfileEdit: User data received:", userData.userName);
+
+          // Map all fields from API to local formData state
           const loadedData = {
             aboutMe: userData.aboutMe || "",
             gender: userData.gender || "",
@@ -881,8 +849,8 @@ const [existingVideoUrl, setExistingVideoUrl] = useState(""); // video stored in
             name: userData.userName || "",
             email: userData.userEmail || "",
             phone: userData.userMobile || "",
-            dateOfBirth: userData.dateOfBirth
-              ? userData.dateOfBirth.split("T")[0]
+            dateOfBirth: userData.dateOfBirth && !isNaN(new Date(userData.dateOfBirth))
+              ? new Date(userData.dateOfBirth).toISOString().split("T")[0]
               : "",
             age: userData.age ? userData.age.toString() : "",
             bodyType: userData.bodyType || "",
@@ -978,69 +946,63 @@ const [existingVideoUrl, setExistingVideoUrl] = useState(""); // video stored in
 
           setFormData(loadedData);
 
-          // ===========================
-        // Set profile image preview
-        // ===========================
-        if (userData.profileImage) {
-          setProfileImagePreview(userData.profileImage);
-        }
+          if (userData.profileImage) {
+            setProfileImagePreview(userData.profileImage);
+          }
 
-        // ===========================
-        // Set additional images
-        // ===========================
-        if (userData.additionalImages && userData.additionalImages.length > 0) {
-          const existingImages = userData.additionalImages.map((url) => ({
-            url,
-            isExisting: true,
-          }));
-          setAdditionalImagePreviews(existingImages);
-          setExistingAdditionalImages(userData.additionalImages);
-        }
+          if (userData.additionalImages && userData.additionalImages.length > 0) {
+            const existingImages = userData.additionalImages.map((url) => ({
+              url,
+              isExisting: true,
+            }));
+            setAdditionalImagePreviews(existingImages);
+            setExistingAdditionalImages(userData.additionalImages);
+          }
 
-        // ===========================
-        // Set self-introduction video
-        // ===========================
-        if (userData.selfIntroductionVideo) {
-          setExistingVideoUrl(userData.selfIntroductionVideo);
-          setVideoPreview(userData.selfIntroductionVideo);
-        }
+          if (userData.selfIntroductionVideo) {
+            setExistingVideoUrl(userData.selfIntroductionVideo);
+            setVideoPreview(userData.selfIntroductionVideo);
+          }
 
-        if (userData.idVerificationStatus) {
-          setIdVerificationStatus(userData.idVerificationStatus);
+          if (userData.idVerificationStatus) {
+            setIdVerificationStatus(userData.idVerificationStatus);
+          }
+          if (userData.idProofDocument) {
+            setIdProofDocument(userData.idProofDocument);
+            setIdProofPreview(userData.idProofDocument);
+          }
+        } else {
+          console.warn("User data fetch was successful but returned no data or failed status.");
         }
-        if (userData.idProofDocument) {
-          setIdProofDocument(userData.idProofDocument);
-          setIdProofPreview(userData.idProofDocument);
-        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        const errorMsg = error.response?.data?.message || "Error loading user data.";
+        alert(`${errorMsg} Please check your connection or try logging in again.`);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      alert("Error loading user data. Please try again.");
-    }
-  };
+    };
 
-  if (userId) {
     fetchUserData();
-  }
-}, [userId]);
+  }, [userId]);
 
   // Initialize country and state codes when formData changes
   useEffect(() => {
     if (formData.citizenOf) {
       const country = allCountries.find((c) => c.name === formData.citizenOf);
       if (country) {
-        setSelectedCountryCode(country.isoCode);
+        setSelectedCountryCode((prev) => prev !== country.isoCode ? country.isoCode : prev);
 
         if (formData.state) {
           const states = State.getStatesOfCountry(country.isoCode);
           const state = states.find((s) => s.name === formData.state);
           if (state) {
-            setSelectedStateCode(state.isoCode);
+            setSelectedStateCode((prev) => prev !== state.isoCode ? state.isoCode : prev);
           }
         }
       }
     }
-  }, [formData.citizenOf, formData.state, allCountries]);
+  }, [formData.citizenOf, formData.state]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -1163,342 +1125,343 @@ const [existingVideoUrl, setExistingVideoUrl] = useState(""); // video stored in
   };
 
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  try {
-    // ========================
-    // Step 1: Delete removed additional images from Cloudinary
-    // ========================
-    if (deletedAdditionalImages.length > 0) {
-      try {
-        const deleteResponse = await deleteAdditionalImages(userId, deletedAdditionalImages);
-        if (deleteResponse.status === 200) {
-          console.log("Deleted images successfully from Cloudinary");
-          setDeletedAdditionalImages([]);
+    try {
+      // ========================
+      // Step 1: Delete removed additional images from Cloudinary
+      // ========================
+      if (deletedAdditionalImages.length > 0) {
+        try {
+          const deleteResponse = await deleteAdditionalImages(userId, deletedAdditionalImages);
+          if (deleteResponse.status === 200) {
+            console.log("Deleted images successfully from Cloudinary");
+            setDeletedAdditionalImages([]);
+          }
+        } catch (deleteError) {
+          console.error("Error deleting images from Cloudinary:", deleteError);
+          alert("Error deleting some images. Continuing with profile update...");
         }
-      } catch (deleteError) {
-        console.error("Error deleting images from Cloudinary:", deleteError);
-        alert("Error deleting some images. Continuing with profile update...");
       }
-    }
 
-    // ========================
-    // Step 2: Build FormData
-    // ========================
-    const submitFormData = new FormData();
+      // ========================
+      // Step 2: Build FormData
+      // ========================
+      const submitFormData = new FormData();
 
-    // Append all form fields
-    Object.keys(formData).forEach((key) => {
-      if (key === "hobbies") {
-        if (Array.isArray(formData[key]) && formData[key].length > 0) {
-          formData[key].forEach((hobby, index) => {
-            submitFormData.append(`hobbies[${index}]`, hobby);
-          });
+      // Append all form fields
+      Object.keys(formData).forEach((key) => {
+        if (key === "hobbies") {
+          if (Array.isArray(formData[key]) && formData[key].length > 0) {
+            formData[key].forEach((hobby) => {
+              submitFormData.append("hobbies", hobby);
+            });
+          } else {
+            submitFormData.append("hobbies", "");
+          }
         } else {
-          submitFormData.append("hobbies", "");
+          submitFormData.append(key, formData[key] || "");
         }
-      } else {
-        submitFormData.append(key, formData[key] || "");
+      });
+
+      // ========================
+      // Step 3: Handle profile image
+      // ========================
+      if (profileImageFile) {
+        submitFormData.append("profileImage", profileImageFile);
       }
-    });
+      if (deleteProfileImageFlag) {
+        submitFormData.append("deleteProfileImage", "true");
+      }
 
-    // ========================
-    // Step 3: Handle profile image
-    // ========================
-    if (profileImageFile) {
-      submitFormData.append("profileImage", profileImageFile);
-    }
-    if (deleteProfileImageFlag) {
-      submitFormData.append("deleteProfileImage", "true");
-    }
+      // ========================
+      // Step 4: Handle additional images
+      // ========================
+      if (additionalImageFiles.length > 0) {
+        additionalImageFiles.forEach((file) => {
+          submitFormData.append("additionalImages", file);
+        });
+      }
 
-    // ========================
-    // Step 4: Handle additional images
-    // ========================
-    if (additionalImageFiles.length > 0) {
-      additionalImageFiles.forEach((file) => {
-        submitFormData.append("additionalImages", file);
-      });
-    }
+      // Include existing additional images
+      if (existingAdditionalImages.length > 0) {
+        existingAdditionalImages.forEach((url) => {
+          submitFormData.append("existingAdditionalImages", url);
+        });
+      }
 
-    // Include existing additional images
-    if (existingAdditionalImages.length > 0) {
-      existingAdditionalImages.forEach((url, index) => {
-        submitFormData.append(`existingAdditionalImages[${index}]`, url);
-      });
-    }
+      // ========================
+      // Step 5: Handle self-introduction video
+      // ========================
+      if (videoFile) {
+        submitFormData.append("selfIntroductionVideo", videoFile);
+      }
+      if (deleteVideoFlag) {
+        submitFormData.append("deleteSelfIntroductionVideo", "true");
+      }
 
-    // ========================
-    // Step 5: Handle self-introduction video
-    // ========================
-    if (videoFile) {
-      submitFormData.append("selfIntroductionVideo", videoFile);
-    }
-    if (deleteVideoFlag) {
-      submitFormData.append("deleteSelfIntroductionVideo", "true");
-    }
+      // ========================
+      // Step 6: Send FormData to backend
+      // ========================
+      console.log("Submitting form data...");
+      const response = await savePersonalInfo(submitFormData, userId);
+      console.log("Response:", response);
 
-    // ========================
-    // Step 6: Send FormData to backend
-    // ========================
-    console.log("Submitting form data...");
-    const response = await savePersonalInfo(submitFormData, userId);
-    console.log("Response:", response);
+      if (response.status === 200 || response.data?.success) {
+        alert("Profile updated successfully!");
 
-    if (response.status === 200 || response.data?.success) {
-      alert("Profile updated successfully!");
+        // Clear video file state and update preview
+        setVideoFile(null);
+        setVideoPreview(response.data.data.selfIntroductionVideo || null);
 
-      // Clear video file state and update preview
-      setVideoFile(null);
-      setVideoPreview(response.data.data.selfIntroductionVideo || null);
+        // Reset flags and deleted images list
+        setHasUnsavedChanges(false);
+        setDeleteProfileImageFlag(false);
+        setDeletedAdditionalImages([]);
 
-      // Reset flags and deleted images list
-      setHasUnsavedChanges(false);
-      setDeleteProfileImageFlag(false);
-      setDeletedAdditionalImages([]);
-
-      // Optional: navigate after update
-      setTimeout(() => {
-        navigate(`/user/user-profile-page`);
-      }, 500);
-    } else {
-      const errorMessage = response.data?.message || "Error updating profile. Please try again.";
+        // Optional: navigate after update
+        setTimeout(() => {
+          navigate(`/user/user-profile-page`);
+        }, 500);
+      } else {
+        const errorMessage = response.data?.message || "Error updating profile. Please try again.";
+        alert(errorMessage);
+        console.error("Update failed:", response);
+      }
+    } catch (error) {
+      console.error("Error submitting profile:", error);
+      const errorMessage =
+        error.response?.data?.message || error.message || "Error updating profile. Please try again.";
       alert(errorMessage);
-      console.error("Update failed:", response);
-    }
-  } catch (error) {
-    console.error("Error submitting profile:", error);
-    const errorMessage =
-      error.response?.data?.message || error.message || "Error updating profile. Please try again.";
-    alert(errorMessage);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
-// ========================
-// Warn user about unsaved changes
-// ========================
-useEffect(() => {
-  const handleBeforeUnload = (e) => {
-    if (hasUnsavedChanges) {
-      e.preventDefault();
-      e.returnValue = "";
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  window.addEventListener("beforeunload", handleBeforeUnload);
-  return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-}, [hasUnsavedChanges]);
-
-// ========================
-// Video handlers
-// ========================
-const handleVideoChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    setHasUnsavedChanges(true);
-    setVideoFile(file);
-    setDeleteVideoFlag(false); // reset delete flag
-    setVideoPreview(URL.createObjectURL(file));
-  }
-};
-
-const handleDeleteVideo = () => {
-  setHasUnsavedChanges(true);
-  setVideoFile(null);
-  setVideoPreview(null);
-  setDeleteVideoFlag(true); // mark for deletion
-};
-
-const handleIdProofChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    setIdProofFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setIdProofPreview(reader.result);
+  // ========================
+  // Warn user about unsaved changes
+  // ========================
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
     };
-    reader.readAsDataURL(file);
-  }
-};
 
-const handleIdProofUpload = async () => {
-  if (!idProofFile) return;
-  setIsUploadingId(true);
-  try {
-    const formData = new FormData();
-    formData.append("idProof", idProofFile);
-    
-    // Using manual axios for direct control
-    const baseUrl = import.meta.env.VITE_BASE_ROUTE;
-    const url = `${baseUrl}/test-upload-id-proof/${userId}`;
-    console.log("HITTING TEST URL:", url);
-    
-    const response = await axios.post(url, formData, {
-      headers: { "Content-Type": "multipart/form-data" }
-    });
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [hasUnsavedChanges]);
 
-    if (response.status === 200) {
-      alert("ID Proof uploaded successfully (via test route). It is now pending admin approval.");
-      setIdVerificationStatus("Uploaded");
-      setIdProofFile(null);
+  // ========================
+  // Video handlers
+  // ========================
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setHasUnsavedChanges(true);
+      setVideoFile(file);
+      setDeleteVideoFlag(false); // reset delete flag
+      setVideoPreview(URL.createObjectURL(file));
     }
-  } catch (error) {
-    console.error("Error uploading ID proof (test route):", error);
-    alert("Error uploading ID proof. Please try again.");
-  } finally {
-    setIsUploadingId(false);
-  }
-};
+  };
 
-// const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setIsSubmitting(true);  
+  const handleDeleteVideo = () => {
+    setHasUnsavedChanges(true);
+    setVideoFile(null);
+    setVideoPreview(null);
+    setDeleteVideoFlag(true); // mark for deletion
+  };
 
-//     try {
-//       // Step 1: Delete additional images from Cloudinary if any were removed
-//       if (deletedAdditionalImages.length > 0) {
-//         console.log("Deleting images from Cloudinary:", deletedAdditionalImages);
-//         try {
-//           const deleteResponse = await deleteAdditionalImages(
-//             userId,
-//             deletedAdditionalImages,
-//           );
-//           if (deleteResponse.status === 200) {
-//             console.log("Images deleted successfully from Cloudinary");
-//             setDeletedAdditionalImages([]); // Clear the deleted images list
-//           }
-//         } catch (deleteError) {
-//           console.error("Error deleting images from Cloudinary:", deleteError);
-//           alert("Error deleting some images. Continuing with profile update...");
-//         }
-//       }
+  const handleIdProofChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setIdProofFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setIdProofPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-//       // Step 2: Update the profile with remaining data
-//       const submitFormData = new FormData();
+  const handleIdProofUpload = async () => {
+    if (!idProofFile) return;
+    setIsUploadingId(true);
+    try {
+      const formData = new FormData();
+      formData.append("idProof", idProofFile);
 
-//       // Append all form fields
-//       Object.keys(formData).forEach((key) => {
-//         if (key === "hobbies") {
-//           if (Array.isArray(formData[key]) && formData[key].length > 0) {
-//             formData[key].forEach((hobby, index) => {
-//               submitFormData.append(`hobbies[${index}]`, hobby);
-//             });
-//           } else {
-//             submitFormData.append("hobbies", "");
-//           }
-//         } else {
-//           const value = formData[key];
-//           submitFormData.append(key, value || "");
-//         }
-//       });
+      // Using manual axios for direct control
+      const baseUrl = import.meta.env.VITE_BASE_ROUTE;
+      const url = `${baseUrl}/upload-id-proof/${userId}`;
+      console.log("HITTING ID PROOF UPLOAD URL:", url);
 
-//       // Append profile image if changed
-//       if (profileImageFile) {
-//         submitFormData.append("profileImage", profileImageFile);
-//       }
+      const response = await axios.post(url, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
 
-//       // Append delete profile image flag if needed
-//       if (deleteProfileImageFlag) {
-//         submitFormData.append("deleteProfileImage", "true");
-//       }
+      if (response.status === 200) {
+        alert("ID Proof uploaded successfully (via test route). It is now pending admin approval.");
+        setIdVerificationStatus("Uploaded");
+        setIdProofFile(null);
+      }
+    } catch (error) {
+      console.error("Error uploading ID proof (test route):", error);
+      alert("Error uploading ID proof. Please try again.");
+    } finally {
+      setIsUploadingId(false);
+    }
+  };
 
-//       // Append new additional images
-//       if (additionalImageFiles.length > 0) {
-//         additionalImageFiles.forEach((file) => {
-//           submitFormData.append("additionalImages", file);
-//         });
-//       }
-      
+  // const handleSubmit = async (e) => {
+  //     e.preventDefault();
+  //     setIsSubmitting(true);  
 
-//       // Append video if new
-// if (videoFile) {
-//   submitFormData.append("selfIntroductionVideo", videoFile);
-// }
+  //     try {
+  //       // Step 1: Delete additional images from Cloudinary if any were removed
+  //       if (deletedAdditionalImages.length > 0) {
+  //         console.log("Deleting images from Cloudinary:", deletedAdditionalImages);
+  //         try {
+  //           const deleteResponse = await deleteAdditionalImages(
+  //             userId,
+  //             deletedAdditionalImages,
+  //           );
+  //           if (deleteResponse.status === 200) {
+  //             console.log("Images deleted successfully from Cloudinary");
+  //             setDeletedAdditionalImages([]); // Clear the deleted images list
+  //           }
+  //         } catch (deleteError) {
+  //           console.error("Error deleting images from Cloudinary:", deleteError);
+  //           alert("Error deleting some images. Continuing with profile update...");
+  //         }
+  //       }
 
-// // Append delete flag if video removed
-// if (deleteVideoFlag) {
-//   submitFormData.append("deleteSelfIntroductionVideo", "true");
-// }
+  //       // Step 2: Update the profile with remaining data
+  //       const submitFormData = new FormData();
+
+  //       // Append all form fields
+  //       Object.keys(formData).forEach((key) => {
+  //         if (key === "hobbies") {
+  //           if (Array.isArray(formData[key]) && formData[key].length > 0) {
+  //             formData[key].forEach((hobby, index) => {
+  //               submitFormData.append(`hobbies[${index}]`, hobby);
+  //             });
+  //           } else {
+  //             submitFormData.append("hobbies", "");
+  //           }
+  //         } else {
+  //           const value = formData[key];
+  //           submitFormData.append(key, value || "");
+  //         }
+  //       });
+
+  //       // Append profile image if changed
+  //       if (profileImageFile) {
+  //         submitFormData.append("profileImage", profileImageFile);
+  //       }
+
+  //       // Append delete profile image flag if needed
+  //       if (deleteProfileImageFlag) {
+  //         submitFormData.append("deleteProfileImage", "true");
+  //       }
+
+  //       // Append new additional images
+  //       if (additionalImageFiles.length > 0) {
+  //         additionalImageFiles.forEach((file) => {
+  //           submitFormData.append("additionalImages", file);
+  //         });
+  //       }
+
+
+  //       // Append video if new
+  // if (videoFile) {
+  //   submitFormData.append("selfIntroductionVideo", videoFile);
+  // }
+
+  // // Append delete flag if video removed
+  // if (deleteVideoFlag) {
+  //   submitFormData.append("deleteSelfIntroductionVideo", "true");
+  // }
 
 
 
-//       // Append existing additional images that weren't removed
-//       if (existingAdditionalImages.length > 0) {
-//         existingAdditionalImages.forEach((url, index) => {
-//           submitFormData.append(`existingAdditionalImages[${index}]`, url);
-//         });
-//       }
+  //       // Append existing additional images that weren't removed
+  //       if (existingAdditionalImages.length > 0) {
+  //         existingAdditionalImages.forEach((url, index) => {
+  //           submitFormData.append(`existingAdditionalImages[${index}]`, url);
+  //         });
+  //       }
 
-//       console.log("Submitting form data...");
-//       console.log(
-//         "Form data to submit:",
-//         Object.fromEntries(submitFormData.entries()),
-//       );
+  //       console.log("Submitting form data...");
+  //       console.log(
+  //         "Form data to submit:",
+  //         Object.fromEntries(submitFormData.entries()),
+  //       );
 
-//       const response = await savePersonalInfo(submitFormData, userId);
+  //       const response = await savePersonalInfo(submitFormData, userId);
 
-//       console.log("Response:", response);
+  //       console.log("Response:", response);
 
-//       if (response.status === 200 || response.data?.success) {
-//         setHasUnsavedChanges(false);
-//         setDeleteProfileImageFlag(false);
-//         setDeletedAdditionalImages([]); // Clear the deleted images list
-//         alert("Profile updated successfully!");
+  //       if (response.status === 200 || response.data?.success) {
+  //         setHasUnsavedChanges(false);
+  //         setDeleteProfileImageFlag(false);
+  //         setDeletedAdditionalImages([]); // Clear the deleted images list
+  //         alert("Profile updated successfully!");
 
-//         // Small delay before navigation to ensure alert is seen
-//         setTimeout(() => {
-//           navigate(`/user/user-profile-page`);
-//         }, 500);
-//       } else {
-//         const errorMessage =
-//           response.data?.message || "Error updating profile. Please try again.";
-//         alert(errorMessage);
-//         console.error("Update failed:", response);
-//       }
-//     } catch (error) {
-//       console.error("Error details:", error);
-//       const errorMessage =
-//         error.response?.data?.message ||
-//         error.message ||
-//         "Error updating profile. Please try again.";
-//       alert(errorMessage);
+  //         // Small delay before navigation to ensure alert is seen
+  //         setTimeout(() => {
+  //           navigate(`/user/user-profile-page`);
+  //         }, 500);
+  //       } else {
+  //         const errorMessage =
+  //           response.data?.message || "Error updating profile. Please try again.";
+  //         alert(errorMessage);
+  //         console.error("Update failed:", response);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error details:", error);
+  //       const errorMessage =
+  //         error.response?.data?.message ||
+  //         error.message ||
+  //         "Error updating profile. Please try again.";
+  //       alert(errorMessage);
 
-//       if (error.response) {
-//         console.error("Response error:", error.response.data);
-//         console.error("Response status:", error.response.status);
-//       }
-//     } finally {
-//       setIsSubmitting(false);
-//     }
-//   };
+  //       if (error.response) {
+  //         console.error("Response error:", error.response.data);
+  //         console.error("Response status:", error.response.status);
+  //       }
+  //     } finally {
+  //       setIsSubmitting(false);
+  //     }
+  //   };
 
-//   // Warn user about unsaved changes
-//   useEffect(() => {
-//     const handleBeforeUnload = (e) => {
-//       if (hasUnsavedChanges) {
-//         e.preventDefault();
-//         e.returnValue = "";
-//       }
-//     };
+  //   // Warn user about unsaved changes
+  //   useEffect(() => {
+  //     const handleBeforeUnload = (e) => {
+  //       if (hasUnsavedChanges) {
+  //         e.preventDefault();
+  //         e.returnValue = "";
+  //       }
+  //     };
 
-//     window.addEventListener("beforeunload", handleBeforeUnload);
-//     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-//   }, [hasUnsavedChanges]);
+  //     window.addEventListener("beforeunload", handleBeforeUnload);
+  //     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   }, [hasUnsavedChanges]);
 
 
 
 
   return (
     <div style={{ minHeight: "100vh", background: "#f5f5f5" }}>
+      {console.log("UserProfileEdit: Render state - formData.name:", formData.name, "isLoading:", isLoading)}
       <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 50 }}>
         <LayoutComponent />
       </div>
 
-      <div style={{ paddingTop: "40px", paddingBottom: "40px" }}>
+      <div style={{ paddingTop: "160px", paddingBottom: "40px" }}>
         <div className="db">
           <div
             className="container-fluid"
@@ -1533,2199 +1496,2223 @@ const handleIdProofUpload = async () => {
                 className="col-md-3 col-lg-2"
                 style={{ paddingLeft: 0, marginLeft: "0px" }}
               >
-                <UserSideBar key="edit-sidebar-v4" />
+                <UserSideBar key="edit-sidebar-v4" sidebarTop="160px" />
               </div>
               {/* Main Content - Right Column */}
               <div
                 className="col-md-9 col-lg-10"
                 style={{ paddingLeft: "20px", paddingRight: "15px" }}
               >
-                <form onSubmit={handleSubmit}>
-                  {/* Top Buttons Section */}
-                  <div
-                    style={{
-                      background: "#fff",
-                      padding: "20px 24px",
-                      borderRadius: "8px",
-                      marginBottom: "24px",
-                      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+                <form onSubmit={handleSubmit} key={userId || "edit-form"}>
+                  {isLoading ? (
+                    <div style={{
                       display: "flex",
-                      justifyContent: "flex-end",
-                      gap: "12px",
-                      position: "sticky",
-                      top: "115px",
-                      zIndex: 30,
-                    }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => window.history.back()}
-                      disabled={isSubmitting}
-                      style={{
-                        padding: "10px 24px",
-                        background: "#fff",
-                        color: "#374151",
-                        border: "2px solid #d1d5db",
-                        borderRadius: "6px",
-                        fontSize: "14px",
-                        fontWeight: "600",
-                        cursor: isSubmitting ? "not-allowed" : "pointer",
-                        transition: "all 0.2s ease",
-                      }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      style={{
-                        padding: "10px 24px",
-                        background: isSubmitting ? "#9ca3af" : "#667eea",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: "6px",
-                        fontSize: "14px",
-                        fontWeight: "600",
-                        cursor: isSubmitting ? "not-allowed" : "pointer",
-                        transition: "all 0.2s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isSubmitting) {
-                          e.target.style.background = "#5568d3";
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isSubmitting) {
-                          e.target.style.background = "#667eea";
-                        }
-                      }}
-                    >
-                      {isSubmitting ? "Submitting..." : "Save Changes"}
-                    </button>
-                  </div>
-
-                  {/* Profile Image Upload Section */}
-                  <BasicInfomation
-                    profileImagePreview={profileImagePreview}
-                    handleProfileImageChange={handleProfileImageChange}
-                    handleAdditionalImagesChange={handleAdditionalImagesChange}
-                    additionalImagePreviews={additionalImagePreviews}
-                    removeAdditionalImage={removeAdditionalImage}
-                    handleDeleteProfileImage={handleDeleteProfileImage}
-                  />
-
-                  <FormSection title="Self Introduction Video">
-  <div style={{ display: "flex", alignItems: "center", gap: "20px", flexWrap: "wrap" }}>
-    {videoPreview ? (
-      <div style={{ position: "relative", display: "inline-block" }}>
-       <video
-  src={videoPreview}
-  controls
-  style={{
-    width: "200px", // smaller size
-    borderRadius: "8px",
-    border: "1px solid #e5e7eb",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-  }}
-/>
-        {/* Delete Button */}
-        <button
-          type="button"
-          onClick={handleDeleteVideo}
-          style={{
-            position: "absolute",
-            top: "6px",
-            right: "6px",
-            width: "28px",
-            height: "28px",
-            borderRadius: "50%",
-            background: "#ef4444",
-            border: "2px solid #fff",
-            color: "#fff",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "14px",
-            transition: "all 0.2s ease",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
-          onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-          title="Remove video"
-        >
-          <i className="fa fa-times"></i>
-        </button>
-
-        {/* Download Button */}
-        <a
-          href={videoPreview}
-          download="SelfIntroduction.mp4"
-          style={{
-            position: "absolute",
-            bottom: "6px",
-            right: "6px",
-            padding: "6px 10px",
-            background: "#667eea",
-            color: "#fff",
-            fontSize: "12px",
-            fontWeight: "600",
-            borderRadius: "6px",
-            textDecoration: "none",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            cursor: "pointer",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-            transition: "all 0.2s ease",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "#5568d3";
-            e.currentTarget.style.transform = "scale(1.05)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "#667eea";
-            e.currentTarget.style.transform = "scale(1)";
-          }}
-        >
-          <i className="fa fa-download"></i> Download
-        </a>
-      </div>
-    ) : (
-      <div>
-        <input
-          type="file"
-          accept="video/*"
-          onChange={handleVideoChange}
-          style={{
-            padding: "8px",
-            border: "2px dashed #d1d5db",
-            borderRadius: "8px",
-            cursor: "pointer",
-            transition: "all 0.2s ease",
-            background: "#f9fafb",
-          }}
-        />
-        <p style={{ fontSize: "13px", color: "#6b7280", marginTop: "6px" }}>
-          Upload a short self-introduction video
-        </p>
-      </div>
-    )}
-  </div>
-</FormSection>
-
-<FormSection title="Government ID Verification">
-  <div style={{
-    background: "#f8fafc",
-    padding: "24px",
-    borderRadius: "12px",
-    border: "1px solid #e2e8f0"
-  }}>
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
-      <div>
-        <h4 style={{ fontSize: "16px", fontWeight: "600", color: "#1e293b", marginBottom: "4px" }}>
-          Verify your identity
-        </h4>
-        <p style={{ fontSize: "14px", color: "#64748b" }}>
-          Please upload a valid government-issued ID (Aadhar, PAN, Passport, etc.) for verification.
-        </p>
-      </div>
-      <div style={{
-        padding: "6px 12px",
-        borderRadius: "20px",
-        fontSize: "12px",
-        fontWeight: "700",
-        textTransform: "uppercase",
-        background: idVerificationStatus === "Verified" ? "#dcfce7" : idVerificationStatus === "Rejected" ? "#fee2e2" : idVerificationStatus === "Uploaded" ? "#fef9c3" : "#f1f5f9",
-        color: idVerificationStatus === "Verified" ? "#15803d" : idVerificationStatus === "Rejected" ? "#b91c1c" : idVerificationStatus === "Uploaded" ? "#854d0e" : "#475569",
-        border: "1px solid",
-        borderColor: idVerificationStatus === "Verified" ? "#86efac" : idVerificationStatus === "Rejected" ? "#fecaca" : idVerificationStatus === "Uploaded" ? "#fef08a" : "#cbd5e1"
-      }}>
-        {idVerificationStatus}
-      </div>
-    </div>
-
-    {idVerificationStatus === "Verified" ? (
-      <div style={{ display: "flex", alignItems: "center", gap: "12px", color: "#15803d", background: "#f0fdf4", padding: "16px", borderRadius: "8px", border: "1px solid #bbf7d0" }}>
-        <i className="fa fa-check-circle" style={{ fontSize: "20px" }}></i>
-        <div>
-          <p style={{ fontWeight: "600", margin: 0 }}>Your ID has been verified!</p>
-          <p style={{ fontSize: "13px", margin: 0 }}>A verified badge is now visible on your profile.</p>
-        </div>
-      </div>
-    ) : (
-      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-        {idProofPreview && (
-          <div style={{ position: "relative", width: "fit-content" }}>
-            {idProofDocument?.toLowerCase().endsWith(".pdf") || (idProofFile && idProofFile.type === "application/pdf") ? (
-              <div style={{
-                width: "200px",
-                height: "150px",
-                background: "#fff",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: "8px",
-                border: "1px solid #e2e8f0",
-                color: "#64748b"
-              }}>
-                <i className="fa fa-file-pdf-o" style={{ fontSize: "40px", color: "#ef4444", marginBottom: "8px" }}></i>
-                <span style={{ fontSize: "12px", fontWeight: "600" }}>PDF Document</span>
-              </div>
-            ) : (
-              <img
-                src={idProofPreview}
-                alt="ID Proof Preview"
-                style={{
-                  width: "200px",
-                  borderRadius: "8px",
-                  border: "1px solid #e2e8f0",
-                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
-                }}
-              />
-            )}
-          </div>
-        )}
-
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <label style={{
-            padding: "10px 20px",
-            background: "#fff",
-            border: "2px dashed #cbd5e1",
-            borderRadius: "8px",
-            color: "#475569",
-            fontSize: "14px",
-            fontWeight: "600",
-            cursor: "pointer",
-            transition: "all 0.2s ease",
-            display: "inline-block"
-          }}>
-            <i className="fa fa-upload" style={{ marginRight: "8px" }}></i>
-            {idProofFile ? "Change File" : "Choose ID File"}
-            <input
-              type="file"
-              accept="image/*,.pdf"
-              onChange={handleIdProofChange}
-              style={{ display: "none" }}
-            />
-          </label>
-
-          {idProofFile && (
-            <button
-              type="button"
-              onClick={handleIdProofUpload}
-              disabled={isUploadingId}
-              style={{
-                padding: "10px 24px",
-                background: "#6366f1",
-                color: "#fff",
-                border: "none",
-                borderRadius: "8px",
-                fontSize: "14px",
-                fontWeight: "600",
-                cursor: isUploadingId ? "not-allowed" : "pointer",
-                boxShadow: "0 4px 6px -1px rgba(99, 102, 241, 0.4)",
-                transition: "all 0.2s ease"
-              }}
-            >
-              {isUploadingId ? (
-                <><i className="fa fa-spinner fa-spin" style={{ marginRight: "8px" }}></i> Uploading...</>
-              ) : (
-                "Upload & Submit"
-              )}
-            </button>
-          )}
-        </div>
-        
-        {idVerificationStatus === "Rejected" && (
-          <p style={{ fontSize: "13px", color: "#dc2626", fontWeight: "500", marginTop: "8px" }}>
-            <i className="fa fa-exclamation-circle" style={{ marginRight: "6px" }}></i>
-            Your previous document was rejected. Please upload a clear, valid ID.
-          </p>
-        )}
-      </div>
-    )}
-  </div>
-</FormSection>
-
-                  {/* Profile Visibility Toggle Section */}
-                  <div
-                    style={{
-                      padding: "24px",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "80px",
                       background: "#fff",
-                      borderRadius: "8px",
-                      marginBottom: "24px",
-                      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <div>
-                        <h3
-                          style={{
-                            fontSize: "16px",
-                            fontWeight: "600",
-                            color: "#1f2937",
-                            marginBottom: "8px",
-                            marginTop: "0",
-                          }}
-                        >
-                          Profile Visibility
-                        </h3>
-                        <p
-                          style={{
-                            fontSize: "13px",
-                            color: "#6b7280",
-                            margin: "0",
-                          }}
-                        >
-                          Current Status: <strong>{formData.profileVisibility}</strong>
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowVisibilityOptions(!showVisibilityOptions)
-                        }
-                        style={{
-                          padding: "10px 20px",
-                          background: "#667eea",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "6px",
-                          fontSize: "14px",
-                          fontWeight: "600",
-                          cursor: "pointer",
-                          transition: "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.background = "#5568d3";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.background = "#667eea";
-                        }}
-                      >
-                        {showVisibilityOptions ? "Cancel" : "Change Visibility"}
-                      </button>
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+                      border: "1px solid #e5e7eb"
+                    }}>
+                      <i className="fa fa-spinner fa-spin" style={{ fontSize: "48px", color: "#d4af37", marginBottom: "20px" }}></i>
+                      <p style={{ color: "#1f2937", fontWeight: "600", fontSize: "18px" }}>Loading your profile data...</p>
+                      <p style={{ color: "#6b7280", marginTop: "8px" }}>Please wait a moment</p>
                     </div>
-
-                    {/* Visibility Options */}
-                    {showVisibilityOptions && (
+                  ) : (
+                    <>
+                      {/* DEBUG HEADING - TO BE REMOVED AFTER FIX */}
+                      <div style={{ background: "#fff", padding: "10px", marginBottom: "10px", borderRadius: "8px", border: "2px solid #667eea" }}>
+                         <h3 style={{ color: "#667eea", margin: 0 }}>Debug: Loading data for {formData.name || "None"}</h3>
+                      </div>
+                      {/* Top Buttons Section */}
                       <div
                         style={{
-                          marginTop: "20px",
-                          paddingTop: "20px",
-                          borderTop: "1px solid #e5e7eb",
-                          display: "grid",
-                          gridTemplateColumns: "repeat(2, 1fr)",
-                          gap: "16px",
+                          background: "#fff",
+                          padding: "20px 24px",
+                          borderRadius: "8px",
+                          marginBottom: "24px",
+                          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          gap: "12px",
+                          position: "sticky",
+                          top: "150px",
+                          zIndex: 30,
                         }}
                       >
                         <button
                           type="button"
-                          onClick={() => handleVisibilityChange("Public")}
+                          onClick={() => window.history.back()}
+                          disabled={isSubmitting}
                           style={{
-                            padding: "20px 16px",
-                            background:
-                              formData.profileVisibility === "Public"
-                                ? "#ecf0ff"
-                                : "#f9fafb",
-                            border:
-                              formData.profileVisibility === "Public"
-                                ? "2px solid #667eea"
-                                : "2px solid #e5e7eb",
+                            padding: "10px 24px",
+                            background: "#fff",
+                            color: "#374151",
+                            border: "2px solid #d1d5db",
                             borderRadius: "6px",
-                            cursor: "pointer",
+                            fontSize: "14px",
+                            fontWeight: "600",
+                            cursor: isSubmitting ? "not-allowed" : "pointer",
                             transition: "all 0.2s ease",
-                            textAlign: "left",
-                          }}
-                          onMouseEnter={(e) => {
-                            if (formData.profileVisibility !== "Public") {
-                              e.target.style.borderColor = "#d1d5db";
-                              e.target.style.background = "#f3f4f6";
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            if (formData.profileVisibility !== "Public") {
-                              e.target.style.borderColor = "#e5e7eb";
-                              e.target.style.background = "#f9fafb";
-                            }
                           }}
                         >
-                          <div
-                            style={{
-                              fontSize: "16px",
-                              fontWeight: "600",
-                              color: "#1f2937",
-                              marginBottom: "6px",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                            }}
-                          >
-                            <i className="fa fa-globe"></i>
-                            Public
-                            {formData.profileVisibility === "Public" && (
-                              <i
-                                className="fa fa-check-circle"
-                                style={{ color: "#667eea", marginLeft: "auto" }}
-                              ></i>
-                            )}
-                          </div>
-                          <p
-                            style={{
-                              fontSize: "13px",
-                              color: "#6b7280",
-                              margin: "0",
-                            }}
-                          >
-                            Your profile is visible to all users
-                          </p>
+                          Cancel
                         </button>
-
                         <button
-                          type="button"
-                          onClick={() => handleVisibilityChange("Private")}
+                          type="submit"
+                          disabled={isSubmitting}
                           style={{
-                            padding: "20px 16px",
-                            background:
-                              formData.profileVisibility === "Private"
-                                ? "#ecf0ff"
-                                : "#f9fafb",
-                            border:
-                              formData.profileVisibility === "Private"
-                                ? "2px solid #667eea"
-                                : "2px solid #e5e7eb",
+                            padding: "10px 24px",
+                            background: isSubmitting ? "#9ca3af" : "#667eea",
+                            color: "#fff",
+                            border: "none",
                             borderRadius: "6px",
-                            cursor: "pointer",
+                            fontSize: "14px",
+                            fontWeight: "600",
+                            cursor: isSubmitting ? "not-allowed" : "pointer",
                             transition: "all 0.2s ease",
-                            textAlign: "left",
                           }}
                           onMouseEnter={(e) => {
-                            if (formData.profileVisibility !== "Private") {
-                              e.target.style.borderColor = "#d1d5db";
-                              e.target.style.background = "#f3f4f6";
+                            if (!isSubmitting) {
+                              e.target.style.background = "#5568d3";
                             }
                           }}
                           onMouseLeave={(e) => {
-                            if (formData.profileVisibility !== "Private") {
-                              e.target.style.borderColor = "#e5e7eb";
-                              e.target.style.background = "#f9fafb";
+                            if (!isSubmitting) {
+                              e.target.style.background = "#667eea";
                             }
                           }}
                         >
-                          <div
-                            style={{
-                              fontSize: "16px",
-                              fontWeight: "600",
-                              color: "#1f2937",
-                              marginBottom: "6px",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                            }}
-                          >
-                            <i className="fa fa-lock"></i>
-                            Private
-                            {formData.profileVisibility === "Private" && (
-                              <i
-                                className="fa fa-check-circle"
-                                style={{ color: "#667eea", marginLeft: "auto" }}
-                              ></i>
-                            )}
-                          </div>
-                          <p
-                            style={{
-                              fontSize: "13px",
-                              color: "#6b7280",
-                              margin: "0",
-                            }}
-                          >
-                            Only you and admins can view your profile
-                          </p>
+                          {isSubmitting ? "Submitting..." : "Save Changes"} 
                         </button>
                       </div>
-                    )}
-                  </div>
 
-               
-                  {/* Basic Details Section */}
-                  <FormSection title="Basic Details">
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "20px",
-                      }}
-                    >
-                      <div style={{ gridColumn: "1 / -1" }}>
-                        <FormInput
-                          label="About Me"
-                          name="aboutMe"
-                          type="textarea"
-                          value={formData.aboutMe}
-                          onChange={handleInputChange}
-                          placeholder="Write a brief introduction about yourself..."
-                          rows={4}
-                        />
-                      </div>
-                      <FormInput
-                        label="Gender"
-                        name="gender"
-                        type="select"
-                        value={formData.gender}
-                        onChange={handleInputChange}
-                        options={["Male", "Female", "Other"]}
+                      {/* Profile Image Upload Section */}
+                      <BasicInfomation
+                        profileImagePreview={profileImagePreview}
+                        handleProfileImageChange={handleProfileImageChange}
+                        handleAdditionalImagesChange={handleAdditionalImagesChange}
+                        additionalImagePreviews={additionalImagePreviews}
+                        removeAdditionalImage={removeAdditionalImage}
+                        handleDeleteProfileImage={handleDeleteProfileImage}
                       />
-                      <FormInput
-                        label="Profile Created By"
-                        name="profileCreatedFor"
-                        type="select"
-                        value={formData.profileCreatedFor}
-                        onChange={handleInputChange}
-                        options={[
-                          "Self",
-                          "Son",
-                          "Daughter",
-                          "Brother",
-                          "Sister",
-                          "Friend",
-                          "Relative",
-                        ]}
-                      />
-                      <FormInput
-                        label="Name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required
-                      />
-                      <FormInput
-                        label="Date of Birth"
-                        name="dateOfBirth"
-                        type="date"
-                        value={formData.dateOfBirth}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Age"
-                        name="age"
-                        value={formData.age}
-                        onChange={handleInputChange}
-                        placeholder="Calculated automatically"
-                      />
-                      <FormInput
-                        label="Body Type"
-                        name="bodyType"
-                        type="select"
-                        value={formData.bodyType}
-                        onChange={handleInputChange}
-                        options={["Slim", "Average", "Athletic", "Heavy"]}
-                      />
-                      <FormInput
-                        label="Physical Status"
-                        name="physicalStatus"
-                        type="select"
-                        value={formData.physicalStatus}
-                        onChange={handleInputChange}
-                        options={["Normal", "Physically Challenged"]}
-                      />
-                      <FormInput
-                        label="Complexion"
-                        name="complexion"
-                        type="select"
-                        value={formData.complexion}
-                        onChange={handleInputChange}
-                        options={[
-                          "Very Fair",
-                          "Fair",
-                          "Wheatish",
-                          "Dark",
-                          "Very Dark",
-                        ]}
-                      />
-                      <FormInput
-                        label="Height"
-                        name="height"
-                        type="select"
-                        searchable={true}
-                        value={formData.height}
-                        onChange={handleInputChange}
-                        options={[
-                          "4ft",
-                          "4ft 1in",
-                          "4ft 2in",
-                          "4ft 3in",
-                          "4ft 4in",
-                          "4ft 5in",
-                          "4ft 6in",
-                          "4ft 7in",
-                          "4ft 8in",
-                          "4ft 9in",
-                          "4ft 10in",
-                          "4ft 11in",
-                          "5ft",
-                          "5ft 1in",
-                          "5ft 2in",
-                          "5ft 3in",
-                          "5ft 4in",
-                          "5ft 5in",
-                          "5ft 6in",
-                          "5ft 7in",
-                          "5ft 8in",
-                          "5ft 9in",
-                          "5ft 10in",
-                          "5ft 11in",
-                          "6ft",
-                          "6ft 1in",
-                          "6ft 2in",
-                          "6ft 3in",
-                          "6ft 4in",
-                          "6ft 5in",
-                          "6ft 6in",
-                          "6ft 7in",
-                          "6ft 8in",
-                          "6ft 9in",
-                          "6ft 10in",
-                          "6ft 11in",
-                          "7ft",
-                          "7ft 1in",
-                          "7ft 2in",
-                          "7ft 3in",
-                          "7ft 4in",
-                          "7ft 5in",
-                          "7ft 6in",
-                          "7ft 7in",
-                          "7ft 8in",
-                          "7ft 9in",
-                          "7ft 10in",
-                          "7ft 11in",
-                          "8ft",
-                        ]}
-                      />
-                      <FormInput
-                        label="Weight (kg)"
-                        name="weight"
-                        value={formData.weight}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Marital Status"
-                        name="maritalStatus"
-                        type="select"
-                        value={formData.maritalStatus}
-                        onChange={handleInputChange}
-                        options={[
-                          "Never Married",
-                          "Separated",
-                          "Divorced",
-                          "Widow / Widower",
-                          "Awaiting Divorce",
-                          "Annulled",
-                        ]}
-                      />
-                      {formData.maritalStatus &&
-                        formData.maritalStatus !== "Never Married" && (
-                          <>
-                            <FormInput
-                              label="Married Month & Year"
-                              name="marriedMonthYear"
-                              value={formData.marriedMonthYear}
-                              onChange={handleInputChange}
-                            />
-                            <FormInput
-                              label="Living Together Period"
-                              name="livingTogetherPeriod"
-                              value={formData.livingTogetherPeriod}
-                              onChange={handleInputChange}
-                            />
-                          </>
+
+                      <FormSection title="Self Introduction Video">
+                        <div style={{ display: "flex", alignItems: "center", gap: "20px", flexWrap: "wrap" }}>
+                          {videoPreview ? (
+                            <div style={{ position: "relative", display: "inline-block" }}>
+                              <video
+                                src={videoPreview}
+                                controls
+                                style={{
+                                  width: "200px", // smaller size
+                                  borderRadius: "8px",
+                                  border: "1px solid #e5e7eb",
+                                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                                }}
+                              />
+                              {/* Delete Button */}
+                              <button
+                                type="button"
+                                onClick={handleDeleteVideo}
+                                style={{
+                                  position: "absolute",
+                                  top: "6px",
+                                  right: "6px",
+                                  width: "28px",
+                                  height: "28px",
+                                  borderRadius: "50%",
+                                  background: "#ef4444",
+                                  border: "2px solid #fff",
+                                  color: "#fff",
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  fontSize: "14px",
+                                  transition: "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
+                                onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                                title="Remove video"
+                              >
+                                <i className="fa fa-times"></i>
+                              </button>
+
+                              {/* Download Button */}
+                              <a
+                                href={videoPreview}
+                                download="SelfIntroduction.mp4"
+                                style={{
+                                  position: "absolute",
+                                  bottom: "6px",
+                                  right: "6px",
+                                  padding: "6px 10px",
+                                  background: "#667eea",
+                                  color: "#fff",
+                                  fontSize: "12px",
+                                  fontWeight: "600",
+                                  borderRadius: "6px",
+                                  textDecoration: "none",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "6px",
+                                  cursor: "pointer",
+                                  boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                                  transition: "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background = "#5568d3";
+                                  e.currentTarget.style.transform = "scale(1.05)";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background = "#667eea";
+                                  e.currentTarget.style.transform = "scale(1)";
+                                }}
+                              >
+                                <i className="fa fa-download"></i> Download
+                              </a>
+                            </div>
+                          ) : (
+                            <div>
+                              <input
+                                type="file"
+                                accept="video/*"
+                                onChange={handleVideoChange}
+                                style={{
+                                  padding: "8px",
+                                  border: "2px dashed #d1d5db",
+                                  borderRadius: "8px",
+                                  cursor: "pointer",
+                                  transition: "all 0.2s ease",
+                                  background: "#f9fafb",
+                                }}
+                              />
+                              <p style={{ fontSize: "13px", color: "#6b7280", marginTop: "6px" }}>
+                                Upload a short self-introduction video
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </FormSection>
+
+                      <FormSection title="Government ID Verification">
+                        <div style={{
+                          background: "#f8fafc",
+                          padding: "24px",
+                          borderRadius: "12px",
+                          border: "1px solid #e2e8f0"
+                        }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
+                            <div>
+                              <h4 style={{ fontSize: "16px", fontWeight: "600", color: "#1e293b", marginBottom: "4px" }}>
+                                Verify your identity
+                              </h4>
+                              <p style={{ fontSize: "14px", color: "#64748b" }}>
+                                Please upload a valid government-issued ID (Aadhar, PAN, Passport, etc.) for verification.
+                              </p>
+                            </div>
+                            <div style={{
+                              padding: "6px 12px",
+                              borderRadius: "20px",
+                              fontSize: "12px",
+                              fontWeight: "700",
+                              textTransform: "uppercase",
+                              background: idVerificationStatus === "Verified" ? "#dcfce7" : idVerificationStatus === "Rejected" ? "#fee2e2" : idVerificationStatus === "Uploaded" ? "#fef9c3" : "#f1f5f9",
+                              color: idVerificationStatus === "Verified" ? "#15803d" : idVerificationStatus === "Rejected" ? "#b91c1c" : idVerificationStatus === "Uploaded" ? "#854d0e" : "#475569",
+                              border: "1px solid",
+                              borderColor: idVerificationStatus === "Verified" ? "#86efac" : idVerificationStatus === "Rejected" ? "#fecaca" : idVerificationStatus === "Uploaded" ? "#fef08a" : "#cbd5e1"
+                            }}>
+                              {idVerificationStatus}
+                            </div>
+                          </div>
+
+                          {idVerificationStatus === "Verified" ? (
+                            <div style={{ display: "flex", alignItems: "center", gap: "12px", color: "#15803d", background: "#f0fdf4", padding: "16px", borderRadius: "8px", border: "1px solid #bbf7d0" }}>
+                              <i className="fa fa-check-circle" style={{ fontSize: "20px" }}></i>
+                              <div>
+                                <p style={{ fontWeight: "600", margin: 0 }}>Your ID has been verified!</p>
+                                <p style={{ fontSize: "13px", margin: 0 }}>A verified badge is now visible on your profile.</p>
+                              </div>
+                            </div>
+                          ) : (
+                            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                              {idProofPreview && (
+                                <div style={{ position: "relative", width: "fit-content" }}>
+                                  {idProofDocument?.toLowerCase().endsWith(".pdf") || (idProofFile && idProofFile.type === "application/pdf") ? (
+                                    <div style={{
+                                      width: "200px",
+                                      height: "150px",
+                                      background: "#fff",
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      borderRadius: "8px",
+                                      border: "1px solid #e2e8f0",
+                                      color: "#64748b"
+                                    }}>
+                                      <i className="fa fa-file-pdf-o" style={{ fontSize: "40px", color: "#ef4444", marginBottom: "8px" }}></i>
+                                      <span style={{ fontSize: "12px", fontWeight: "600" }}>PDF Document</span>
+                                    </div>
+                                  ) : (
+                                    <img
+                                      src={idProofPreview}
+                                      alt="ID Proof Preview"
+                                      style={{
+                                        width: "200px",
+                                        borderRadius: "8px",
+                                        border: "1px solid #e2e8f0",
+                                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+                                      }}
+                                    />
+                                  )}
+                                </div>
+                              )}
+
+                              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                                <label style={{
+                                  padding: "10px 20px",
+                                  background: "#fff",
+                                  border: "2px dashed #cbd5e1",
+                                  borderRadius: "8px",
+                                  color: "#475569",
+                                  fontSize: "14px",
+                                  fontWeight: "600",
+                                  cursor: "pointer",
+                                  transition: "all 0.2s ease",
+                                  display: "inline-block"
+                                }}>
+                                  <i className="fa fa-upload" style={{ marginRight: "8px" }}></i>
+                                  {idProofFile ? "Change File" : "Choose ID File"}
+                                  <input
+                                    type="file"
+                                    accept="image/*,.pdf"
+                                    onChange={handleIdProofChange}
+                                    style={{ display: "none" }}
+                                  />
+                                </label>
+
+                                {idProofFile && (
+                                  <button
+                                    type="button"
+                                    onClick={handleIdProofUpload}
+                                    disabled={isUploadingId}
+                                    style={{
+                                      padding: "10px 24px",
+                                      background: "#6366f1",
+                                      color: "#fff",
+                                      border: "none",
+                                      borderRadius: "8px",
+                                      fontSize: "14px",
+                                      fontWeight: "600",
+                                      cursor: isUploadingId ? "not-allowed" : "pointer",
+                                      boxShadow: "0 4px 6px -1px rgba(99, 102, 241, 0.4)",
+                                      transition: "all 0.2s ease"
+                                    }}
+                                  >
+                                    {isUploadingId ? (
+                                      <><i className="fa fa-spinner fa-spin" style={{ marginRight: "8px" }}></i> Uploading...</>
+                                    ) : (
+                                      "Upload & Submit"
+                                    )}
+                                  </button>
+                                )}
+                              </div>
+
+                              {idVerificationStatus === "Rejected" && (
+                                <p style={{ fontSize: "13px", color: "#dc2626", fontWeight: "500", marginTop: "8px" }}>
+                                  <i className="fa fa-exclamation-circle" style={{ marginRight: "6px" }}></i>
+                                  Your previous document was rejected. Please upload a clear, valid ID.
+                                </p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </FormSection>
+
+                      {/* Profile Visibility Toggle Section */}
+                      <div
+                        style={{
+                          padding: "24px",
+                          background: "#fff",
+                          borderRadius: "8px",
+                          marginBottom: "24px",
+                          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <div>
+                            <h3
+                              style={{
+                                fontSize: "16px",
+                                fontWeight: "600",
+                                color: "#1f2937",
+                                marginBottom: "8px",
+                                marginTop: "0",
+                              }}
+                            >
+                              Profile Visibility
+                            </h3>
+                            <p
+                              style={{
+                                fontSize: "13px",
+                                color: "#6b7280",
+                                margin: "0",
+                              }}
+                            >
+                              Current Status: <strong>{formData.profileVisibility}</strong>
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setShowVisibilityOptions(!showVisibilityOptions)
+                            }
+                            style={{
+                              padding: "10px 20px",
+                              background: "#667eea",
+                              color: "#fff",
+                              border: "none",
+                              borderRadius: "6px",
+                              fontSize: "14px",
+                              fontWeight: "600",
+                              cursor: "pointer",
+                              transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.background = "#5568d3";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.background = "#667eea";
+                            }}
+                          >
+                            {showVisibilityOptions ? "Cancel" : "Change Visibility"}
+                          </button>
+                        </div>
+
+                        {/* Visibility Options */}
+                        {showVisibilityOptions && (
+                          <div
+                            style={{
+                              marginTop: "20px",
+                              paddingTop: "20px",
+                              borderTop: "1px solid #e5e7eb",
+                              display: "grid",
+                              gridTemplateColumns: "repeat(2, 1fr)",
+                              gap: "16px",
+                            }}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => handleVisibilityChange("Public")}
+                              style={{
+                                padding: "20px 16px",
+                                background:
+                                  formData.profileVisibility === "Public"
+                                    ? "#ecf0ff"
+                                    : "#f9fafb",
+                                border:
+                                  formData.profileVisibility === "Public"
+                                    ? "2px solid #667eea"
+                                    : "2px solid #e5e7eb",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
+                                textAlign: "left",
+                              }}
+                              onMouseEnter={(e) => {
+                                if (formData.profileVisibility !== "Public") {
+                                  e.target.style.borderColor = "#d1d5db";
+                                  e.target.style.background = "#f3f4f6";
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                if (formData.profileVisibility !== "Public") {
+                                  e.target.style.borderColor = "#e5e7eb";
+                                  e.target.style.background = "#f9fafb";
+                                }
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "16px",
+                                  fontWeight: "600",
+                                  color: "#1f2937",
+                                  marginBottom: "6px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "8px",
+                                }}
+                              >
+                                <i className="fa fa-globe"></i>
+                                Public
+                                {formData.profileVisibility === "Public" && (
+                                  <i
+                                    className="fa fa-check-circle"
+                                    style={{ color: "#667eea", marginLeft: "auto" }}
+                                  ></i>
+                                )}
+                              </div>
+                              <p
+                                style={{
+                                  fontSize: "13px",
+                                  color: "#6b7280",
+                                  margin: "0",
+                                }}
+                              >
+                                Your profile is visible to all users
+                              </p>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleVisibilityChange("Private")}
+                              style={{
+                                padding: "20px 16px",
+                                background:
+                                  formData.profileVisibility === "Private"
+                                    ? "#ecf0ff"
+                                    : "#f9fafb",
+                                border:
+                                  formData.profileVisibility === "Private"
+                                    ? "2px solid #667eea"
+                                    : "2px solid #e5e7eb",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
+                                textAlign: "left",
+                              }}
+                              onMouseEnter={(e) => {
+                                if (formData.profileVisibility !== "Private") {
+                                  e.target.style.borderColor = "#d1d5db";
+                                  e.target.style.background = "#f3f4f6";
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                if (formData.profileVisibility !== "Private") {
+                                  e.target.style.borderColor = "#e5e7eb";
+                                  e.target.style.background = "#f9fafb";
+                                }
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "16px",
+                                  fontWeight: "600",
+                                  color: "#1f2937",
+                                  marginBottom: "6px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "8px",
+                                }}
+                              >
+                                <i className="fa fa-lock"></i>
+                                Private
+                                {formData.profileVisibility === "Private" && (
+                                  <i
+                                    className="fa fa-check-circle"
+                                    style={{ color: "#667eea", marginLeft: "auto" }}
+                                  ></i>
+                                )}
+                              </div>
+                              <p
+                                style={{
+                                  fontSize: "13px",
+                                  color: "#6b7280",
+                                  margin: "0",
+                                }}
+                              >
+                                Only you and admins can view your profile
+                              </p>
+                            </button>
+                          </div>
                         )}
+                      </div>
 
-                      {(formData.maritalStatus === "Divorced" ||
-                        formData.maritalStatus === "Awaiting Divorce") && (
-                        <>
+
+                      {/* Basic Details Section */}
+                      <FormSection title="Basic Details">
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(2, 1fr)",
+                            gap: "20px",
+                          }}
+                        >
+                          <div style={{ gridColumn: "1 / -1" }}>
+                            <FormInput
+                              label="About Me"
+                              name="aboutMe"
+                              type="textarea"
+                              value={formData.aboutMe}
+                              onChange={handleInputChange}
+                              placeholder="Write a brief introduction about yourself..."
+                              rows={4}
+                            />
+                          </div>
                           <FormInput
-                            label="Divorced Month & Year"
-                            name="divorcedMonthYear"
-                            value={formData.divorcedMonthYear}
+                            label="Gender"
+                            name="gender"
+                            type="select"
+                            value={formData.gender}
+                            onChange={handleInputChange}
+                            options={["Male", "Female", "Other"]}
+                          />
+                          <FormInput
+                            label="Profile Created By"
+                            name="profileCreatedFor"
+                            type="select"
+                            value={formData.profileCreatedFor}
+                            onChange={handleInputChange}
+                            options={[
+                              "Self",
+                              "Son",
+                              "Daughter",
+                              "Brother",
+                              "Sister",
+                              "Friend",
+                              "Relative",
+                            ]}
+                          />
+                          <FormInput
+                            label="Name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                            required
+                          />
+                          <FormInput
+                            label="Date of Birth"
+                            name="dateOfBirth"
+                            type="date"
+                            value={formData.dateOfBirth}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Age"
+                            name="age"
+                            value={formData.age}
+                            onChange={handleInputChange}
+                            placeholder="Calculated automatically"
+                          />
+                          <FormInput
+                            label="Body Type"
+                            name="bodyType"
+                            type="select"
+                            value={formData.bodyType}
+                            onChange={handleInputChange}
+                            options={["Slim", "Average", "Athletic", "Heavy"]}
+                          />
+                          <FormInput
+                            label="Physical Status"
+                            name="physicalStatus"
+                            type="select"
+                            value={formData.physicalStatus}
+                            onChange={handleInputChange}
+                            options={["Normal", "Physically Challenged"]}
+                          />
+                          <FormInput
+                            label="Complexion"
+                            name="complexion"
+                            type="select"
+                            value={formData.complexion}
+                            onChange={handleInputChange}
+                            options={[
+                              "Very Fair",
+                              "Fair",
+                              "Wheatish",
+                              "Dark",
+                              "Very Dark",
+                            ]}
+                          />
+                          <FormInput
+                            label="Height"
+                            name="height"
+                            type="select"
+                            searchable={true}
+                            value={formData.height}
+                            onChange={handleInputChange}
+                            options={[
+                              "4ft",
+                              "4ft 1in",
+                              "4ft 2in",
+                              "4ft 3in",
+                              "4ft 4in",
+                              "4ft 5in",
+                              "4ft 6in",
+                              "4ft 7in",
+                              "4ft 8in",
+                              "4ft 9in",
+                              "4ft 10in",
+                              "4ft 11in",
+                              "5ft",
+                              "5ft 1in",
+                              "5ft 2in",
+                              "5ft 3in",
+                              "5ft 4in",
+                              "5ft 5in",
+                              "5ft 6in",
+                              "5ft 7in",
+                              "5ft 8in",
+                              "5ft 9in",
+                              "5ft 10in",
+                              "5ft 11in",
+                              "6ft",
+                              "6ft 1in",
+                              "6ft 2in",
+                              "6ft 3in",
+                              "6ft 4in",
+                              "6ft 5in",
+                              "6ft 6in",
+                              "6ft 7in",
+                              "6ft 8in",
+                              "6ft 9in",
+                              "6ft 10in",
+                              "6ft 11in",
+                              "7ft",
+                              "7ft 1in",
+                              "7ft 2in",
+                              "7ft 3in",
+                              "7ft 4in",
+                              "7ft 5in",
+                              "7ft 6in",
+                              "7ft 7in",
+                              "7ft 8in",
+                              "7ft 9in",
+                              "7ft 10in",
+                              "7ft 11in",
+                              "8ft",
+                            ]}
+                          />
+                          <FormInput
+                            label="Weight (kg)"
+                            name="weight"
+                            value={formData.weight}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Marital Status"
+                            name="maritalStatus"
+                            type="select"
+                            value={formData.maritalStatus}
+                            onChange={handleInputChange}
+                            options={[
+                              "Never Married",
+                              "Separated",
+                              "Divorced",
+                              "Widow / Widower",
+                              "Awaiting Divorce",
+                              "Annulled",
+                            ]}
+                          />
+                          {formData.maritalStatus &&
+                            formData.maritalStatus !== "Never Married" && (
+                              <>
+                                <FormInput
+                                  label="Married Month & Year"
+                                  name="marriedMonthYear"
+                                  value={formData.marriedMonthYear}
+                                  onChange={handleInputChange}
+                                />
+                                <FormInput
+                                  label="Living Together Period"
+                                  name="livingTogetherPeriod"
+                                  value={formData.livingTogetherPeriod}
+                                  onChange={handleInputChange}
+                                />
+                              </>
+                            )}
+
+                          {(formData.maritalStatus === "Divorced" ||
+                            formData.maritalStatus === "Awaiting Divorce") && (
+                              <>
+                                <FormInput
+                                  label="Divorced Month & Year"
+                                  name="divorcedMonthYear"
+                                  value={formData.divorcedMonthYear}
+                                  onChange={handleInputChange}
+                                />
+                                <div style={{ gridColumn: "1 / -1" }}>
+                                  <FormInput
+                                    label="Reason for Divorce"
+                                    name="reasonForDivorce"
+                                    type="textarea"
+                                    value={formData.reasonForDivorce}
+                                    onChange={handleInputChange}
+                                  />
+                                </div>
+                              </>
+                            )}
+
+                          {formData.maritalStatus &&
+                            formData.maritalStatus !== "Never Married" && (
+                              <>
+                                <FormInput
+                                  label="Child Status"
+                                  name="childStatus"
+                                  type="select"
+                                  value={formData.childStatus}
+                                  onChange={handleInputChange}
+                                  options={[
+                                    "No Children",
+                                    "Have Children - Living Together",
+                                    "Have Children - Not Living Together",
+                                  ]}
+                                />
+                                <FormInput
+                                  label="Number of Children"
+                                  name="numberOfChildren"
+                                  value={formData.numberOfChildren}
+                                  onChange={handleInputChange}
+                                />
+                              </>
+                            )}
+                          <FormInput
+                            label="Eating Habits"
+                            name="eatingHabits"
+                            type="select"
+                            value={formData.eatingHabits}
+                            onChange={handleInputChange}
+                            options={["Vegetarian", "Non-Vegetarian", "Eggetarian"]}
+                          />
+                          <FormInput
+                            label="Drinking Habits"
+                            name="drinkingHabits"
+                            type="select"
+                            value={formData.drinkingHabits}
+                            onChange={handleInputChange}
+                            options={[
+                              "Never Drinks",
+                              "Drinks Socially",
+                              "Drinks Regularly",
+                            ]}
+                          />
+                          <FormInput
+                            label="Smoking Habits"
+                            name="smokingHabits"
+                            type="select"
+                            value={formData.smokingHabits}
+                            onChange={handleInputChange}
+                            options={[
+                              "Never Smokes",
+                              "Smokes Occasionally",
+                              "Smokes Regularly",
+                            ]}
+                          />
+                          <FormInput
+                            label="Mother Tongue"
+                            name="motherTongue"
+                            type="select"
+                            searchable={true}
+                            value={formData.motherTongue}
+                            onChange={handleInputChange}
+                            options={[
+                              "Aka",
+                              "Arabic",
+                              "Arunachali",
+                              "Assamese",
+                              "Awadhi",
+                              "Bengali",
+                              "Bhojpuri",
+                              "Bhutia",
+                              "Bihari",
+                              "Brij",
+                              "Chatisgarhi",
+                              "Chinese",
+                              "Dogri",
+                              "English",
+                              "French",
+                              "Garhwali",
+                              "Garo",
+                              "Gujarati",
+                              "Haryanvi",
+                              "Himachali/Pahari",
+                              "Hindi",
+                              "Kanauji",
+                              "Kannada",
+                              "Kashmiri",
+                              "Khandesi",
+                              "Khasi",
+                              "Konkani",
+                              "Koshali",
+                              "Kumaoni",
+                              "Kutchi",
+                              "Ladacki",
+                              "Lepcha",
+                              "Magahi",
+                              "Maithili",
+                              "Malay",
+                              "Malayalam",
+                              "Manipuri",
+                              "Marathi",
+                              "Marwari",
+                              "Miji",
+                              "Mizo",
+                              "Monpa",
+                              "Nepali",
+                              "Odia",
+                              "Persian",
+                              "Punjabi",
+                              "Rajasthani",
+                              "Russian",
+                              "Sanskrit",
+                              "Santhali",
+                              "Sindhi",
+                              "Spanish",
+                              "Swedish",
+                              "Tagalog",
+                              "Tamil",
+                              "Telugu",
+                              "Tulu",
+                              "Urdu",
+                              "Other",
+                            ]}
+                          />
+                          <FormInput
+                            label="Caste"
+                            name="caste"
+                            type="select"
+                            searchable={true}
+                            value={formData.caste}
+                            onChange={handleInputChange}
+                            options={[
+                              "Do not wish to specify",
+                              "Latin Catholic",
+                              "Roman Catholic",
+                              "Syro Malabar",
+                              "Syro Malankara",
+                              "Knanaya Catholic",
+                              "CSI (Church of South India)",
+                              "Pentecostal",
+                              "Jacobite",
+                              "Orthodox",
+                              "Marthoma",
+                              "Protestant",
+                              "Anglican",
+                              "Baptist",
+                              "Methodist",
+                              "Presbyterian",
+                              "Seventh Day Adventist",
+                              "Assembly of God",
+                              "Brethren",
+                              "Other",
+                            ]}
+                          />
+                        </div>
+                      </FormSection>
+
+                      {/* Family Details Section */}
+                      <FormSection title="Family Details">
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(2, 1fr)",
+                            gap: "20px",
+                          }}
+                        >
+                          <FormInput
+                            label="Father's Name"
+                            name="fathersName"
+                            value={formData.fathersName}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Mother's Name"
+                            name="mothersName"
+                            value={formData.mothersName}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Father's Occupation"
+                            name="fathersOccupation"
+                            value={formData.fathersOccupation}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Father's Profession"
+                            name="fathersProfession"
+                            value={formData.fathersProfession}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Mother's Occupation"
+                            name="mothersOccupation"
+                            value={formData.mothersOccupation}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Father's Native"
+                            name="fathersNative"
+                            value={formData.fathersNative}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Mother's Native"
+                            name="mothersNative"
+                            value={formData.mothersNative}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Family Value"
+                            name="familyValue"
+                            type="select"
+                            value={formData.familyValue}
+                            onChange={handleInputChange}
+                            options={[
+                              "Orthodox",
+                              "Traditional",
+                              "Moderate",
+                              "Liberal",
+                            ]}
+                          />
+                          <FormInput
+                            label="Family Type"
+                            name="familyType"
+                            type="select"
+                            value={formData.familyType}
+                            onChange={handleInputChange}
+                            options={["Joint Family", "Nuclear Family"]}
+                          />
+                          <FormInput
+                            label="Family Status"
+                            name="familyStatus"
+                            type="select"
+                            value={formData.familyStatus}
+                            onChange={handleInputChange}
+                            options={[
+                              "Middle Class",
+                              "Upper Middle Class",
+                              "High Class",
+                            ]}
+                          />
+                          <FormInput
+                            label="Residence Type"
+                            name="residenceType"
+                            type="select"
+                            value={formData.residenceType}
+                            onChange={handleInputChange}
+                            options={["Own House", "Rented House", "Company Lease"]}
+                          />
+                          <FormInput
+                            label="Number of Brothers"
+                            name="numberOfBrothers"
+                            value={formData.numberOfBrothers}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Number of Sisters"
+                            name="numberOfSisters"
+                            value={formData.numberOfSisters}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                      </FormSection>
+
+                      {/* Religious Information Section */}
+                      <FormSection title="Religious Information">
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(2, 1fr)",
+                            gap: "20px",
+                          }}
+                        >
+                          <FormInput
+                            label="Denomination"
+                            name="denomination"
+                            type="select"
+                            searchable={true}
+                            value={formData.denomination}
+                            onChange={handleInputChange}
+                            options={[
+                              "ACI - Anglican Church Of India",
+                              "Adventist",
+                              "AG - Assembly of God",
+                              "Anglican",
+                              "Anglo Indian",
+                              "Apostolic",
+                              "Baptist",
+                              "Believers Church",
+                              "Brethren",
+                              "Catholic",
+                              "Catholic - Knanaya",
+                              "Catholic - Latin",
+                              "Catholic - Malankara",
+                              "Catholic - Roman",
+                              "Catholic - Syro Malabar",
+                              "Chaldean Syrian",
+                              "Charismatic",
+                              "Christian - Others",
+                              "Church Of Christ",
+                              "Church Of God",
+                              "CNI - Church Of North India",
+                              "Congregational",
+                              "CPM - Ceylon Pentecostal Mission",
+                              "CSI - Church Of South India",
+                              "Don't wish to specify",
+                              "Evangelist",
+                              "Independent Church",
+                              "Jacobite",
+                              "Jacobite - Knanaya",
+                              "Jehovah Shammah",
+                              "Jehovah's Witnesses",
+                              "Knanaya",
+                              "Knanaya Catholic",
+                              "Knanaya Jacobite",
+                              "Latin Catholic",
+                              "Lutheran",
+                              "Malankara Catholic",
+                              "Marthoma",
+                              "Methodist",
+                              "Moravian",
+                              "Muslim - Sunni",
+                              "Orthodox",
+                              "Orthodox - Knanaya",
+                              "Pentecost",
+                              "Presbyterian",
+                              "Protestant",
+                              "Reformed",
+                              "Revival",
+                              "Salvation Army",
+                              "Seventh-day Adventist",
+                              "St. Thomas Evangelical",
+                              "Syro Malabar",
+                              "Syrian Catholic",
+                              "TPM - The Pentecostal Mission",
+                              "Other",
+                            ]}
+                          />
+                          <FormInput
+                            label="Church"
+                            name="church"
+                            value={formData.church}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Church Activity"
+                            name="churchActivity"
+                            type="select"
+                            searchable={true}
+                            value={formData.churchActivity}
+                            onChange={handleInputChange}
+                            options={[
+                              "Church Choir",
+                              "Worship Leader",
+                              "Youth Fellowship",
+                              "Sunday School",
+                              "Music & Ministry",
+                              "Prayer Group",
+                              "Bible Study",
+                              "Evangelism",
+                              "Volunteer",
+                              "Other",
+                            ]}
+                          />
+                          <FormInput
+                            label="Pastor's Name"
+                            name="pastorsName"
+                            value={formData.pastorsName}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Spirituality"
+                            name="spirituality"
+                            type="select"
+                            value={formData.spirituality}
+                            onChange={handleInputChange}
+                            options={[
+                              "Very Religious",
+                              "Religious",
+                              "Moderately Religious",
+                              "Not Religious",
+                            ]}
+                          />
+                          <div style={{ gridColumn: "1 / -1" }}>
+                            <FormInput
+                              label="Religious Detail"
+                              name="religiousDetail"
+                              type="textarea"
+                              value={formData.religiousDetail}
+                              onChange={handleInputChange}
+                            />
+                          </div>
+                        </div>
+                      </FormSection>
+
+                      {/* Contact Information Section */}
+                      <FormSection title="Contact Information">
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(2, 1fr)",
+                            gap: "20px",
+                          }}
+                        >
+                          <FormInput
+                            label="Mobile Number"
+                            name="phone"
+                            type="tel"
+                            value={formData.phone}
+                            onChange={handleInputChange}
+                            required
+                          />
+                          <FormInput
+                            label="Alternate Mobile Number"
+                            name="alternateMobile"
+                            type="tel"
+                            value={formData.alternateMobile}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Email"
+                            name="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            required
+                          />
+                          <FormInput
+                            label="Landline Number"
+                            name="landlineNumber"
+                            value={formData.landlineNumber}
                             onChange={handleInputChange}
                           />
                           <div style={{ gridColumn: "1 / -1" }}>
                             <FormInput
-                              label="Reason for Divorce"
-                              name="reasonForDivorce"
+                              label="Current Address"
+                              name="currentAddress"
                               type="textarea"
-                              value={formData.reasonForDivorce}
+                              value={formData.currentAddress}
                               onChange={handleInputChange}
                             />
                           </div>
-                        </>
-                      )}
-
-                      {formData.maritalStatus &&
-                        formData.maritalStatus !== "Never Married" && (
-                          <>
+                          <div style={{ gridColumn: "1 / -1" }}>
                             <FormInput
-                              label="Child Status"
-                              name="childStatus"
+                              label="Permanent Address"
+                              name="permanentAddress"
+                              type="textarea"
+                              value={formData.permanentAddress}
+                              onChange={handleInputChange}
+                            />
+                          </div>
+                          <FormInput
+                            label="City"
+                            name="city"
+                            type="text"
+                            placeholder="Enter city name"
+                            value={formData.city}
+                            onChange={handleCityChange}
+                          />
+                          <FormInput
+                            label="State"
+                            name="state"
+                            type="select"
+                            searchable={true}
+                            value={formData.state}
+                            onChange={handleStateChange}
+                            options={stateOptions}
+                          />
+                          <FormInput
+                            label="Pincode"
+                            name="pincode"
+                            value={formData.pincode}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Country"
+                            name="citizenOf"
+                            type="select"
+                            searchable={true}
+                            value={formData.citizenOf}
+                            onChange={handleCountryChange}
+                            options={countryOptions}
+                          />
+                          <FormInput
+                            label="Contact Person Name"
+                            name="contactPersonName"
+                            value={formData.contactPersonName}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Relationship"
+                            name="relationship"
+                            type="select"
+                            searchable={true}
+                            value={formData.relationship}
+                            onChange={handleInputChange}
+                            options={[
+                              "Father",
+                              "Mother",
+                              "Brother",
+                              "Sister",
+                              "Uncle",
+                              "Aunt",
+                              "Cousin",
+                              "Friend",
+                              "Self",
+                              "Other",
+                            ]}
+                          />
+                        </div>
+                      </FormSection>
+
+                      {/* Professional Information Section */}
+                      <FormSection title="Professional Information">
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(2, 1fr)",
+                            gap: "20px",
+                          }}
+                        >
+                          <FormInput
+                            label="Education"
+                            name="education"
+                            type="select"
+                            searchable={true}
+                            value={formData.education}
+                            onChange={handleInputChange}
+                            options={[
+                              "B.Arch",
+                              "B.Com",
+                              "B.Ed",
+                              "B.Pharm",
+                              "B.Sc",
+                              "B.Sc (Hons)",
+                              "B.E",
+                              "B.Tech",
+                              "BA",
+                              "BBA",
+                              "BCA",
+                              "BDS",
+                              "BHM",
+                              "BAMS",
+                              "BHMS",
+                              "BSw",
+                              "LLB",
+                              "M.Arch",
+                              "M.Com",
+                              "M.Ed",
+                              "M.Pharm",
+                              "M.Sc",
+                              "M.E",
+                              "M.Tech",
+                              "MA",
+                              "MBA",
+                              "MCA",
+                              "MDS",
+                              "MHM",
+                              "MSW",
+                              "LLM",
+                              "MBBS",
+                              "MD",
+                              "MS",
+                              "Ph.D",
+                              "Diploma",
+                              "Polytechnic",
+                              "Trade School",
+                              "Higher Secondary / Plus Two",
+                              "SSLC / 10th",
+                              "Other",
+                            ]}
+                          />
+                          <FormInput
+                            label="Additional Education"
+                            name="additionalEducation"
+                            type="select"
+                            searchable={true}
+                            value={formData.additionalEducation}
+                            onChange={handleInputChange}
+                            options={[
+                              "B.Arch",
+                              "B.Com",
+                              "B.Ed",
+                              "B.Pharm",
+                              "B.Sc",
+                              "B.E",
+                              "B.Tech",
+                              "BA",
+                              "BBA",
+                              "BCA",
+                              "BDS",
+                              "BHM",
+                              "BAMS",
+                              "BHMS",
+                              "BSw",
+                              "LLB",
+                              "M.Arch",
+                              "M.Com",
+                              "M.Ed",
+                              "M.Pharm",
+                              "M.Sc",
+                              "M.E",
+                              "M.Tech",
+                              "MA",
+                              "MBA",
+                              "MCA",
+                              "MDS",
+                              "MHM",
+                              "MSW",
+                              "LLM",
+                              "MBBS",
+                              "MD",
+                              "MS",
+                              "Ph.D",
+                              "Diploma",
+                              "Polytechnic",
+                              "Trade School",
+                              "Higher Secondary / Plus Two",
+                              "SSLC / 10th",
+                              "Other",
+                            ]}
+                          />
+                          <FormInput
+                            label="College"
+                            name="college"
+                            value={formData.college}
+                            onChange={handleInputChange}
+                          />
+                          <div style={{ gridColumn: "1 / -1" }}>
+                            <FormInput
+                              label="Education in Detail"
+                              name="educationDetail"
+                              type="textarea"
+                              value={formData.educationDetail}
+                              onChange={handleInputChange}
+                            />
+                          </div>
+                          <FormInput
+                            label="Employment Type"
+                            name="employmentType"
+                            type="select"
+                            searchable={true}
+                            value={formData.employmentType}
+                            onChange={handleInputChange}
+                            options={[
+                              "Private Sector",
+                              "Government",
+                              "Self Employed",
+                              "Business",
+                              "Not Working",
+                            ]}
+                          />
+                          <FormInput
+                            label="Occupation"
+                            name="occupation"
+                            type="select"
+                            searchable={true}
+                            value={formData.occupation}
+                            onChange={handleInputChange}
+                            options={[
+                              "Accountant",
+                              "Actor",
+                              "Administrative Professional",
+                              "Advertising Professional",
+                              "Agri-Business Professional",
+                              "Air Hostess / Flight Attendant",
+                              "Architect",
+                              "Artist",
+                              "Auditor",
+                              "Banking Professional",
+                              "Beautician",
+                              "Biologist / Botanist",
+                              "Business",
+                              "Chartered Accountant",
+                              "Civil Engineer",
+                              "Clerical Official",
+                              "Commercial Pilot",
+                              "Company Secretary",
+                              "Computer Professional",
+                              "Consultant",
+                              "Contractor",
+                              "Cost Accountant",
+                              "Creative Person",
+                              "Customer Support Professional",
+                              "Defense Employee",
+                              "Dentist",
+                              "Designer",
+                              "Doctor",
+                              "Economist",
+                              "Engineer",
+                              "Engineer (Mechanical)",
+                              "Engineer (Project)",
+                              "Entertainment Professional",
+                              "Event Manager",
+                              "Executive",
+                              "Factory Worker",
+                              "Farmer",
+                              "Fashion Designer",
+                              "Finance Professional",
+                              "Flight Attendant",
+                              "Government Employee",
+                              "Graphic Designer",
+                              "Health Care Professional",
+                              "Hotel Management Professional",
+                              "HR Professional",
+                              "Human Resources Professional",
+                              "Indian Administrative Services (IAS)",
+                              "Indian Foreign Services (IFS)",
+                              "Indian Police Services (IPS)",
+                              "Interior Designer",
+                              "Investment Professional",
+                              "IT Professional",
+                              "Journalist",
+                              "Lawyer",
+                              "Lecturer",
+                              "Legal Professional",
+                              "Manager",
+                              "Marketing Professional",
+                              "Media Professional",
+                              "Medical Professional",
+                              "Merchant Naval Officer",
+                              "Microbiologist",
+                              "Military",
+                              "Model",
+                              "Musician",
+                              "Nurse",
+                              "Nutritionist",
+                              "Occupational Therapist",
+                              "Optician",
+                              "Pharmacist",
+                              "Photographer",
+                              "Physical Therapist",
+                              "Physician",
+                              "Pilot",
+                              "Police",
+                              "Politician",
+                              "Professor",
+                              "Psychologist",
+                              "Public Relations Professional",
+                              "Real Estate Professional",
+                              "Researcher",
+                              "Retired",
+                              "Sales Professional",
+                              "Scientist",
+                              "Secretary",
+                              "Security Professional",
+                              "Self Employed",
+                              "Social Worker",
+                              "Software Consultant",
+                              "Software Engineer",
+                              "Sportsman",
+                              "Student",
+                              "Teacher",
+                              "Technician",
+                              "Training Professional",
+                              "Transportation Professional",
+                              "Veterinary Doctor",
+                              "Volunteer",
+                              "Writer",
+                              "Zoologist",
+                              "Not Working",
+                            ]}
+                          />
+                          <FormInput
+                            label="Position"
+                            name="position"
+                            value={formData.position}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Company Name"
+                            name="companyName"
+                            value={formData.companyName}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Annual Income"
+                            name="annualIncome"
+                            type="select"
+                            searchable={true}
+                            value={formData.annualIncome}
+                            onChange={handleInputChange}
+                            options={[
+                              "50 Thousands",
+                              "1 Lakh",
+                              "2 Lakhs",
+                              "3 Lakhs",
+                              "4 Lakhs",
+                              "5 Lakhs",
+                              "6 Lakhs",
+                              "7 Lakhs",
+                              "8 Lakhs",
+                              "9 Lakhs",
+                              "10 Lakhs",
+                              "12 Lakhs",
+                              "14 Lakhs",
+                              "16 Lakhs",
+                              "18 Lakhs",
+                              "20 Lakhs",
+                              "25 Lakhs",
+                              "30 Lakhs",
+                              "35 Lakhs",
+                              "40 Lakhs",
+                              "50 Lakhs",
+                              "60 Lakhs",
+                              "70 Lakhs",
+                              "80 Lakhs",
+                              "90 Lakhs",
+                              "1 Crore",
+                              "1 Crore+",
+                            ]}
+                          />
+                        </div>
+                      </FormSection>
+
+                      {/* Lifestyle Section with Checkboxes */}
+                      <FormSection title="Lifestyle">
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr",
+                            gap: "20px",
+                          }}
+                        >
+                          {/* Hobbies as Checkboxes */}
+                          <div style={{ gridColumn: "1 / -1" }}>
+                            <CheckboxGroup
+                              label="Hobbies"
+                              name="hobbies"
+                              options={hobbiesOptions}
+                              selectedValues={
+                                Array.isArray(formData.hobbies)
+                                  ? formData.hobbies
+                                  : []
+                              }
+                              onChange={handleHobbiesChange}
+                            />
+                          </div>
+
+                          <div
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: "repeat(2, 1fr)",
+                              gap: "20px",
+                            }}
+                          >
+                            <FormInput
+                              label="Interests"
+                              name="interests"
+                              value={formData.interests}
+                              onChange={handleInputChange}
+                            />
+                            <FormInput
+                              label="Music"
+                              name="music"
+                              value={formData.music}
+                              onChange={handleInputChange}
+                            />
+                            <FormInput
+                              label="Favourite Reads"
+                              name="favouriteReads"
+                              value={formData.favouriteReads}
+                              onChange={handleInputChange}
+                            />
+                            <FormInput
+                              label="Favourite Cuisines"
+                              name="favouriteCuisines"
+                              value={formData.favouriteCuisines}
+                              onChange={handleInputChange}
+                            />
+                            <FormInput
+                              label="Exercise"
+                              name="exercise"
                               type="select"
-                              value={formData.childStatus}
+                              value={formData.exercise}
                               onChange={handleInputChange}
-                              options={[
-                                "No Children",
-                                "Have Children - Living Together",
-                                "Have Children - Not Living Together",
-                              ]}
+                              options={["Regular", "Occasional", "Rare", "Never"]}
                             />
                             <FormInput
-                              label="Number of Children"
-                              name="numberOfChildren"
-                              value={formData.numberOfChildren}
+                              label="Sports Activities"
+                              name="sportsActivities"
+                              value={formData.sportsActivities}
                               onChange={handleInputChange}
                             />
-                          </>
-                        )}
-                      <FormInput
-                        label="Eating Habits"
-                        name="eatingHabits"
-                        type="select"
-                        value={formData.eatingHabits}
-                        onChange={handleInputChange}
-                        options={["Vegetarian", "Non-Vegetarian", "Eggetarian"]}
-                      />
-                      <FormInput
-                        label="Drinking Habits"
-                        name="drinkingHabits"
-                        type="select"
-                        value={formData.drinkingHabits}
-                        onChange={handleInputChange}
-                        options={[
-                          "Never Drinks",
-                          "Drinks Socially",
-                          "Drinks Regularly",
-                        ]}
-                      />
-                      <FormInput
-                        label="Smoking Habits"
-                        name="smokingHabits"
-                        type="select"
-                        value={formData.smokingHabits}
-                        onChange={handleInputChange}
-                        options={[
-                          "Never Smokes",
-                          "Smokes Occasionally",
-                          "Smokes Regularly",
-                        ]}
-                      />
-                      <FormInput
-                        label="Mother Tongue"
-                        name="motherTongue"
-                        type="select"
-                        searchable={true}
-                        value={formData.motherTongue}
-                        onChange={handleInputChange}
-                        options={[
-                          "Aka",
-                          "Arabic",
-                          "Arunachali",
-                          "Assamese",
-                          "Awadhi",
-                          "Bengali",
-                          "Bhojpuri",
-                          "Bhutia",
-                          "Bihari",
-                          "Brij",
-                          "Chatisgarhi",
-                          "Chinese",
-                          "Dogri",
-                          "English",
-                          "French",
-                          "Garhwali",
-                          "Garo",
-                          "Gujarati",
-                          "Haryanvi",
-                          "Himachali/Pahari",
-                          "Hindi",
-                          "Kanauji",
-                          "Kannada",
-                          "Kashmiri",
-                          "Khandesi",
-                          "Khasi",
-                          "Konkani",
-                          "Koshali",
-                          "Kumaoni",
-                          "Kutchi",
-                          "Ladacki",
-                          "Lepcha",
-                          "Magahi",
-                          "Maithili",
-                          "Malay",
-                          "Malayalam",
-                          "Manipuri",
-                          "Marathi",
-                          "Marwari",
-                          "Miji",
-                          "Mizo",
-                          "Monpa",
-                          "Nepali",
-                          "Odia",
-                          "Persian",
-                          "Punjabi",
-                          "Rajasthani",
-                          "Russian",
-                          "Sanskrit",
-                          "Santhali",
-                          "Sindhi",
-                          "Spanish",
-                          "Swedish",
-                          "Tagalog",
-                          "Tamil",
-                          "Telugu",
-                          "Tulu",
-                          "Urdu",
-                          "Other",
-                        ]}
-                      />
-                      <FormInput
-                        label="Caste"
-                        name="caste"
-                        type="select"
-                        searchable={true}
-                        value={formData.caste}
-                        onChange={handleInputChange}
-                        options={[
-                          "Do not wish to specify",
-                          "Latin Catholic",
-                          "Roman Catholic",
-                          "Syro Malabar",
-                          "Syro Malankara",
-                          "Knanaya Catholic",
-                          "CSI (Church of South India)",
-                          "Pentecostal",
-                          "Jacobite",
-                          "Orthodox",
-                          "Marthoma",
-                          "Protestant",
-                          "Anglican",
-                          "Baptist",
-                          "Methodist",
-                          "Presbyterian",
-                          "Seventh Day Adventist",
-                          "Assembly of God",
-                          "Brethren",
-                          "Other",
-                        ]}
-                      />
-                    </div>
-                  </FormSection>
+                            <FormInput
+                              label="Dress Styles"
+                              name="dressStyles"
+                              value={formData.dressStyles}
+                              onChange={handleInputChange}
+                            />
+                          </div>
+                        </div>
+                      </FormSection>
 
-                  {/* Family Details Section */}
-                  <FormSection title="Family Details">
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "20px",
-                      }}
-                    >
-                      <FormInput
-                        label="Father's Name"
-                        name="fathersName"
-                        value={formData.fathersName}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Mother's Name"
-                        name="mothersName"
-                        value={formData.mothersName}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Father's Occupation"
-                        name="fathersOccupation"
-                        value={formData.fathersOccupation}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Father's Profession"
-                        name="fathersProfession"
-                        value={formData.fathersProfession}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Mother's Occupation"
-                        name="mothersOccupation"
-                        value={formData.mothersOccupation}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Father's Native"
-                        name="fathersNative"
-                        value={formData.fathersNative}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Mother's Native"
-                        name="mothersNative"
-                        value={formData.mothersNative}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Family Value"
-                        name="familyValue"
-                        type="select"
-                        value={formData.familyValue}
-                        onChange={handleInputChange}
-                        options={[
-                          "Orthodox",
-                          "Traditional",
-                          "Moderate",
-                          "Liberal",
-                        ]}
-                      />
-                      <FormInput
-                        label="Family Type"
-                        name="familyType"
-                        type="select"
-                        value={formData.familyType}
-                        onChange={handleInputChange}
-                        options={["Joint Family", "Nuclear Family"]}
-                      />
-                      <FormInput
-                        label="Family Status"
-                        name="familyStatus"
-                        type="select"
-                        value={formData.familyStatus}
-                        onChange={handleInputChange}
-                        options={[
-                          "Middle Class",
-                          "Upper Middle Class",
-                          "High Class",
-                        ]}
-                      />
-                      <FormInput
-                        label="Residence Type"
-                        name="residenceType"
-                        type="select"
-                        value={formData.residenceType}
-                        onChange={handleInputChange}
-                        options={["Own House", "Rented House", "Company Lease"]}
-                      />
-                      <FormInput
-                        label="Number of Brothers"
-                        name="numberOfBrothers"
-                        value={formData.numberOfBrothers}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Number of Sisters"
-                        name="numberOfSisters"
-                        value={formData.numberOfSisters}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                  </FormSection>
+                      {/* Partner Preferences - Basic & Religion */}
+                      <FormSection title="Partner Preferences - Basic & Religion">
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(2, 1fr)",
+                            gap: "20px",
+                          }}
+                        >
+                          <FormInput
+                            label="Partner Age From"
+                            name="partnerAgeFrom"
+                            value={formData.partnerAgeFrom}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Partner Age To"
+                            name="partnerAgeTo"
+                            value={formData.partnerAgeTo}
+                            onChange={handleInputChange}
+                          />
+                          <FormInput
+                            label="Partner Height"
+                            name="partnerHeight"
+                            value={formData.partnerHeight}
+                            onChange={handleInputChange}
+                            placeholder="e.g., 160-180 cm"
+                          />
+                          <FormInput
+                            label="Partner Marital Status"
+                            name="partnerMaritalStatus"
+                            type="select"
+                            searchable={true}
+                            value={formData.partnerMaritalStatus}
+                            onChange={handleInputChange}
+                            options={[
+                              "Never Married",
+                              "Divorced",
+                              "Separated",
+                              "Widow / Widower",
+                              "Awaiting Divorce",
+                              "Annulled",
+                              "Any",
+                            ]}
+                          />
+                          <FormInput
+                            label="Partner Mother Tongue"
+                            name="partnerMotherTongue"
+                            type="select"
+                            searchable={true}
+                            value={formData.partnerMotherTongue}
+                            onChange={handleInputChange}
+                            options={[
+                              "Aka",
+                              "Arabic",
+                              "Arunachali",
+                              "Assamese",
+                              "Awadhi",
+                              "Bengali",
+                              "Bhojpuri",
+                              "Bhutia",
+                              "Bihari",
+                              "Brij",
+                              "Chatisgarhi",
+                              "Chinese",
+                              "Dogri",
+                              "English",
+                              "French",
+                              "Garhwali",
+                              "Garo",
+                              "Gujarati",
+                              "Haryanvi",
+                              "Himachali/Pahari",
+                              "Hindi",
+                              "Kanauji",
+                              "Kannada",
+                              "Kashmiri",
+                              "Khandesi",
+                              "Khasi",
+                              "Konkani",
+                              "Koshali",
+                              "Kumaoni",
+                              "Kutchi",
+                              "Ladacki",
+                              "Lepcha",
+                              "Magahi",
+                              "Maithili",
+                              "Malay",
+                              "Malayalam",
+                              "Manipuri",
+                              "Marathi",
+                              "Marwari",
+                              "Miji",
+                              "Mizo",
+                              "Monpa",
+                              "Nepali",
+                              "Odia",
+                              "Persian",
+                              "Punjabi",
+                              "Rajasthani",
+                              "Russian",
+                              "Sanskrit",
+                              "Santhali",
+                              "Sindhi",
+                              "Spanish",
+                              "Swedish",
+                              "Tagalog",
+                              "Tamil",
+                              "Telugu",
+                              "Tulu",
+                              "Urdu",
+                              "Other",
+                              "Any",
+                            ]}
+                          />
+                          <FormInput
+                            label="Partner Caste"
+                            name="partnerCaste"
+                            type="select"
+                            searchable={true}
+                            value={formData.partnerCaste}
+                            onChange={handleInputChange}
+                            options={[
+                              "Doesn't wish to specify",
+                              "Latin Catholic",
+                              "Roman Catholic",
+                              "Syro Malabar",
+                              "Syro Malankara",
+                              "Knanaya Catholic",
+                              "CSI (Church of South India)",
+                              "Pentecostal",
+                              "Jacobite",
+                              "Orthodox",
+                              "Marthoma",
+                              "Protestant",
+                              "Anglican",
+                              "Baptist",
+                              "Methodist",
+                              "Presbyterian",
+                              "Seventh Day Adventist",
+                              "Assembly of God",
+                              "Brethren",
+                              "Other",
+                              "Any",
+                            ]}
+                          />
+                          <FormInput
+                            label="Partner Physical Status"
+                            name="partnerPhysicalStatus"
+                            type="select"
+                            value={formData.partnerPhysicalStatus}
+                            onChange={handleInputChange}
+                            options={["Normal", "Physically Challenged", "Any"]}
+                          />
+                          <FormInput
+                            label="Partner Eating Habits"
+                            name="partnerEatingHabits"
+                            type="select"
+                            value={formData.partnerEatingHabits}
+                            onChange={handleInputChange}
+                            options={[
+                              "Vegetarian",
+                              "Non-Vegetarian",
+                              "Eggetarian",
+                              "Any",
+                            ]}
+                          />
+                          <FormInput
+                            label="Partner Drinking Habits"
+                            name="partnerDrinkingHabits"
+                            type="select"
+                            value={formData.partnerDrinkingHabits}
+                            onChange={handleInputChange}
+                            options={[
+                              "Never Drinks",
+                              "Drinks Socially",
+                              "Drinks Regularly",
+                              "Any",
+                            ]}
+                          />
+                          <FormInput
+                            label="Partner Smoking Habits"
+                            name="partnerSmokingHabits"
+                            type="select"
+                            value={formData.partnerSmokingHabits}
+                            onChange={handleInputChange}
+                            options={[
+                              "Never Smokes",
+                              "Smokes Occasionally",
+                              "Smokes Regularly",
+                              "Any",
+                            ]}
+                          />
+                          <FormInput
+                            label="Partner Denomination"
+                            name="partnerDenomination"
+                            type="select"
+                            searchable={true}
+                            value={formData.partnerDenomination}
+                            onChange={handleInputChange}
+                            options={[
+                              "ACI - Anglican Church Of India",
+                              "Adventist",
+                              "AG - Assembly of God",
+                              "Anglican",
+                              "Anglo Indian",
+                              "Apostolic",
+                              "Baptist",
+                              "Believers Church",
+                              "Brethren",
+                              "Catholic",
+                              "Catholic - Knanaya",
+                              "Catholic - Latin",
+                              "Catholic - Malankara",
+                              "Catholic - Roman",
+                              "Catholic - Syro Malabar",
+                              "Chaldean Syrian",
+                              "Charismatic",
+                              "Christian - Others",
+                              "Church Of Christ",
+                              "Church Of God",
+                              "CNI - Church Of North India",
+                              "Congregational",
+                              "CPM - Ceylon Pentecostal Mission",
+                              "CSI - Church Of South India",
+                              "Don't wish to specify",
+                              "Evangelist",
+                              "Independent Church",
+                              "Jacobite",
+                              "Jacobite - Knanaya",
+                              "Jehovah Shammah",
+                              "Jehovah's Witnesses",
+                              "Knanaya",
+                              "Knanaya Catholic",
+                              "Knanaya Jacobite",
+                              "Latin Catholic",
+                              "Lutheran",
+                              "Malankara Catholic",
+                              "Marthoma",
+                              "Methodist",
+                              "Moravian",
+                              "Muslim - Sunni",
+                              "Orthodox",
+                              "Orthodox - Knanaya",
+                              "Pentecost",
+                              "Presbyterian",
+                              "Protestant",
+                              "Reformed",
+                              "Revival",
+                              "Salvation Army",
+                              "Seventh-day Adventist",
+                              "St. Thomas Evangelical",
+                              "Syro Malabar",
+                              "Syrian Catholic",
+                              "TPM - The Pentecostal Mission",
+                              "Other",
+                              "Any",
+                            ]}
+                          />
+                          <FormInput
+                            label="Partner Spirituality"
+                            name="partnerSpirituality"
+                            type="select"
+                            value={formData.partnerSpirituality}
+                            onChange={handleInputChange}
+                            options={[
+                              "Very Religious",
+                              "Religious",
+                              "Moderately Religious",
+                              "Not Religious",
+                              "Any",
+                            ]}
+                          />
+                        </div>
+                      </FormSection>
 
-                  {/* Religious Information Section */}
-                  <FormSection title="Religious Information">
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "20px",
-                      }}
-                    >
-                      <FormInput
-                        label="Denomination"
-                        name="denomination"
-                        type="select"
-                        searchable={true}
-                        value={formData.denomination}
-                        onChange={handleInputChange}
-                        options={[
-                          "ACI - Anglican Church Of India",
-                          "Adventist",
-                          "AG - Assembly of God",
-                          "Anglican",
-                          "Anglo Indian",
-                          "Apostolic",
-                          "Baptist",
-                          "Believers Church",
-                          "Brethren",
-                          "Catholic",
-                          "Catholic - Knanaya",
-                          "Catholic - Latin",
-                          "Catholic - Malankara",
-                          "Catholic - Roman",
-                          "Catholic - Syro Malabar",
-                          "Chaldean Syrian",
-                          "Charismatic",
-                          "Christian - Others",
-                          "Church Of Christ",
-                          "Church Of God",
-                          "CNI - Church Of North India",
-                          "Congregational",
-                          "CPM - Ceylon Pentecostal Mission",
-                          "CSI - Church Of South India",
-                          "Don't wish to specify",
-                          "Evangelist",
-                          "Independent Church",
-                          "Jacobite",
-                          "Jacobite - Knanaya",
-                          "Jehovah Shammah",
-                          "Jehovah's Witnesses",
-                          "Knanaya",
-                          "Knanaya Catholic",
-                          "Knanaya Jacobite",
-                          "Latin Catholic",
-                          "Lutheran",
-                          "Malankara Catholic",
-                          "Marthoma",
-                          "Methodist",
-                          "Moravian",
-                          "Muslim - Sunni",
-                          "Orthodox",
-                          "Orthodox - Knanaya",
-                          "Pentecost",
-                          "Presbyterian",
-                          "Protestant",
-                          "Reformed",
-                          "Revival",
-                          "Salvation Army",
-                          "Seventh-day Adventist",
-                          "St. Thomas Evangelical",
-                          "Syro Malabar",
-                          "Syrian Catholic",
-                          "TPM - The Pentecostal Mission",
-                          "Other",
-                        ]}
-                      />
-                      <FormInput
-                        label="Church"
-                        name="church"
-                        value={formData.church}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Church Activity"
-                        name="churchActivity"
-                        type="select"
-                        searchable={true}
-                        value={formData.churchActivity}
-                        onChange={handleInputChange}
-                        options={[
-                          "Church Choir",
-                          "Worship Leader",
-                          "Youth Fellowship",
-                          "Sunday School",
-                          "Music & Ministry",
-                          "Prayer Group",
-                          "Bible Study",
-                          "Evangelism",
-                          "Volunteer",
-                          "Other",
-                        ]}
-                      />
-                      <FormInput
-                        label="Pastor's Name"
-                        name="pastorsName"
-                        value={formData.pastorsName}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Spirituality"
-                        name="spirituality"
-                        type="select"
-                        value={formData.spirituality}
-                        onChange={handleInputChange}
-                        options={[
-                          "Very Religious",
-                          "Religious",
-                          "Moderately Religious",
-                          "Not Religious",
-                        ]}
-                      />
-                      <div style={{ gridColumn: "1 / -1" }}>
-                        <FormInput
-                          label="Religious Detail"
-                          name="religiousDetail"
-                          type="textarea"
-                          value={formData.religiousDetail}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                    </div>
-                  </FormSection>
+                      {/* Partner Preferences - Professional */}
+                      <FormSection title="Partner Preferences - Professional">
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(2, 1fr)",
+                            gap: "20px",
+                          }}
+                        >
+                          <FormInput
+                            label="Partner Education"
+                            name="partnerEducation"
+                            type="select"
+                            searchable={true}
+                            value={formData.partnerEducation}
+                            onChange={handleInputChange}
+                            options={[
+                              "B.Arch",
+                              "B.Com",
+                              "B.Ed",
+                              "B.Pharm",
+                              "B.Sc",
+                              "B.Tech",
+                              "BA",
+                              "BBA",
+                              "BCA",
+                              "BDS",
+                              "BHM",
+                              "BAMS",
+                              "BHMS",
+                              "BSw",
+                              "LLB",
+                              "M.Arch",
+                              "M.Com",
+                              "M.Ed",
+                              "M.Pharm",
+                              "M.Sc",
+                              "M.Tech",
+                              "MA",
+                              "MBA",
+                              "MCA",
+                              "MDS",
+                              "MHM",
+                              "MSW",
+                              "LLM",
+                              "MBBS",
+                              "MD",
+                              "MS",
+                              "Ph.D",
+                              "Diploma",
+                              "Polytechnic",
+                              "Trade School",
+                              "Higher Secondary / Plus Two",
+                              "SSLC / 10th",
+                              "Other",
+                              "Any",
+                            ]}
+                          />
+                          <FormInput
+                            label="Partner Employment Type"
+                            name="partnerEmploymentType"
+                            type="select"
+                            searchable={true}
+                            value={formData.partnerEmploymentType}
+                            onChange={handleInputChange}
+                            options={[
+                              "Private Sector",
+                              "Government",
+                              "Self Employed",
+                              "Business",
+                              "Not Working",
+                              "Any",
+                            ]}
+                          />
+                          <FormInput
+                            label="Partner Occupation"
+                            name="partnerOccupation"
+                            type="select"
+                            searchable={true}
+                            value={formData.partnerOccupation}
+                            onChange={handleInputChange}
+                            options={[
+                              "Accountant",
+                              "Actor",
+                              "Administrative Professional",
+                              "Advertising Professional",
+                              "Agri-Business Professional",
+                              "Air Hostess / Flight Attendant",
+                              "Architect",
+                              "Artist",
+                              "Auditor",
+                              "Banking Professional",
+                              "Beautician",
+                              "Biologist / Botanist",
+                              "Business",
+                              "Chartered Accountant",
+                              "Civil Engineer",
+                              "Clerical Official",
+                              "Commercial Pilot",
+                              "Company Secretary",
+                              "Computer Professional",
+                              "Consultant",
+                              "Contractor",
+                              "Cost Accountant",
+                              "Creative Person",
+                              "Customer Support Professional",
+                              "Defense Employee",
+                              "Dentist",
+                              "Designer",
+                              "Doctor",
+                              "Economist",
+                              "Engineer",
+                              "Engineer (Mechanical)",
+                              "Engineer (Project)",
+                              "Entertainment Professional",
+                              "Event Manager",
+                              "Executive",
+                              "Factory Worker",
+                              "Farmer",
+                              "Fashion Designer",
+                              "Finance Professional",
+                              "Flight Attendant",
+                              "Government Employee",
+                              "Graphic Designer",
+                              "Health Care Professional",
+                              "Hotel Management Professional",
+                              "HR Professional",
+                              "Human Resources Professional",
+                              "Indian Administrative Services (IAS)",
+                              "Indian Foreign Services (IFS)",
+                              "Indian Police Services (IPS)",
+                              "Interior Designer",
+                              "Investment Professional",
+                              "IT Professional",
+                              "Journalist",
+                              "Lawyer",
+                              "Lecturer",
+                              "Legal Professional",
+                              "Manager",
+                              "Marketing Professional",
+                              "Media Professional",
+                              "Medical Professional",
+                              "Merchant Naval Officer",
+                              "Microbiologist",
+                              "Military",
+                              "Model",
+                              "Musician",
+                              "Nurse",
+                              "Nutritionist",
+                              "Occupational Therapist",
+                              "Optician",
+                              "Pharmacist",
+                              "Photographer",
+                              "Physical Therapist",
+                              "Physician",
+                              "Pilot",
+                              "Police",
+                              "Politician",
+                              "Professor",
+                              "Psychologist",
+                              "Public Relations Professional",
+                              "Real Estate Professional",
+                              "Researcher",
+                              "Retired",
+                              "Sales Professional",
+                              "Scientist",
+                              "Secretary",
+                              "Security Professional",
+                              "Self Employed",
+                              "Social Worker",
+                              "Software Consultant",
+                              "Software Engineer",
+                              "Sportsman",
+                              "Student",
+                              "Teacher",
+                              "Technician",
+                              "Training Professional",
+                              "Transportation Professional",
+                              "Veterinary Doctor",
+                              "Volunteer",
+                              "Writer",
+                              "Zoologist",
+                              "Not Working",
+                              "Any",
+                            ]}
+                          />
+                          <FormInput
+                            label="Partner Annual Income"
+                            name="partnerAnnualIncome"
+                            value={formData.partnerAnnualIncome}
+                            onChange={handleInputChange}
+                            placeholder="e.g., 5-10 Lakhs"
+                          />
+                        </div>
+                      </FormSection>
 
-                  {/* Contact Information Section */}
-                  <FormSection title="Contact Information">
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "20px",
-                      }}
-                    >
-                      <FormInput
-                        label="Mobile Number"
-                        name="phone"
-                        type="tel"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        required
-                      />
-                      <FormInput
-                        label="Alternate Mobile Number"
-                        name="alternateMobile"
-                        type="tel"
-                        value={formData.alternateMobile}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                      />
-                      <FormInput
-                        label="Landline Number"
-                        name="landlineNumber"
-                        value={formData.landlineNumber}
-                        onChange={handleInputChange}
-                      />
-                      <div style={{ gridColumn: "1 / -1" }}>
-                        <FormInput
-                          label="Current Address"
-                          name="currentAddress"
-                          type="textarea"
-                          value={formData.currentAddress}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div style={{ gridColumn: "1 / -1" }}>
-                        <FormInput
-                          label="Permanent Address"
-                          name="permanentAddress"
-                          type="textarea"
-                          value={formData.permanentAddress}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <FormInput
-                        label="City"
-                        name="city"
-                        type="text"
-                        placeholder="Enter city name"
-                        value={formData.city}
-                        onChange={handleCityChange}
-                      />
-                      <FormInput
-                        label="State"
-                        name="state"
-                        type="select"
-                        searchable={true}
-                        value={formData.state}
-                        onChange={handleStateChange}
-                        options={stateOptions}
-                      />
-                      <FormInput
-                        label="Pincode"
-                        name="pincode"
-                        value={formData.pincode}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Country"
-                        name="citizenOf"
-                        type="select"
-                        searchable={true}
-                        value={formData.citizenOf}
-                        onChange={handleCountryChange}
-                        options={countryOptions}
-                      />
-                      <FormInput
-                        label="Contact Person Name"
-                        name="contactPersonName"
-                        value={formData.contactPersonName}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Relationship"
-                        name="relationship"
-                        type="select"
-                        searchable={true}
-                        value={formData.relationship}
-                        onChange={handleInputChange}
-                        options={[
-                          "Father",
-                          "Mother",
-                          "Brother",
-                          "Sister",
-                          "Uncle",
-                          "Aunt",
-                          "Cousin",
-                          "Friend",
-                          "Self",
-                          "Other",
-                        ]}
-                      />
-                    </div>
-                  </FormSection>
+                      {/* Partner Preferences - Location */}
+                      <FormSection title="Partner Preferences - Location">
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(2, 1fr)",
+                            gap: "20px",
+                          }}
+                        >
+                          <FormInput
+                            label="Partner Country"
+                            name="partnerCountry"
+                            value={formData.partnerCountry}
+                            onChange={handleInputChange}
+                            placeholder="Any"
+                          />
+                          <FormInput
+                            label="Partner State"
+                            name="partnerState"
+                            value={formData.partnerState}
+                            onChange={handleInputChange}
+                            placeholder="Any"
+                          />
+                          <FormInput
+                            label="Partner Residing District"
+                            name="partnerDistrict"
+                            value={formData.partnerDistrict}
+                            onChange={handleInputChange}
+                            placeholder="Any"
+                          />
+                        </div>
+                      </FormSection>
 
-                  {/* Professional Information Section */}
-                  <FormSection title="Professional Information">
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "20px",
-                      }}
-                    >
-                      <FormInput
-                        label="Education"
-                        name="education"
-                        type="select"
-                        searchable={true}
-                        value={formData.education}
-                        onChange={handleInputChange}
-                        options={[
-                          "B.Arch",
-                          "B.Com",
-                          "B.Ed",
-                          "B.Pharm",
-                          "B.Sc",
-                          "B.Sc (Hons)",
-                          "B.E",
-                          "B.Tech",
-                          "BA",
-                          "BBA",
-                          "BCA",
-                          "BDS",
-                          "BHM",
-                          "BAMS",
-                          "BHMS",
-                          "BSw",
-                          "LLB",
-                          "M.Arch",
-                          "M.Com",
-                          "M.Ed",
-                          "M.Pharm",
-                          "M.Sc",
-                          "M.E",
-                          "M.Tech",
-                          "MA",
-                          "MBA",
-                          "MCA",
-                          "MDS",
-                          "MHM",
-                          "MSW",
-                          "LLM",
-                          "MBBS",
-                          "MD",
-                          "MS",
-                          "Ph.D",
-                          "Diploma",
-                          "Polytechnic",
-                          "Trade School",
-                          "Higher Secondary / Plus Two",
-                          "SSLC / 10th",
-                          "Other",
-                        ]}
-                      />
-                      <FormInput
-                        label="Additional Education"
-                        name="additionalEducation"
-                        type="select"
-                        searchable={true}
-                        value={formData.additionalEducation}
-                        onChange={handleInputChange}
-                        options={[
-                          "B.Arch",
-                          "B.Com",
-                          "B.Ed",
-                          "B.Pharm",
-                          "B.Sc",
-                          "B.E",
-                          "B.Tech",
-                          "BA",
-                          "BBA",
-                          "BCA",
-                          "BDS",
-                          "BHM",
-                          "BAMS",
-                          "BHMS",
-                          "BSw",
-                          "LLB",
-                          "M.Arch",
-                          "M.Com",
-                          "M.Ed",
-                          "M.Pharm",
-                          "M.Sc",
-                          "M.E",
-                          "M.Tech",
-                          "MA",
-                          "MBA",
-                          "MCA",
-                          "MDS",
-                          "MHM",
-                          "MSW",
-                          "LLM",
-                          "MBBS",
-                          "MD",
-                          "MS",
-                          "Ph.D",
-                          "Diploma",
-                          "Polytechnic",
-                          "Trade School",
-                          "Higher Secondary / Plus Two",
-                          "SSLC / 10th",
-                          "Other",
-                        ]}
-                      />
-                      <FormInput
-                        label="College"
-                        name="college"
-                        value={formData.college}
-                        onChange={handleInputChange}
-                      />
-                      <div style={{ gridColumn: "1 / -1" }}>
-                        <FormInput
-                          label="Education in Detail"
-                          name="educationDetail"
-                          type="textarea"
-                          value={formData.educationDetail}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <FormInput
-                        label="Employment Type"
-                        name="employmentType"
-                        type="select"
-                        searchable={true}
-                        value={formData.employmentType}
-                        onChange={handleInputChange}
-                        options={[
-                          "Private Sector",
-                          "Government",
-                          "Self Employed",
-                          "Business",
-                          "Not Working",
-                        ]}
-                      />
-                      <FormInput
-                        label="Occupation"
-                        name="occupation"
-                        type="select"
-                        searchable={true}
-                        value={formData.occupation}
-                        onChange={handleInputChange}
-                        options={[
-                          "Accountant",
-                          "Actor",
-                          "Administrative Professional",
-                          "Advertising Professional",
-                          "Agri-Business Professional",
-                          "Air Hostess / Flight Attendant",
-                          "Architect",
-                          "Artist",
-                          "Auditor",
-                          "Banking Professional",
-                          "Beautician",
-                          "Biologist / Botanist",
-                          "Business",
-                          "Chartered Accountant",
-                          "Civil Engineer",
-                          "Clerical Official",
-                          "Commercial Pilot",
-                          "Company Secretary",
-                          "Computer Professional",
-                          "Consultant",
-                          "Contractor",
-                          "Cost Accountant",
-                          "Creative Person",
-                          "Customer Support Professional",
-                          "Defense Employee",
-                          "Dentist",
-                          "Designer",
-                          "Doctor",
-                          "Economist",
-                          "Engineer",
-                          "Engineer (Mechanical)",
-                          "Engineer (Project)",
-                          "Entertainment Professional",
-                          "Event Manager",
-                          "Executive",
-                          "Factory Worker",
-                          "Farmer",
-                          "Fashion Designer",
-                          "Finance Professional",
-                          "Flight Attendant",
-                          "Government Employee",
-                          "Graphic Designer",
-                          "Health Care Professional",
-                          "Hotel Management Professional",
-                          "HR Professional",
-                          "Human Resources Professional",
-                          "Indian Administrative Services (IAS)",
-                          "Indian Foreign Services (IFS)",
-                          "Indian Police Services (IPS)",
-                          "Interior Designer",
-                          "Investment Professional",
-                          "IT Professional",
-                          "Journalist",
-                          "Lawyer",
-                          "Lecturer",
-                          "Legal Professional",
-                          "Manager",
-                          "Marketing Professional",
-                          "Media Professional",
-                          "Medical Professional",
-                          "Merchant Naval Officer",
-                          "Microbiologist",
-                          "Military",
-                          "Model",
-                          "Musician",
-                          "Nurse",
-                          "Nutritionist",
-                          "Occupational Therapist",
-                          "Optician",
-                          "Pharmacist",
-                          "Photographer",
-                          "Physical Therapist",
-                          "Physician",
-                          "Pilot",
-                          "Police",
-                          "Politician",
-                          "Professor",
-                          "Psychologist",
-                          "Public Relations Professional",
-                          "Real Estate Professional",
-                          "Researcher",
-                          "Retired",
-                          "Sales Professional",
-                          "Scientist",
-                          "Secretary",
-                          "Security Professional",
-                          "Self Employed",
-                          "Social Worker",
-                          "Software Consultant",
-                          "Software Engineer",
-                          "Sportsman",
-                          "Student",
-                          "Teacher",
-                          "Technician",
-                          "Training Professional",
-                          "Transportation Professional",
-                          "Veterinary Doctor",
-                          "Volunteer",
-                          "Writer",
-                          "Zoologist",
-                          "Not Working",
-                        ]}
-                      />
-                      <FormInput
-                        label="Position"
-                        name="position"
-                        value={formData.position}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Company Name"
-                        name="companyName"
-                        value={formData.companyName}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Annual Income"
-                        name="annualIncome"
-                        type="select"
-                        searchable={true}
-                        value={formData.annualIncome}
-                        onChange={handleInputChange}
-                        options={[
-                          "50 Thousands",
-                          "1 Lakh",
-                          "2 Lakhs",
-                          "3 Lakhs",
-                          "4 Lakhs",
-                          "5 Lakhs",
-                          "6 Lakhs",
-                          "7 Lakhs",
-                          "8 Lakhs",
-                          "9 Lakhs",
-                          "10 Lakhs",
-                          "12 Lakhs",
-                          "14 Lakhs",
-                          "16 Lakhs",
-                          "18 Lakhs",
-                          "20 Lakhs",
-                          "25 Lakhs",
-                          "30 Lakhs",
-                          "35 Lakhs",
-                          "40 Lakhs",
-                          "50 Lakhs",
-                          "60 Lakhs",
-                          "70 Lakhs",
-                          "80 Lakhs",
-                          "90 Lakhs",
-                          "1 Crore",
-                          "1 Crore+",
-                        ]}
-                      />
-                    </div>
-                  </FormSection>
-
-                  {/* Lifestyle Section with Checkboxes */}
-                  <FormSection title="Lifestyle">
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr",
-                        gap: "20px",
-                      }}
-                    >
-                      {/* Hobbies as Checkboxes */}
-                      <div style={{ gridColumn: "1 / -1" }}>
-                        <CheckboxGroup
-                          label="Hobbies"
-                          name="hobbies"
-                          options={hobbiesOptions}
-                          selectedValues={
-                            Array.isArray(formData.hobbies)
-                              ? formData.hobbies
-                              : []
-                          }
-                          onChange={handleHobbiesChange}
-                        />
-                      </div>
-
+                      {/* Submit Button */}
                       <div
                         style={{
-                          display: "grid",
-                          gridTemplateColumns: "repeat(2, 1fr)",
-                          gap: "20px",
+                          background: "#fff",
+                          padding: "20px 24px",
+                          borderRadius: "8px",
+                          marginTop: "24px",
+                          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          gap: "12px",
                         }}
                       >
-                        <FormInput
-                          label="Interests"
-                          name="interests"
-                          value={formData.interests}
-                          onChange={handleInputChange}
-                        />
-                        <FormInput
-                          label="Music"
-                          name="music"
-                          value={formData.music}
-                          onChange={handleInputChange}
-                        />
-                        <FormInput
-                          label="Favourite Reads"
-                          name="favouriteReads"
-                          value={formData.favouriteReads}
-                          onChange={handleInputChange}
-                        />
-                        <FormInput
-                          label="Favourite Cuisines"
-                          name="favouriteCuisines"
-                          value={formData.favouriteCuisines}
-                          onChange={handleInputChange}
-                        />
-                        <FormInput
-                          label="Exercise"
-                          name="exercise"
-                          type="select"
-                          value={formData.exercise}
-                          onChange={handleInputChange}
-                          options={["Regular", "Occasional", "Rare", "Never"]}
-                        />
-                        <FormInput
-                          label="Sports Activities"
-                          name="sportsActivities"
-                          value={formData.sportsActivities}
-                          onChange={handleInputChange}
-                        />
-                        <FormInput
-                          label="Dress Styles"
-                          name="dressStyles"
-                          value={formData.dressStyles}
-                          onChange={handleInputChange}
-                        />
+                        <button
+                          type="button"
+                          onClick={() => window.history.back()}
+                          disabled={isSubmitting}
+                          style={{
+                            padding: "12px 32px",
+                            background: "#fff",
+                            color: "#374151",
+                            border: "2px solid #d1d5db",
+                            borderRadius: "6px",
+                            fontSize: "16px",
+                            fontWeight: "600",
+                            cursor: isSubmitting ? "not-allowed" : "pointer",
+                            transition: "all 0.2s ease",
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={isSubmitting}
+                          style={{
+                            padding: "12px 32px",
+                            background: isSubmitting ? "#9ca3af" : "#667eea",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "6px",
+                            fontSize: "16px",
+                            fontWeight: "600",
+                            cursor: isSubmitting ? "not-allowed" : "pointer",
+                            transition: "all 0.2s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!isSubmitting) {
+                              e.target.style.background = "#5568d3";
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isSubmitting) {
+                              e.target.style.background = "#667eea";
+                            }
+                          }}
+                        >
+                          {isSubmitting ? "Submitting..." : "Save Changes"}
+                        </button>
                       </div>
-                    </div>
-                  </FormSection>
-
-                  {/* Partner Preferences - Basic & Religion */}
-                  <FormSection title="Partner Preferences - Basic & Religion">
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "20px",
-                      }}
-                    >
-                      <FormInput
-                        label="Partner Age From"
-                        name="partnerAgeFrom"
-                        value={formData.partnerAgeFrom}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Partner Age To"
-                        name="partnerAgeTo"
-                        value={formData.partnerAgeTo}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Partner Height"
-                        name="partnerHeight"
-                        value={formData.partnerHeight}
-                        onChange={handleInputChange}
-                        placeholder="e.g., 160-180 cm"
-                      />
-                      <FormInput
-                        label="Partner Marital Status"
-                        name="partnerMaritalStatus"
-                        type="select"
-                        searchable={true}
-                        value={formData.partnerMaritalStatus}
-                        onChange={handleInputChange}
-                        options={[
-                          "Never Married",
-                          "Divorced",
-                          "Separated",
-                          "Widow / Widower",
-                          "Awaiting Divorce",
-                          "Annulled",
-                          "Any",
-                        ]}
-                      />
-                      <FormInput
-                        label="Partner Mother Tongue"
-                        name="partnerMotherTongue"
-                        type="select"
-                        searchable={true}
-                        value={formData.partnerMotherTongue}
-                        onChange={handleInputChange}
-                        options={[
-                          "Aka",
-                          "Arabic",
-                          "Arunachali",
-                          "Assamese",
-                          "Awadhi",
-                          "Bengali",
-                          "Bhojpuri",
-                          "Bhutia",
-                          "Bihari",
-                          "Brij",
-                          "Chatisgarhi",
-                          "Chinese",
-                          "Dogri",
-                          "English",
-                          "French",
-                          "Garhwali",
-                          "Garo",
-                          "Gujarati",
-                          "Haryanvi",
-                          "Himachali/Pahari",
-                          "Hindi",
-                          "Kanauji",
-                          "Kannada",
-                          "Kashmiri",
-                          "Khandesi",
-                          "Khasi",
-                          "Konkani",
-                          "Koshali",
-                          "Kumaoni",
-                          "Kutchi",
-                          "Ladacki",
-                          "Lepcha",
-                          "Magahi",
-                          "Maithili",
-                          "Malay",
-                          "Malayalam",
-                          "Manipuri",
-                          "Marathi",
-                          "Marwari",
-                          "Miji",
-                          "Mizo",
-                          "Monpa",
-                          "Nepali",
-                          "Odia",
-                          "Persian",
-                          "Punjabi",
-                          "Rajasthani",
-                          "Russian",
-                          "Sanskrit",
-                          "Santhali",
-                          "Sindhi",
-                          "Spanish",
-                          "Swedish",
-                          "Tagalog",
-                          "Tamil",
-                          "Telugu",
-                          "Tulu",
-                          "Urdu",
-                          "Other",
-                          "Any",
-                        ]}
-                      />
-                      <FormInput
-                        label="Partner Caste"
-                        name="partnerCaste"
-                        type="select"
-                        searchable={true}
-                        value={formData.partnerCaste}
-                        onChange={handleInputChange}
-                        options={[
-                          "Doesn't wish to specify",
-                          "Latin Catholic",
-                          "Roman Catholic",
-                          "Syro Malabar",
-                          "Syro Malankara",
-                          "Knanaya Catholic",
-                          "CSI (Church of South India)",
-                          "Pentecostal",
-                          "Jacobite",
-                          "Orthodox",
-                          "Marthoma",
-                          "Protestant",
-                          "Anglican",
-                          "Baptist",
-                          "Methodist",
-                          "Presbyterian",
-                          "Seventh Day Adventist",
-                          "Assembly of God",
-                          "Brethren",
-                          "Other",
-                          "Any",
-                        ]}
-                      />
-                      <FormInput
-                        label="Partner Physical Status"
-                        name="partnerPhysicalStatus"
-                        type="select"
-                        value={formData.partnerPhysicalStatus}
-                        onChange={handleInputChange}
-                        options={["Normal", "Physically Challenged", "Any"]}
-                      />
-                      <FormInput
-                        label="Partner Eating Habits"
-                        name="partnerEatingHabits"
-                        type="select"
-                        value={formData.partnerEatingHabits}
-                        onChange={handleInputChange}
-                        options={[
-                          "Vegetarian",
-                          "Non-Vegetarian",
-                          "Eggetarian",
-                          "Any",
-                        ]}
-                      />
-                      <FormInput
-                        label="Partner Drinking Habits"
-                        name="partnerDrinkingHabits"
-                        type="select"
-                        value={formData.partnerDrinkingHabits}
-                        onChange={handleInputChange}
-                        options={[
-                          "Never Drinks",
-                          "Drinks Socially",
-                          "Drinks Regularly",
-                          "Any",
-                        ]}
-                      />
-                      <FormInput
-                        label="Partner Smoking Habits"
-                        name="partnerSmokingHabits"
-                        type="select"
-                        value={formData.partnerSmokingHabits}
-                        onChange={handleInputChange}
-                        options={[
-                          "Never Smokes",
-                          "Smokes Occasionally",
-                          "Smokes Regularly",
-                          "Any",
-                        ]}
-                      />
-                      <FormInput
-                        label="Partner Denomination"
-                        name="partnerDenomination"
-                        type="select"
-                        searchable={true}
-                        value={formData.partnerDenomination}
-                        onChange={handleInputChange}
-                        options={[
-                          "ACI - Anglican Church Of India",
-                          "Adventist",
-                          "AG - Assembly of God",
-                          "Anglican",
-                          "Anglo Indian",
-                          "Apostolic",
-                          "Baptist",
-                          "Believers Church",
-                          "Brethren",
-                          "Catholic",
-                          "Catholic - Knanaya",
-                          "Catholic - Latin",
-                          "Catholic - Malankara",
-                          "Catholic - Roman",
-                          "Catholic - Syro Malabar",
-                          "Chaldean Syrian",
-                          "Charismatic",
-                          "Christian - Others",
-                          "Church Of Christ",
-                          "Church Of God",
-                          "CNI - Church Of North India",
-                          "Congregational",
-                          "CPM - Ceylon Pentecostal Mission",
-                          "CSI - Church Of South India",
-                          "Don't wish to specify",
-                          "Evangelist",
-                          "Independent Church",
-                          "Jacobite",
-                          "Jacobite - Knanaya",
-                          "Jehovah Shammah",
-                          "Jehovah's Witnesses",
-                          "Knanaya",
-                          "Knanaya Catholic",
-                          "Knanaya Jacobite",
-                          "Latin Catholic",
-                          "Lutheran",
-                          "Malankara Catholic",
-                          "Marthoma",
-                          "Methodist",
-                          "Moravian",
-                          "Muslim - Sunni",
-                          "Orthodox",
-                          "Orthodox - Knanaya",
-                          "Pentecost",
-                          "Presbyterian",
-                          "Protestant",
-                          "Reformed",
-                          "Revival",
-                          "Salvation Army",
-                          "Seventh-day Adventist",
-                          "St. Thomas Evangelical",
-                          "Syro Malabar",
-                          "Syrian Catholic",
-                          "TPM - The Pentecostal Mission",
-                          "Other",
-                          "Any",
-                        ]}
-                      />
-                      <FormInput
-                        label="Partner Spirituality"
-                        name="partnerSpirituality"
-                        type="select"
-                        value={formData.partnerSpirituality}
-                        onChange={handleInputChange}
-                        options={[
-                          "Very Religious",
-                          "Religious",
-                          "Moderately Religious",
-                          "Not Religious",
-                          "Any",
-                        ]}
-                      />
-                    </div>
-                  </FormSection>
-
-                  {/* Partner Preferences - Professional */}
-                  <FormSection title="Partner Preferences - Professional">
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "20px",
-                      }}
-                    >
-                      <FormInput
-                        label="Partner Education"
-                        name="partnerEducation"
-                        type="select"
-                        searchable={true}
-                        value={formData.partnerEducation}
-                        onChange={handleInputChange}
-                        options={[
-                          "B.Arch",
-                          "B.Com",
-                          "B.Ed",
-                          "B.Pharm",
-                          "B.Sc",
-                          "B.Tech",
-                          "BA",
-                          "BBA",
-                          "BCA",
-                          "BDS",
-                          "BHM",
-                          "BAMS",
-                          "BHMS",
-                          "BSw",
-                          "LLB",
-                          "M.Arch",
-                          "M.Com",
-                          "M.Ed",
-                          "M.Pharm",
-                          "M.Sc",
-                          "M.Tech",
-                          "MA",
-                          "MBA",
-                          "MCA",
-                          "MDS",
-                          "MHM",
-                          "MSW",
-                          "LLM",
-                          "MBBS",
-                          "MD",
-                          "MS",
-                          "Ph.D",
-                          "Diploma",
-                          "Polytechnic",
-                          "Trade School",
-                          "Higher Secondary / Plus Two",
-                          "SSLC / 10th",
-                          "Other",
-                          "Any",
-                        ]}
-                      />
-                      <FormInput
-                        label="Partner Employment Type"
-                        name="partnerEmploymentType"
-                        type="select"
-                        searchable={true}
-                        value={formData.partnerEmploymentType}
-                        onChange={handleInputChange}
-                        options={[
-                          "Private Sector",
-                          "Government",
-                          "Self Employed",
-                          "Business",
-                          "Not Working",
-                          "Any",
-                        ]}
-                      />
-                      <FormInput
-                        label="Partner Occupation"
-                        name="partnerOccupation"
-                        type="select"
-                        searchable={true}
-                        value={formData.partnerOccupation}
-                        onChange={handleInputChange}
-                        options={[
-                          "Accountant",
-                          "Actor",
-                          "Administrative Professional",
-                          "Advertising Professional",
-                          "Agri-Business Professional",
-                          "Air Hostess / Flight Attendant",
-                          "Architect",
-                          "Artist",
-                          "Auditor",
-                          "Banking Professional",
-                          "Beautician",
-                          "Biologist / Botanist",
-                          "Business",
-                          "Chartered Accountant",
-                          "Civil Engineer",
-                          "Clerical Official",
-                          "Commercial Pilot",
-                          "Company Secretary",
-                          "Computer Professional",
-                          "Consultant",
-                          "Contractor",
-                          "Cost Accountant",
-                          "Creative Person",
-                          "Customer Support Professional",
-                          "Defense Employee",
-                          "Dentist",
-                          "Designer",
-                          "Doctor",
-                          "Economist",
-                          "Engineer",
-                          "Engineer (Mechanical)",
-                          "Engineer (Project)",
-                          "Entertainment Professional",
-                          "Event Manager",
-                          "Executive",
-                          "Factory Worker",
-                          "Farmer",
-                          "Fashion Designer",
-                          "Finance Professional",
-                          "Flight Attendant",
-                          "Government Employee",
-                          "Graphic Designer",
-                          "Health Care Professional",
-                          "Hotel Management Professional",
-                          "HR Professional",
-                          "Human Resources Professional",
-                          "Indian Administrative Services (IAS)",
-                          "Indian Foreign Services (IFS)",
-                          "Indian Police Services (IPS)",
-                          "Interior Designer",
-                          "Investment Professional",
-                          "IT Professional",
-                          "Journalist",
-                          "Lawyer",
-                          "Lecturer",
-                          "Legal Professional",
-                          "Manager",
-                          "Marketing Professional",
-                          "Media Professional",
-                          "Medical Professional",
-                          "Merchant Naval Officer",
-                          "Microbiologist",
-                          "Military",
-                          "Model",
-                          "Musician",
-                          "Nurse",
-                          "Nutritionist",
-                          "Occupational Therapist",
-                          "Optician",
-                          "Pharmacist",
-                          "Photographer",
-                          "Physical Therapist",
-                          "Physician",
-                          "Pilot",
-                          "Police",
-                          "Politician",
-                          "Professor",
-                          "Psychologist",
-                          "Public Relations Professional",
-                          "Real Estate Professional",
-                          "Researcher",
-                          "Retired",
-                          "Sales Professional",
-                          "Scientist",
-                          "Secretary",
-                          "Security Professional",
-                          "Self Employed",
-                          "Social Worker",
-                          "Software Consultant",
-                          "Software Engineer",
-                          "Sportsman",
-                          "Student",
-                          "Teacher",
-                          "Technician",
-                          "Training Professional",
-                          "Transportation Professional",
-                          "Veterinary Doctor",
-                          "Volunteer",
-                          "Writer",
-                          "Zoologist",
-                          "Not Working",
-                          "Any",
-                        ]}
-                      />
-                      <FormInput
-                        label="Partner Annual Income"
-                        name="partnerAnnualIncome"
-                        value={formData.partnerAnnualIncome}
-                        onChange={handleInputChange}
-                        placeholder="e.g., 5-10 Lakhs"
-                      />
-                    </div>
-                  </FormSection>
-
-                  {/* Partner Preferences - Location */}
-                  <FormSection title="Partner Preferences - Location">
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "20px",
-                      }}
-                    >
-                      <FormInput
-                        label="Partner Country"
-                        name="partnerCountry"
-                        value={formData.partnerCountry}
-                        onChange={handleInputChange}
-                        placeholder="Any"
-                      />
-                      <FormInput
-                        label="Partner State"
-                        name="partnerState"
-                        value={formData.partnerState}
-                        onChange={handleInputChange}
-                        placeholder="Any"
-                      />
-                      <FormInput
-                        label="Partner Residing District"
-                        name="partnerDistrict"
-                        value={formData.partnerDistrict}
-                        onChange={handleInputChange}
-                        placeholder="Any"
-                      />
-                    </div>
-                  </FormSection>
-
-                  {/* Submit Button */}
-                  <div
-                    style={{
-                      background: "#fff",
-                      padding: "20px 24px",
-                      borderRadius: "8px",
-                      marginTop: "24px",
-                      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      gap: "12px",
-                    }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => window.history.back()}
-                      disabled={isSubmitting}
-                      style={{
-                        padding: "12px 32px",
-                        background: "#fff",
-                        color: "#374151",
-                        border: "2px solid #d1d5db",
-                        borderRadius: "6px",
-                        fontSize: "16px",
-                        fontWeight: "600",
-                        cursor: isSubmitting ? "not-allowed" : "pointer",
-                        transition: "all 0.2s ease",
-                      }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      style={{
-                        padding: "12px 32px",
-                        background: isSubmitting ? "#9ca3af" : "#667eea",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: "6px",
-                        fontSize: "16px",
-                        fontWeight: "600",
-                        cursor: isSubmitting ? "not-allowed" : "pointer",
-                        transition: "all 0.2s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isSubmitting) {
-                          e.target.style.background = "#5568d3";
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isSubmitting) {
-                          e.target.style.background = "#667eea";
-                        }
-                      }}
-                    >
-                      {isSubmitting ? "Submitting..." : "Save Changes"}
-                    </button>
-                  </div>
+                    </>
+                  )}
                 </form>
               </div>
             </div>

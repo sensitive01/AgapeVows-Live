@@ -33,12 +33,12 @@ const UserSettingsPage = () => {
                     <h2 className="db-tit">Profile settings</h2>
                     <div className="col7 fol-set-rhs">
                       <div className="ms-write-post fol-sett-sec sett-rhs-pro">
-                        <div className="foll-set-tit fol-pro-abo-ico">
+                        {/* <div className="foll-set-tit fol-pro-abo-ico">
                           <h4>Profile</h4>
-                        </div>
+                        </div> */}
                         <div className="fol-sett-box">
                           <ul>
-                            <li>
+                            {/* <li>
                               <div className="sett-lef">
                                 <div className="auth-pro-sm sett-pro-wid">
                                   <div className="auth-pro-sm-img">
@@ -55,7 +55,7 @@ const UserSettingsPage = () => {
                                   Sign Out
                                 </a>
                               </div>
-                            </li>
+                            </li> */}
                             <li>
                               <div className="sett-lef">
                                 <div className="sett-rad-left">

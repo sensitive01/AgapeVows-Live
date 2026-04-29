@@ -576,10 +576,10 @@ const ReportIssue = () => {
               <div className="row">
                 <div className="hom-ban">
                   <div className="ban-tit">
-                    <span>
+                    {/* <span>
                       <i className="no1">#1</i> Support Center
-                    </span>
-                    <h1>Report Your Issue</h1>
+                    </span> */}
+                    <h1>Report an Issue</h1>
                     <p>
                       Facing a problem? Let us know and we’ll fix it quickly and efficiently.
                     </p>

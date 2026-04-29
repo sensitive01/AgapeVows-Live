@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const cloudinary = require("cloudinary").v2;
 const bcrypt = require("bcrypt");
 const moment = require("moment");
@@ -59,6 +60,14 @@ const generateOrderId = () => {
 const getUserInformation = async (req, res) => {
   try {
     const { userId } = req.params;
+
+    // Check if userId is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID format",
+      });
+    }
 
     const userData = await userModel.findById(userId, { userPassword: 0 });
 
