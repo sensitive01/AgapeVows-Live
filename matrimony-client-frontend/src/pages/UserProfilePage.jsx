@@ -4,7 +4,7 @@ import "./UserProfile.css";
 import UserSideBar from "../components/UserSideBar";
 import Footer from "../components/Footer";
 import CopyRights from "../components/CopyRights";
-import { getUserProfile } from "../api/axiosService/userAuthService";
+import { getUserProfile, uploadIdProof } from "../api/axiosService/userAuthService";
 import profImage from "../assets/images/blue-circle-with-white-user_78370-4707.avif";
 import LayoutComponent from "../components/layouts/LayoutComponent";
 import MembershipBadge from "../components/common/MembershipBadge";
@@ -112,148 +112,276 @@ const SocialLink = ({ icon, color, label, value }) => (
   </a>
 );
 
-// ----------------- VideoCard with small modal video -----------------
-function VideoCard({ videoUrl }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+// ----------------- DocumentVerificationSection -----------------
+const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
+  const [idType, setIdType] = useState("");
+  const [idNumber, setIdNumber] = useState("");
+  const [file, setFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
 
-  const handleCardClick = () => {
-    if (!videoUrl) {
-      alert("Please upload the video");
-      return;
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
     }
-    setIsModalOpen(true);
   };
 
-  return (
-    <>
-      {/* Inline Thumbnail Preview */}
-      <div
-        style={{
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!idType || !idNumber || !file) {
+      alert("Please fill all fields and select a file.");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      console.log("Submitting ID Proof:", { idType, idNumber, fileName: file.name });
+      const formData = new FormData();
+      formData.append("idProofType", idType);
+      formData.append("idProofNumber", idNumber);
+      formData.append("idProof", file);
+
+      const userId = localStorage.getItem("userId");
+      
+      const response = await uploadIdProof(userId, formData);
+
+      if (response.status === 200) {
+        alert("ID Proof uploaded successfully for verification!");
+        onUploadSuccess();
+      } else {
+        alert("Upload failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("An error occurred during upload.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  if (userInfo?.idVerificationStatus === "Uploaded") {
+    return (
+      <div className="col-12 mb-3">
+        <div style={{
+          padding: "20px",
+          background: "#eff6ff",
+          borderRadius: "8px",
+          border: "1px solid #3b82f6",
           display: "flex",
           alignItems: "center",
-          gap: "10px",
-          border: "1px solid #e5e7eb",
-          borderRadius: "8px",
-          padding: "8px 10px",
-          width: "220px",
-          cursor: videoUrl ? "pointer" : "not-allowed",
-          background: "#f9fafb",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-        }}
-        onClick={handleCardClick}
-      >
-        {videoUrl ? (
-          <video
-            src={videoUrl}
-            style={{
-              width: "60px",
-              height: "60px",
-              objectFit: "cover",
-              borderRadius: "6px",
-            }}
-            muted
-            playsInline
-          />
-        ) : (
-          <i
-            className="fa fa-file-video-o"
-            style={{ fontSize: "20px", color: "#667eea" }}
-          ></i>
-        )}
-
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <span style={{ fontSize: "13px", fontWeight: "500" }}>
-            SelfIntroduction.mp4
-          </span>
-          <span style={{ fontSize: "11px", color: "#6b7280" }}>
-            {videoUrl ? "Click to view video" : "No video uploaded"}
-          </span>
+          gap: "15px"
+        }}>
+          <i className="fa fa-clock-o" style={{ color: "#3b82f6", fontSize: "2rem" }}></i>
+          <div>
+            <h5 style={{ margin: 0, color: "#1e40af", fontWeight: "700" }}>Waiting for Admin Verification</h5>
+            <p style={{ margin: 0, color: "#1e3a8a", fontSize: "0.9rem" }}>Your identity document has been uploaded and is currently under review by our team.</p>
+          </div>
         </div>
-
-        {videoUrl && (
-          <a
-            href={videoUrl}
-            download="SelfIntroduction.mp4"
-            style={{
-              marginLeft: "auto",
-              background: "#667eea",
-              color: "#fff",
-              padding: "3px 6px",
-              borderRadius: "4px",
-              fontSize: "11px",
-              textDecoration: "none",
-              fontWeight: "500",
-            }}
-            onClick={(e) => e.stopPropagation()} // prevent modal open
-          >
-            <i className="fa fa-download"></i>
-          </a>
-        )}
       </div>
+    );
+  }
 
-      {/* Modal with Small Video */}
-      {isModalOpen && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.6)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 9999,
-          }}
-          onClick={() => setIsModalOpen(false)}
-        >
-          <div
-            style={{
-              background: "#fff",
-              borderRadius: "8px",
-              padding: "20px",
-              width: "300px",      // 👈 small width
-              height: "480px",     // 👈 small height
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              position: "relative",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setIsModalOpen(false)}
-              style={{
-                position: "absolute",
-                top: "5px",
-                right: "5px",
-                background: "transparent",
-                border: "none",
-                fontSize: "20px",
-                cursor: "pointer",
-              }}
-            >
-              &times;
-            </button>
+  if (userInfo?.idVerificationStatus === "Verified") {
+    return (
+      <div className="col-12 mb-3">
+        <div style={{
+          padding: "20px",
+          background: "#ecfdf5",
+          borderRadius: "8px",
+          border: "1px solid #10b981",
+          display: "flex",
+          alignItems: "center",
+          gap: "15px"
+        }}>
+          <i className="fa fa-check-circle" style={{ color: "#10b981", fontSize: "2rem" }}></i>
+          <div>
+            <h5 style={{ margin: 0, color: "#065f46", fontWeight: "700" }}>Profile Verified</h5>
+            <p style={{ margin: 0, color: "#047857", fontSize: "0.9rem" }}>Your identity has been successfully verified.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-            <video
-              src={videoUrl}
-              controls
-              autoPlay
-              style={{
-                width: "100%",    // fits container
-                height: "100%",   // fits container
-                borderRadius: "6px",
-                objectFit: "cover",
-              }}
-            />
+  return (
+    <div className="col-12 mb-4">
+      {userInfo?.idVerificationStatus === "Rejected" && (
+        <div style={{
+          padding: "15px 20px",
+          background: "#fff1f2",
+          borderRadius: "12px",
+          border: "1px solid #fecdd3",
+          marginBottom: "20px",
+          display: "flex",
+          alignItems: "center",
+          gap: "15px",
+          boxShadow: "0 2px 8px rgba(244, 63, 94, 0.1)"
+        }}>
+          <i className="fa fa-exclamation-circle" style={{ color: "#f43f5e", fontSize: "1.8rem" }}></i>
+          <div>
+            <h6 style={{ margin: 0, color: "#9f1239", fontWeight: "700" }}>Verification Failed</h6>
+            <p style={{ margin: 0, color: "#be123c", fontSize: "0.85rem" }}>Your verification failed. Please re-upload your document with a clear and visible picture.</p>
           </div>
         </div>
       )}
-    </>
+      <div style={{
+        background: "#fff",
+        borderRadius: "12px",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap"
+      }}>
+        {/* Left Side: Info */}
+        <div style={{
+          flex: "1 1 300px",
+          padding: "40px",
+          background: "#f8faff",
+          borderRight: "1px solid #eee",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center"
+        }}>
+          <div style={{ marginBottom: "30px" }}>
+             <img src="/images/verify-id-icon.png" alt="Verify ID" style={{ width: "120px" }} onError={(e) => e.target.src = "https://cdn-icons-png.flaticon.com/512/7518/7518532.png"} />
+          </div>
+          <h4 style={{ fontWeight: "700", color: "#333", marginBottom: "15px" }}>Verify Your Profile</h4>
+          <p style={{ color: "#666", fontSize: "0.9rem", lineHeight: "1.6", marginBottom: "30px" }}>
+            AgapeVows.com requires proof of the candidate's identity as per the advisory on the functioning of matrimonial websites. Your ID proof is in the safe hands of us and we won't divulge it to any third party.
+          </p>
+          <div style={{ marginTop: "auto", textAlign: "left", width: "100%", fontSize: "0.85rem", color: "#888" }}>
+            <p className="mb-1"><i className="fa fa-envelope me-2" style={{ color: "#7c3aed" }}></i> idproof@agapevows.com</p>
+            <p className="mb-0"><i className="fa fa-phone me-2" style={{ color: "#7c3aed" }}></i> +91 9995777037</p>
+          </div>
+        </div>
+
+        {/* Right Side: Form */}
+        <div style={{
+          flex: "2 1 500px",
+          padding: "40px"
+        }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+            <h5 style={{ fontWeight: "700", color: "#333", margin: 0 }}>ID Proof</h5>
+            <span style={{ fontSize: "0.85rem", color: "#888" }}>My Home / <span style={{ color: "#7c3aed" }}>Submit ID Proof</span></span>
+          </div>
+
+          <p style={{ color: "#777", fontSize: "0.85rem", marginBottom: "25px", borderTop: "1px solid #eee", paddingTop: "15px" }}>
+            Upload your government approved identification proof i.e <strong>Passport / Voter ID / Aadhaar (Both Sides), or Driving License (Front Side)</strong> along with your name, date of birth, and address, immediately to avoid deactivation without notice.
+          </p>
+
+          <div className="row g-3 mb-4">
+            <div className="col-md-6">
+              <label style={{ fontSize: "0.85rem", fontWeight: "600", color: "#555", marginBottom: "8px", display: "block" }}>ID Proof Type*</label>
+              <select 
+                className="form-select" 
+                value={idType} 
+                onChange={(e) => setIdType(e.target.value)}
+                style={{ borderRadius: "6px", padding: "10px" }}
+              >
+                <option value="">Select ID Type</option>
+                <option value="Aadhar Number">Aadhar Number</option>
+                <option value="Driving License">Driving License</option>
+                <option value="Passport">Passport</option>
+                <option value="Voter ID">Voter ID</option>
+              </select>
+            </div>
+            <div className="col-md-6">
+              <label style={{ fontSize: "0.85rem", fontWeight: "600", color: "#555", marginBottom: "8px", display: "block" }}>ID Proof Number*</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                placeholder="Enter ID Number" 
+                value={idNumber}
+                onChange={(e) => setIdNumber(e.target.value)}
+                style={{ borderRadius: "6px", padding: "10px" }}
+              />
+            </div>
+          </div>
+
+          <div 
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+            style={{
+              border: `2px dashed ${dragActive ? "#7c3aed" : "#ddd"}`,
+              borderRadius: "10px",
+              padding: "40px",
+              textAlign: "center",
+              background: dragActive ? "#f5f3ff" : "#fafafa",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              position: "relative"
+            }}
+            onClick={() => document.getElementById("id-file-input").click()}
+          >
+            <input 
+              type="file" 
+              id="id-file-input" 
+              className="d-none" 
+              onChange={handleFileChange}
+              accept=".png,.jpg,.jpeg,.pdf"
+            />
+            <div style={{ fontSize: "40px", color: "#ccc", marginBottom: "15px" }}>
+              <i className="fa fa-cloud-upload"></i>
+            </div>
+            {file ? (
+              <div style={{ color: "#7c3aed", fontWeight: "600" }}>{file.name}</div>
+            ) : (
+              <>
+                <p style={{ fontWeight: "600", color: "#555", margin: 0 }}>Drag & drop file here</p>
+                <p style={{ color: "#999", fontSize: "0.75rem", marginTop: "10px" }}>Only PNG/JPG/JPEG/PDF format with maximum 30MB size allowed</p>
+              </>
+            )}
+          </div>
+
+          <div style={{ marginTop: "30px", textAlign: "center" }}>
+            <button 
+              onClick={handleSubmit}
+              disabled={isUploading}
+              style={{
+                background: "#7c3aed",
+                color: "#fff",
+                border: "none",
+                padding: "12px 40px",
+                borderRadius: "6px",
+                fontWeight: "600",
+                fontSize: "1rem",
+                boxShadow: "0 4px 12px rgba(124, 58, 237, 0.3)",
+                transition: "all 0.2s ease",
+                cursor: isUploading ? "not-allowed" : "pointer"
+              }}
+              onMouseOver={(e) => e.target.style.transform = "translateY(-2px)"}
+              onMouseOut={(e) => e.target.style.transform = "translateY(0)"}
+            >
+              {isUploading ? "UPLOADING..." : "UPLOAD ID PROOF"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
-}
+};
 
 
 const UserProfilePage = () => {
@@ -585,7 +713,7 @@ const UserProfilePage = () => {
                           className="fa fa-edit"
                           style={{ marginRight: "8px" }}
                         ></i>
-                        Edit Profile
+                        Edit profile
                       </Link>
                     </div>
                   </div>
@@ -660,8 +788,9 @@ const UserProfilePage = () => {
                         }}>
                           <MembershipBadge user={userInfo} isMini={true} />
                           {userInfo?.idVerificationStatus === 'Verified' && (
-                            <div className="badge bg-success shadow-sm" style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '4px', border: '1px solid white' }}>
-                              <i className="fa fa-check-circle"></i>
+                            <div className="membership-badge badge-verified badge-mini shadow-sm">
+                              <i className="fa fa-check-circle badge-icon"></i>
+                              <span className="badge-text">ID Verified</span>
                             </div>
                           )}
                           {userInfo?.isPhoneVerified && (
@@ -841,11 +970,16 @@ const UserProfilePage = () => {
                     </div>
                   </div>
 
-            {userInfo && (
-  <ProfileSection title="Self Introduction Video" icon="fa-video">
-    <VideoCard videoUrl={userInfo.selfIntroductionVideo} />
-  </ProfileSection>
-)}
+                  <DocumentVerificationSection 
+                    userInfo={userInfo} 
+                    onUploadSuccess={() => {
+                      // Refresh profile data
+                      const sanitizedId = (userId && userId.length > 24) ? userId.substring(0, 24) : userId;
+                      getUserProfile(sanitizedId).then(res => {
+                        if (res.status === 200) setUserInfo(res.data.data);
+                      });
+                    }} 
+                  />
                   {/* About Me Section */}
                   {userInfo?.aboutMe && (
                     <div className="col-12 mb-3">

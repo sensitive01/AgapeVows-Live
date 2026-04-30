@@ -185,6 +185,7 @@ const AdminEditUser = () => {
         const response = await getUserById(id);
         if (response.status === 200) {
           const userData = response.data.data;
+          console.log("AdminEditUser: Fetched user data:", userData);
           
           // Map backend fields to local formData
           setFormData({
@@ -311,7 +312,7 @@ const AdminEditUser = () => {
               </div>
             </div>
 
-            <div className="bg-light px-4 pt-4">
+            <div className="px-4 pt-4">
               <ul className="nav nav-tabs border-0" id="profileTabs" role="tablist">
                 {[
                   { id: "basic", label: "Basic Info", icon: "fa-user" },

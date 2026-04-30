@@ -36,6 +36,8 @@ const userSchema = new mongoose.Schema(
          ID VERIFICATION
       ========================== */
       idProofDocument: { type: String, default: "" },
+      idProofType: { type: String, default: "" },
+      idProofNumber: { type: String, default: "" },
       idVerificationStatus: {
          type: String,
          enum: ["Pending", "Uploaded", "Verified", "Rejected"],

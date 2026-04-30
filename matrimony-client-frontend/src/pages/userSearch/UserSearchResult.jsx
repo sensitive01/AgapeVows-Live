@@ -16,7 +16,7 @@ import maleDefault from "../../assets/images/profiles/men1.jpg";
 import femaleDefault from "../../assets/images/profiles/12.jpg";
 import MembershipBadge from "../../components/common/MembershipBadge";
 
-const UserCardImageSlider = ({ user, isAccepted, height = "220px" }) => {
+const UserCardImageSlider = ({ user, isAccepted, height = "220px", blur = false }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
 
@@ -66,6 +66,7 @@ const UserCardImageSlider = ({ user, isAccepted, height = "220px" }) => {
   const openZoom = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (blur) return; // Disable zoom for blurred images
     if (isAccepted) {
       setIsZoomOpen(true);
     }
@@ -100,6 +101,8 @@ const UserCardImageSlider = ({ user, isAccepted, height = "220px" }) => {
               objectFit: "cover",
               objectPosition: "center",
               display: "block",
+              filter: blur ? "blur(12px)" : "none",
+              transition: "filter 0.3s ease"
             }}
           />
         </div>
@@ -332,40 +335,6 @@ const UserSearchResult = () => {
     [state],
   );
 
-  // Initial data fetch
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const { formData, ...restState } = state || {};
-  //       const requestData = {
-  //         ...restState,
-  //         ...(formData || {}),
-  //         userId, // Add userId to request
-  //       };
-
-  //       const response = await fetchSearchedProfileData(requestData);
-  //       if (response.status === 200) {
-  //         setUsers(response.data.data);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching profiles:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   if (state) {
-  //     if (state.formData && state.formData.gender) {
-  //       setFilters((prev) => ({
-  //         ...prev,
-  //         gender: state.formData.gender,
-  //       }));
-  //     }
-  //     fetchData();
-  //   }
-  // }, [state]);
-
   // Fetch current user's active plan
   useEffect(() => {
     const fetchMyPlan = async () => {
@@ -528,7 +497,7 @@ const UserSearchResult = () => {
   };
 
   const handleViewProfile = (targetUser) => {
-    if (!userId) {
+    if (!userId || state?.isGuest) {
       setShowLoginModal(true);
       return;
     }
@@ -571,7 +540,7 @@ const UserSearchResult = () => {
   };
 
   const shortListProfile = async (user) => {
-    if (!userId) {
+    if (!userId || state?.isGuest) {
       setShowLoginModal(true);
       return;
     }
@@ -765,6 +734,7 @@ const UserSearchResult = () => {
                                     user.interestStatus === "accepted"
                                   }
                                   height="100%"
+                                  blur={state?.isGuest}
                                 />
                                 <div style={{
                                   position: 'absolute',
@@ -778,8 +748,9 @@ const UserSearchResult = () => {
                                 }}>
                                   <MembershipBadge user={user} isMini={true} />
                                   {user.idVerificationStatus === 'Verified' && (
-                                    <div className="badge bg-success p-1 shadow-sm" style={{ fontSize: '8px', borderRadius: '2px', border: '1px solid white' }}>
-                                      <i className="fa fa-check-circle"></i>
+                                    <div className="membership-badge badge-verified badge-mini shadow-sm">
+                                      <i className="fa fa-check-circle badge-icon"></i>
+                                      <span className="badge-text">ID Verified</span>
                                     </div>
                                   )}
                                   {user.isPhoneVerified && (
@@ -979,7 +950,10 @@ const UserSearchResult = () => {
                   cursor: "pointer",
                   fontWeight: "500",
                 }}
-                onClick={() => navigate("/user/user-login")}
+                onClick={() => {
+                  window.scrollTo(0, 0);
+                  navigate("/user/user-login");
+                }}
               >
                 Login Now
               </button>

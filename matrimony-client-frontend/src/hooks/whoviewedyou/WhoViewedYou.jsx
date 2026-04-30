@@ -7,6 +7,7 @@ import CopyRights from "../../components/CopyRights";
 import { getWhoViewedYouData } from "../../api/axiosService/userAuthService";
 import { useNavigate } from "react-router-dom";
 import MembershipBadge from "../../components/common/MembershipBadge";
+import dummyProfileImage from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
 
 const WhoViewedYou = () => {
   const userId = localStorage.getItem("userId");
@@ -81,7 +82,7 @@ const WhoViewedYou = () => {
                 style={{
                   position: "relative",
                   width: "100px",
-                  height: "100px" // 👈 space for badge
+                  height: "100px"
                 }}
               >
                 {/* ✅ Badge - TOP CENTER */}
@@ -98,20 +99,24 @@ const WhoViewedYou = () => {
                 </div>
 
                 {/* ✅ Profile Image */}
-                <img
-                  src={profile.profileImage || "images/profiles/default.jpg"}
+               <img
+                  src={profile.profileImage || dummyProfileImage}
                   alt={profile.userName}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = dummyProfileImage;
+                  }}
                   style={{
                     width: "90px",
                     height: "90px",
                     objectFit: "cover",
                     borderRadius: "8px",
-                    marginTop: "15px" // 👈 push image down
+                    marginTop: "15px"
                   }}
                 />
               </div>
               <div className="db-int-pro-2">
-                <h5>{profile.userName}</h5>
+                {/* <h5>{profile.userName}</h5> */}
                 <ol className="poi">
                   <li>
                     City: <strong>{profile.city}</strong>

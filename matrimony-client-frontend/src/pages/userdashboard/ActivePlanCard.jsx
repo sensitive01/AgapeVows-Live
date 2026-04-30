@@ -50,20 +50,22 @@ const ActivePlanCard = () => {
   if (!planData) {
     return (
       <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com">
-        <div className="card p-4 text-center shadow-sm">
-          <h6>No Active Plan</h6>
-          <button
-            className="btn btn-dark btn-sm mt-2"
-            onClick={() => navigate("/user/user-plan-selection")}
-          >
-            Upgrade Plan
-          </button>
+        <h2 className="db-tit">Active plan benefits</h2>
+        <div className="db-pro-stat">
+          <div className="text-center p-4 d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '280px' }}>
+            <h6 className="text-danger fw-bold mb-3">No Active Plan Found</h6>
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={() => navigate("/user/user-plan-selection")}
+            >
+              Upgrade Plan
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  // Find the base plan definition from the plan list to fallback on missing benefits
   const basePlan = plansList.find(p => p.name === planData.subscriptionType) || {};
 
   const subscriptionType = planData.subscriptionType;
@@ -119,9 +121,49 @@ const ActivePlanCard = () => {
 
   return (
     <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com">
-      <h2 className="db-tit mb-3">Active Plan Benefits</h2>
+      <h2 className="db-tit">Active plan benefits</h2>
 
-      <div className="card shadow-lg border-0 p-4 rounded-4">
+      <div className="db-pro-stat">
+        {/* Dropdown options */}
+        <div className="dropdown">
+          <button
+            type="button"
+            className="btn btn-outline-secondary"
+            data-bs-toggle="dropdown"
+          >
+            <i className="fa fa-ellipsis-h" aria-hidden="true"></i>
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <a
+                className="dropdown-item"
+                href="#!"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(`/user/user-plan-page`);
+                }}
+              >
+                Plan details
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                href="#!"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(`/user/user-plan-selection`);
+                }}
+              >
+                Upgrade Plan
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <h6 className="tit-top-curv">
+          Current plan benefits
+        </h6>
 
         {/* Plan Title */}
         <div className="d-flex justify-content-between align-items-center mb-3">

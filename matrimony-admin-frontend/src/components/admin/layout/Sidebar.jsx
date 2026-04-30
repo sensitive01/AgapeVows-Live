@@ -15,7 +15,8 @@ const Sidebar = () => {
       "/admin/deleted-users",
       "/admin/issues",
       "/admin/billing-info/",
-      "/admin/new-user/"
+      "/admin/new-user/",
+      "/admin/id-verification-requests"
     ];
     if (usersRoutes.some(route => location.pathname.startsWith(route))) {
       setExpandedMenus(prev => ({ ...prev, users: true }));
@@ -154,6 +155,14 @@ const Sidebar = () => {
                     style={isActive("/admin/issues") ? activeLinkStyle : normalLinkStyle}
                   >
                     Issues
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/admin/id-verification-requests" 
+                    style={isActive("/admin/id-verification-requests") ? activeLinkStyle : normalLinkStyle}
+                  >
+                    ID Verification
                   </Link>
                 </li>
               </ul>

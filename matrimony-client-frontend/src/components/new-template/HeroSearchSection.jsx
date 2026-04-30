@@ -207,25 +207,15 @@ export default function HeroSearchSection() {
     if (e) e.preventDefault();
     const userId = localStorage.getItem("userId");
 
-    if (userId) {
-      navigate("/show-searched-result", {
-        state: { formData: formData },
-      });
-    } else {
-      // Save redirect info in sessionStorage
-      sessionStorage.setItem("redirectAfterLogin", "/show-searched-result");
-      sessionStorage.setItem("searchData", JSON.stringify(formData));
-
-      // Open Login Popup
-      const menuPop = document.querySelector('.menu-pop1');
-      const popBg = document.querySelector('.pop-bg');
-
-      if (menuPop) menuPop.classList.add('act');
-      if (popBg) popBg.classList.add('act');
-
-      document.body.style.overflow = 'hidden';
-    }
-  }
+    // Always navigate to search results. 
+    // The results page will handle blurred profiles for guests.
+    navigate("/show-searched-result", {
+      state: { 
+        formData: formData,
+        isGuest: !userId 
+      },
+    });
+  };
   return (
     <div className="hero-main-wrapper">
       {/* BANNER SLIDER (BACKGROUND) */}

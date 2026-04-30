@@ -7,6 +7,33 @@ import * as XLSX from "xlsx";
 import { Modal } from "react-bootstrap";
 import { registerUserByAdmin, bulkRegisterUsersByAdmin } from "../../api/service/adminServices";
 
+const FormSection = ({ title, children, id, activeTab }) => (
+  <div className={`tab-pane fade ${activeTab === id ? "show active" : ""}`} id={id} role="tabpanel">
+    <div className="card border-0 p-4">
+      <h5 className="fw-bold mb-4 border-bottom pb-2">{title}</h5>
+      <div className="row g-3">{children}</div>
+    </div>
+  </div>
+);
+
+const InputField = ({ label, name, type = "text", options = null, col = "6", required = false, formData, handleChange }) => (
+  <div className={`col-md-${col}`}>
+    <label className="form-label small fw-bold text-muted">{label} {required && <span className="text-danger">*</span>}</label>
+    {options ? (
+      <select className="form-select" name={name} value={formData[name] || ""} onChange={handleChange}>
+        <option value="">Select {label}</option>
+        {options.map((opt, i) => (
+          <option key={i} value={opt}>{opt}</option>
+        ))}
+      </select>
+    ) : type === "textarea" ? (
+      <textarea className="form-control" name={name} value={formData[name] || ""} onChange={handleChange} rows="3" />
+    ) : (
+      <input type={type} className="form-control" name={name} value={formData[name] || ""} onChange={handleChange} required={required} />
+    )}
+  </div>
+);
+
 const AdminAddNewUser = () => {
   const navigate = useNavigate();
   const [updating, setUpdating] = useState(false);
@@ -333,46 +360,30 @@ const AdminAddNewUser = () => {
     }
     setUpdating(true);
 
+    // Sanitize data: remove ALL empty strings to avoid Mongoose validation errors
+    // for fields like age (Number), dateOfBirth (Date), or Enums (gender, etc.)
+    const sanitizedData = Object.entries(formData).reduce((acc, [key, value]) => {
+      if (value !== "") {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+
     try {
-      const response = await registerUserByAdmin(formData);
+      const response = await registerUserByAdmin(sanitizedData);
       if (response.data.success) {
         alert("User Profile Created Successfully!");
         navigate(-1);
       }
     } catch (err) {
       console.error("Creation error:", err);
-      alert(err.response?.data?.message || "Failed to create user");
+      alert(err.response?.data?.message || "Failed to create user (Internal Error)");
     } finally {
       setUpdating(false);
     }
   };
 
-  const FormSection = ({ title, children, id }) => (
-    <div className={`tab-pane fade ${activeTab === id ? "show active" : ""}`} id={id} role="tabpanel">
-      <div className="card border-0 p-4">
-        <h5 className="fw-bold mb-4 border-bottom pb-2">{title}</h5>
-        <div className="row g-3">{children}</div>
-      </div>
-    </div>
-  );
 
-  const InputField = ({ label, name, type = "text", options = null, col = "6", required = false }) => (
-    <div className={`col-md-${col}`}>
-      <label className="form-label small fw-bold text-muted">{label} {required && <span className="text-danger">*</span>}</label>
-      {options ? (
-        <select className="form-select" name={name} value={formData[name] || ""} onChange={handleChange}>
-          <option value="">Select {label}</option>
-          {options.map((opt, i) => (
-            <option key={i} value={opt}>{opt}</option>
-          ))}
-        </select>
-      ) : type === "textarea" ? (
-        <textarea className="form-control" name={name} value={formData[name] || ""} onChange={handleChange} rows="3" />
-      ) : (
-        <input type={type} className="form-control" name={name} value={formData[name] || ""} onChange={handleChange} required={required} />
-      )}
-    </div>
-  );
 
   return (
     <NewLayout>
@@ -421,23 +432,23 @@ const AdminAddNewUser = () => {
 
             <div className="tab-content" id="profileTabsContent">
               {/* AUTH & BASIC INFO */}
-              <FormSection title="Authentication & Basic Details" id="basic">
-                <InputField label="Full Name" name="userName" required />
-                <InputField label="Email Address" name="userEmail" type="email" required />
-                <InputField label="Mobile Number" name="userMobile" required />
-                <InputField label="Account Password" name="password" type="password" required />
-                <InputField label="About Me" name="aboutMe" type="textarea" col="12" />
-                <InputField label="Date of Birth" name="dateOfBirth" type="date" />
-                <InputField label="Gender" name="gender" options={["Male", "Female", "Other"]} />
-                <InputField label="Profile Created For" name="profileCreatedFor" options={["Self", "Son", "Daughter", "Brother", "Sister", "Friend"]} />
-                <InputField label="Marital Status" name="maritalStatus" options={["Never Married", "Divorced", "Awaiting Divorce", "Widow/Widower"]} />
-                <InputField label="Height" name="height" options={["4ft", "4ft 1in", "4ft 2in", "4ft 3in", "4ft 4in", "4ft 5in", "4ft 6in", "4ft 7in", "4ft 8in", "4ft 9in", "4ft 10in", "4ft 11in", "5ft", "5ft 1in", "5ft 2in", "5ft 3in", "5ft 4in", "5ft 5in", "5ft 6in", "5ft 7in", "5ft 8in", "5ft 9in", "5ft 10in", "5ft 11in", "6ft", "6ft 1in", "6ft 2in", "6ft 3in", "6ft 4in", "6ft 5in", "6ft 6in", "6ft 7in", "6ft 8in", "6ft 9in", "6ft 10in", "6ft 11in", "7ft"]} />
-                <InputField label="Weight" name="weight" />
-                <InputField label="Body Type" name="bodyType" options={["Average", "Slim", "Athletic", "Heavy"]} />
-                <InputField label="Complexion" name="complexion" options={["Fair", "Very Fair", "Wheatish", "Dark"]} />
-                <InputField label="Eating Habits" name="eatingHabits" options={["Vegetarian", "Non-Vegetarian", "Eggetarian"]} />
-                <InputField label="Mother Tongue" name="motherTongue" />
-                <InputField label="Caste" name="caste" />
+              <FormSection title="Authentication & Basic Details" id="basic" activeTab={activeTab}>
+                <InputField label="Full Name" name="userName" required formData={formData} handleChange={handleChange} />
+                <InputField label="Email Address" name="userEmail" type="email" required formData={formData} handleChange={handleChange} />
+                <InputField label="Mobile Number" name="userMobile" required formData={formData} handleChange={handleChange} />
+                <InputField label="Account Password" name="password" type="password" required formData={formData} handleChange={handleChange} />
+                <InputField label="About Me" name="aboutMe" type="textarea" col="12" formData={formData} handleChange={handleChange} />
+                <InputField label="Date of Birth" name="dateOfBirth" type="date" formData={formData} handleChange={handleChange} />
+                <InputField label="Gender" name="gender" options={["Male", "Female", "Other"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Profile Created For" name="profileCreatedFor" options={["Self", "Son", "Daughter", "Brother", "Sister", "Friend"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Marital Status" name="maritalStatus" options={["Never Married", "Divorced", "Awaiting Divorce", "Widow/Widower"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Height" name="height" options={["4ft", "4ft 1in", "4ft 2in", "4ft 3in", "4ft 4in", "4ft 5in", "4ft 6in", "4ft 7in", "4ft 8in", "4ft 9in", "4ft 10in", "4ft 11in", "5ft", "5ft 1in", "5ft 2in", "5ft 3in", "5ft 4in", "5ft 5in", "5ft 6in", "5ft 7in", "5ft 8in", "5ft 9in", "5ft 10in", "5ft 11in", "6ft", "6ft 1in", "6ft 2in", "6ft 3in", "6ft 4in", "6ft 5in", "6ft 6in", "6ft 7in", "6ft 8in", "6ft 9in", "6ft 10in", "6ft 11in", "7ft"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Weight" name="weight" formData={formData} handleChange={handleChange} />
+                <InputField label="Body Type" name="bodyType" options={["Average", "Slim", "Athletic", "Heavy"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Complexion" name="complexion" options={["Fair", "Very Fair", "Wheatish", "Dark"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Eating Habits" name="eatingHabits" options={["Vegetarian", "Non-Vegetarian", "Eggetarian"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Mother Tongue" name="motherTongue" formData={formData} handleChange={handleChange} />
+                <InputField label="Caste" name="caste" formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* GALLERY */}
@@ -456,62 +467,62 @@ const AdminAddNewUser = () => {
               </div>
 
               {/* FAMILY */}
-              <FormSection title="Family Background" id="family">
-                <InputField label="Father's Name" name="fathersName" />
-                <InputField label="Father's Occupation" name="fathersOccupation" />
-                <InputField label="Mother's Name" name="mothersName" />
-                <InputField label="Mother's Occupation" name="mothersOccupation" />
-                <InputField label="Family Value" name="familyValue" options={["Traditional", "Moderate", "Liberal"]} />
-                <InputField label="Family Type" name="familyType" options={["Joint", "Nuclear"]} />
-                <InputField label="Family Status" name="familyStatus" options={["Middle Class", "Upper Middle Class", "Rich", "Affluent"]} />
-                <InputField label="No. of Brothers" name="numberOfBrothers" type="number" />
-                <InputField label="No. of Sisters" name="numberOfSisters" type="number" />
+              <FormSection title="Family Background" id="family" activeTab={activeTab}>
+                <InputField label="Father's Name" name="fathersName" formData={formData} handleChange={handleChange} />
+                <InputField label="Father's Occupation" name="fathersOccupation" formData={formData} handleChange={handleChange} />
+                <InputField label="Mother's Name" name="mothersName" formData={formData} handleChange={handleChange} />
+                <InputField label="Mother's Occupation" name="mothersOccupation" formData={formData} handleChange={handleChange} />
+                <InputField label="Family Value" name="familyValue" options={["Traditional", "Moderate", "Liberal"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Family Type" name="familyType" options={["Joint", "Nuclear"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Family Status" name="familyStatus" options={["Middle Class", "Upper Middle Class", "Rich", "Affluent"]} formData={formData} handleChange={handleChange} />
+                <InputField label="No. of Brothers" name="numberOfBrothers" type="number" formData={formData} handleChange={handleChange} />
+                <InputField label="No. of Sisters" name="numberOfSisters" type="number" formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* RELIGIOUS */}
-              <FormSection title="Religious Information" id="religious">
-                <InputField label="Religion" name="religion" />
-                <InputField label="Denomination" name="denomination" />
-                <InputField label="Church Name" name="church" />
-                <InputField label="Pastors Name" name="pastorsName" />
-                <InputField label="Religious Detail" name="religiousDetail" type="textarea" col="12" />
+              <FormSection title="Religious Information" id="religious" activeTab={activeTab}>
+                <InputField label="Religion" name="religion" formData={formData} handleChange={handleChange} />
+                <InputField label="Denomination" name="denomination" formData={formData} handleChange={handleChange} />
+                <InputField label="Church Name" name="church" formData={formData} handleChange={handleChange} />
+                <InputField label="Pastors Name" name="pastorsName" formData={formData} handleChange={handleChange} />
+                <InputField label="Religious Detail" name="religiousDetail" type="textarea" col="12" formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* PROFESSIONAL */}
-              <FormSection title="Education & Career" id="professional">
-                <InputField label="Education" name="education" />
-                <InputField label="College / University" name="college" />
-                <InputField label="Employment Type" name="employmentType" options={["Government", "Private", "Business", "Self Employed", "Not Working"]} />
-                <InputField label="Occupation" name="occupation" />
-                <InputField label="Annual Income" name="annualIncome" />
-                <InputField label="Company Name" name="companyName" />
+              <FormSection title="Education & Career" id="professional" activeTab={activeTab}>
+                <InputField label="Education" name="education" formData={formData} handleChange={handleChange} />
+                <InputField label="College / University" name="college" formData={formData} handleChange={handleChange} />
+                <InputField label="Employment Type" name="employmentType" options={["Government", "Private", "Business", "Self Employed", "Not Working"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Occupation" name="occupation" formData={formData} handleChange={handleChange} />
+                <InputField label="Annual Income" name="annualIncome" formData={formData} handleChange={handleChange} />
+                <InputField label="Company Name" name="companyName" formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* CONTACT */}
-              <FormSection title="Contact Details" id="contact">
-                <InputField label="Current Address" name="currentAddress" type="textarea" col="12" />
-                <InputField label="City" name="city" />
-                <InputField label="State" name="state" />
-                <InputField label="Pincode" name="pincode" />
-                <InputField label="Citizen Of" name="citizenOf" />
-                <InputField label="Alternate Mobile" name="alternateMobile" />
+              <FormSection title="Contact Details" id="contact" activeTab={activeTab}>
+                <InputField label="Current Address" name="currentAddress" type="textarea" col="12" formData={formData} handleChange={handleChange} />
+                <InputField label="City" name="city" formData={formData} handleChange={handleChange} />
+                <InputField label="State" name="state" formData={formData} handleChange={handleChange} />
+                <InputField label="Pincode" name="pincode" formData={formData} handleChange={handleChange} />
+                <InputField label="Citizen Of" name="citizenOf" formData={formData} handleChange={handleChange} />
+                <InputField label="Alternate Mobile" name="alternateMobile" formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* LIFESTYLE */}
-              <FormSection title="Lifestyle & Interests" id="lifestyle">
-                <InputField label="Hobbies" name="hobbies" />
-                <InputField label="Smoking Habits" name="smokingHabits" options={["No", "Yes", "Occasionally"]} />
-                <InputField label="Drinking Habits" name="drinkingHabits" options={["No", "Yes", "Occasionally"]} />
+              <FormSection title="Lifestyle & Interests" id="lifestyle" activeTab={activeTab}>
+                <InputField label="Hobbies" name="hobbies" formData={formData} handleChange={handleChange} />
+                <InputField label="Smoking Habits" name="smokingHabits" options={["No", "Yes", "Occasionally"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Drinking Habits" name="drinkingHabits" options={["No", "Yes", "Occasionally"]} formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* PARTNER PREFERENCES */}
-              <FormSection title="Ideal Partner Preferences" id="partner">
-                <InputField label="Age From" name="partnerAgeFrom" type="number" />
-                <InputField label="Age To" name="partnerAgeTo" type="number" />
-                <InputField label="Desired Height" name="partnerHeight" />
-                <InputField label="Preferred Marital Status" name="partnerMaritalStatus" />
-                <InputField label="Preferred Caste" name="partnerCaste" />
-                <InputField label="Preferred City/State" name="partnerState" />
+              <FormSection title="Ideal Partner Preferences" id="partner" activeTab={activeTab}>
+                <InputField label="Age From" name="partnerAgeFrom" type="number" formData={formData} handleChange={handleChange} />
+                <InputField label="Age To" name="partnerAgeTo" type="number" formData={formData} handleChange={handleChange} />
+                <InputField label="Desired Height" name="partnerHeight" formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Marital Status" name="partnerMaritalStatus" formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Caste" name="partnerCaste" formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred City/State" name="partnerState" formData={formData} handleChange={handleChange} />
               </FormSection>
             </div>
 

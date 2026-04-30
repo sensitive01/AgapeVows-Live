@@ -14,18 +14,13 @@ const AGAPE_WATERMARK_CONFIG = [
   {
     overlay: {
       font_family: "Arial",
-      font_size: 80,
+      font_size: 45,
       font_weight: "bold",
       text: "AgapeVows",
-      stroke: "stroke"
     },
     color: "#ffffff",
-    border: "5px_solid_black"
-  },
-  {
-    flags: "layer_apply",
+    opacity: 40,
     gravity: "south_east",
-    opacity: 65,
     x: 20,
     y: 20
   }

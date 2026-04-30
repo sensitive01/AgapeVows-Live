@@ -33,18 +33,13 @@ const AGAPE_WATERMARK_CONFIG = [
   {
     overlay: {
       font_family: "Arial",
-      font_size: 80,
+      font_size: 45,
       font_weight: "bold",
       text: "AgapeVows",
-      stroke: "stroke"
     },
     color: "#ffffff",
-    border: "5px_solid_black"
-  },
-  {
-    flags: "layer_apply",
+    opacity: 40,
     gravity: "south_east",
-    opacity: 65,
     x: 20,
     y: 20
   }
@@ -1285,7 +1280,7 @@ const getMyActivePlanDetails = async (req, res) => {
     if (!userData.paymentDetails || userData.paymentDetails.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "No subscription found",
+        message: "No Subscription Found",
       });
     }
 
@@ -2098,6 +2093,7 @@ const getBlockedProfiles = async (req, res) => {
 
 const uploadIdProof = async (req, res) => {
   console.log("RECEIVED uploadIdProof request for userId:", req.params.userId);
+  console.log("REQ BODY:", req.body);
   try {
     const { userId } = req.params;
     const file = req.file;
@@ -2116,24 +2112,34 @@ const uploadIdProof = async (req, res) => {
       resource_type: "auto", // Handle PDF or Image
     });
 
+    const { idProofType, idProofNumber } = req.body;
+    
+    console.log("Extracted ID details:", { idProofType, idProofNumber });
+
     // Update user record
-    await userModel.findByIdAndUpdate(userId, {
-      idProofDocument: result.secure_url,
-      idVerificationStatus: "Uploaded",
-    });
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      {
+        idProofDocument: result.secure_url,
+        idProofType: idProofType || "",
+        idProofNumber: idProofNumber || "",
+        idVerificationStatus: "Uploaded",
+      },
+      { new: true }
+    );
+
+    console.log("Updated user status:", updatedUser?.idVerificationStatus);
+    console.log("Updated user ID details:", updatedUser?.idProofType, updatedUser?.idProofNumber);
 
     // Remove local file
-    if (fs.existsSync(file.path)) {
+    if (file && file.path && fs.existsSync(file.path)) {
       fs.unlinkSync(file.path);
     }
 
     res.status(200).json({
       success: true,
       message: "ID Proof uploaded successfully. It is now pending admin approval.",
-      data: {
-        idProofDocument: result.secure_url,
-        idVerificationStatus: "Uploaded",
-      },
+      data: updatedUser
     });
   } catch (err) {
     console.error("Error uploading ID proof:", err);

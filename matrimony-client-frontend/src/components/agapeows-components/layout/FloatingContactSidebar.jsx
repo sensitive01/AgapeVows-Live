@@ -155,7 +155,7 @@ const FloatingContactSidebar = () => {
         {/* Toggle Arrow - Always visible at the top */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`bg-[#d4af37] text-white p-2 shadow-lg hover:bg-[#d81b60] transition-all w-[50px] h-[45px] flex justify-center items-center border-b border-white/10 z-[10000] ${isOpen ? "rounded-tl-xl" : "rounded-l-xl animate-pulse"
+          className={`bg-purple-600 text-white p-2 shadow-lg hover:bg-purple-700 transition-all w-[50px] h-[45px] flex justify-center items-center border-b border-white/10 z-[10000] ${isOpen ? "rounded-tl-xl" : "rounded-l-xl animate-pulse"
             }`}
           title={isOpen ? "Collapse" : "Expand"}
         >
@@ -175,7 +175,7 @@ const FloatingContactSidebar = () => {
         >
           {/* Enquire Now Panel */}
           <div
-            className="bg-[#0071bc] text-white flex flex-col items-center justify-center py-6 px-1 hover:bg-[#005a96] transition-all w-[50px] min-h-[180px] border-b border-white/10 cursor-pointer group shine-effect"
+            className="bg-purple-600 text-white flex flex-col items-center justify-center py-6 px-1 hover:bg-purple-700 transition-all w-[50px] min-h-[180px] border-b border-white/10 cursor-pointer group shine-effect"
             onMouseEnter={() => setShowForm(true)}
           >
             <Mail size={22} className="mb-4 group-hover:scale-110 transition-transform" />
@@ -219,13 +219,19 @@ const FloatingContactSidebar = () => {
             href="tel:+9153125312"
             onMouseEnter={() => setHoveredBtn('phone')}
             onMouseLeave={() => setHoveredBtn(null)}
-            className={`bg-[#e91e63] text-white flex items-center justify-end p-3 transition-all duration-300 h-[60px] rounded-bl-xl overflow-hidden ${hoveredBtn === 'phone' ? 'w-[180px]' : 'w-[50px]'}`}
-          >
-            <span className={`transition-opacity duration-300 whitespace-nowrap font-bold text-lg pr-3 ${hoveredBtn === 'phone' ? 'opacity-100' : 'opacity-0'}`}>
-              Call Us Now
+            className={`bg-purple-600 text-white flex items-center justify-end p-3 transition-all duration-300 h-[60px] rounded-bl-xl overflow-hidden ${
+              hoveredBtn === 'phone' ? 'w-[180px]' : 'w-[50px]'
+            } hover:bg-purple-700`}
+            >
+            <span
+                className={`transition-opacity duration-300 whitespace-nowrap font-bold text-lg pr-3 ${
+                hoveredBtn === 'phone' ? 'opacity-100' : 'opacity-0'
+                }`}
+            >
+                Call Us Now
             </span>
             <Phone size={24} className="shrink-0" />
-          </a>
+        </a>
         </div>
       </div>
     </div>

@@ -70,11 +70,10 @@ const UserSettingsPage = () => {
                                 <div className="sett-select-drop">
                                   <select>
                                     <option value="All users">All users</option>
-                                    <option value="Premium">Premium</option>
-                                    <option value="Free">Free</option>
-                                    <option value="Free">
-                                      No-more visible(You can't visible, so no
-                                      one can view your profile)
+                                    <option value="Premium">Premium Users Only</option>
+                                    {/* <option value="Free">Free</option> */}
+                                    <option value="Free"> 
+                                      Hide from Everyone (No one can view your profile)
                                     </option>
                                   </select>
                                 </div>
@@ -94,8 +93,8 @@ const UserSettingsPage = () => {
                                 <div className="sett-select-drop">
                                   <select>
                                     <option value="All users">All users</option>
-                                    <option value="Premium">Premium</option>
-                                    <option value="Free">Free</option>
+                                    <option value="Premium">Premium Users Only</option>
+                                    {/* <option value="Free">Free</option> */}
                                   </select>
                                 </div>
                               </div>

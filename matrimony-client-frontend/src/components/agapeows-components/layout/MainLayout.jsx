@@ -322,7 +322,7 @@ const MainLayout = () => {
                   : "text-gray-800 hover:text-purple-600"
                   }`}
               >
-                ABOUT US
+                About Us
               </button>
 
               {isUserActive && (
@@ -339,7 +339,7 @@ const MainLayout = () => {
                       : "text-gray-800 group-hover:text-purple-600"
                       }`}
                   />
-                  <span>SEARCH</span>
+                  <span>Search</span>
                 </button>
               )}
 
@@ -361,7 +361,7 @@ const MainLayout = () => {
                     : "text-gray-800 hover:text-purple-600"
                     }`}
                 >
-                  SERVICES <ChevronDown className="w-4 h-4 ml-1" />
+                  Services <ChevronDown className="w-4 h-4 ml-1" />
                 </button>
                 <ExploreDropdown
                   isVisible={isExploreDropdownVisible}
@@ -371,12 +371,15 @@ const MainLayout = () => {
 
               <button
                 onClick={() => handleNavigate("/user/events-page")}
-                className="nav-highlight-events relative"
+                className={`px-4 py-1.5 rounded-full border transition-all duration-200 font-medium ${
+                location.pathname === "/user/events-page"
+                  ? "border-purple-600 text-purple-600"
+                  : "border-gray-300 text-gray-800 hover:border-purple-600 hover:text-purple-600"
+              }`}
               >
                 EVENTS
-                <span className="badge-hot">HOT</span>
               </button>
-
+ 
               <button
                 onClick={() => handleNavigate("/user/user-plan-selection")}
                 className={`transition-all duration-200 font-medium py-2 ${location.pathname === "/user/user-plan-selection"
@@ -384,7 +387,7 @@ const MainLayout = () => {
                   : "text-gray-800 hover:text-purple-600"
                   }`}
               >
-                PLANS
+                Plans
               </button>
 
               <div
@@ -399,7 +402,7 @@ const MainLayout = () => {
                     : "text-gray-800 hover:text-purple-600"
                     }`}
                 >
-                  HELP & SUPPORT <ChevronDown className="w-4 h-4 ml-1" />
+                  Help & Support <ChevronDown className="w-4 h-4 ml-1" />
                 </button>
 
                 <HelpDropdown isVisible={isHelpDropdownVisible} />
@@ -431,7 +434,7 @@ const MainLayout = () => {
                         {userName}
                       </div>
                       <div className="text-gray-500 text-sm flex items-center">
-                        MY PROFILE <ChevronDown className="w-3 h-3 ml-1" />
+                        My Profile <ChevronDown className="w-3 h-3 ml-1" />
                       </div>
                     </div>
                   </div>
@@ -446,13 +449,13 @@ const MainLayout = () => {
                     onClick={() => handleNavigate("/user/user-sign-up")}
                     className="text-gray-800 hover:text-purple-600 font-medium"
                   >
-                    REGISTER
+                    Register
                   </button>
                   <button
                     onClick={openLoginPopup}
                     className="bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors"
                   >
-                    LOGIN
+                    Login
                   </button>
                 </>
               )}
@@ -485,7 +488,7 @@ const MainLayout = () => {
                     : "text-gray-800 hover:text-purple-600 hover:bg-gray-50"
                     }`}
                 >
-                  ABOUT US
+                  About Us
                 </button>
 
                 {isUserActive && (
@@ -499,7 +502,7 @@ const MainLayout = () => {
                       : "text-gray-800 hover:text-purple-600 hover:bg-gray-50"
                       }`}
                   >
-                    SEARCH
+                    Search
                   </button>
                 )}
 
@@ -509,7 +512,7 @@ const MainLayout = () => {
                     onClick={() => setIsMobileServicesOpen(!isMobileServicesOpen)}
                     className="w-full flex justify-between items-center font-medium p-3 rounded-md text-gray-800 hover:text-purple-600 hover:bg-gray-50 transition-colors"
                   >
-                    <span>SERVICES</span>
+                    <span>Services</span>
                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isMobileServicesOpen ? "rotate-180" : ""}`} />
                   </button>
 
@@ -537,15 +540,12 @@ const MainLayout = () => {
                     handleNavigate("/user/events-page");
                     setIsMobileMenuOpen(false);
                   }}
-                  className={`w-full flex justify-between items-center font-medium p-3 rounded-md transition-colors ${location.pathname === "/user/events-page"
-                    ? "text-purple-600 bg-purple-50"
-                    : "text-gray-800 hover:text-purple-600 hover:bg-gray-50"
+                  className={`w-full flex justify-between items-center p-3 rounded-md transition-colors ${location.pathname === "/user/events-page"
+                    ? "bg-purple-50"
+                    : "hover:bg-gray-50"
                     }`}
                 >
-                  <span>EVENTS</span>
-                  <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold animate-pulse">
-                    HOT
-                  </span>
+                  <span className="nav-highlight-events">EVENTS</span>
                 </button>
 
                 <button
@@ -558,7 +558,7 @@ const MainLayout = () => {
                     : "text-gray-800 hover:text-purple-600 hover:bg-gray-50"
                     }`}
                 >
-                  PLANS
+                  Plans
                 </button>
 
                 {/* HELP & SUPPORT Dropdown Accordion */}
@@ -567,7 +567,7 @@ const MainLayout = () => {
                     onClick={() => setIsMobileHelpOpen(!isMobileHelpOpen)}
                     className="w-full flex justify-between items-center font-medium p-3 rounded-md text-gray-800 hover:text-purple-600 hover:bg-gray-50 transition-colors"
                   >
-                    <span>HELP & SUPPORT</span>
+                    <span>Help & Support</span>
                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isMobileHelpOpen ? "rotate-180" : ""}`} />
                   </button>
 
@@ -610,7 +610,7 @@ const MainLayout = () => {
                         <div className="font-semibold text-sm" style={{ color: '#d4af37' }}>
                           {userName}
                         </div>
-                        <div className="text-purple-600 font-medium text-xs">MY PROFILE</div>
+                        <div className="text-purple-600 font-medium text-xs">My Profile</div>
                       </div>
                     </div>
 
@@ -682,7 +682,7 @@ const MainLayout = () => {
                       }}
                       className="w-full text-center text-purple-600 border border-purple-600 font-medium py-2.5 rounded-lg hover:bg-purple-50 transition-colors"
                     >
-                      REGISTER
+                      Register
                     </button>
                     <button
                       onClick={(e) => {
@@ -691,7 +691,7 @@ const MainLayout = () => {
                       }}
                       className="w-full bg-purple-600 text-white py-2.5 rounded-lg font-medium hover:bg-purple-700 transition-colors shadow-sm"
                     >
-                      LOGIN
+                      Login
                     </button>
                   </div>
                 )}

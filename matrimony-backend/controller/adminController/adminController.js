@@ -768,6 +768,36 @@ const verifyIdProof = async (req, res) => {
   }
 };
 
+/* =========================
+   GET UNVERIFIED ID USERS
+========================== */
+const getUnverifiedIdProofUsers = async (req, res) => {
+  try {
+    const userData = await userModel
+      .find(
+        { idVerificationStatus: { $ne: "Verified" }, isDeleted: false },
+        {
+          userEmail: 1,
+          userMobile: 1,
+          userName: 1,
+          gender: 1,
+          profileImage: 1,
+          idProofDocument: 1,
+          idProofType: 1,
+          idProofNumber: 1,
+          idVerificationStatus: 1,
+          createdAt: 1,
+        }
+      )
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, data: userData });
+  } catch (err) {
+    console.error("Error fetching unverified ID proof users:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 const verifyMobile = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -839,7 +869,7 @@ const registerUser = async (req, res) => {
     console.error("Error in registerUser:", err);
     res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: err.message || "Internal server error",
     });
   }
 };
@@ -931,4 +961,5 @@ module.exports = {
   verifyMobile,
   registerUser,
   bulkRegisterUsers,
+  getUnverifiedIdProofUsers,
 };

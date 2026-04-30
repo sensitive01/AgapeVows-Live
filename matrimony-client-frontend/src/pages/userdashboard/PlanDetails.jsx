@@ -333,13 +333,13 @@ const PlanDetails = () => {
       <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com">
         <h2 className="db-tit">Plan details</h2>
         <div className="db-pro-stat">
-          <div className="text-center p-4">
-            <p className="text-danger">{error || "No active plan found"}</p>
+          <div className="text-center p-4 d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '280px' }}>
+            <h6 className="text-danger fw-bold mb-3">{error || "No Subscription Found"}</h6>
             <button
               className="btn btn-primary btn-sm"
               onClick={() => navigate("/user/user-plan-selection")}
             >
-              Upgrade plan
+              Upgrade Plan
             </button>
           </div>
         </div>

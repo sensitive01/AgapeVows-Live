@@ -369,18 +369,10 @@ export const clearChatHistory = async (chatId) => {
   }
 };
 
-export const uploadIdProof = async (userId, file) => {
-  const formData = new FormData();
-  formData.append("idProof", file);
-
+export const uploadIdProof = async (userId, formData) => {
   const response = await userInstance.post(
     `/upload-id-proof/${userId}`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
+    formData
   );
   return response;
 };

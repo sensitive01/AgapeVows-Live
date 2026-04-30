@@ -26,6 +26,7 @@ import AdminUserPlan from "./components/admin/AdminUserPlan";
 import AdminBlogs from "./components/admin/AdminBlogs";
 import AdminEnquiries from "./components/admin/AdminEnquiries";
 import AdminFeedbacks from "./components/admin/AdminFeedbacks";
+import AdminUnverifiedIdUsers from "./components/admin/AdminUnverifiedIdUsers";
 
 
 function App() {
@@ -240,6 +241,14 @@ function App() {
           element={
             <AdminLayout>
               <AdminFeedbacks />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/id-verification-requests"
+          element={
+            <AdminLayout>
+              <AdminUnverifiedIdUsers />
             </AdminLayout>
           }
         />

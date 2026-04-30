@@ -179,9 +179,9 @@ const Events = () => {
               #1 Wedding Website
             </span>
             <h1 className="text-4xl md:text-6xl font-black mb-6 flex flex-wrap justify-center gap-x-4">
-              <span className="text-[#17D1AC]">Events</span>
-              <span className="text-white">&</span>
-              <span className="text-[#56CCF2]">Gatherings</span>
+              <span className="text-[#17D1AC]">Events & Gatherings</span>
+              {/* <span className="text-white">&</span> */}
+              {/* <span className="text-[#56CCF2]">Gatherings</span> */}
             </h1>
             <p className="text-lg md:text-xl text-white max-w-2xl mx-auto font-medium opacity-90">
               Discover and join celebrations, gatherings, and special occasions near you.

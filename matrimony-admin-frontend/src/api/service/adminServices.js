@@ -180,6 +180,11 @@ export const verifyIdProof = async (userId, status) => {
   return await adminInstance.put(`/verify-id-proof/${userId}`, { status });
 };
 
+// Get Unverified ID Users
+export const getUnverifiedIdUsers = async () => {
+  return await adminInstance.get(`/get-unverified-id-users`);
+};
+
 // Verify Mobile Phone
 export const verifyMobile = async (userId, isVerified) => {
   return await adminInstance.put(`/verify-mobile/${userId}`, { isVerified });

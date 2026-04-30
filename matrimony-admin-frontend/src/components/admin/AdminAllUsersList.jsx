@@ -262,7 +262,7 @@ const AdminAllUsersList = () => {
             <div className="tit">
               <h3>Approved Users</h3>
               <p>All approved user profiles ({filteredUsers.length} users)</p>
-              <div className="dropdown">
+              {/* <div className="dropdown">
                 <button
                   type="button"
                   className="btn btn-outline-secondary"
@@ -289,7 +289,7 @@ const AdminAllUsersList = () => {
                       className="dropdown-item"
                       href="admin-settings.html#new-user-request"
                     >
-                      Approval setting
+                      Approval settings
                     </a>
                   </li>
                   <li>
@@ -301,7 +301,7 @@ const AdminAllUsersList = () => {
                     </a>
                   </li>
                 </ul>
-              </div>
+              </div> */}
             </div>
 
             {/* Search and Filter Controls */}
@@ -339,7 +339,7 @@ const AdminAllUsersList = () => {
                   <option value="Pending">Pending</option>
                 </select> */}
               </div>
-              <div className="col-md-2">
+              {/* <div className="col-md-2">
                 <button
                   className="btn btn-secondary w-100"
                   onClick={() => {
@@ -350,7 +350,7 @@ const AdminAllUsersList = () => {
                 >
                   Clear
                 </button>
-              </div>
+              </div> */}
             </div>
 
             {loading ? (
