@@ -8739,7 +8739,7 @@ span.mail::before {
 /*-------------------------------------------------------*/
 /* CONTACT
 /*-------------------------------------------------------*/
-.pg-cont..ban-inn {}
+.pg-cont.ban-inn {}
 
 .pg-cont.ab-sec2 ul li div h4 {
     font-size: 16px;
