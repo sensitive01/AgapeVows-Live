@@ -459,6 +459,7 @@
 import React, { useEffect, useState } from "react";
 import LayoutComponent from "../components/layouts/LayoutComponent";
 import Footer from "../components/Footer";
+import CommonBanner from "../components/CommonBanner";
 import { getUserProfile, reportIssue } from "../api/axiosService/userAuthService";
 
 const ReportIssue = () => {
@@ -569,26 +570,12 @@ const ReportIssue = () => {
         <LayoutComponent />
       </div>
 
-      <div className="pt-16">
-        <div className="str">
-          <div className="ban-inn ab-ban">
-            <div className="container">
-              <div className="row">
-                <div className="hom-ban">
-                  <div className="ban-tit">
-                    {/* <span>
-                      <i className="no1">#1</i> Support Center
-                    </span> */}
-                    <h1>Report an Issue</h1>
-                    <p>
-                      Facing a problem? Let us know and we’ll fix it quickly and efficiently.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="pt-20">
+
+        <CommonBanner 
+          title="Report an Issue" 
+          subtitle="Facing a problem? Let us know and we’ll fix it quickly and efficiently."
+        />
       </div>
 
       {/* Form Section */}

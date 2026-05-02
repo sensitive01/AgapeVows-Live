@@ -10,6 +10,7 @@ import {
 import { getAllEvents } from "../../api/axiosService/userSignUpService";
 import LayoutComponent from "../../components/layouts/LayoutComponent";
 import Footer from "../../components/Footer";
+import CommonBanner from "../../components/CommonBanner";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -171,34 +172,11 @@ const Events = () => {
         <LayoutComponent />
       </div>
 
-      <div className="pt-32">
-        {/* SECTION 1: HEADER BANNER (Exact Screenshot Color Match) */}
-       <section className="relative overflow-hidden bg-gradient-to-r from-[#6b6b6b] to-[#3f3f3f] py-20 shadow-lg z-20">
-          <div className="container mx-auto px-4 relative z-10 text-center">
-            <span className="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-[0.2em] text-[#ffc107] uppercase">
-              #1 Wedding Website
-            </span>
-            <h1 className="text-4xl md:text-6xl font-black mb-6 flex flex-wrap justify-center gap-x-4">
-              <span className="text-[#17D1AC]">Events & Gatherings</span>
-              {/* <span className="text-white">&</span> */}
-              {/* <span className="text-[#56CCF2]">Gatherings</span> */}
-            </h1>
-            <p className="text-lg md:text-xl text-white max-w-2xl mx-auto font-medium opacity-90">
-              Discover and join celebrations, gatherings, and special occasions near you.
-            </p>
-          </div>
-          {/* Subtle Background Pattern */}
-          <div className="absolute top-0 left-0 w-full h-full opacity-[0.05] pointer-events-none">
-            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="1" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#grid)" />
-            </svg>
-          </div>
-        </section>
+      <div className="pt-20">
+        <CommonBanner 
+          title="Events & Gatherings" 
+          subtitle="Discover and join celebrations, gatherings, and special occasions near you."
+        />
 
         {/* SECTION 2: SEARCH & CONTENT BLOCK */}
         <section className="bg-gray-50 flex-grow pb-12 px-4 sm:px-6 lg:px-8">

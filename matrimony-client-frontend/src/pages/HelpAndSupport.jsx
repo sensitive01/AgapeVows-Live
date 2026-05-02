@@ -1,34 +1,20 @@
 import React from 'react';
 import LayoutComponent from "../components/layouts/LayoutComponent";
 import Footer from "../components/Footer";
+import CommonBanner from "../components/CommonBanner";
 
 const HelpAndSupport = () => {
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-gray-50">
             <div className="fixed top-0 left-0 right-0 z-50">
                 <LayoutComponent />
             </div>
 
-            <div className="pt-16">
-                <div className="str">
-                    <div className="ban-inn ab-ban">
-                        <div className="container">
-                            <div className="row">
-                                <div className="hom-ban">
-                                    <div className="ban-tit">
-                                        <span>
-                                            <i className="no1">#1</i> Wedding Website
-                                        </span>
-                                        <h1>Help & Support</h1>
-                                        <p>
-                                            We are here to help you with any questions or issues.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div className="pt-20">
+                <CommonBanner 
+                    title="Help & Support" 
+                    subtitle="We are here to help you with any questions or issues."
+                />
 
                 {/* Content Area */}
                 <section>

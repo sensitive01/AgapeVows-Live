@@ -7,22 +7,22 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name }) => {
   const dropdownRef = useRef(null);
 
   // Filter options based on search term
-  const filteredOptions = options.filter((option) => {
-    const optionLabel = typeof option === "string" ? option : option.label;
+  const filteredOptions = (options || []).filter((option) => {
+    const optionLabel = typeof option === "string" ? option : (option?.label || "");
     return optionLabel.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
   // Get display value
   const getDisplayValue = () => {
-    if (!value) return "";
+    if (!value || !options) return "";
     const selected = options.find((opt) => {
-      const optValue = typeof opt === "string" ? opt : opt.value;
+      const optValue = typeof opt === "string" ? opt : opt?.value;
       return optValue === value;
     });
     return selected
       ? typeof selected === "string"
         ? selected
-        : selected.label
+        : (selected?.label || "")
       : "";
   };
 
