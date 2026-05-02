@@ -598,8 +598,8 @@ const CheckboxGroup = ({ label, name, options, selectedValues, onChange }) => {
 // Main UserProfileEditPage Component
 const UserProfileEditPage = () => {
   const { userId: rawUserId } = useParams();
-  const userId = (rawUserId && typeof rawUserId === "string" && rawUserId.length > 24) 
-    ? rawUserId.substring(0, 24) 
+  const userId = (rawUserId && typeof rawUserId === "string" && rawUserId.length > 24)
+    ? rawUserId.substring(0, 24)
     : rawUserId;
   const navigate = useNavigate();
 
@@ -734,10 +734,10 @@ const UserProfileEditPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showVisibilityOptions, setShowVisibilityOptions] = useState(false);
- const [videoFile, setVideoFile] = useState(null);
-const [videoPreview, setVideoPreview] = useState(""); // local preview or existing video URL
-const [deleteVideoFlag, setDeleteVideoFlag] = useState(false);
-const [existingVideoUrl, setExistingVideoUrl] = useState(""); // video stored in DB
+  const [videoFile, setVideoFile] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(""); // local preview or existing video URL
+  const [deleteVideoFlag, setDeleteVideoFlag] = useState(false);
+  const [existingVideoUrl, setExistingVideoUrl] = useState(""); // video stored in DB
 
   const [idProofFile, setIdProofFile] = useState(null);
   const [idProofPreview, setIdProofPreview] = useState(null);
@@ -778,8 +778,8 @@ const [existingVideoUrl, setExistingVideoUrl] = useState(""); // video stored in
   const cityOptions =
     selectedCountryCode && selectedStateCode
       ? City.getCitiesOfState(selectedCountryCode, selectedStateCode).map(
-          (city) => city.name,
-        )
+        (city) => city.name,
+      )
       : [];
 
   // Handle country change
@@ -814,7 +814,7 @@ const [existingVideoUrl, setExistingVideoUrl] = useState(""); // video stored in
   // Handle city change - Auto-populate state and country
   const handleCityChange = (e) => {
     const cityName = e.target.value;
-    
+
     if (!cityName) {
       setFormData((prev) => ({
         ...prev,
@@ -834,12 +834,12 @@ const [existingVideoUrl, setExistingVideoUrl] = useState(""); // video stored in
     for (const country of allCountries) {
       if (cityFound) break;
       const states = State.getStatesOfCountry(country.isoCode) || [];
-      
+
       for (const state of states) {
         if (cityFound) break;
         const cities = City.getCitiesOfState(country.isoCode, state.isoCode) || [];
         const city = cities.find((c) => c.name.toLowerCase() === cityName.toLowerCase());
-        
+
         if (city) {
           foundCountryCode = country.isoCode;
           foundStateCode = state.isoCode;
@@ -986,50 +986,50 @@ const [existingVideoUrl, setExistingVideoUrl] = useState(""); // video stored in
           setFormData(loadedData);
 
           // ===========================
-        // Set profile image preview
-        // ===========================
-        if (userData.profileImage) {
-          setProfileImagePreview(userData.profileImage);
-        }
+          // Set profile image preview
+          // ===========================
+          if (userData.profileImage) {
+            setProfileImagePreview(userData.profileImage);
+          }
 
-        // ===========================
-        // Set additional images
-        // ===========================
-        if (userData.additionalImages && userData.additionalImages.length > 0) {
-          const existingImages = userData.additionalImages.map((url) => ({
-            url,
-            isExisting: true,
-          }));
-          setAdditionalImagePreviews(existingImages);
-          setExistingAdditionalImages(userData.additionalImages);
-        }
+          // ===========================
+          // Set additional images
+          // ===========================
+          if (userData.additionalImages && userData.additionalImages.length > 0) {
+            const existingImages = userData.additionalImages.map((url) => ({
+              url,
+              isExisting: true,
+            }));
+            setAdditionalImagePreviews(existingImages);
+            setExistingAdditionalImages(userData.additionalImages);
+          }
 
-        // ===========================
-        // Set self-introduction video
-        // ===========================
-        if (userData.selfIntroductionVideo) {
-          setExistingVideoUrl(userData.selfIntroductionVideo);
-          setVideoPreview(userData.selfIntroductionVideo);
-        }
+          // ===========================
+          // Set self-introduction video
+          // ===========================
+          if (userData.selfIntroductionVideo) {
+            setExistingVideoUrl(userData.selfIntroductionVideo);
+            setVideoPreview(userData.selfIntroductionVideo);
+          }
 
-        if (userData.idVerificationStatus) {
-          setIdVerificationStatus(userData.idVerificationStatus);
+          if (userData.idVerificationStatus) {
+            setIdVerificationStatus(userData.idVerificationStatus);
+          }
+          if (userData.idProofDocument) {
+            setIdProofDocument(userData.idProofDocument);
+            setIdProofPreview(userData.idProofDocument);
+          }
         }
-        if (userData.idProofDocument) {
-          setIdProofDocument(userData.idProofDocument);
-          setIdProofPreview(userData.idProofDocument);
-        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        alert("Error loading user data. Please try again.");
       }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      alert("Error loading user data. Please try again.");
-    }
-  };
+    };
 
-  if (userId) {
-    fetchUserData();
-  }
-}, [userId]);
+    if (userId) {
+      fetchUserData();
+    }
+  }, [userId]);
 
   // Initialize country and state codes when formData changes
   useEffect(() => {
@@ -1170,331 +1170,331 @@ const [existingVideoUrl, setExistingVideoUrl] = useState(""); // video stored in
   };
 
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  try {
-    // ========================
-    // Step 1: Delete removed additional images from Cloudinary
-    // ========================
-    if (deletedAdditionalImages.length > 0) {
-      try {
-        const deleteResponse = await deleteAdditionalImages(userId, deletedAdditionalImages);
-        if (deleteResponse.status === 200) {
-          console.log("Deleted images successfully from Cloudinary");
-          setDeletedAdditionalImages([]);
+    try {
+      // ========================
+      // Step 1: Delete removed additional images from Cloudinary
+      // ========================
+      if (deletedAdditionalImages.length > 0) {
+        try {
+          const deleteResponse = await deleteAdditionalImages(userId, deletedAdditionalImages);
+          if (deleteResponse.status === 200) {
+            console.log("Deleted images successfully from Cloudinary");
+            setDeletedAdditionalImages([]);
+          }
+        } catch (deleteError) {
+          console.error("Error deleting images from Cloudinary:", deleteError);
+          alert("Error deleting some images. Continuing with profile update...");
         }
-      } catch (deleteError) {
-        console.error("Error deleting images from Cloudinary:", deleteError);
-        alert("Error deleting some images. Continuing with profile update...");
       }
-    }
 
-    // ========================
-    // Step 2: Build FormData
-    // ========================
-    const submitFormData = new FormData();
+      // ========================
+      // Step 2: Build FormData
+      // ========================
+      const submitFormData = new FormData();
 
-    // Append all form fields
-    Object.keys(formData).forEach((key) => {
-      if (key === "hobbies") {
-        if (Array.isArray(formData[key]) && formData[key].length > 0) {
-          formData[key].forEach((hobby, index) => {
-            submitFormData.append(`hobbies[${index}]`, hobby);
-          });
+      // Append all form fields
+      Object.keys(formData).forEach((key) => {
+        if (key === "hobbies") {
+          if (Array.isArray(formData[key]) && formData[key].length > 0) {
+            formData[key].forEach((hobby, index) => {
+              submitFormData.append(`hobbies[${index}]`, hobby);
+            });
+          } else {
+            submitFormData.append("hobbies", "");
+          }
         } else {
-          submitFormData.append("hobbies", "");
+          submitFormData.append(key, formData[key] || "");
         }
-      } else {
-        submitFormData.append(key, formData[key] || "");
+      });
+
+      // ========================
+      // Step 3: Handle profile image
+      // ========================
+      if (profileImageFile) {
+        submitFormData.append("profileImage", profileImageFile);
       }
-    });
+      if (deleteProfileImageFlag) {
+        submitFormData.append("deleteProfileImage", "true");
+      }
 
-    // ========================
-    // Step 3: Handle profile image
-    // ========================
-    if (profileImageFile) {
-      submitFormData.append("profileImage", profileImageFile);
-    }
-    if (deleteProfileImageFlag) {
-      submitFormData.append("deleteProfileImage", "true");
-    }
+      // ========================
+      // Step 4: Handle additional images
+      // ========================
+      if (additionalImageFiles.length > 0) {
+        additionalImageFiles.forEach((file) => {
+          submitFormData.append("additionalImages", file);
+        });
+      }
 
-    // ========================
-    // Step 4: Handle additional images
-    // ========================
-    if (additionalImageFiles.length > 0) {
-      additionalImageFiles.forEach((file) => {
-        submitFormData.append("additionalImages", file);
-      });
-    }
+      // Include existing additional images
+      if (existingAdditionalImages.length > 0) {
+        existingAdditionalImages.forEach((url, index) => {
+          submitFormData.append(`existingAdditionalImages[${index}]`, url);
+        });
+      }
 
-    // Include existing additional images
-    if (existingAdditionalImages.length > 0) {
-      existingAdditionalImages.forEach((url, index) => {
-        submitFormData.append(`existingAdditionalImages[${index}]`, url);
-      });
-    }
+      // ========================
+      // Step 5: Handle self-introduction video
+      // ========================
+      if (videoFile) {
+        submitFormData.append("selfIntroductionVideo", videoFile);
+      }
+      if (deleteVideoFlag) {
+        submitFormData.append("deleteSelfIntroductionVideo", "true");
+      }
 
-    // ========================
-    // Step 5: Handle self-introduction video
-    // ========================
-    if (videoFile) {
-      submitFormData.append("selfIntroductionVideo", videoFile);
-    }
-    if (deleteVideoFlag) {
-      submitFormData.append("deleteSelfIntroductionVideo", "true");
-    }
+      // ========================
+      // Step 6: Send FormData to backend
+      // ========================
+      console.log("Submitting form data...");
+      const response = await savePersonalInfo(submitFormData, userId);
+      console.log("Response:", response);
 
-    // ========================
-    // Step 6: Send FormData to backend
-    // ========================
-    console.log("Submitting form data...");
-    const response = await savePersonalInfo(submitFormData, userId);
-    console.log("Response:", response);
+      if (response.status === 200 || response.data?.success) {
+        alert("Profile updated successfully!");
 
-    if (response.status === 200 || response.data?.success) {
-      alert("Profile updated successfully!");
+        // Clear video file state and update preview
+        setVideoFile(null);
+        setVideoPreview(response.data.data.selfIntroductionVideo || null);
 
-      // Clear video file state and update preview
-      setVideoFile(null);
-      setVideoPreview(response.data.data.selfIntroductionVideo || null);
+        // Reset flags and deleted images list
+        setHasUnsavedChanges(false);
+        setDeleteProfileImageFlag(false);
+        setDeletedAdditionalImages([]);
 
-      // Reset flags and deleted images list
-      setHasUnsavedChanges(false);
-      setDeleteProfileImageFlag(false);
-      setDeletedAdditionalImages([]);
-
-      // Optional: navigate after update
-      setTimeout(() => {
-        navigate(`/user/user-profile-page`);
-      }, 500);
-    } else {
-      const errorMessage = response.data?.message || "Error updating profile. Please try again.";
+        // Optional: navigate after update
+        setTimeout(() => {
+          navigate(`/user/user-profile-page`);
+        }, 500);
+      } else {
+        const errorMessage = response.data?.message || "Error updating profile. Please try again.";
+        alert(errorMessage);
+        console.error("Update failed:", response);
+      }
+    } catch (error) {
+      console.error("Error submitting profile:", error);
+      const errorMessage =
+        error.response?.data?.message || error.message || "Error updating profile. Please try again.";
       alert(errorMessage);
-      console.error("Update failed:", response);
-    }
-  } catch (error) {
-    console.error("Error submitting profile:", error);
-    const errorMessage =
-      error.response?.data?.message || error.message || "Error updating profile. Please try again.";
-    alert(errorMessage);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
-// ========================
-// Warn user about unsaved changes
-// ========================
-useEffect(() => {
-  const handleBeforeUnload = (e) => {
-    if (hasUnsavedChanges) {
-      e.preventDefault();
-      e.returnValue = "";
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  window.addEventListener("beforeunload", handleBeforeUnload);
-  return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-}, [hasUnsavedChanges]);
-
-// ========================
-// Video handlers
-// ========================
-const handleVideoChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    setHasUnsavedChanges(true);
-    setVideoFile(file);
-    setDeleteVideoFlag(false); // reset delete flag
-    setVideoPreview(URL.createObjectURL(file));
-  }
-};
-
-const handleDeleteVideo = () => {
-  setHasUnsavedChanges(true);
-  setVideoFile(null);
-  setVideoPreview(null);
-  setDeleteVideoFlag(true); // mark for deletion
-};
-
-const handleIdProofChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    setIdProofFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setIdProofPreview(reader.result);
+  // ========================
+  // Warn user about unsaved changes
+  // ========================
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
     };
-    reader.readAsDataURL(file);
-  }
-};
 
-const handleIdProofUpload = async () => {
-  if (!idProofFile) return;
-  setIsUploadingId(true);
-  try {
-    const formData = new FormData();
-    formData.append("idProof", idProofFile);
-    
-    // Using manual axios for direct control
-    const baseUrl = import.meta.env.VITE_BASE_ROUTE;
-    const url = `${baseUrl}/test-upload-id-proof/${userId}`;
-    console.log("HITTING TEST URL:", url);
-    
-    const response = await axios.post(url, formData, {
-      headers: { "Content-Type": "multipart/form-data" }
-    });
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [hasUnsavedChanges]);
 
-    if (response.status === 200) {
-      alert("ID Proof uploaded successfully (via test route). It is now pending admin approval.");
-      setIdVerificationStatus("Uploaded");
-      setIdProofFile(null);
+  // ========================
+  // Video handlers
+  // ========================
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setHasUnsavedChanges(true);
+      setVideoFile(file);
+      setDeleteVideoFlag(false); // reset delete flag
+      setVideoPreview(URL.createObjectURL(file));
     }
-  } catch (error) {
-    console.error("Error uploading ID proof (test route):", error);
-    alert("Error uploading ID proof. Please try again.");
-  } finally {
-    setIsUploadingId(false);
-  }
-};
+  };
 
-// const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setIsSubmitting(true);  
+  const handleDeleteVideo = () => {
+    setHasUnsavedChanges(true);
+    setVideoFile(null);
+    setVideoPreview(null);
+    setDeleteVideoFlag(true); // mark for deletion
+  };
 
-//     try {
-//       // Step 1: Delete additional images from Cloudinary if any were removed
-//       if (deletedAdditionalImages.length > 0) {
-//         console.log("Deleting images from Cloudinary:", deletedAdditionalImages);
-//         try {
-//           const deleteResponse = await deleteAdditionalImages(
-//             userId,
-//             deletedAdditionalImages,
-//           );
-//           if (deleteResponse.status === 200) {
-//             console.log("Images deleted successfully from Cloudinary");
-//             setDeletedAdditionalImages([]); // Clear the deleted images list
-//           }
-//         } catch (deleteError) {
-//           console.error("Error deleting images from Cloudinary:", deleteError);
-//           alert("Error deleting some images. Continuing with profile update...");
-//         }
-//       }
+  const handleIdProofChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setIdProofFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setIdProofPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-//       // Step 2: Update the profile with remaining data
-//       const submitFormData = new FormData();
+  const handleIdProofUpload = async () => {
+    if (!idProofFile) return;
+    setIsUploadingId(true);
+    try {
+      const formData = new FormData();
+      formData.append("idProof", idProofFile);
 
-//       // Append all form fields
-//       Object.keys(formData).forEach((key) => {
-//         if (key === "hobbies") {
-//           if (Array.isArray(formData[key]) && formData[key].length > 0) {
-//             formData[key].forEach((hobby, index) => {
-//               submitFormData.append(`hobbies[${index}]`, hobby);
-//             });
-//           } else {
-//             submitFormData.append("hobbies", "");
-//           }
-//         } else {
-//           const value = formData[key];
-//           submitFormData.append(key, value || "");
-//         }
-//       });
+      // Using manual axios for direct control
+      const baseUrl = import.meta.env.VITE_BASE_ROUTE;
+      const url = `${baseUrl}/test-upload-id-proof/${userId}`;
+      console.log("HITTING TEST URL:", url);
 
-//       // Append profile image if changed
-//       if (profileImageFile) {
-//         submitFormData.append("profileImage", profileImageFile);
-//       }
+      const response = await axios.post(url, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
 
-//       // Append delete profile image flag if needed
-//       if (deleteProfileImageFlag) {
-//         submitFormData.append("deleteProfileImage", "true");
-//       }
+      if (response.status === 200) {
+        alert("ID Proof uploaded successfully (via test route). It is now pending admin approval.");
+        setIdVerificationStatus("Uploaded");
+        setIdProofFile(null);
+      }
+    } catch (error) {
+      console.error("Error uploading ID proof (test route):", error);
+      alert("Error uploading ID proof. Please try again.");
+    } finally {
+      setIsUploadingId(false);
+    }
+  };
 
-//       // Append new additional images
-//       if (additionalImageFiles.length > 0) {
-//         additionalImageFiles.forEach((file) => {
-//           submitFormData.append("additionalImages", file);
-//         });
-//       }
-      
+  // const handleSubmit = async (e) => {
+  //     e.preventDefault();
+  //     setIsSubmitting(true);  
 
-//       // Append video if new
-// if (videoFile) {
-//   submitFormData.append("selfIntroductionVideo", videoFile);
-// }
+  //     try {
+  //       // Step 1: Delete additional images from Cloudinary if any were removed
+  //       if (deletedAdditionalImages.length > 0) {
+  //         console.log("Deleting images from Cloudinary:", deletedAdditionalImages);
+  //         try {
+  //           const deleteResponse = await deleteAdditionalImages(
+  //             userId,
+  //             deletedAdditionalImages,
+  //           );
+  //           if (deleteResponse.status === 200) {
+  //             console.log("Images deleted successfully from Cloudinary");
+  //             setDeletedAdditionalImages([]); // Clear the deleted images list
+  //           }
+  //         } catch (deleteError) {
+  //           console.error("Error deleting images from Cloudinary:", deleteError);
+  //           alert("Error deleting some images. Continuing with profile update...");
+  //         }
+  //       }
 
-// // Append delete flag if video removed
-// if (deleteVideoFlag) {
-//   submitFormData.append("deleteSelfIntroductionVideo", "true");
-// }
+  //       // Step 2: Update the profile with remaining data
+  //       const submitFormData = new FormData();
+
+  //       // Append all form fields
+  //       Object.keys(formData).forEach((key) => {
+  //         if (key === "hobbies") {
+  //           if (Array.isArray(formData[key]) && formData[key].length > 0) {
+  //             formData[key].forEach((hobby, index) => {
+  //               submitFormData.append(`hobbies[${index}]`, hobby);
+  //             });
+  //           } else {
+  //             submitFormData.append("hobbies", "");
+  //           }
+  //         } else {
+  //           const value = formData[key];
+  //           submitFormData.append(key, value || "");
+  //         }
+  //       });
+
+  //       // Append profile image if changed
+  //       if (profileImageFile) {
+  //         submitFormData.append("profileImage", profileImageFile);
+  //       }
+
+  //       // Append delete profile image flag if needed
+  //       if (deleteProfileImageFlag) {
+  //         submitFormData.append("deleteProfileImage", "true");
+  //       }
+
+  //       // Append new additional images
+  //       if (additionalImageFiles.length > 0) {
+  //         additionalImageFiles.forEach((file) => {
+  //           submitFormData.append("additionalImages", file);
+  //         });
+  //       }
+
+
+  //       // Append video if new
+  // if (videoFile) {
+  //   submitFormData.append("selfIntroductionVideo", videoFile);
+  // }
+
+  // // Append delete flag if video removed
+  // if (deleteVideoFlag) {
+  //   submitFormData.append("deleteSelfIntroductionVideo", "true");
+  // }
 
 
 
-//       // Append existing additional images that weren't removed
-//       if (existingAdditionalImages.length > 0) {
-//         existingAdditionalImages.forEach((url, index) => {
-//           submitFormData.append(`existingAdditionalImages[${index}]`, url);
-//         });
-//       }
+  //       // Append existing additional images that weren't removed
+  //       if (existingAdditionalImages.length > 0) {
+  //         existingAdditionalImages.forEach((url, index) => {
+  //           submitFormData.append(`existingAdditionalImages[${index}]`, url);
+  //         });
+  //       }
 
-//       console.log("Submitting form data...");
-//       console.log(
-//         "Form data to submit:",
-//         Object.fromEntries(submitFormData.entries()),
-//       );
+  //       console.log("Submitting form data...");
+  //       console.log(
+  //         "Form data to submit:",
+  //         Object.fromEntries(submitFormData.entries()),
+  //       );
 
-//       const response = await savePersonalInfo(submitFormData, userId);
+  //       const response = await savePersonalInfo(submitFormData, userId);
 
-//       console.log("Response:", response);
+  //       console.log("Response:", response);
 
-//       if (response.status === 200 || response.data?.success) {
-//         setHasUnsavedChanges(false);
-//         setDeleteProfileImageFlag(false);
-//         setDeletedAdditionalImages([]); // Clear the deleted images list
-//         alert("Profile updated successfully!");
+  //       if (response.status === 200 || response.data?.success) {
+  //         setHasUnsavedChanges(false);
+  //         setDeleteProfileImageFlag(false);
+  //         setDeletedAdditionalImages([]); // Clear the deleted images list
+  //         alert("Profile updated successfully!");
 
-//         // Small delay before navigation to ensure alert is seen
-//         setTimeout(() => {
-//           navigate(`/user/user-profile-page`);
-//         }, 500);
-//       } else {
-//         const errorMessage =
-//           response.data?.message || "Error updating profile. Please try again.";
-//         alert(errorMessage);
-//         console.error("Update failed:", response);
-//       }
-//     } catch (error) {
-//       console.error("Error details:", error);
-//       const errorMessage =
-//         error.response?.data?.message ||
-//         error.message ||
-//         "Error updating profile. Please try again.";
-//       alert(errorMessage);
+  //         // Small delay before navigation to ensure alert is seen
+  //         setTimeout(() => {
+  //           navigate(`/user/user-profile-page`);
+  //         }, 500);
+  //       } else {
+  //         const errorMessage =
+  //           response.data?.message || "Error updating profile. Please try again.";
+  //         alert(errorMessage);
+  //         console.error("Update failed:", response);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error details:", error);
+  //       const errorMessage =
+  //         error.response?.data?.message ||
+  //         error.message ||
+  //         "Error updating profile. Please try again.";
+  //       alert(errorMessage);
 
-//       if (error.response) {
-//         console.error("Response error:", error.response.data);
-//         console.error("Response status:", error.response.status);
-//       }
-//     } finally {
-//       setIsSubmitting(false);
-//     }
-//   };
+  //       if (error.response) {
+  //         console.error("Response error:", error.response.data);
+  //         console.error("Response status:", error.response.status);
+  //       }
+  //     } finally {
+  //       setIsSubmitting(false);
+  //     }
+  //   };
 
-//   // Warn user about unsaved changes
-//   useEffect(() => {
-//     const handleBeforeUnload = (e) => {
-//       if (hasUnsavedChanges) {
-//         e.preventDefault();
-//         e.returnValue = "";
-//       }
-//     };
+  //   // Warn user about unsaved changes
+  //   useEffect(() => {
+  //     const handleBeforeUnload = (e) => {
+  //       if (hasUnsavedChanges) {
+  //         e.preventDefault();
+  //         e.returnValue = "";
+  //       }
+  //     };
 
-//     window.addEventListener("beforeunload", handleBeforeUnload);
-//     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-//   }, [hasUnsavedChanges]);
+  //     window.addEventListener("beforeunload", handleBeforeUnload);
+  //     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   }, [hasUnsavedChanges]);
 
 
 
@@ -1511,7 +1511,7 @@ const handleIdProofUpload = async () => {
         <LayoutComponent />
       </div>
 
-      <div style={{ paddingTop: "115px", paddingBottom: "40px" }}>
+      <div style={{ paddingTop: "160px", paddingBottom: "40px" }}>
         <div style={{ background: "#f5f5f5", minHeight: "100vh" }}>
           <div
             className="container-fluid"
@@ -1848,7 +1848,7 @@ const handleIdProofUpload = async () => {
                               </button>
                             )}
                           </div>
-                          
+
                           {idVerificationStatus === "Rejected" && (
                             <p style={{ fontSize: "13px", color: "#dc2626", fontWeight: "500", marginTop: "8px" }}>
                               <i className="fa fa-exclamation-circle" style={{ marginRight: "6px" }}></i>
@@ -2065,7 +2065,7 @@ const handleIdProofUpload = async () => {
                     )}
                   </div>
 
-               
+
                   {/* Basic Details Section */}
                   <FormSection title="Basic Details">
                     <div
@@ -2261,24 +2261,24 @@ const handleIdProofUpload = async () => {
 
                       {(formData.maritalStatus === "Divorced" ||
                         formData.maritalStatus === "Awaiting Divorce") && (
-                        <>
-                          <FormInput
-                            label="Divorced Month & Year"
-                            name="divorcedMonthYear"
-                            value={formData.divorcedMonthYear}
-                            onChange={handleInputChange}
-                          />
-                          <div style={{ gridColumn: "1 / -1" }}>
+                          <>
                             <FormInput
-                              label="Reason for Divorce"
-                              name="reasonForDivorce"
-                              type="textarea"
-                              value={formData.reasonForDivorce}
+                              label="Divorced Month & Year"
+                              name="divorcedMonthYear"
+                              value={formData.divorcedMonthYear}
                               onChange={handleInputChange}
                             />
-                          </div>
-                        </>
-                      )}
+                            <div style={{ gridColumn: "1 / -1" }}>
+                              <FormInput
+                                label="Reason for Divorce"
+                                name="reasonForDivorce"
+                                type="textarea"
+                                value={formData.reasonForDivorce}
+                                onChange={handleInputChange}
+                              />
+                            </div>
+                          </>
+                        )}
 
                       {formData.maritalStatus &&
                         formData.maritalStatus !== "Never Married" && (
