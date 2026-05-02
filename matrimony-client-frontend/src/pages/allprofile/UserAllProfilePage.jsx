@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import Footer from "../../components/Footer";
 import CopyRights from "../../components/CopyRights";
 import LayoutComponent from "../../components/layouts/LayoutComponent";
@@ -13,6 +14,7 @@ import ShowInterest from "./ShowInterest";
 import MembershipBadge from "../../components/common/MembershipBadge";
 
 const UserAllProfilePage = () => {
+  const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState({
@@ -29,6 +31,12 @@ const UserAllProfilePage = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [activeChats, setActiveChats] = useState([]);
   const [currentUserPlan, setCurrentUserPlan] = useState(null);
+  const [showUpgradePopup, setShowUpgradePopup] = useState(false);
+
+  const isPaidUser = useMemo(() => {
+    if (!currentUserPlan) return false;
+    return currentUserPlan.subscriptionStatus?.toLowerCase() === "active";
+  }, [currentUserPlan]);
 
   // Fetch current user's active plan
   useEffect(() => {
@@ -537,9 +545,18 @@ const UserAllProfilePage = () => {
                               <a
                                 href="#!"
                                 className="cta cta-sendint"
-                                data-bs-toggle="modal"
-                                data-bs-target="#sendInter"
-                                onClick={() => setSelectedUser(user)}
+                                onClick={(e) => {
+                                  if (!isPaidUser) {
+                                    e.preventDefault();
+                                    setShowUpgradePopup(true);
+                                    return;
+                                  }
+                                  setSelectedUser(user);
+                                }}
+                                {...(isPaidUser && {
+                                  "data-bs-toggle": "modal",
+                                  "data-bs-target": "#sendInter",
+                                })}
                               >
                                 Send interest
                               </a>
@@ -780,6 +797,34 @@ const UserAllProfilePage = () => {
           </span>
         </div>
       )}
+
+      {/* Upgrade Popup */}
+      {showUpgradePopup && (
+        <div className="upgrade-popup">
+          <div className="upgrade-content">
+            <div className="upgrade-icon">🔒</div>
+            <h3>Premium Feature</h3>
+            <p>Upgrade your plan to unlock premium features and connect directly with your matches.</p>
+            <div className="upgrade-buttons">
+              <button onClick={() => navigate("/user/user-plan-selection")} className="upgrade-btn">Upgrade Now</button>
+              <button onClick={() => setShowUpgradePopup(false)} className="cancel-btn">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        .upgrade-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.65); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(4px); }
+        .upgrade-content { background: #fff; padding: 35px 30px; border-radius: 16px; text-align: center; width: 100%; max-width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); animation: fadeInScale 0.3s ease; }
+        .upgrade-icon { font-size: 40px; margin-bottom: 10px; }
+        .upgrade-content h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 10px; color: #111; }
+        .upgrade-content p { font-size: 0.95rem; color: #666; margin-bottom: 25px; }
+        .upgrade-buttons { display: flex; gap: 10px; justify-content: center; }
+        .upgrade-btn { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: transform 0.2s; }
+        .upgrade-btn:hover { transform: scale(1.05); }
+        .cancel-btn { background: #f3f4f6; color: #333; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 0.9rem; }
+        @keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+      `}</style>
 
       <ToastContainer />
       <Footer />

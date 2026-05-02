@@ -2069,11 +2069,10 @@ const MoreDetails = () => {
 
              
               <button
-                disabled={!isPaidUser}
-                className={`interest-btn ${isPaidUser ? "" : "disabled"}`}
+                className="interest-btn"
                 onClick={(e) => {
                   if (!isPaidUser) {
-                    e.preventDefault();
+                    setShowUpgradePopup(true);
                     return;
                   }
                   handleShowInterestClick();
@@ -2441,7 +2440,7 @@ const MoreDetails = () => {
           <div className="upgrade-content">
             <div className="upgrade-icon">🔒</div>
             <h3>Premium Feature</h3>
-            <p>Upgrade your plan to unlock contact details and connect directly.</p>
+            <p>Upgrade your plan to unlock premium features and connect directly with your matches.</p>
             <div className="upgrade-buttons">
               <button onClick={() => navigate("/user/user-plan-selection")} className="upgrade-btn">Upgrade Now</button>
               <button onClick={() => setShowUpgradePopup(false)} className="cancel-btn">Cancel</button>
