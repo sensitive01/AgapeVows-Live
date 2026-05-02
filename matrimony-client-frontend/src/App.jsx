@@ -74,10 +74,23 @@ function ReloadHandler() {
 
 function App() {
   useEffect(() => {
-    // Feature Flag for Security
-    const ADD_SECURITY_CHECK = false;
+    // Synchronize logout across tabs
+    const handleStorageChange = (e) => {
+      // If userId is removed or localStorage is cleared
+      if ((e.key === "userId" && !e.newValue) || e.key === null) {
+        window.location.href = "/";
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
 
-    if (!ADD_SECURITY_CHECK) return;
+    // Feature Flag for Security
+    const ADD_SECURITY_CHECK = true;  
+
+    if (!ADD_SECURITY_CHECK) {
+      return () => {
+        window.removeEventListener("storage", handleStorageChange);
+      };
+    }
 
     // Disable Right Click
     const handleContextMenu = (e) => {
@@ -86,7 +99,6 @@ function App() {
     };
 
     // Disable Keyboard Shortcuts (Screenshots, DevTools, Print, Save, Copy, Paste)
-    // Handle PrintScreen instantly on keydown
     const handleKeyDown = (e) => {
       // Handle PrintScreen instantly on keydown
       if (e.key === "PrintScreen") {
@@ -103,7 +115,7 @@ function App() {
 
       // Prevent F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, and Screenshot interactions
       if (
-        e.key === "F12" ||
+        e.key === "F13" ||
         (e.ctrlKey &&
           e.shiftKey &&
           (e.key === "I" || e.key === "i" || e.key === "J" || e.key === "j")) ||
@@ -143,8 +155,30 @@ function App() {
       return false;
     };
 
+    // Universal Ctrl + Click handler to force foreground navigation
+    const handleGlobalClick = (e) => {
+      if (e.ctrlKey && e.button === 0) {
+        const target = e.target.closest("a");
+        if (target && target.href && target.href !== "javascript:void(0)" && !target.href.startsWith("#")) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // Strategy: Programmatically click a target="_blank" link WITHOUT the Ctrl modifier.
+          // This forces most browsers to treat it as a foreground tab open.
+          const a = document.createElement("a");
+          a.href = target.href;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }
+      }
+    };
+
     window.addEventListener("contextmenu", handleContextMenu);
     window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("click", handleGlobalClick, true);
     window.addEventListener("dragstart", handleDragStart);
     window.addEventListener("blur", handleBlur);
     window.addEventListener("focus", handleFocus);
@@ -173,12 +207,14 @@ function App() {
     return () => {
       window.removeEventListener("contextmenu", handleContextMenu);
       window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("click", handleGlobalClick, true);
       window.removeEventListener("dragstart", handleDragStart);
       window.removeEventListener("blur", handleBlur);
       window.removeEventListener("focus", handleFocus);
       window.removeEventListener("copy", handleCopyCutPaste);
       window.removeEventListener("cut", handleCopyCutPaste);
       window.removeEventListener("paste", handleCopyCutPaste);
+      window.removeEventListener("storage", handleStorageChange);
       if (document.head.contains(style)) {
         document.head.removeChild(style);
       }

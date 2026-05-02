@@ -78,7 +78,17 @@ const handleLogout = () => {
                       <ul>
                         <li>
                           <a
-                            href="admin-all-users.html"
+                            href="/admin/all-user-list"
+                            onClick={(e) => {
+                              if (!e.ctrlKey) {
+                                e.preventDefault();
+                                navigate("/admin/all-user-list");
+                              } else {
+                                e.preventDefault();
+                                const newTab = window.open("/admin/all-user-list", "_blank");
+                                if (newTab) newTab.focus();
+                              }
+                            }}
                             className="waves-effect"
                           >
                             <i className="fa fa-male" aria-hidden="true"></i>{" "}
@@ -86,14 +96,37 @@ const handleLogout = () => {
                           </a>
                         </li>
                         <li>
-                          <a href="admin-price.html" className="waves-effect">
+                          <a
+                            href="/admin/pricing-plans-list"
+                            onClick={(e) => {
+                              if (!e.ctrlKey) {
+                                e.preventDefault();
+                                navigate("/admin/pricing-plans-list");
+                              } else {
+                                e.preventDefault();
+                                const newTab = window.open("/admin/pricing-plans-list", "_blank");
+                                if (newTab) newTab.focus();
+                              }
+                            }}
+                            className="waves-effect"
+                          >
                             <i className="fa fa-usd" aria-hidden="true"></i>{" "}
                             Pricing details{" "}
                           </a>
                         </li>
                         <li>
                           <a
-                            href="admin-all-payments.html"
+                            href="/admin/all-payments-list"
+                            onClick={(e) => {
+                              if (!e.ctrlKey) {
+                                e.preventDefault();
+                                navigate("/admin/all-payments-list");
+                              } else {
+                                e.preventDefault();
+                                const newTab = window.open("/admin/all-payments-list", "_blank");
+                                if (newTab) newTab.focus();
+                              }
+                            }}
                             className="waves-effect"
                           >
                             <i className="fa fa-money" aria-hidden="true"></i>{" "}
@@ -101,7 +134,20 @@ const handleLogout = () => {
                           </a>
                         </li>
                         <li>
-                          <a href="/admin/enquiries" className="waves-effect">
+                          <a
+                            href="/admin/enquiries"
+                            onClick={(e) => {
+                              if (!e.ctrlKey) {
+                                e.preventDefault();
+                                navigate("/admin/enquiries");
+                              } else {
+                                e.preventDefault();
+                                const newTab = window.open("/admin/enquiries", "_blank");
+                                if (newTab) newTab.focus();
+                              }
+                            }}
+                            className="waves-effect"
+                          >
                             <i
                               className="fa fa-envelope-o"
                               aria-hidden="true"
@@ -130,14 +176,37 @@ const handleLogout = () => {
                     <div className="smenu-open">
                       <ul>
                         <li>
-                          <a href="admin-setting.html" className="waves-effect">
+                          <a
+                            href="/admin/settings-page"
+                            onClick={(e) => {
+                              if (!e.ctrlKey) {
+                                e.preventDefault();
+                                navigate("/admin/settings-page");
+                              } else {
+                                e.preventDefault();
+                                const newTab = window.open("/admin/settings-page", "_blank");
+                                if (newTab) newTab.focus();
+                              }
+                            }}
+                            className="waves-effect"
+                          >
                             <i className="fa fa-cogs" aria-hidden="true"></i>
                             Site Setting{" "}
                           </a>
                         </li>
                         <li>
                           <a
-                            href="seo-google-analytics-code.html"
+                            href="/admin/seo-google-analystics-code"
+                            onClick={(e) => {
+                              if (!e.ctrlKey) {
+                                e.preventDefault();
+                                navigate("/admin/seo-google-analystics-code");
+                              } else {
+                                e.preventDefault();
+                                const newTab = window.open("/admin/seo-google-analystics-code", "_blank");
+                                if (newTab) newTab.focus();
+                              }
+                            }}
                             className="waves-effect"
                           >
                             <i className="fa fa-list-ul" aria-hidden="true"></i>{" "}

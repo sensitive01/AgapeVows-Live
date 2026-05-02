@@ -124,6 +124,42 @@ export default function SidebarLoginComponent({ closePopup }) {
         zIndex: 10001
       }}>
         <style>{`
+          .pop-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 10000;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+          }
+
+          .pop-bg.act {
+            display: block;
+            opacity: 1;
+          }
+
+          .menu-pop {
+            display: none;
+            opacity: 0;
+          }
+
+          .menu-pop.act {
+            display: block;
+            opacity: 1;
+            animation: modalFadeIn 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+          }
+
+          @keyframes modalFadeIn {
+            0% { transform: translate(-50%, -45%) scale(0.95); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+          }
+
           .login-mobile-fix {
             width: 90%;
             max-width: 950px;

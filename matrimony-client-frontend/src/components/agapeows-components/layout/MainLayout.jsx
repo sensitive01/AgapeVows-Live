@@ -49,13 +49,23 @@ const ExploreDropdown = ({ isVisible }) => {
         }`}
     >
       {SERVICE_CATEGORIES.map((category, index) => (
-        <button
+        <a
           key={index}
-          onClick={() => handleNavigate(category.path)}
-          className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors font-medium border-b border-gray-50 last:border-0"
+          href={category.path}
+          onClick={(e) => {
+            if (!e.ctrlKey) {
+              e.preventDefault();
+              handleNavigate(category.path);
+            } else {
+              e.preventDefault();
+              const newTab = window.open(category.path, "_blank");
+              if (newTab) newTab.focus();
+            }
+          }}
+          className="w-full text-left block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors font-medium border-b border-gray-50 last:border-0"
         >
           {category.title}
-        </button>
+        </a>
       ))}
     </div>
   );
@@ -85,13 +95,23 @@ const ProfileDropdown = ({ isVisible, onLogout }) => {
         }`}
     >
       {profileLinks.map((link, index) => (
-        <button
+        <a
           key={index}
-          onClick={() => handleNavigate(link.path)}
-          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+          href={link.path}
+          onClick={(e) => {
+            if (!e.ctrlKey) {
+              e.preventDefault();
+              handleNavigate(link.path);
+            } else {
+              e.preventDefault();
+              const newTab = window.open(link.path, "_blank");
+              if (newTab) newTab.focus();
+            }
+          }}
+          className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
         >
           {link.label}
-        </button>
+        </a>
       ))}
       <hr className="my-1" />
       <button
@@ -300,9 +320,19 @@ const MainLayout = () => {
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4">
           <div className="flex items-center gap-4 md:gap-8">
             {/* Logo - Aligned to Left */}
-            <div
+            <a
+              href="/"
               className="flex items-center cursor-pointer shrink-0 mr-auto"
-              onClick={() => handleNavigate("/")}
+              onClick={(e) => {
+                if (!e.ctrlKey) {
+                  e.preventDefault();
+                  handleNavigate("/");
+                } else {
+                  e.preventDefault();
+                  const newTab = window.open("/", "_blank");
+                  if (newTab) newTab.focus();
+                }
+              }}
             >
               <div className="text-2xl font-bold">
                 <img
@@ -311,23 +341,47 @@ const MainLayout = () => {
                   className="h-8 w-auto sm:h-10 md:h-12 lg:h-14 object-contain"
                 />
               </div>
-            </div>
+            </a>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
-              <button
-                onClick={() => handleNavigate("/about-us")}
+              <a
+                href="/about-us"
+                onClick={(e) => {
+                  if (!e.ctrlKey) {
+                    e.preventDefault();
+                    handleNavigate("/about-us");
+                  } else {
+                    // Standard Ctrl+Click behavior often opens in background;
+                    // we'll explicitly open and focus if we want foreground.
+                    // But wait, if we let the default happen, we can't focus.
+                    // So we prevent default even for Ctrl+Click and open manually.
+                    e.preventDefault();
+                    const newTab = window.open("/about-us", "_blank");
+                    if (newTab) newTab.focus();
+                  }
+                }}
                 className={`transition-all duration-200 font-medium py-2 ${location.pathname === "/about-us"
                   ? "text-purple-600 font-bold border-b-2 border-purple-600"
                   : "text-gray-800 hover:text-purple-600"
                   }`}
               >
                 About Us
-              </button>
+              </a>
 
               {isUserActive && (
-                <button
-                  onClick={() => handleNavigate("/user/find-matches")}
+                <a
+                  href="/user/find-matches"
+                  onClick={(e) => {
+                    if (!e.ctrlKey) {
+                      e.preventDefault();
+                      handleNavigate("/user/find-matches");
+                    } else {
+                      e.preventDefault();
+                      const newTab = window.open("/user/find-matches", "_blank");
+                      if (newTab) newTab.focus();
+                    }
+                  }}
                   className={`group flex items-center space-x-2 font-medium transition-all duration-200 py-2 ${location.pathname === "/user/find-matches"
                     ? "text-purple-600 font-bold border-b-2 border-purple-600"
                     : "text-gray-800 hover:text-purple-600"
@@ -340,7 +394,7 @@ const MainLayout = () => {
                       }`}
                   />
                   <span>Search</span>
-                </button>
+                </a>
               )}
 
               <div
@@ -369,8 +423,18 @@ const MainLayout = () => {
                 />
               </div>
 
-              <button
-                onClick={() => handleNavigate("/user/events-page")}
+              <a
+                href="/user/events-page"
+                onClick={(e) => {
+                  if (!e.ctrlKey) {
+                    e.preventDefault();
+                    handleNavigate("/user/events-page");
+                  } else {
+                    e.preventDefault();
+                    const newTab = window.open("/user/events-page", "_blank");
+                    if (newTab) newTab.focus();
+                  }
+                }}
                 className={`px-4 py-1.5 rounded-full border transition-all duration-200 font-medium ${
                 location.pathname === "/user/events-page"
                   ? "border-purple-600 text-purple-600"
@@ -378,17 +442,27 @@ const MainLayout = () => {
               }`}
               >
                 EVENTS
-              </button>
+              </a>
  
-              <button
-                onClick={() => handleNavigate("/user/user-plan-selection")}
+              <a
+                href="/user/user-plan-selection"
+                onClick={(e) => {
+                  if (!e.ctrlKey) {
+                    e.preventDefault();
+                    handleNavigate("/user/user-plan-selection");
+                  } else {
+                    e.preventDefault();
+                    const newTab = window.open("/user/user-plan-selection", "_blank");
+                    if (newTab) newTab.focus();
+                  }
+                }}
                 className={`transition-all duration-200 font-medium py-2 ${location.pathname === "/user/user-plan-selection"
                   ? "text-purple-600 font-bold border-b-2 border-purple-600"
                   : "text-gray-800 hover:text-purple-600"
                   }`}
               >
                 Plans
-              </button>
+              </a>
 
               <div
                 className="relative"
@@ -445,18 +519,30 @@ const MainLayout = () => {
                 </div>
               ) : (
                 <>
-                  <button
-                    onClick={() => handleNavigate("/user/user-sign-up")}
+                  <a
+                    href="/user/user-sign-up"
+                    onClick={(e) => {
+                      if (!e.ctrlKey) {
+                        e.preventDefault();
+                        handleNavigate("/user/user-sign-up");
+                      }
+                    }}
                     className="text-gray-800 hover:text-purple-600 font-medium"
                   >
                     Register
-                  </button>
-                  <button
-                    onClick={openLoginPopup}
-                    className="bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors"
+                  </a>
+                  <a
+                    href="/user/user-login"
+                    onClick={(e) => {
+                      if (!e.ctrlKey) {
+                        e.preventDefault();
+                        openLoginPopup(e);
+                      }
+                    }}
+                    className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors font-medium shadow-md shadow-purple-100"
                   >
                     Login
-                  </button>
+                  </a>
                 </>
               )}
             </div>
@@ -520,25 +606,33 @@ const MainLayout = () => {
                   <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isMobileServicesOpen ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"}`}>
                     <div className="pl-4 pr-2 flex flex-col space-y-1 mt-1 bg-gray-50/50 rounded-md py-2 border-l-2 border-purple-100 ml-2">
                       {SERVICE_CATEGORIES.map((category, index) => (
-                        <button
+                        <a
                           key={index}
-                          onClick={() => {
-                            handleNavigate(category.path);
-                            setIsMobileMenuOpen(false);
+                          href={category.path}
+                          onClick={(e) => {
+                            if (!e.ctrlKey) {
+                              e.preventDefault();
+                              handleNavigate(category.path);
+                              setIsMobileMenuOpen(false);
+                            }
                           }}
-                          className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-colors"
+                          className="w-full text-left block px-4 py-2.5 text-sm text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-colors"
                         >
                           {category.title}
-                        </button>
+                        </a>
                       ))}
                     </div>
                   </div>
                 </div>
 
-                <button
-                  onClick={() => {
-                    handleNavigate("/user/events-page");
-                    setIsMobileMenuOpen(false);
+                <a
+                  href="/user/events-page"
+                  onClick={(e) => {
+                    if (!e.ctrlKey) {
+                      e.preventDefault();
+                      handleNavigate("/user/events-page");
+                      setIsMobileMenuOpen(false);
+                    }
                   }}
                   className={`w-full flex justify-between items-center p-3 rounded-md transition-colors ${location.pathname === "/user/events-page"
                     ? "bg-purple-50"
@@ -546,20 +640,24 @@ const MainLayout = () => {
                     }`}
                 >
                   <span className="nav-highlight-events">EVENTS</span>
-                </button>
+                </a>
 
-                <button
-                  onClick={() => {
-                    handleNavigate("/user/user-plan-selection");
-                    setIsMobileMenuOpen(false);
+                <a
+                  href="/user/user-plan-selection"
+                  onClick={(e) => {
+                    if (!e.ctrlKey) {
+                      e.preventDefault();
+                      handleNavigate("/user/user-plan-selection");
+                      setIsMobileMenuOpen(false);
+                    }
                   }}
-                  className={`text-left font-medium p-3 rounded-md transition-colors ${location.pathname === "/user/user-plan-selection"
+                  className={`text-left block font-medium p-3 rounded-md transition-colors ${location.pathname === "/user/user-plan-selection"
                     ? "text-purple-600 bg-purple-50"
                     : "text-gray-800 hover:text-purple-600 hover:bg-gray-50"
                     }`}
                 >
                   Plans
-                </button>
+                </a>
 
                 {/* HELP & SUPPORT Dropdown Accordion */}
                 <div className="w-full">
@@ -574,16 +672,20 @@ const MainLayout = () => {
                   <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isMobileHelpOpen ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"}`}>
                     <div className="pl-4 pr-2 flex flex-col space-y-1 mt-1 bg-gray-50/50 rounded-md py-2 border-l-2 border-purple-100 ml-2">
                       {HELP_OPTIONS.map((item, index) => (
-                        <button
+                        <a
                           key={index}
-                          onClick={() => {
-                            handleNavigate(item.path);
-                            setIsMobileMenuOpen(false);
+                          href={item.path}
+                          onClick={(e) => {
+                            if (!e.ctrlKey) {
+                              e.preventDefault();
+                              handleNavigate(item.path);
+                              setIsMobileMenuOpen(false);
+                            }
                           }}
-                          className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-colors"
+                          className="w-full text-left block px-4 py-2.5 text-sm text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-colors"
                         >
                           {item.title}
-                        </button>
+                        </a>
                       ))}
                     </div>
                   </div>
