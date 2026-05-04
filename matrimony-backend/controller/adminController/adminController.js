@@ -810,10 +810,32 @@ const verifyIdProof = async (req, res) => {
 ========================== */
 const getUnverifiedIdProofUsers = async (req, res) => {
   try {
-    const userData = await userModel
-      .find(
-        { idVerificationStatus: { $ne: "Verified" }, isDeleted: false },
-        {
+    const userData = await userModel.aggregate([
+      {
+        $match: {
+          idVerificationStatus: { $ne: "Verified" },
+          isDeleted: false,
+        },
+      },
+      {
+        $addFields: {
+          statusWeight: {
+            $switch: {
+              branches: [
+                { case: { $eq: ["$idVerificationStatus", "Uploaded"] }, then: 1 },
+                { case: { $eq: ["$idVerificationStatus", "Rejected"] }, then: 2 },
+                { case: { $eq: ["$idVerificationStatus", "Pending"] }, then: 3 },
+              ],
+              default: 4,
+            },
+          },
+        },
+      },
+      {
+        $sort: { statusWeight: 1, createdAt: -1 },
+      },
+      {
+        $project: {
           userEmail: 1,
           userMobile: 1,
           userName: 1,
@@ -824,9 +846,9 @@ const getUnverifiedIdProofUsers = async (req, res) => {
           idProofNumber: 1,
           idVerificationStatus: 1,
           createdAt: 1,
-        }
-      )
-      .sort({ createdAt: -1 });
+        },
+      },
+    ]);
 
     res.status(200).json({ success: true, data: userData });
   } catch (err) {
