@@ -667,6 +667,8 @@ const restoreUser = async (req, res) => {
       {
         isDeleted: false,
         deletedAt: null,
+        profileStatus: "Active",
+        deactivatedAt: null,
       },
       { new: true }
     );
@@ -717,6 +719,37 @@ const getDeletedUsers = async (req, res) => {
     });
   } catch (err) {
     console.error("Error fetching deleted users:", err);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+const getDeactivatedUsers = async (req, res) => {
+  try {
+    const deactivatedUsers = await userModel
+      .find(
+        { profileStatus: "Deactivated", isDeleted: false },
+        {
+          userEmail: 1,
+          userMobile: 1,
+          userName: 1,
+          gender: 1,
+          city: 1,
+          profileImage: 1,
+          deactivatedAt: 1,
+          deactivationReason: 1,
+        }
+      )
+      .sort({ deactivatedAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: deactivatedUsers,
+    });
+  } catch (err) {
+    console.error("Error fetching deactivated users:", err);
     res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -981,6 +1014,7 @@ module.exports = {
   restoreUser,
   updateUser,
   getDeletedUsers,
+  getDeactivatedUsers,
   verifyIdProof,
   verifyMobile,
   registerUser,

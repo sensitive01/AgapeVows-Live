@@ -255,6 +255,10 @@ export const getDeletedUsers = async () => {
   return await adminInstance.get(`/deleted-users`);
 };
 
+export const getDeactivatedUsers = async () => {
+  return await adminInstance.get(`/deactivated-users`);
+};
+
 // Delete Additional Images (Admin)
 export const deleteAdditionalImagesByAdmin = async (userId, imagesToDelete) => {
   try {

@@ -29,6 +29,7 @@ import AdminEnquiries from "./components/admin/AdminEnquiries";
 import AdminFeedbacks from "./components/admin/AdminFeedbacks";
 import AdminReports from "./components/admin/AdminReports";
 import AdminUnverifiedIdUsers from "./components/admin/AdminUnverifiedIdUsers";
+import AdminDeactivatedUsers from "./components/admin/AdminDeactivatedUsers";
 
 function App() {
   useEffect(() => {
@@ -165,6 +166,14 @@ function App() {
   element={
     <AdminLayout>
       <AdminDeletedUsers />
+    </AdminLayout>
+  }
+/>
+<Route
+  path="/admin/deactivated-users"
+  element={
+    <AdminLayout>
+      <AdminDeactivatedUsers />
     </AdminLayout>
   }
 />

@@ -167,7 +167,12 @@ const verifyLogin = async (req, res) => {
 
     // BLOCK DELETED USERS
     if (user.isDeleted) {
-      return res.status(403).json({ message: "This account has been deleted.Please contact admin" });
+      return res.status(403).json({ message: "This account has been deleted. Please contact admin" });
+    }
+
+    // BLOCK DEACTIVATED USERS
+    if (user.profileStatus === "Deactivated") {
+      return res.status(403).json({ message: "Account is deactivated. Contact admin to reactivate." });
     }
 
     const isMatch = await bcrypt.compare(password, user.userPassword);
