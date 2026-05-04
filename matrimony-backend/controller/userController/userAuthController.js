@@ -55,9 +55,10 @@ const generateOrderId = () => {
 const getUserInformation = async (req, res) => {
   try {
     const { userId } = req.params;
+    console.log("Fetching info for userId:", userId);
 
-    // Check if userId is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(userId)) {
+      console.log("Invalid ID format:", userId);
       return res.status(400).json({
         success: false,
         message: "Invalid user ID format",
@@ -65,6 +66,7 @@ const getUserInformation = async (req, res) => {
     }
 
     const userData = await userModel.findById(userId, { userPassword: 0 });
+    console.log("User data found:", !!userData);
 
     if (!userData) {
       return res.status(404).json({
@@ -74,12 +76,17 @@ const getUserInformation = async (req, res) => {
     }
 
     // Get Interest Count
-    const interestsCount = await interestModel.countDocuments({
-      targetUserId: userId,
-    });
+    let interestsCount = 0;
+    try {
+      interestsCount = await interestModel.countDocuments({
+        targetUserId: userId,
+      });
+    } catch (e) {
+      console.error("Error counting interests:", e);
+    }
 
     // Get Views Count
-    const viewsCount = userData.profileViews ? userData.profileViews.length : 0;
+    const viewsCount = (userData.profileViews && Array.isArray(userData.profileViews)) ? userData.profileViews.length : 0;
 
     // Convert to object and add counts
     const responseData = {
@@ -94,10 +101,11 @@ const getUserInformation = async (req, res) => {
       data: responseData,
     });
   } catch (err) {
-    console.error("Error in getting the user information", err);
+    console.error("Error in getting the user information:", err);
     res.status(500).json({
       success: false,
       message: "Internal server error",
+      error: err.message
     });
   }
 };

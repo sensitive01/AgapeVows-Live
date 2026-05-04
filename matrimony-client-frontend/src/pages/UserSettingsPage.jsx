@@ -1,15 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UserSideBar from "../components/UserSideBar";
 import LayoutComponent from "../components/layouts/LayoutComponent";
-import { deactivateProfile } from "../api/axiosService/userAuthService";
+import { deactivateProfile, getUserInfo } from "../api/axiosService/userAuthService";
+import { resetPasswordRequest } from "../api/axiosService/userSignUpService";
+import { toast } from "react-toastify";
 
 const UserSettingsPage = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
+  const [activeTab, setActiveTab] = useState("mobile");
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [deactivationReason, setDeactivationReason] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  const [passwordData, setPasswordData] = useState({
+    newPassword: "",
+    confirmPassword: "",
+  });
 
   const reasons = [
     "Found my partner in AgapeVows",
@@ -19,9 +28,51 @@ const UserSettingsPage = () => {
     "Going to pursue higher studies"
   ];
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const res = await getUserInfo(userId);
+        if (res?.data?.success) {
+          setUserData(res.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      }
+    };
+    if (userId) fetchUserData();
+  }, [userId]);
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    if (passwordData.newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await resetPasswordRequest({
+        newPassword: passwordData.newPassword,
+        userId
+      });
+      if (res.status === 200) {
+        toast.success("Password updated successfully");
+        setPasswordData({ newPassword: "", confirmPassword: "" });
+      }
+    } catch (error) {
+      toast.error("Failed to update password");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDeactivate = async () => {
     if (!deactivationReason) {
-      alert("Please select a reason for deactivation");
+      toast.warn("Please select a reason for deactivation");
       return;
     }
 
@@ -33,239 +84,201 @@ const UserSettingsPage = () => {
     try {
       const response = await deactivateProfile(userId, deactivationReason);
       if (response.status === 200) {
-        alert("Your profile has been deactivated successfully.");
-        // Logout user
+        toast.success("Your profile has been deactivated successfully.");
         localStorage.clear();
         navigate("/user/user-login");
       }
     } catch (error) {
-      console.error("Error deactivating profile:", error);
-      alert("Failed to deactivate profile. Please try again.");
+      toast.error("Failed to deactivate profile.");
     } finally {
       setLoading(false);
       setShowDeactivateModal(false);
     }
   };
 
+  const tabList = [
+    { id: "mobile", label: "Update Mobile Number", icon: "fa-mobile" },
+    { id: "email", label: "Update Email Address", icon: "fa-envelope" },
+    { id: "password", label: "Change Password", icon: "fa-lock" },
+    { id: "privacy", label: "Privacy Settings", icon: "fa-shield" },
+    { id: "notifications", label: "Notifications", icon: "fa-bell" },
+    { id: "deactivate", label: "Deactivate Profile", icon: "fa-user-times" },
+  ];
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       <div className="fixed top-0 left-0 right-0 z-50">
         <LayoutComponent />
       </div>
 
-      <div style={{ paddingTop: "40px", paddingBottom: "40px" }}>
-        <div className="db">
-          <div
-            className="container-fluid"
-            style={{ paddingLeft: 0, paddingRight: 0 }}
-          >
-            <div className="row" style={{ marginLeft: 0, marginRight: 0 }}>
-              <div
-                className="col-md-3 col-lg-2"
-                style={{ paddingLeft: 0, marginLeft: "0px" }}
-              >
-                <UserSideBar />
-              </div>
+      <div style={{ paddingTop: "170px", paddingBottom: "40px" }}>
+        <div className="container">
+          <div className="row">
+            <div className="col-md-3">
+              <UserSideBar sidebarTop="120px" />
+            </div>
 
-              <div
-                className="col-md-9 col-lg-10"
-                style={{ paddingLeft: "20px", paddingRight: "15px" }}
-              >
-                <div className="row">
-                  <div className="col-md-12 db-sec-com">
-                    <h2 className="db-tit">Profile settings</h2>
-                    <div className="col7 fol-set-rhs">
-                      <div className="ms-write-post fol-sett-sec sett-rhs-pro">
-                        {/* <div className="foll-set-tit fol-pro-abo-ico">
-                          <h4>Profile</h4>
-                        </div> */}
-                        <div className="fol-sett-box">
-                          <ul>
-                            {/* <li>
-                              <div className="sett-lef">
-                                <div className="auth-pro-sm sett-pro-wid">
-                                  <div className="auth-pro-sm-img">
-                                    <img src="images/profiles/15.jpg" alt="" />
-                                  </div>
-                                  <div className="auth-pro-sm-desc">
-                                    <h5>Anna Jaslin</h5>
-                                    <p>Premium user | Illunois</p>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="sett-rig">
-                                <a href="#" className="set-sig-out">
-                                  Sign Out
-                                </a>
-                              </div>
-                            </li> */}
-                            <li>
-                              <div className="sett-lef">
-                                <div className="sett-rad-left">
-                                  <h5>Profile visible</h5>
-                                  <p>
-                                    You can set-up who can able to view your
-                                    profile.
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="sett-rig">
-                                <div className="sett-select-drop">
-                                  <select>
-                                    <option value="All users">All users</option>
-                                    <option value="Premium">Premium Users Only</option>
-                                    {/* <option value="Free">Free</option> */}
-                                    <option value="Free"> 
-                                      Hide from Everyone (No one can view your profile)
-                                    </option>
-                                  </select>
-                                </div>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="sett-lef">
-                                <div className="sett-rad-left">
-                                  <h5>Who can send you Interest requests?</h5>
-                                  <p>
-                                    You can set-up who can able to make Interest
-                                    request here.
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="sett-rig">
-                                <div className="sett-select-drop">
-                                  <select>
-                                    <option value="All users">All users</option>
-                                    <option value="Premium">Premium Users Only</option>
-                                    {/* <option value="Free">Free</option> */}
-                                  </select>
-                                </div>
-                              </div>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-
-                      <div className="ms-write-post fol-sett-sec sett-rhs-not">
-                        <div className="foll-set-tit fol-pro-abo-ico">
-                          <h4>Notifications</h4>
-                        </div>
-                        <div className="fol-sett-box">
-                          <ul>
-                            <li>
-                              <div className="sett-lef">
-                                <div className="sett-rad-left">
-                                  <h5>Interest request</h5>
-                                  <p>Interest request email notificatios</p>
-                                </div>
-                              </div>
-                              <div className="sett-rig">
-                                <div className="checkboxes-and-radios">
-                                  <input
-                                    type="checkbox"
-                                    name="checkbox-cats"
-                                    id="sett-not-mail"
-                                    value="1"
-                                    defaultChecked
-                                  />
-                                  <label htmlFor="sett-not-mail"></label>
-                                </div>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="sett-lef">
-                                <div className="sett-rad-left">
-                                  <h5>Chat</h5>
-                                  <p>New chat notificatios</p>
-                                </div>
-                              </div>
-                              <div className="sett-rig">
-                                <div className="checkboxes-and-radios">
-                                  <input
-                                    type="checkbox"
-                                    name="checkbox-cats"
-                                    id="sett-not-fri"
-                                    value="1"
-                                    defaultChecked
-                                  />
-                                  <label htmlFor="sett-not-fri"></label>
-                                </div>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="sett-lef">
-                                <div className="sett-rad-left">
-                                  <h5>Profile views</h5>
-                                  <p>
-                                    If any one view your profile means you get
-                                    the notifications at end of the day
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="sett-rig">
-                                <div className="checkboxes-and-radios">
-                                  <input
-                                    type="checkbox"
-                                    name="checkbox-cats"
-                                    id="sett-not-fol"
-                                    value="1"
-                                    defaultChecked
-                                  />
-                                  <label htmlFor="sett-not-fol"></label>
-                                </div>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="sett-lef">
-                                <div className="sett-rad-left">
-                                  <h5>New profile match</h5>
-                                  <p>You get the profile match emails</p>
-                                </div>
-                              </div>
-                              <div className="sett-rig">
-                                <div className="checkboxes-and-radios">
-                                  <input
-                                    type="checkbox"
-                                    name="checkbox-cats"
-                                    id="sett-not-mes"
-                                    value="1"
-                                    defaultChecked
-                                  />
-                                  <label htmlFor="sett-not-mes"></label>
-                                </div>
-                              </div>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-
-                      <div className="ms-write-post fol-sett-sec sett-rhs-deact">
-                        <div className="foll-set-tit fol-pro-abo-ico">
-                          <h4>Account Settings</h4>
-                        </div>
-                        <div className="fol-sett-box">
-                          <ul>
-                            <li>
-                              <div className="sett-lef">
-                                <div className="sett-rad-left">
-                                  <h5>Deactivate Profile</h5>
-                                  <p>Temporarily hide your profile from the platform. You can reactivate it later by contacting support.</p>
-                                </div>
-                              </div>
-                              <div className="sett-rig">
-                                <button 
-                                  className="btn btn-danger btn-sm"
-                                  onClick={() => setShowDeactivateModal(true)}
-                                >
-                                  Deactivate Account
-                                </button>
-                              </div>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-
+            <div className="col-md-9">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="row g-0" style={{ minHeight: "600px" }}>
+                  <div className="col-md-4 border-end bg-light">
+                    <div className="list-group list-group-flush">
+                      {tabList.map((tab) => (
+                        <button
+                          key={tab.id}
+                          className={`list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 ${
+                            activeTab === tab.id ? "active bg-primary text-white" : "bg-light"
+                          }`}
+                          onClick={() => setActiveTab(tab.id)}
+                        >
+                          <i className={`fa ${tab.icon} fa-fw`}></i>
+                          {tab.label}
+                        </button>
+                      ))}
                     </div>
+                  </div>
+
+                  <div className="col-md-8 p-4">
+                    {activeTab === "mobile" && (
+                      <div>
+                        <h4 className="mb-4 border-bottom pb-2 d-flex align-items-center gap-2">
+                          <i className="fa fa-mobile text-primary"></i>
+                          Update Mobile Number
+                        </h4>
+                        <div className="mb-4">
+                          <label className="text-muted small mb-1">Current Mobile Number :</label>
+                          <div className="h5 font-weight-bold">{userData?.userMobile || "Loading..."}</div>
+                        </div>
+                        <div className="alert alert-info py-3">
+                          <i className="fa fa-phone-alt me-2"></i>
+                          Call us at <strong className="text-primary">8122234414</strong> to update your phone number
+                        </div>
+                      </div>
+                    )}
+
+                    {activeTab === "email" && (
+                      <div>
+                        <h4 className="mb-4 border-bottom pb-2 d-flex align-items-center gap-2">
+                          <i className="fa fa-envelope text-primary"></i>
+                          Update Email Address
+                        </h4>
+                        <div className="mb-4">
+                          <label className="text-muted small mb-1">Current Email Address :</label>
+                          <div className="h5 font-weight-bold">{userData?.userEmail || "Loading..."}</div>
+                        </div>
+                        <div className="alert alert-info py-3">
+                          <i className="fa fa-envelope me-2"></i>
+                          Contact support at <strong className="text-primary">support@agapevows.com</strong> to change your email
+                        </div>
+                      </div>
+                    )}
+
+                    {activeTab === "password" && (
+                      <div>
+                        <h4 className="mb-4 border-bottom pb-2 d-flex align-items-center gap-2">
+                          <i className="fa fa-lock text-primary"></i>
+                          Change Password
+                        </h4>
+                        <form onSubmit={handlePasswordChange}>
+                          <div className="mb-3">
+                            <label className="form-label">New Password</label>
+                            <input
+                              type="password"
+                              className="form-control"
+                              required
+                              value={passwordData.newPassword}
+                              onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                            />
+                          </div>
+                          <div className="mb-3">
+                            <label className="form-label">Confirm New Password</label>
+                            <input
+                              type="password"
+                              className="form-control"
+                              required
+                              value={passwordData.confirmPassword}
+                              onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                            />
+                          </div>
+                          <button type="submit" className="btn btn-primary px-4" disabled={loading}>
+                            {loading ? "Updating..." : "Update Password"}
+                          </button>
+                        </form>
+                      </div>
+                    )}
+
+                    {activeTab === "privacy" && (
+                      <div>
+                        <h4 className="mb-4 border-bottom pb-2 d-flex align-items-center gap-2">
+                          <i className="fa fa-shield text-primary"></i>
+                          Privacy Settings
+                        </h4>
+                        <div className="mb-4">
+                          <label className="form-label font-weight-bold">Profile Visibility</label>
+                          <p className="text-muted small">Control who can view your profile details.</p>
+                          <select 
+                            className="form-select"
+                            value={userData?.profileVisibility || "Private"}
+                            onChange={() => {}} // Placeholder for now
+                          >
+                            <option value="Public">All Users</option>
+                            <option value="Private">Premium Users Only</option>
+                            <option value="Hidden">Hide from Everyone</option>
+                          </select>
+                        </div>
+                        <div className="mb-4">
+                          <label className="form-label font-weight-bold">Interest Requests</label>
+                          <p className="text-muted small">Control who can send you interest requests.</p>
+                          <select className="form-select">
+                            <option value="All users">All users</option>
+                            <option value="Premium">Premium Users Only</option>
+                          </select>
+                        </div>
+                      </div>
+                    )}
+
+                    {activeTab === "notifications" && (
+                      <div>
+                        <h4 className="mb-4 border-bottom pb-2 d-flex align-items-center gap-2">
+                          <i className="fa fa-bell text-primary"></i>
+                          Notifications
+                        </h4>
+                        <div className="list-group list-group-flush">
+                          {[
+                            { id: "not-interest", label: "Interest Request", desc: "Interest request email notifications" },
+                            { id: "not-chat", label: "Chat", desc: "New chat notifications" },
+                            { id: "not-views", label: "Profile Views", desc: "Get notified when someone views your profile" },
+                            { id: "not-match", label: "New Profile Match", desc: "You get the profile match emails" }
+                          ].map(item => (
+                            <div key={item.id} className="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+                              <div>
+                                <h6 className="mb-0">{item.label}</h6>
+                                <p className="text-muted small mb-0">{item.desc}</p>
+                              </div>
+                              <div className="form-check form-switch">
+                                <input className="form-check-input" type="checkbox" defaultChecked />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {activeTab === "deactivate" && (
+                      <div>
+                        <h4 className="mb-4 border-bottom pb-2 d-flex align-items-center gap-2 text-danger">
+                          <i className="fa fa-user-times"></i>
+                          Deactivate Profile
+                        </h4>
+                        <p className="text-muted">Temporarily hide your profile from the platform. You can reactivate it later by contacting support.</p>
+                        <button 
+                          className="btn btn-outline-danger mt-3 px-4"
+                          onClick={() => setShowDeactivateModal(true)}
+                        >
+                          Proceed to Deactivation
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -274,20 +287,19 @@ const UserSettingsPage = () => {
         </div>
       </div>
 
-      {/* Deactivate Modal */}
       {showDeactivateModal && (
         <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title text-danger">Deactivate Profile</h5>
-                <button type="button" className="btn-close" onClick={() => setShowDeactivateModal(false)}></button>
+            <div className="modal-content border-0 shadow">
+              <div className="modal-header bg-danger text-white">
+                <h5 className="modal-title">Deactivate Profile</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={() => setShowDeactivateModal(false)}></button>
               </div>
-              <div className="modal-body">
+              <div className="modal-body p-4">
                 <p>We are sorry to see you go. Please tell us why you want to deactivate your profile:</p>
                 <div className="form-group mt-3">
                   <select 
-                    className="form-control" 
+                    className="form-select" 
                     value={deactivationReason}
                     onChange={(e) => setDeactivationReason(e.target.value)}
                   >
@@ -297,16 +309,12 @@ const UserSettingsPage = () => {
                     ))}
                   </select>
                 </div>
-                <div className="alert alert-warning mt-4 small">
-                  <i className="fa fa-info-circle me-2"></i>
-                  Note: Deactivating your profile will hide it from all other users. Your data will be preserved, but you won't be visible in searches or lists.
-                </div>
               </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowDeactivateModal(false)}>Cancel</button>
+              <div className="modal-footer bg-light border-0">
+                <button type="button" className="btn btn-link text-muted" onClick={() => setShowDeactivateModal(false)}>Cancel</button>
                 <button 
                   type="button" 
-                  className="btn btn-danger" 
+                  className="btn btn-danger px-4" 
                   onClick={handleDeactivate}
                   disabled={loading || !deactivationReason}
                 >
@@ -317,101 +325,6 @@ const UserSettingsPage = () => {
           </div>
         </div>
       )}
-
-
-      <section className="wed-hom-footer">
-        <div className="container">
-          <div className="row foot-supp">
-            <h2>
-              <span>Free support:</span> +92 (8800) 68 - 8960
-              &nbsp;&nbsp;|&nbsp;&nbsp; <span>Email:</span>
-              info@example.com
-            </h2>
-          </div>
-          <div className="row wed-foot-link wed-foot-link-1">
-            <div className="col-md-4">
-              <h4>Get In Touch</h4>
-              <p>Address: 3812 Lena Lane City Jackson Mississippi</p>
-              <p>
-                Phone: <a href="tel:+917904462944">+92 (8800) 68 - 8960</a>
-              </p>
-              <p>
-                Email: <a href="mailto:info@example.com">info@example.com</a>
-              </p>
-            </div>
-            <div className="col-md-4">
-              <h4>HELP &amp; SUPPORT</h4>
-              <ul>
-                <li>
-                  <a href="#">About company</a>
-                </li>
-                <li>
-                  <a href="#!">Contact us</a>
-                </li>
-                <li>
-                  <a href="#!">Feedback</a>
-                </li>
-                <li>
-                  <a href="#">FAQs</a>
-                </li>
-                <li>
-                  <a href="#">Testimonials</a>
-                </li>
-              </ul>
-            </div>
-            <div className="col-md-4 fot-soc">
-              <h4>SOCIAL MEDIA</h4>
-              <ul>
-                <li>
-                  <a href="#!">
-                    <img src="/images/social/1.png" alt="" />
-                  </a>
-                </li>
-                <li>
-                  <a href="#!">
-                    <img src="/images/social/2.png" alt="" />
-                  </a>
-                </li>
-                <li>
-                  <a href="#!">
-                    <img src="/images/social/3.png" alt="" />
-                  </a>
-                </li>
-                <li>
-                  <a href="#!">
-                    <img src="/images/social/5.png" alt="" />
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="row foot-count">
-            <p>
-              Company name Site - Trusted by over thousands of Boys & Girls for
-              successfull marriage.{" "}
-              <a href="#" className="btn btn-primary btn-sm">
-                Join us today !
-              </a>
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section>
-        <div className="cr">
-          <div className="container">
-            <div className="row">
-              <p>
-                Copyright © <span id="cry">2017-2020</span>{" "}
-                <a href="#!" target="_blank">
-                  Company.com
-                </a>{" "}
-                All rights reserved.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };
