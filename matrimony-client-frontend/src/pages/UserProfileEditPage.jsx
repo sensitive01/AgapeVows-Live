@@ -13,6 +13,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import UserSideBar from "../components/UserSideBar";
 import LayoutComponent from "../components/layouts/LayoutComponent";
 import SearchableSelect from "../components/SearchableSelect";
+import MultiSearchSelect from "../components/MultiSearchSelect";
 import { Country, State, City } from "country-state-city";
 
 // BasicInfomation Component (same as before)
@@ -603,6 +604,17 @@ const UserProfileEditPage = () => {
     : rawUserId;
   const navigate = useNavigate();
 
+  const selectStyle = {
+    flex: 1,
+    padding: "10px 14px",
+    border: "2px solid #e5e7eb",
+    borderRadius: "6px",
+    fontSize: "14px",
+    color: "#374151",
+    background: "#fff",
+    cursor: "pointer",
+  };
+
   const [formData, setFormData] = useState({
     // Basic Details
     aboutMe: "",
@@ -716,9 +728,9 @@ const UserProfileEditPage = () => {
     partnerAnnualIncome: "",
 
     // Partner Preferences - Location
-    partnerCountry: "",
-    partnerState: "",
-    partnerDistrict: "",
+    partnerCountry: [],
+    partnerState: [],
+    partnerDistrict: [],
 
     // Profile Visibility
     profileVisibility: "Public",
@@ -744,6 +756,17 @@ const UserProfileEditPage = () => {
   const [idVerificationStatus, setIdVerificationStatus] = useState("Pending");
   const [idProofDocument, setIdProofDocument] = useState("");
   const [isUploadingId, setIsUploadingId] = useState(false);
+
+  // Age options 18-70
+  const ageOptions = Array.from({ length: 53 }, (_, i) => (i + 18).toString());
+
+  // Height options 4ft to 8ft
+  const heightOptions = [
+    "4ft", "4ft 1in", "4ft 2in", "4ft 3in", "4ft 4in", "4ft 5in", "4ft 6in", "4ft 7in", "4ft 8in", "4ft 9in", "4ft 10in", "4ft 11in",
+    "5ft", "5ft 1in", "5ft 2in", "5ft 3in", "5ft 4in", "5ft 5in", "5ft 6in", "5ft 7in", "5ft 8in", "5ft 9in", "5ft 10in", "5ft 11in",
+    "6ft", "6ft 1in", "6ft 2in", "6ft 3in", "6ft 4in", "6ft 5in", "6ft 6in", "6ft 7in", "6ft 8in", "6ft 9in", "6ft 10in", "6ft 11in",
+    "7ft", "7ft 1in", "7ft 2in", "7ft 3in", "7ft 4in", "7ft 5in", "7ft 6in", "7ft 7in", "7ft 8in", "7ft 9in", "7ft 10in", "7ft 11in", "8ft",
+  ];
 
   // Hobbies options for checkboxes
   const hobbiesOptions = [
@@ -977,9 +1000,9 @@ const UserProfileEditPage = () => {
             partnerEmploymentType: userData.partnerEmploymentType || "",
             partnerOccupation: userData.partnerOccupation || "",
             partnerAnnualIncome: userData.partnerAnnualIncome || "",
-            partnerCountry: userData.partnerCountry || "",
-            partnerState: userData.partnerState || "",
-            partnerDistrict: userData.partnerDistrict || "",
+            partnerCountry: Array.isArray(userData.partnerCountry) ? userData.partnerCountry : userData.partnerCountry ? [userData.partnerCountry] : [],
+            partnerState: Array.isArray(userData.partnerState) ? userData.partnerState : userData.partnerState ? [userData.partnerState] : [],
+            partnerDistrict: Array.isArray(userData.partnerDistrict) ? userData.partnerDistrict : userData.partnerDistrict ? [userData.partnerDistrict] : [],
             profileVisibility: userData.profileVisibility || "Public",
           };
 
@@ -2796,7 +2819,7 @@ const UserProfileEditPage = () => {
                         gap: "20px",
                       }}
                     >
-                      
+
                       <FormInput
                         label="Contact Person Name"
                         name="contactPersonName"
@@ -3287,34 +3310,89 @@ const UserProfileEditPage = () => {
                     </div>
                   </FormSection>
 
-                  {/* Partner Preferences - Basic & Religion */}
-                  <FormSection title="Partner Preferences - Basic & Religion">
+                  {/* Partner Preferences */}
+                  <FormSection title="Partner Preference">
+                    <div
+                      style={{
+                        background: "#fff",
+                        border: "1px solid #e5e7eb",
+                        borderRadius: "8px",
+                        padding: "24px",
+                        marginBottom: "24px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: "20px",
+                          borderBottom: "1px solid #f3f4f6",
+                          paddingBottom: "10px",
+                        }}
+                      >
+                        <span style={{ fontSize: "14px", fontWeight: "700", color: "#374151" }}>
+                          Basic & Religion Preferences
+                        </span>
+                        <div
+                          style={{
+                            background: "#1f2937",
+                            color: "#fff",
+                            width: "20px",
+                            height: "20px",
+                            borderRadius: "4px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                            fontSize: "12px",
+                          }}
+                        >
+                          <i className="fa fa-times"></i>
+                        </div>
+                      </div>
+
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "20px" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", alignItems: "center", gap: "20px" }}>
+                          <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151" }}>Partner Age</label>
+                          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                            <select name="partnerAgeFrom" value={formData.partnerAgeFrom} onChange={handleInputChange} style={selectStyle}>
+                              <option value="">Select Age</option>
+                              {ageOptions.map(age => <option key={age} value={age}>{age}</option>)}
+                            </select>
+                            <span style={{ fontSize: "14px", color: "#6b7280" }}>To</span>
+                            <select name="partnerAgeTo" value={formData.partnerAgeTo} onChange={handleInputChange} style={selectStyle}>
+                              <option value="">Select Age</option>
+                              {ageOptions.map(age => <option key={age} value={age}>{age}</option>)}
+                            </select>
+                          </div>
+                        </div>
+
+                        <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", alignItems: "center", gap: "20px" }}>
+                          <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151" }}>Partner Height</label>
+                          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                            <select name="partnerHeight" value={formData.partnerHeight} onChange={handleInputChange} style={selectStyle}>
+                              <option value="">Select Height</option>
+                              {heightOptions.map(h => <option key={h} value={h}>{h}</option>)}
+                            </select>
+                            <span style={{ fontSize: "14px", color: "#6b7280" }}>To</span>
+                            <select name="partnerHeightTo" value={formData.partnerHeightTo} onChange={handleInputChange} style={selectStyle}>
+                              <option value="">Select Height</option>
+                              {heightOptions.map(h => <option key={h} value={h}>{h}</option>)}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     <div
                       style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(2, 1fr)",
                         gap: "20px",
+                        marginTop: "20px",
                       }}
                     >
-                      <FormInput
-                        label="Partner Age From"
-                        name="partnerAgeFrom"
-                        value={formData.partnerAgeFrom}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Partner Age To"
-                        name="partnerAgeTo"
-                        value={formData.partnerAgeTo}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Partner Height"
-                        name="partnerHeight"
-                        value={formData.partnerHeight}
-                        onChange={handleInputChange}
-                        placeholder="e.g., 160-180 cm"
-                      />
                       <FormInput
                         label="Partner Marital Status"
                         name="partnerMaritalStatus"
@@ -3876,31 +3954,65 @@ const UserProfileEditPage = () => {
                     <div
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
+                        gridTemplateColumns: "repeat(1, 1fr)",
                         gap: "20px",
                       }}
                     >
-                      <FormInput
-                        label="Partner Country"
-                        name="partnerCountry"
-                        value={formData.partnerCountry}
-                        onChange={handleInputChange}
-                        placeholder="Any"
-                      />
-                      <FormInput
-                        label="Partner State"
-                        name="partnerState"
-                        value={formData.partnerState}
-                        onChange={handleInputChange}
-                        placeholder="Any"
-                      />
-                      <FormInput
-                        label="Partner Residing District"
-                        name="partnerDistrict"
-                        value={formData.partnerDistrict}
-                        onChange={handleInputChange}
-                        placeholder="Any"
-                      />
+                      <div>
+                        <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151", marginBottom: "8px", display: "block" }}>Partner Country</label>
+                        <MultiSearchSelect
+                          name="partnerCountry"
+                          value={formData.partnerCountry}
+                          onChange={handleInputChange}
+                          options={allCountries.map(c => c.name)}
+                          placeholder="Search Country..."
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151", marginBottom: "8px", display: "block" }}>Partner State</label>
+                        <MultiSearchSelect
+                          name="partnerState"
+                          value={formData.partnerState}
+                          onChange={handleInputChange}
+                          options={
+                            formData.partnerCountry.length > 0 
+                              ? Array.from(new Set(formData.partnerCountry.flatMap(cName => {
+                                  const c = allCountries.find(curr => curr.name === cName);
+                                  return c ? State.getStatesOfCountry(c.isoCode).map(s => s.name) : [];
+                                })))
+                              : State.getStatesOfCountry("IN").map(s => s.name) // Default to India states if no country selected
+                          }
+                          placeholder="Search State..."
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151", marginBottom: "8px", display: "block" }}>Partner District / City</label>
+                        <MultiSearchSelect
+                          name="partnerDistrict"
+                          value={formData.partnerDistrict}
+                          onChange={handleInputChange}
+                          options={
+                            formData.partnerState.length > 0
+                              ? Array.from(new Set(formData.partnerState.flatMap(sName => {
+                                  // This is a bit complex as we need to know which country the state belongs to.
+                                  // For simplicity, we search across all selected countries or all countries.
+                                  const countriesToSearch = formData.partnerCountry.length > 0 
+                                    ? allCountries.filter(c => formData.partnerCountry.includes(c.name))
+                                    : [allCountries.find(c => c.isoCode === "IN")];
+                                  
+                                  return countriesToSearch.flatMap(c => {
+                                    const states = State.getStatesOfCountry(c.isoCode);
+                                    const s = states.find(curr => curr.name === sName);
+                                    return s ? City.getCitiesOfState(c.isoCode, s.isoCode).map(city => city.name) : [];
+                                  });
+                                })))
+                              : []
+                          }
+                          placeholder="Search District / City..."
+                        />
+                      </div>
                     </div>
                   </FormSection>
 

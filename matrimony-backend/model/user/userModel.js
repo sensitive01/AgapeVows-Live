@@ -199,9 +199,9 @@ const userSchema = new mongoose.Schema(
       partnerOccupation: { type: String },
       partnerAnnualIncome: { type: String },
 
-      partnerCountry: { type: String },
-      partnerState: { type: String },
-      partnerDistrict: { type: String },
+      partnerCountry: { type: [String] },
+      partnerState: { type: [String] },
+      partnerDistrict: { type: [String] },
 
       /* =========================
          SUBSCRIPTION & PAYMENTS

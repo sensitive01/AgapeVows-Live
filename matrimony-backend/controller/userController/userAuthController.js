@@ -529,11 +529,11 @@ const getAllUserProfileData = async (req, res) => {
 const getAllUserProfileDataHome = async (req, res) => {
   try {
     const userData = await userModel.find(
-      { 
+      {
         profileStatus: { $ne: "Deactivated" },
         isApproved: true,
         isDeleted: false
-      }, 
+      },
       { userPassword: 0 }
     );
 
@@ -2143,7 +2143,7 @@ const uploadIdProof = async (req, res) => {
     });
 
     const { idProofType, idProofNumber } = req.body;
-    
+
     console.log("Extracted ID details:", { idProofType, idProofNumber });
 
     // Update user record
@@ -2204,7 +2204,7 @@ const deactivateProfile = async (req, res) => {
     userData.profileStatus = "Deactivated";
     userData.deactivationReason = deactivationReason;
     userData.deactivatedAt = new Date();
-    
+
     await userData.save();
 
     res.status(200).json({
