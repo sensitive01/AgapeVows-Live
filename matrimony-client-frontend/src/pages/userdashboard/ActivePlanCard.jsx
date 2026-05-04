@@ -2,15 +2,34 @@ import React, { useEffect, useState } from "react";
 import { getMyActivePlanData, getAllPlanDetails } from "../../api/axiosService/userAuthService";
 import { useNavigate } from "react-router-dom";
 
-const ActivePlanCard = () => {
+const ActivePlanCard = ({ externalPlanData }) => {
   const navigate = useNavigate();
-  const [planData, setPlanData] = useState(null);
+  const [planData, setPlanData] = useState(externalPlanData || null);
   const [plansList, setPlansList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!externalPlanData);
 
   const userId = localStorage.getItem("userId");
 
   useEffect(() => {
+    if (externalPlanData) {
+      setPlanData(externalPlanData);
+      // We still might need plansList for base definitions if not in snapshot
+      const fetchPlans = async () => {
+        try {
+          const plansListRes = await getAllPlanDetails();
+          if (plansListRes.status === 200) {
+            setPlansList(plansListRes?.data?.data || []);
+          }
+        } catch (error) {
+          console.error("Error fetching plans list:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchPlans();
+      return;
+    }
+
     const fetchData = async () => {
       try {
         const [planRes, plansListRes] = await Promise.all([
@@ -120,10 +139,9 @@ const ActivePlanCard = () => {
   const remainingDaily = isUnlimitedDaily ? "Unlimited" : parsedDaily - dailyViewedCount;
 
   return (
-    <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com">
+    <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com h-100">
       <h2 className="db-tit">Active plan benefits</h2>
-
-      <div className="db-pro-stat">
+      <div className="db-pro-stat h-100" style={{ minHeight: "450px", display: "flex", flexDirection: "column" }}>
         {/* Dropdown options */}
         <div className="dropdown">
           <button

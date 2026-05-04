@@ -225,15 +225,21 @@ import planIcon from "../../assets/images/icon/plan.png";
 import { getMyActivePlanData } from "../../api/axiosService/userAuthService";
 import { useNavigate } from "react-router-dom";
 
-const PlanDetails = () => {
+const PlanDetails = ({ externalPlanData }) => {
   const navigate = useNavigate();
-  const [planData, setPlanData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [planData, setPlanData] = useState(externalPlanData || null);
+  const [loading, setLoading] = useState(!externalPlanData);
   const [error, setError] = useState(null);
 
   const userId = localStorage.getItem("userId");
 
   useEffect(() => {
+    if (externalPlanData) {
+      setPlanData(externalPlanData);
+      setLoading(false);
+      return;
+    }
+
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -332,8 +338,8 @@ const PlanDetails = () => {
     return (
       <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com">
         <h2 className="db-tit">Plan details</h2>
-        <div className="db-pro-stat">
-          <div className="text-center p-4 d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '280px' }}>
+        <div className="db-pro-stat h-100" style={{ minHeight: "450px", display: "flex", flexDirection: "column" }}>
+          <div className="text-center p-4 d-flex flex-column justify-content-center align-items-center flex-grow-1">
             <h6 className="text-danger fw-bold mb-3">{error || "No Subscription Found"}</h6>
             <button
               className="btn btn-primary btn-sm"
@@ -348,9 +354,9 @@ const PlanDetails = () => {
   }
 
   return (
-    <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com">
+    <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com h-100">
       <h2 className="db-tit">Plan details</h2>
-      <div className="db-pro-stat">
+      <div className="db-pro-stat h-100" style={{ minHeight: "450px", display: "flex", flexDirection: "column" }}>
         <h6 className="tit-top-curv">
           {planData?.subscriptionType || "Standard"} plan
         </h6>

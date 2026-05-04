@@ -296,9 +296,9 @@ const ProfileCompletion = ({ userData }) => {
   }, [userData]);
 
   return (
-    <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com">
+    <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com h-100">
       <h2 className="db-tit">Profiles status</h2>
-      <div className="db-pro-stat">
+      <div className="db-pro-stat h-100" style={{ minHeight: "450px", display: "flex", flexDirection: "column" }}>
         <h6>Profile completion</h6>
         <div className="dropdown">
           <button

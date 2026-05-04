@@ -269,7 +269,7 @@ const userSchema = new mongoose.Schema(
       },
       profileStatus: {
          type: String,
-         enum: ["Active", "Deactivated", "Pending"],
+         enum: ["Active", "Deactivated", "Pending", "Completed"],
          default: "Pending",
       },
 

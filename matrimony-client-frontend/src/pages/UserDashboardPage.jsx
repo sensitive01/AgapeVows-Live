@@ -30,36 +30,42 @@ const UserDashboardPage = () => {
   const chartRef = useRef(null);
   const hasInitialized = useRef(false);
   const [userInfo, setUserInfo] = useState(null);
+  const [activePlan, setActivePlan] = useState(null);
+  const [planLoading, setPlanLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
+    const fetchData = async () => {
       if (userId) {
         try {
-          console.log("UserDashboard: Fetching user info for userId:", userId);
-          // Add cache-busting parameter to force fresh API call
-          const response = await getUserProfile(userId);
-          console.log("UserDashboard: Response received:", {
-            status: response.status,
-            success: response.data?.success,
-            hasData: !!response.data?.data,
-            dataKeys: response.data?.data ? Object.keys(response.data.data).length : 0,
-          });
+          setLoading(true);
+          setPlanLoading(true);
+          
+          const [userRes, planRes] = await Promise.all([
+            getUserProfile(userId),
+            getMyActivePlanData(userId)
+          ]);
 
-          // Check if response has data
-          if (response.data && response.data.data) {
-            console.log("UserDashboard: Setting userInfo with data");
-            setUserInfo(response.data.data);
-          } else if (response.data) {
-            console.log("UserDashboard: Setting userInfo with response.data");
-            setUserInfo(response.data);
+          if (userRes.data && userRes.data.data) {
+            setUserInfo(userRes.data.data);
+          } else if (userRes.data) {
+            setUserInfo(userRes.data);
+          }
+
+          if (planRes.status === 200 && planRes.data?.activePlan) {
+            setActivePlan(planRes.data.activePlan);
+          } else {
+            setActivePlan(null);
           }
         } catch (error) {
-          console.error("Error fetching user info:", error);
-          setError("Failed to load user information");
+          console.error("Error fetching dashboard data:", error);
+          setError("Failed to load dashboard information");
+        } finally {
+          setLoading(false);
+          setPlanLoading(false);
         }
       }
     };
-    fetchUserInfo();
+    fetchData();
   }, [userId]);
 
   // Function to safely destroy slider
@@ -341,7 +347,6 @@ const UserDashboardPage = () => {
     }
   }, []);
 
-  // Initial fetch and set up interval for periodic updates
   useEffect(() => {
     fetchProfileMatches();
 
@@ -508,11 +513,17 @@ const UserDashboardPage = () => {
                 </div>
 
                 {/* Additional Dashboard Components */}
-                <div className="row">
+                <div className="row g-4" style={{ marginTop: "0px" }}>
                   <ProfileCompletion userData={userInfo} />
-                  <PlanDetails />
-                  <ActivePlanCard />
-                  <RecentChats />
+                  
+                  {!planLoading && (
+                    <>
+                      <PlanDetails externalPlanData={activePlan} />
+                      {activePlan && <ActivePlanCard externalPlanData={activePlan} />}
+                    </>
+                  )}
+                  
+                  {/* <RecentChats /> */}
                 </div>
               </div>
             </div>
