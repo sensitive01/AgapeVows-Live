@@ -19,6 +19,7 @@ import {
   sendChatMessage,
   blockUser,
   clearChatHistory,
+  submitReport,
 } from "../api/axiosService/userAuthService.js";
 
 const UserChatPage = () => {
@@ -31,6 +32,12 @@ const UserChatPage = () => {
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [isChatOpen, setIsChatOpen] = useState(false);
+
+  // Reporting states
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportComments, setReportComments] = useState("");
+  const [isReporting, setIsReporting] = useState(false);
 
   // Socket.IO states
   const [socket, setSocket] = useState(null);
@@ -151,6 +158,50 @@ const UserChatPage = () => {
     setSelectedChat(null);
     setMessages([]);
     setIsChatOpen(false);
+  };
+
+  const handleReportSubmit = async (e) => {
+    e.preventDefault();
+    if (!reportReason) {
+      showAlert({ title: "Error", text: "Please select a reason for reporting", icon: "warning" });
+      return;
+    }
+
+    setIsReporting(true);
+    try {
+      const reportData = {
+        reporterId: userId,
+        reportedUserId: selectedChat.participant._id,
+        reason: reportReason,
+        comments: reportComments,
+      };
+
+      const res = await submitReport(reportData);
+      if (res.status === 201 || res.data.success) {
+        showAlert({
+          title: "Reported & Blocked",
+          text: "User reported and blocked successfully. They will appear in your Blocked section.",
+          icon: "success",
+        });
+        setShowReportModal(false);
+        setReportReason("");
+        setReportComments("");
+        
+        // Remove from chat list since they are now blocked
+        setChatList((prev) => prev.filter((chat) => chat.participant._id !== selectedChat.participant._id));
+        handleCloseChatbox();
+        
+        // Redirect to blocked profiles page
+        setTimeout(() => {
+          navigate("/user/blocked-profiles-page");
+        }, 2000);
+      }
+    } catch (err) {
+      console.error("Error reporting user:", err);
+      showAlert({ title: "Error", text: "Failed to submit report. Please try again later.", icon: "error" });
+    } finally {
+      setIsReporting(false);
+    }
   };
 
   const handleBlockUser = async (profileId) => {
@@ -482,7 +533,107 @@ const UserChatPage = () => {
           setChatMessages={setMessages}
           onBlockUser={handleBlockUser}
           onClearChat={() => handleClearChat(selectedChat.chatId)}
+          onReportUser={() => setShowReportModal(true)}
         />
+      )}
+
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="upgrade-popup">
+          <div className="upgrade-content" style={{ maxWidth: "450px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+              <h3 style={{ margin: 0, color: "#dc2626" }}>Report User</h3>
+              <button 
+                onClick={() => setShowReportModal(false)}
+                style={{ background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer", color: "#666" }}
+              >
+                &times;
+              </button>
+            </div>
+            
+            <form onSubmit={handleReportSubmit} style={{ textAlign: "left" }}>
+              <div style={{ marginBottom: "20px" }}>
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", color: "#374151" }}>
+                  Reason for Reporting
+                </label>
+                <select
+                  value={reportReason}
+                  onChange={(e) => setReportReason(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "1px solid #d1d5db",
+                    fontSize: "0.95rem"
+                  }}
+                  required
+                >
+                  <option value="">Select a reason</option>
+                  <option value="Inappropriate profile picture">Inappropriate profile picture</option>
+                  <option value="Fake profile">Fake profile</option>
+                  <option value="Misleading information">Misleading information</option>
+                  <option value="Abusive behavior">Abusive behavior</option>
+                  <option value="Spam/Promotional content">Spam/Promotional content</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: "20px" }}>
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", color: "#374151" }}>
+                  Additional Comments (Optional)
+                </label>
+                <textarea
+                  value={reportComments}
+                  onChange={(e) => setReportComments(e.target.value)}
+                  placeholder="Provide more details about why you are reporting this user..."
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "1px solid #d1d5db",
+                    fontSize: "0.95rem",
+                    minHeight: "100px",
+                    resize: "vertical"
+                  }}
+                />
+              </div>
+
+              <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "20px" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowReportModal(false)}
+                  style={{
+                    padding: "10px 20px",
+                    borderRadius: "8px",
+                    border: "1px solid #d1d5db",
+                    background: "#fff",
+                    color: "#374151",
+                    fontWeight: "600",
+                    cursor: "pointer"
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isReporting}
+                  style={{
+                    padding: "10px 20px",
+                    borderRadius: "8px",
+                    border: "none",
+                    background: "#dc2626",
+                    color: "#fff",
+                    fontWeight: "600",
+                    cursor: isReporting ? "not-allowed" : "pointer",
+                    opacity: isReporting ? 0.7 : 1
+                  }}
+                >
+                  {isReporting ? "Submitting..." : "Submit Report"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );

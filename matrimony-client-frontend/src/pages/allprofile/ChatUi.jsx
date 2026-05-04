@@ -74,7 +74,8 @@ const ChatUi = ({
   userId,
   setChatMessages, // NEW PROP
   onBlockUser,     // NEW PROP
-  onClearChat      // NEW PROP
+  onClearChat,      // NEW PROP
+  onReportUser     // NEW PROP
 }) => {
   console.log(chatMessages)
   const messagesEndRef = useRef(null);
@@ -369,6 +370,19 @@ const ChatUi = ({
                 onMouseEnter={(e) => e.target.style.backgroundColor = '#f9f9f9'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
               >Block</div>
+              <div 
+                style={{ padding: "10px 14px", cursor: "pointer", borderBottom: "1px solid #eee", fontSize: "14px", color: "#d32f2f", fontWeight: "600" }}
+                onClick={() => {
+                  if (onReportUser) {
+                    onReportUser();
+                    setIsMenuOpen(false);
+                  } else {
+                    alert("Report functionality is not available in this view.");
+                  }
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#f9f9f9'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+              >Report User</div>
               <div 
                 style={{ padding: "10px 14px", cursor: "pointer", borderBottom: "1px solid #eee", fontSize: "14px", color: "#333" }}
                 onClick={handleClearChat}

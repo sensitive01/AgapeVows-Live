@@ -21,9 +21,19 @@ const submitReport = async (req, res) => {
 
     await newReport.save();
 
+    // ✅ AUTOMATICALLY BLOCK THE REPORTED USER
+    await userModel.findByIdAndUpdate(reporterId, {
+      $addToSet: {
+        blockedUsers: {
+          user: reportedUserId,
+          blockedAt: new Date()
+        }
+      }
+    });
+
     res.status(201).json({
       success: true,
-      message: "Report submitted successfully",
+      message: "Report submitted successfully and user has been blocked",
     });
   } catch (error) {
     console.error("Error submitting report:", error);

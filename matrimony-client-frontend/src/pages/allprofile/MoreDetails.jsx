@@ -1869,10 +1869,15 @@ const MoreDetails = () => {
 
       const res = await submitReport(reportData);
       if (res.status === 201 || res.data.success) {
-        toast.success("User reported successfully. Admin will review your report.");
+        toast.success("User reported and blocked successfully. They will appear in your Blocked section.");
         setShowReportModal(false);
         setReportReason("");
         setReportComments("");
+        
+        // Optionally redirect to blocked profiles page
+        setTimeout(() => {
+          navigate("/user/blocked-profiles-page");
+        }, 2000);
       }
     } catch (err) {
       console.error("Error reporting user:", err);
@@ -2634,6 +2639,7 @@ const MoreDetails = () => {
           socket={socket}
           userId={currentUserId}
           setChatMessages={setChatMessages}
+          onReportUser={() => setShowReportModal(true)}
         />
       )}
 

@@ -913,8 +913,11 @@ const getInterestedProfileRequest = async (req, res) => {
 
     const senderIds = interests.map((item) => item.senderId);
 
+    const user = await userModel.findById(userId, { blockedUsers: 1 });
+    const blockedIds = user?.blockedUsers?.map(b => b.user.toString()) || [];
+
     const senderDetails = await userModel.find(
-      { _id: { $in: senderIds } },
+      { _id: { $in: senderIds, $nin: blockedIds } },
       "userName profileImage city age gender jobType height paymentDetails isAnySubscriptionTaken"
     );
 
@@ -1040,9 +1043,11 @@ const getNewProfileMatches = async (req, res) => {
         : null,
     ].filter(Boolean);
 
+    const blockedIds = currentUser.blockedUsers?.map(b => b.user.toString()) || [];
+
     const rawMatches = await userModel
       .find({
-        _id: { $ne: userId },
+        _id: { $ne: userId, $nin: blockedIds },
         gender: oppositeGender,
         profileStatus: { $ne: "Deactivated" },
         isApproved: true,
@@ -1097,13 +1102,28 @@ const getSearchedProfileData = async (req, res) => {
       physicalStatus,
       familyStatus,
       showWithPhoto,
-      lookingFor
+      lookingFor,
+      userId // Get userId from body
     } = req.body;
+
+    let blockedIds = [];
+    if (userId) {
+      const currentUser = await userModel.findById(userId, { blockedUsers: 1 });
+      if (currentUser) {
+        blockedIds = currentUser.blockedUsers?.map(b => b.user.toString()) || [];
+      }
+    }
+
     const query = {
+      _id: { $nin: blockedIds },
       isApproved: true,
       profileStatus: { $ne: "Deactivated" },
       isDeleted: false,
     };
+
+    if (userId) {
+      query._id.$ne = userId;
+    }
 
     // Handle Gender/LookingFor logic
     let searchGender = gender;
@@ -1444,8 +1464,11 @@ const getShortListedProfileData = async (req, res) => {
       });
     }
 
+    const user = await userModel.findById(userId, { blockedUsers: 1 });
+    const blockedIds = user?.blockedUsers?.map(b => b.user.toString()) || [];
+
     const profiles = await userModel.find(
-      { _id: { $in: shortListData.profiles } },
+      { _id: { $in: shortListData.profiles, $nin: blockedIds } },
       {
         userName: 1,
         profileImage: 1,
@@ -2011,9 +2034,11 @@ const getWhoViewedYou = async (req, res) => {
       });
     }
 
-    // Find profiles of users who viewed
+    const blockedIds = user.blockedUsers?.map(b => b.user.toString()) || [];
+
+    // Find profiles of users who viewed, excluding blocked users
     const profiles = await userModel.find(
-      { _id: { $in: viewerIds } },
+      { _id: { $in: viewerIds, $nin: blockedIds } },
       {
         userName: 1,
         profileImage: 1,
