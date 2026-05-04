@@ -9,6 +9,7 @@ import {
   deleteAdditionalImages,
   uploadIdProof,
 } from "../api/axiosService/userAuthService";
+import { showAlert } from "../utils/alertService";
 import { useParams, useNavigate } from "react-router-dom";
 import UserSideBar from "../components/UserSideBar";
 import LayoutComponent from "../components/layouts/LayoutComponent";
@@ -16,7 +17,7 @@ import SearchableSelect from "../components/SearchableSelect";
 import MultiSearchSelect from "../components/MultiSearchSelect";
 import { Country, State, City } from "country-state-city";
 
-// BasicInfomation Component (same as before)
+// BasicInfomation Component
 const BasicInfomation = ({
   profileImagePreview,
   handleProfileImageChange,
@@ -1045,9 +1046,11 @@ const UserProfileEditPage = () => {
             setIdProofPreview(userData.idProofDocument);
           }
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        alert("Error loading user data. Please try again.");
+      } catch (err) {
+        console.error("Error loading user info:", err);
+        showAlert({ text: "Error loading user data. Please try again.", icon: "error" });
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -1212,7 +1215,7 @@ const UserProfileEditPage = () => {
           }
         } catch (deleteError) {
           console.error("Error deleting images from Cloudinary:", deleteError);
-          alert("Error deleting some images. Continuing with profile update...");
+          showAlert({ text: "Error deleting some images. Continuing with profile update...", icon: "warning" });
         }
       }
 
@@ -1280,7 +1283,7 @@ const UserProfileEditPage = () => {
       console.log("Response:", response);
 
       if (response.status === 200 || response.data?.success) {
-        alert("Profile updated successfully!");
+        showAlert({ text: "Profile updated successfully!", icon: "success" });
 
         // Clear video file state and update preview
         setVideoFile(null);
@@ -1297,14 +1300,14 @@ const UserProfileEditPage = () => {
         }, 500);
       } else {
         const errorMessage = response.data?.message || "Error updating profile. Please try again.";
-        alert(errorMessage);
+        showAlert({ text: errorMessage, icon: "error" });
         console.error("Update failed:", response);
       }
     } catch (error) {
       console.error("Error submitting profile:", error);
       const errorMessage =
         error.response?.data?.message || error.message || "Error updating profile. Please try again.";
-      alert(errorMessage);
+      showAlert({ text: errorMessage, icon: "error" });
     } finally {
       setIsSubmitting(false);
     }
@@ -1374,157 +1377,18 @@ const UserProfileEditPage = () => {
       });
 
       if (response.status === 200) {
-        alert("ID Proof uploaded successfully (via test route). It is now pending admin approval.");
+        showAlert({ text: "ID Proof uploaded successfully (via test route). It is now pending admin approval.", icon: "success" });
         setIdVerificationStatus("Uploaded");
         setIdProofFile(null);
       }
     } catch (error) {
       console.error("Error uploading ID proof (test route):", error);
-      alert("Error uploading ID proof. Please try again.");
+      showAlert({ text: "Error uploading ID proof. Please try again.", icon: "error" });
     } finally {
       setIsUploadingId(false);
     }
   };
 
-  // const handleSubmit = async (e) => {
-  //     e.preventDefault();
-  //     setIsSubmitting(true);  
-
-  //     try {
-  //       // Step 1: Delete additional images from Cloudinary if any were removed
-  //       if (deletedAdditionalImages.length > 0) {
-  //         console.log("Deleting images from Cloudinary:", deletedAdditionalImages);
-  //         try {
-  //           const deleteResponse = await deleteAdditionalImages(
-  //             userId,
-  //             deletedAdditionalImages,
-  //           );
-  //           if (deleteResponse.status === 200) {
-  //             console.log("Images deleted successfully from Cloudinary");
-  //             setDeletedAdditionalImages([]); // Clear the deleted images list
-  //           }
-  //         } catch (deleteError) {
-  //           console.error("Error deleting images from Cloudinary:", deleteError);
-  //           alert("Error deleting some images. Continuing with profile update...");
-  //         }
-  //       }
-
-  //       // Step 2: Update the profile with remaining data
-  //       const submitFormData = new FormData();
-
-  //       // Append all form fields
-  //       Object.keys(formData).forEach((key) => {
-  //         if (key === "hobbies") {
-  //           if (Array.isArray(formData[key]) && formData[key].length > 0) {
-  //             formData[key].forEach((hobby, index) => {
-  //               submitFormData.append(`hobbies[${index}]`, hobby);
-  //             });
-  //           } else {
-  //             submitFormData.append("hobbies", "");
-  //           }
-  //         } else {
-  //           const value = formData[key];
-  //           submitFormData.append(key, value || "");
-  //         }
-  //       });
-
-  //       // Append profile image if changed
-  //       if (profileImageFile) {
-  //         submitFormData.append("profileImage", profileImageFile);
-  //       }
-
-  //       // Append delete profile image flag if needed
-  //       if (deleteProfileImageFlag) {
-  //         submitFormData.append("deleteProfileImage", "true");
-  //       }
-
-  //       // Append new additional images
-  //       if (additionalImageFiles.length > 0) {
-  //         additionalImageFiles.forEach((file) => {
-  //           submitFormData.append("additionalImages", file);
-  //         });
-  //       }
-
-
-  //       // Append video if new
-  // if (videoFile) {
-  //   submitFormData.append("selfIntroductionVideo", videoFile);
-  // }
-
-  // // Append delete flag if video removed
-  // if (deleteVideoFlag) {
-  //   submitFormData.append("deleteSelfIntroductionVideo", "true");
-  // }
-
-
-
-  //       // Append existing additional images that weren't removed
-  //       if (existingAdditionalImages.length > 0) {
-  //         existingAdditionalImages.forEach((url, index) => {
-  //           submitFormData.append(`existingAdditionalImages[${index}]`, url);
-  //         });
-  //       }
-
-  //       console.log("Submitting form data...");
-  //       console.log(
-  //         "Form data to submit:",
-  //         Object.fromEntries(submitFormData.entries()),
-  //       );
-
-  //       const response = await savePersonalInfo(submitFormData, userId);
-
-  //       console.log("Response:", response);
-
-  //       if (response.status === 200 || response.data?.success) {
-  //         setHasUnsavedChanges(false);
-  //         setDeleteProfileImageFlag(false);
-  //         setDeletedAdditionalImages([]); // Clear the deleted images list
-  //         alert("Profile updated successfully!");
-
-  //         // Small delay before navigation to ensure alert is seen
-  //         setTimeout(() => {
-  //           navigate(`/user/user-profile-page`);
-  //         }, 500);
-  //       } else {
-  //         const errorMessage =
-  //           response.data?.message || "Error updating profile. Please try again.";
-  //         alert(errorMessage);
-  //         console.error("Update failed:", response);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error details:", error);
-  //       const errorMessage =
-  //         error.response?.data?.message ||
-  //         error.message ||
-  //         "Error updating profile. Please try again.";
-  //       alert(errorMessage);
-
-  //       if (error.response) {
-  //         console.error("Response error:", error.response.data);
-  //         console.error("Response status:", error.response.status);
-  //       }
-  //     } finally {
-  //       setIsSubmitting(false);
-  //     }
-  //   };
-
-  //   // Warn user about unsaved changes
-  //   useEffect(() => {
-  //     const handleBeforeUnload = (e) => {
-  //       if (hasUnsavedChanges) {
-  //         e.preventDefault();
-  //         e.returnValue = "";
-  //       }
-  //     };
-
-  //     window.addEventListener("beforeunload", handleBeforeUnload);
-  //     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  //   }, [hasUnsavedChanges]);
-
-
-
-
-  console.log("UserProfileEditPage Render - formData:", formData);
 
   return (
     <div style={{ 

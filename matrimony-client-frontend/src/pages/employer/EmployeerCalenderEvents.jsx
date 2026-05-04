@@ -20,6 +20,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import EmployerHeader from "./EmployerHeader";
 import EmployerFooter from "./EmployerFooter";
+import { confirmAction } from "../../utils/alertService";
 
 const API_BASE_URL = "https://api.edprofio.com";
 
@@ -522,7 +523,8 @@ const EmployerCalendarEvents = () => {
   const handleDeleteEvent = async () => {
     if (!selectedEvent || isDeletingEvent) return;
 
-    if (!window.confirm("Are you sure you want to delete this event?")) {
+    const confirmed = await confirmAction({ text: "Are you sure you want to delete this event?" });
+    if (!confirmed) {
       return;
     }
 

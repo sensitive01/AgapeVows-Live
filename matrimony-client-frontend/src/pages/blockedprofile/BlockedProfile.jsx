@@ -9,6 +9,7 @@ import {
   unblockProfile,
 } from "../../api/axiosService/userAuthService";
 import { useNavigate } from "react-router-dom";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 const BlockedProfile = () => {
   const userId = localStorage.getItem("userId");
@@ -25,7 +26,8 @@ const BlockedProfile = () => {
 
   // Handle unblock profile
   const handleUnblockProfile = async (profileId) => {
-    if (window.confirm("Are you sure you want to unblock this profile?")) {
+    const confirmed = await confirmAction({ text: "Are you sure you want to unblock this profile?" });
+    if (confirmed) {
       setUnblockingId(profileId);
       try {
         const response = await unblockProfile(userId, profileId);
@@ -34,12 +36,12 @@ const BlockedProfile = () => {
           setProfileData(
             profileData.filter((profile) => profile._id !== profileId),
           );
-          alert("Profile unblocked successfully!");
+          showAlert({ text: "Profile unblocked successfully!" });
         } else {
-          alert("Failed to unblock profile");
+          showAlert({ title: "Error", text: "Failed to unblock profile", icon: "error" });
         }
       } catch (err) {
-        alert("Error unblocking profile: " + err.message);
+        showAlert({ title: "Error", text: "Error unblocking profile: " + err.message, icon: "error" });
       } finally {
         setUnblockingId(null);
       }

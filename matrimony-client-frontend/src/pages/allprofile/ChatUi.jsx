@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import EmojiPicker from "emoji-picker-react";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 // Utility function to handle both timestamp formats
 const formatTimestamp = (timestamp) => {
@@ -227,8 +228,9 @@ const ChatUi = ({
     return true;
   }) : [];
 
-  const handleClearChat = () => {
-    if (window.confirm("Are you sure you want to clear this entire chat history?")) {
+  const handleClearChat = async () => {
+    const confirmed = await confirmAction({ text: "Are you sure you want to clear this entire chat history?" });
+    if (confirmed) {
       if (onClearChat) {
         onClearChat();
       } else if (setChatMessages) {
@@ -238,12 +240,13 @@ const ChatUi = ({
     }
   };
 
-  const handleBlockAction = () => {
-    if (window.confirm("Are you sure you want to block this user?")) {
+  const handleBlockAction = async () => {
+    const confirmed = await confirmAction({ text: "Are you sure you want to block this user?" });
+    if (confirmed) {
       if (onBlockUser) {
         onBlockUser(profileData.receiverId);
       } else {
-        alert("User blocked! They will appear in the Blocked section.");
+        showAlert({ text: "User blocked! They will appear in the Blocked section." });
       }
       setIsMenuOpen(false);
       setIsChatOpen(false);
@@ -377,7 +380,7 @@ const ChatUi = ({
                     onReportUser();
                     setIsMenuOpen(false);
                   } else {
-                    alert("Report functionality is not available in this view.");
+                    showAlert({ title: "Note", text: "Report functionality is not available in this view.", icon: "info" });
                   }
                 }}
                 onMouseEnter={(e) => e.target.style.backgroundColor = '#f9f9f9'}

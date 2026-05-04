@@ -8,9 +8,9 @@ import {
   fetchSearchedProfileData,
   saveTheProfileAsShortlisted,
   getMyActivePlanData,
-} from "../../api/axiosService/userAuthService.js";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+} from "../../api/axiosService/userAuthService";
+import { showAlert } from "../../utils/alertService";
+
 import defaultProfileImg from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
 import maleDefault from "../../assets/images/profiles/men1.jpg";
 import femaleDefault from "../../assets/images/profiles/12.jpg";
@@ -323,8 +323,8 @@ const UserSearchResult = () => {
         // Call your filter API endpoint
         const response = await fetchSearchedProfileData(requestData);
 
-        if (response.status === 200) {
-          setUsers(response.data.data);
+        if (response?.status === 200) {
+          setUsers(response?.data?.data || []);
         }
       } catch (error) {
         console.error("Error fetching filtered profiles:", error);
@@ -367,8 +367,8 @@ const UserSearchResult = () => {
 
         const response = await fetchSearchedProfileData(requestData);
 
-        if (response.status === 200) {
-          setUsers(response.data.data || []);
+        if (response?.status === 200) {
+          setUsers(response?.data?.data || []);
         }
       } catch (error) {
         console.error("Error fetching profiles:", error);
@@ -523,15 +523,12 @@ const UserSearchResult = () => {
 
     if (myPlanName.includes("premium")) {
       if (isTargetRestricted) {
-        toast.error("Upgrade your plan to view Platinum and Golden Membership profiles.", {
-          position: "top-center",
-          autoClose: 30000, // 30 seconds
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "colored",
+        showAlert({
+          title: "Upgrade Required",
+          text: "Upgrade your plan to view Platinum and Golden Membership profiles.",
+          icon: "info",
         });
+
         return;
       }
     }
@@ -546,11 +543,11 @@ const UserSearchResult = () => {
     }
     const response = await saveTheProfileAsShortlisted(user._id, userId);
     if (response.status === 200) {
-      alert(response.data.message);
+      showAlert({ text: response.data.message, icon: "success" });
       console.log("Profile saved as shortlisted");
     } else {
       console.error("Failed to save profile as shortlisted");
-      alert(response.data.message);
+      showAlert({ text: response.data.message, icon: "error" });
     }
   };
 
@@ -647,7 +644,7 @@ const UserSearchResult = () => {
                         : {}
                     }
                   >
-                    {users.map((user) => (
+                    {Array.isArray(users) && users.map((user) => (
                       <li
                         key={user._id}
                         style={
@@ -1186,8 +1183,8 @@ const UserSearchResult = () => {
         </div>
       )}
 
-      <ToastContainer />
       <Footer />
+
       {/* <CopyRights /> */}
     </div>
   );

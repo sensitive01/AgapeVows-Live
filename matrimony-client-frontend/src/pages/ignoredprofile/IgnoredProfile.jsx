@@ -10,6 +10,7 @@ import {
 } from "../../api/axiosService/userAuthService";
 import { useNavigate } from "react-router-dom";
 import MembershipBadge from "../../components/common/MembershipBadge";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 const IgnoredProfile = () => {
   const userId = localStorage.getItem("userId");
@@ -26,7 +27,8 @@ const IgnoredProfile = () => {
 
   // Handle unignore profile
   const handleUnignoreProfile = async (profileId) => {
-    if (window.confirm("Are you sure you want to unignore this profile?")) {
+    const confirmed = await confirmAction({ text: "Are you sure you want to unignore this profile?" });
+    if (confirmed) {
       setUnignoringId(profileId);
       try {
         const response = await unignoreProfile(userId, profileId);
@@ -35,12 +37,12 @@ const IgnoredProfile = () => {
           setProfileData(
             profileData.filter((profile) => profile._id !== profileId),
           );
-          alert("Profile unignored successfully!");
+          showAlert({ text: "Profile unignored successfully!" });
         } else {
-          alert("Failed to unignore profile");
+          showAlert({ title: "Error", text: "Failed to unignore profile", icon: "error" });
         }
       } catch (err) {
-        alert("Error unignoring profile: " + err.message);
+        showAlert({ title: "Error", text: "Error unignoring profile: " + err.message, icon: "error" });
       } finally {
         setUnignoringId(null);
       }

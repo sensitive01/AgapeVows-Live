@@ -21,6 +21,7 @@ import {
   updateEmployeeProfile,
 } from "../../api/services/projectServices";
 import axios from "axios";
+import { confirmAction } from "../../utils/alertService";
 
 const EmployeeerEditProfile = () => {
   const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -655,7 +656,8 @@ const EmployeeerEditProfile = () => {
 
   // Document delete handlers
   const handleDeleteResume = async () => {
-    if (window.confirm("Are you sure you want to delete your resume?")) {
+    const confirmed = await confirmAction({ text: "Are you sure you want to delete your resume?" });
+    if (confirmed) {
       try {
         const token = localStorage.getItem("authToken");
         const response = await axios.delete(
@@ -681,7 +683,8 @@ const EmployeeerEditProfile = () => {
   };
 
   const handleDeleteCoverLetter = async () => {
-    if (window.confirm("Are you sure you want to delete your cover letter?")) {
+    const confirmed = await confirmAction({ text: "Are you sure you want to delete your cover letter?" });
+    if (confirmed) {
       try {
         const token = localStorage.getItem("authToken");
         const response = await axios.delete(
@@ -707,7 +710,8 @@ const EmployeeerEditProfile = () => {
   };
 
   const handleDeleteVideo = async () => {
-    if (window.confirm("Are you sure you want to delete your profile video?")) {
+    const confirmed = await confirmAction({ text: "Are you sure you want to delete your profile video?" });
+    if (confirmed) {
       try {
         const token = localStorage.getItem("authToken");
         const response = await axios.delete(
@@ -738,9 +742,8 @@ const EmployeeerEditProfile = () => {
   };
 
   const handleDeleteAudio = async () => {
-    if (
-      window.confirm("Are you sure you want to delete your introduction audio?")
-    ) {
+    const confirmed = await confirmAction({ text: "Are you sure you want to delete your introduction audio?" });
+    if (confirmed) {
       try {
         const token = localStorage.getItem("authToken");
 

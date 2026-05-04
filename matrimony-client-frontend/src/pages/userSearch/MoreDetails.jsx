@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import LayoutComponent from "../../components/layouts/LayoutComponent";
 import { useParams, useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { getTheProfieMoreDetails, getUserProfile, getChatMessages, sendChatMessage } from "../../api/axiosService/userAuthService";
+
 import { io } from "socket.io-client";
 import ChatUi from "../allprofile/ChatUi";
 import Footer from "../../components/Footer";
 import CopyRights from "../../components/CopyRights";
 import RelatedProfiles from "./RelatedProfiles";
 import ShowInterest from "./ShowInterest";
+import { showAlert } from "../../utils/alertService";
+
 
 const MoreDetails = () => {
   const { profileId } = useParams();
@@ -48,14 +49,12 @@ const [userId, setUserId] = useState(() => localStorage.getItem("userId"));
       const statusCode = err.response?.status;
 
       if (statusCode === 403) {
-        toast.error(errorMsg || "Access restricted", { 
-          position: "top-center", 
-          autoClose: 30000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
+        showAlert({
+          title: "Access Restricted",
+          text: errorMsg || "Access restricted",
+          icon: "error",
         });
+
       } else {
         setError(errorMsg || "Error fetching profile data");
       }
@@ -193,11 +192,20 @@ const [userId, setUserId] = useState(() => localStorage.getItem("userId"));
           socket.emit("join_chat_room", { roomId });
         }
       } else {
-        alert("Please subscribe to your plan.");
+        showAlert({
+          title: "Premium Feature",
+          text: "Please subscribe to a plan to start chatting.",
+          icon: "info",
+        });
       }
     } catch (error) {
-      alert("Please subscribe to your plan.");
+      showAlert({
+        title: "Error",
+        text: "Please subscribe to a plan to start chatting.",
+        icon: "error",
+      });
     }
+
   };
 
   if (loading) {
@@ -220,7 +228,7 @@ const [userId, setUserId] = useState(() => localStorage.getItem("userId"));
         <div className="error-container">
           <p>{error || "Profile not found"}</p>
         </div>
-        <ToastContainer />
+
         <Footer />
         <CopyRights />
       </>

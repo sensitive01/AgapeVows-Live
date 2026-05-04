@@ -6,6 +6,8 @@ import { useLogin } from "../../../hooks/useLogin";
 import { validateLoginForm } from "../../../utils/validateLogin";
 import { Link, useNavigate } from "react-router-dom";
 import { verifyTheUserExistOrNot } from "../../../api/services/projectServices";
+import { showAlert } from "../../../utils/alertService";
+
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -476,8 +478,13 @@ const LoginPage = () => {
                   className="social-btn linkedin"
                   onClick={() => {
                     // Add LinkedIn functionality here later
-                    alert("LinkedIn integration coming soon!");
+                    showAlert({
+                      title: "Coming Soon",
+                      text: "LinkedIn integration is coming soon!",
+                      icon: "info",
+                    });
                   }}
+
                 >
                   <svg
                     width="20"

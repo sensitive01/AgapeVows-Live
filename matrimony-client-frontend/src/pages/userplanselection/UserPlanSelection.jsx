@@ -7,6 +7,7 @@ import {
   sendPaymentData,
 } from "../../api/axiosService/userAuthService";
 import { useNavigate } from "react-router-dom";
+import { showAlert } from "../../utils/alertService";
 import "../../index.css";
 const UserPlanSelection = () => {
   const [plans, setPlans] = useState([]);
@@ -122,13 +123,13 @@ const UserPlanSelection = () => {
 
   const handlePayment = async (plan) => {
     if (!userId) {
-      alert("Please login to purchase a plan");
+      showAlert({ text: "Please login to purchase a plan", icon: "warning" });
       return;
     }
 
     const scriptLoaded = await loadRazorpayScript();
     if (!scriptLoaded) {
-      alert("Razorpay SDK failed to load. Please try again.");
+      showAlert({ text: "Razorpay SDK failed to load. Please try again.", icon: "error" });
       return;
     }
 
@@ -177,20 +178,21 @@ const UserPlanSelection = () => {
           );
 
           if (backendResponse) {
-            alert("Payment Successful! Your plan has been activated.");
+            showAlert({ text: "Payment Successful! Your plan has been activated.", icon: "success" });
             // Optionally redirect to dashboard or plans page
             window.location.href = "/";
           } else {
-            alert(
-              "Payment received but there was an issue activating your plan. Please contact support."
-            );
+            showAlert({
+              text: "Payment received but there was an issue activating your plan. Please contact support.",
+              icon: "error"
+            });
           }
         } catch (error) {
           console.error("Error processing payment:", error);
-          alert(
-            "Payment was successful but there was an issue processing it. Please contact support with your payment ID: " +
-            response.razorpay_payment_id
-          );
+          showAlert({
+            text: "Payment was successful but there was an issue processing it. Please contact support with your payment ID: " + response.razorpay_payment_id,
+            icon: "error"
+          });
         }
       },
       modal: {
@@ -212,7 +214,7 @@ const UserPlanSelection = () => {
 
     rzp.on("payment.failed", function (response) {
       console.error("Payment failed:", response.error);
-      alert(`Payment failed: ${response.error.description}`);
+      showAlert({ text: `Payment failed: ${response.error.description}`, icon: "error" });
     });
 
     rzp.open();
