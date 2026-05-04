@@ -333,6 +333,7 @@ import {
   getMyActivePlanData,
   downloadInvoice
 } from "../api/axiosService/userAuthService";
+import { showAlert } from "../utils/alertService";
 
 const UserPlanPage = () => {
 
@@ -384,7 +385,11 @@ const UserPlanPage = () => {
     try {
       if (!userId || !transactionId) {
         console.log("Missing values:", userId, transactionId);
-        alert("Missing data ❌");
+        showAlert({
+          title: "Error",
+          text: "Missing data ❌",
+          icon: "error",
+        });
         return;
       }
 
@@ -420,12 +425,20 @@ const UserPlanPage = () => {
     e.preventDefault();
 
     if (!reason || !message) {
-      alert("Please fill all fields");
+      showAlert({
+        title: "Validation Error",
+        text: "Please fill all fields",
+        icon: "warning",
+      });
       return;
     }
 
     if (!userId) {
-      alert("User not found. Please login again.");
+      showAlert({
+        title: "Error",
+        text: "User not found. Please login again.",
+        icon: "error",
+      });
       return;
     }
 
@@ -436,7 +449,11 @@ const UserPlanPage = () => {
       });
 
       if (res?.data?.success) {
-        alert(res?.data?.message || "Plan cancelled successfully!");
+        showAlert({
+          title: "Success",
+          text: res?.data?.message || "Plan cancelled successfully!",
+          icon: "success",
+        });
 
         setReason("");
         setMessage("");
@@ -451,17 +468,21 @@ const UserPlanPage = () => {
 
         window.location.reload();
       } else {
-        alert("Something went wrong");
+        showAlert({
+          title: "Error",
+          text: "Something went wrong",
+          icon: "error",
+        });
       }
 
     } catch (err) {
       console.error("Cancel error:", err);
 
-      alert(
-        err?.response?.data?.message ||
-        err?.message ||
-        "Cancel failed"
-      );
+      showAlert({
+        title: "Error",
+        text: err?.response?.data?.message || err?.message || "Cancel failed",
+        icon: "error",
+      });
     }
   };
 

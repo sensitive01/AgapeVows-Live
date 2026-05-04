@@ -636,7 +636,7 @@ const GlobalSearchModal = () => {
                     <div className="flex justify-center mb-3">
                       <div className="flex flex-col sm:flex-row items-center gap-2 w-full max-w-md bg-gradient-to-r from-purple-50 to-pink-50 p-3 rounded-lg border border-purple-200">
                         <span className="text-sm font-semibold text-gray-700 whitespace-nowrap">
-                          Search by AGVID ID:
+                          Search by AV ID:
                         </span>
                         <input
                           type="text"

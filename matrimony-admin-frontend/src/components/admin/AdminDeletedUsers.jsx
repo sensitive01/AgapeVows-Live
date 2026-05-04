@@ -3,6 +3,7 @@ import NewLayout from "./layout/NewLayout";
 import { getDeletedUsers, restoreUserById, permanentDeleteUserById } from "../../api/service/adminServices";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 
 const AdminDeletedUsers = () => {
@@ -44,45 +45,75 @@ const AdminDeletedUsers = () => {
   }, [searchTerm, users]);
 
   const handleRestore = async (id) => {
-    const confirmRestore = window.confirm("Restore this user?");
-    if (!confirmRestore) return;
+    const confirmed = await confirmAction({
+      title: "Restore User?",
+      text: "Are you sure you want to restore this user?",
+      icon: "question",
+      confirmButtonText: "Yes, Restore",
+    });
+
+    if (!confirmed) return;
 
     try {
       const response = await restoreUserById(id);
       if (response.status === 200) {
-        alert("User restored successfully");
+        showAlert({
+          title: "Restored!",
+          text: "User restored successfully.",
+          icon: "success",
+        });
 
         setUsers((prev) => prev.filter((u) => u._id !== id));
         setFilteredUsers((prev) => prev.filter((u) => u._id !== id));
       }
     } catch (error) {
-      alert("Restore failed");
+      showAlert({
+        title: "Error",
+        text: "Restore failed.",
+        icon: "error",
+      });
     }
   };
 
   const handlePermanentDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to PERMANENTLY delete this user? This action cannot be undone and all user data will be removed from the database."
-    );
-    if (!confirmDelete) return;
+    const confirmed = await confirmAction({
+      title: "Permanent Delete?",
+      text: "Are you sure you want to PERMANENTLY delete this user? This action cannot be undone and all user data will be removed from the database.",
+      icon: "warning",
+      confirmButtonText: "Yes, Delete Permanently",
+    });
+
+    if (!confirmed) return;
 
     try {
       const response = await permanentDeleteUserById(id);
       if (response.status === 200) {
-        alert("User permanently deleted from backend");
+        showAlert({
+          title: "Deleted!",
+          text: "User permanently deleted from the system.",
+          icon: "success",
+        });
 
         setUsers((prev) => prev.filter((u) => u._id !== id));
         setFilteredUsers((prev) => prev.filter((u) => u._id !== id));
       }
     } catch (error) {
       console.error("Permanent delete failed:", error);
-      alert("Permanent delete failed");
+      showAlert({
+        title: "Error",
+        text: "Permanent delete failed.",
+        icon: "error",
+      });
     }
   };
 
   const handleExport = () => {
     if (!filteredUsers || filteredUsers.length === 0) {
-      alert("No data to export");
+      showAlert({
+        title: "No Data",
+        text: "No data available to export.",
+        icon: "info",
+      });
       return;
     }
 

@@ -112,7 +112,7 @@ const HighlightedProfilesSection = () => {
                     
                     <div className="p-5">
                       <div className="flex flex-col gap-1">
-                        <span className="text-gray-800 font-bold text-lg">{profile.agwid || "AGV0000"}</span>
+                        <span className="text-gray-800 font-bold text-lg">{profile.agwid || "AV0000"}</span>
                         <span className="text-gray-500 text-sm font-medium line-clamp-1">
                           {profile.education || "Education not specified"}
                         </span>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
 import { getPaidUserData, removeUserSubscription } from "../../api/service/adminServices";
 import { useNavigate } from "react-router-dom";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 const AdminFreeUserList = () => {
   const [users, setUsers] = useState([]);
@@ -98,19 +99,33 @@ const AdminFreeUserList = () => {
   };
 
   const handleRemove = async (userId) => {
-    const confirmRemove = window.confirm("Are you sure you want to remove this user?");
-    if (!confirmRemove) return;
+    const confirmed = await confirmAction({
+      title: "Remove Subscription?",
+      text: "Are you sure you want to remove this user's subscription?",
+      icon: "warning",
+      confirmButtonText: "Yes, Remove",
+    });
+
+    if (!confirmed) return;
 
     try {
       const response = await removeUserSubscription(userId);
       if (response.status === 200) {
-        alert("User subscription removed successfully");
+        showAlert({
+          title: "Removed",
+          text: "User subscription removed successfully.",
+          icon: "success",
+        });
         setUsers((prevUsers) => prevUsers.filter((user) => user._id !== userId));
         setFilteredUsers((prevUsers) => prevUsers.filter((user) => user._id !== userId));
       }
     } catch (error) {
       console.error("Error removing subscription:", error);
-      alert("Failed to remove subscription");
+      showAlert({
+        title: "Error",
+        text: "Failed to remove subscription.",
+        icon: "error",
+      });
     }
   };
 

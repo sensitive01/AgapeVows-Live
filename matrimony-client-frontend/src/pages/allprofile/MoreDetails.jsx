@@ -2197,7 +2197,7 @@ const MoreDetails = () => {
           <div className="profile-right">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
               <div className="agv-id" style={{ marginBottom: "0", display: 'flex', alignItems: 'center', gap: '10px' }}>
-                AGV ID: {userInfo?.agwid || "N/A"}
+                AV ID: {userInfo?.agwid || "N/A"}
                 <div className="d-flex gap-2 ms-2">
                   {userInfo?.isAnySubscriptionTaken && (
                     <span className="badge rounded-pill bg-warning text-dark" style={{ fontSize: '12px', padding: '5px 12px' }}>

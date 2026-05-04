@@ -4,6 +4,7 @@ import {
   getAllReports,
   updateReportStatus,
 } from "../../api/service/adminServices";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 const AdminReports = () => {
   const [reports, setReports] = useState([]);
@@ -49,12 +50,19 @@ const AdminReports = () => {
 
       await fetchReports();
 
-      setSuccess("Report updated successfully!");
+      showAlert({
+        title: "Updated",
+        text: "Report updated successfully!",
+        icon: "success",
+      });
       window.$("#reportModal").modal("hide");
-
-      setTimeout(() => setSuccess(""), 3000);
     } catch (error) {
       console.error("Update error:", error);
+      showAlert({
+        title: "Error",
+        text: "Failed to update report",
+        icon: "error",
+      });
     }
 
     setLoading(false);

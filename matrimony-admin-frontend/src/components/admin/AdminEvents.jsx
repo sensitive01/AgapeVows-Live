@@ -7,6 +7,7 @@ import {
   editEvent,
   getAllEvents,
 } from "../../api/service/adminServices";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 const AdminEvents = () => {
   const [modalMode, setModalMode] = useState("add"); // 'add', 'edit', 'view'
@@ -126,7 +127,11 @@ const AdminEvents = () => {
     e.preventDefault();
 
     if (!currentEvent.name || !currentEvent.date || !currentEvent.location) {
-      alert("Please fill in all required fields");
+      showAlert({
+        title: "Wait!",
+        text: "Please fill in all required fields",
+        icon: "warning",
+      });
       return;
     }
 
@@ -153,13 +158,21 @@ const AdminEvents = () => {
       if (modalMode === "add") {
         const response = await addNewEvent(formData);
         if (response.status === 201) {
-          alert("Event added successfully!");
+          showAlert({
+            title: "Success",
+            text: "Event added successfully!",
+            icon: "success",
+          });
           fetchEvents();
         }
       } else {
         const response = await editEvent(currentEvent.id, formData);
         if (response.status === 200) {
-          alert("Event updated successfully!");
+          showAlert({
+            title: "Success",
+            text: "Event updated successfully!",
+            icon: "success",
+          });
           fetchEvents();
         }
       }
@@ -175,23 +188,42 @@ const AdminEvents = () => {
       }
     } catch (error) {
       console.error("Error saving event:", error);
-      alert("Failed to save event");
+      showAlert({
+        title: "Error",
+        text: "Failed to save event",
+        icon: "error",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   const deleteEvent = async (id) => {
-    if (confirm("Are you sure you want to delete this event?")) {
+    const confirmed = await confirmAction({
+      title: "Delete Event?",
+      text: "Are you sure you want to delete this event?",
+      icon: "warning",
+      confirmButtonText: "Yes, Delete",
+    });
+
+    if (confirmed) {
       try {
         const response = await deleteEventData(id);
         if (response.status === 200) {
-          alert("Event deleted successfully!");
+          showAlert({
+            title: "Deleted",
+            text: "Event deleted successfully!",
+            icon: "success",
+          });
           fetchEvents();
         }
       } catch (error) {
         console.error("Error deleting event:", error);
-        alert("Failed to delete event");
+        showAlert({
+          title: "Error",
+          text: "Failed to delete event",
+          icon: "error",
+        });
       }
     }
   };

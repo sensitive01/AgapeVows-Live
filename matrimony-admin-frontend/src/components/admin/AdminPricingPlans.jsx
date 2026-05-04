@@ -6,6 +6,7 @@ import {
   editPlanData,
   getAllPlanData,
 } from "../../api/service/adminServices";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 const AdminPricingPlans = () => {
   const [modalMode, setModalMode] = useState("add"); // 'add' or 'edit'
@@ -95,7 +96,11 @@ const AdminPricingPlans = () => {
     e.preventDefault();
 
     if (!currentPlan.name || !currentPlan.price || !currentPlan.duration) {
-      alert("Please fill in all required fields (Plan name, Price, Duration)");
+      showAlert({
+        title: "Wait!",
+        text: "Please fill in all required fields (Plan name, Price, Duration)",
+        icon: "warning",
+      });
       return;
     }
 
@@ -108,7 +113,11 @@ const AdminPricingPlans = () => {
         if (response.status === 201) {
           const newPlan = response.data.data;
           setPlans([...plans, newPlan]);
-          alert("Plan added successfully!");
+          showAlert({
+            title: "Success",
+            text: "Plan added successfully!",
+            icon: "success",
+          });
         } else {
           throw new Error("Failed to add plan");
         }
@@ -122,7 +131,11 @@ const AdminPricingPlans = () => {
               plan._id === currentPlan.id ? { ...plan, ...updatedPlan } : plan
             )
           );
-          alert("Plan updated successfully!");
+          showAlert({
+            title: "Success",
+            text: "Plan updated successfully!",
+            icon: "success",
+          });
         } else {
           throw new Error("Failed to update plan");
         }
@@ -140,7 +153,11 @@ const AdminPricingPlans = () => {
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("An error occurred while saving the plan");
+      showAlert({
+        title: "Error",
+        text: "An error occurred while saving the plan",
+        icon: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -159,13 +176,21 @@ const AdminPricingPlans = () => {
             plan._id === planId ? { ...plan, status: newStatus } : plan
           )
         );
-        alert(`Plan ${newStatus.toLowerCase()} successfully!`);
+        showAlert({
+          title: "Status Updated",
+          text: `Plan ${newStatus.toLowerCase()} successfully!`,
+          icon: "success",
+        });
       } else {
         throw new Error("Failed to update plan status");
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("An error occurred while updating plan status");
+      showAlert({
+        title: "Error",
+        text: "An error occurred while updating plan status",
+        icon: "error",
+      });
     }
   };
 

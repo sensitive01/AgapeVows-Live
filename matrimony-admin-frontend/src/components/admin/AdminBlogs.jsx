@@ -414,6 +414,7 @@ import {
   editBlog,
   deleteBlog,
 } from "../../api/service/adminServices";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 const AdminBlogs = () => {
   const [blogs, setBlogs] = useState([]);
@@ -474,11 +475,21 @@ const AdminBlogs = () => {
 
   // ================= DELETE =================
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure to delete this blog?")) {
+    const confirmed = await confirmAction({
+      title: "Delete Blog?",
+      text: "Are you sure you want to delete this blog?",
+      icon: "warning",
+      confirmButtonText: "Yes, Delete",
+    });
+
+    if (confirmed) {
       await deleteBlog(id);
       fetchBlogs();
-      setSuccess("Blog deleted successfully!");
-      setTimeout(() => setSuccess(""), 3000);
+      showAlert({
+        title: "Deleted",
+        text: "Blog deleted successfully!",
+        icon: "success",
+      });
     }
   };
 
@@ -535,10 +546,18 @@ const AdminBlogs = () => {
 
     if (modalMode === "add") {
       await addNewBlog(formData);
-      setSuccess("Blog published successfully!");
+      showAlert({
+        title: "Published",
+        text: "Blog published successfully!",
+        icon: "success",
+      });
     } else {
       await editBlog(currentBlog.id, formData);
-      setSuccess("Blog updated successfully!");
+      showAlert({
+        title: "Updated",
+        text: "Blog updated successfully!",
+        icon: "success",
+      });
     }
 
     fetchBlogs();

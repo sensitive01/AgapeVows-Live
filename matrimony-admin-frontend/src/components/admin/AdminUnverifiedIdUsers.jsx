@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
-import {
-  getUnverifiedIdUsers,
-  verifyIdProof,
-  deleteUserById,
-} from "../../api/service/adminServices";
+import { getUnverifiedIdUsers, verifyIdProof, deleteUserById } from "../../api/service/adminServices";
 import { useNavigate } from "react-router-dom";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 export default function AdminUnverifiedIdUsers() {
   const navigate = useNavigate();
@@ -56,8 +53,14 @@ export default function AdminUnverifiedIdUsers() {
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
   const handleVerifyId = async (userId, status) => {
-    if (status === "Rejected" && !window.confirm("Are you sure you want to reject this ID proof?")) {
-      return;
+    if (status === "Rejected") {
+      const confirmed = await confirmAction({
+        title: "Reject ID Proof?",
+        text: "Are you sure you want to reject this ID proof?",
+        icon: "warning",
+        confirmButtonText: "Yes, Reject",
+      });
+      if (!confirmed) return;
     }
     
     setProcessingUsers((prev) => new Set(prev).add(userId));
@@ -73,11 +76,19 @@ export default function AdminUnverifiedIdUsers() {
           setUsers((prev) => prev.map(u => u._id === userId ? { ...u, idVerificationStatus: status } : u));
           setFilteredUsers((prev) => prev.map(u => u._id === userId ? { ...u, idVerificationStatus: status } : u));
         }
-        alert(`ID Proof ${status} successfully!`);
+        showAlert({
+          title: "Success!",
+          text: `ID Proof ${status} successfully!`,
+          icon: "success",
+        });
       }
     } catch (error) {
       console.error(`Error ${status} ID:`, error);
-      alert(`Failed to ${status} ID proof.`);
+      showAlert({
+        title: "Error",
+        text: `Failed to ${status} ID proof.`,
+        icon: "error",
+      });
     } finally {
       setProcessingUsers((prev) => {
         const newSet = new Set(prev);

@@ -44,6 +44,7 @@
     "socket.io-client": "^4.8.1",
     "suneditor": "^2.47.8",
     "suneditor-react": "^3.6.1",
+    "sweetalert2": "^11.26.24",
     "swiper": "^12.1.3",
     "yup": "^1.6.1"
   },

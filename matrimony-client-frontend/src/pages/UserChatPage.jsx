@@ -12,6 +12,7 @@ import Footer from "../components/Footer";
 import CopyRights from "../components/CopyRights";
 import MembershipBadge from "../components/common/MembershipBadge";
 import ChatUi from "../pages/allprofile/ChatUi";
+import { showAlert } from "../utils/alertService";
 import {
   getMyChatList,
   getChatMessages,
@@ -159,11 +160,19 @@ const UserChatPage = () => {
         // Remove from chat list
         setChatList((prev) => prev.filter((chat) => chat.participant._id !== profileId));
         handleCloseChatbox();
-        alert("User blocked successfully! They will appear in the Blocked section.");
+        showAlert({
+          title: "Blocked",
+          text: "User blocked successfully! They will appear in the Blocked section.",
+          icon: "success",
+        });
       }
     } catch (error) {
       console.error("Error blocking user:", error);
-      alert("Failed to block user.");
+      showAlert({
+        title: "Error",
+        text: "Failed to block user.",
+        icon: "error",
+      });
     }
   };
 

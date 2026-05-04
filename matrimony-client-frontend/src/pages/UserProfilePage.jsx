@@ -7,6 +7,7 @@ import CopyRights from "../components/CopyRights";
 import { getUserProfile, uploadIdProof } from "../api/axiosService/userAuthService";
 import profImage from "../assets/images/blue-circle-with-white-user_78370-4707.avif";
 import LayoutComponent from "../components/layouts/LayoutComponent";
+import { showAlert } from "../utils/alertService";
 import MembershipBadge from "../components/common/MembershipBadge";
 
 // Helper Components
@@ -147,7 +148,11 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
 
   const handleSubmit = async () => {
     if (!idType || !idNumber || !file) {
-      alert("Please fill all fields and select a file.");
+      showAlert({
+        title: "Validation Error",
+        text: "Please fill all fields and select a file.",
+        icon: "warning",
+      });
       return;
     }
 
@@ -164,14 +169,26 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
       const response = await uploadIdProof(userId, formData);
 
       if (response.status === 200) {
-        alert("ID Proof uploaded successfully for verification!");
+        showAlert({
+          title: "Success",
+          text: "ID Proof uploaded successfully for verification!",
+          icon: "success",
+        });
         onUploadSuccess();
       } else {
-        alert("Upload failed. Please try again.");
+        showAlert({
+          title: "Error",
+          text: "Upload failed. Please try again.",
+          icon: "error",
+        });
       }
     } catch (error) {
       console.error("Upload error:", error);
-      alert("An error occurred during upload.");
+      showAlert({
+        title: "Error",
+        text: "An error occurred during upload.",
+        icon: "error",
+      });
     } finally {
       setIsUploading(false);
     }

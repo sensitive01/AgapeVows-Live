@@ -230,6 +230,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Footer from "../components/Footer";
 import CopyRights from "../components/CopyRights";
 import { verifyUser } from "../api/axiosService/userSignUpService";
+import { showAlert } from "../utils/alertService";
 import LayoutComponent from "../components/layouts/LayoutComponent";
 
 const UserLoginPage = () => {
@@ -316,13 +317,15 @@ const UserLoginPage = () => {
       }
     } catch (error) {
       console.error("Login error:", error);
+      let message = "Network error. Please check your connection and try again.";
       if (error.response && error.response.data) {
-        setLoginError(error.response.data.message || "Invalid credentials");
-      } else {
-        setLoginError(
-          "Network error. Please check your connection and try again."
-        );
+        message = error.response.data.message || "Invalid credentials";
       }
+      showAlert({
+        title: "Login Failed",
+        text: message,
+        icon: "error",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -373,11 +376,6 @@ const UserLoginPage = () => {
 
                     <div className="form-login">
                       <form onSubmit={handleSubmit}>
-                        {loginError && (
-                          <div className="alert alert-danger" role="alert">
-                            {loginError}
-                          </div>
-                        )}
 
                         {/* Email */}
                         <div className="form-group">

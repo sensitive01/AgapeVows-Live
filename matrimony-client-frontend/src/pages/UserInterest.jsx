@@ -9,6 +9,7 @@ import {
   getInterestedProfile,
   handleChangeInterestStatus,
 } from "../api/axiosService/userAuthService";
+import { showAlert } from "../utils/alertService";
 import MembershipBadge from "../components/common/MembershipBadge";
 
 const UserInterest = () => {
@@ -18,25 +19,6 @@ const UserInterest = () => {
   const [profileData, setProfileData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [notification, setNotification] = useState({
-    type: "",
-    message: "",
-    show: false,
-  });
-
-  // Show notification function
-  const showNotification = (type, message) => {
-    setNotification({ type, message, show: true });
-    // Auto hide notification after 5 seconds
-    setTimeout(() => {
-      setNotification({ type: "", message: "", show: false });
-    }, 5000);
-  };
-
-  // Hide notification function
-  const hideNotification = () => {
-    setNotification({ type: "", message: "", show: false });
-  };
 
   // Fetch data based on status
   const fetchProfileData = async (status) => {
@@ -77,17 +59,26 @@ const UserInterest = () => {
       );
 
       if (response.status === 200) {
-        showNotification("success", "Profile request accepted successfully!");
+        showAlert({
+          title: "Success",
+          text: "Profile request accepted successfully!",
+          icon: "success",
+        });
         // Switch to accepted tab and fetch data
         await fetchProfileData("accepted");
       } else {
-        showNotification(
-          "error",
-          "Failed to accept the request. Please try again.",
-        );
+        showAlert({
+          title: "Error",
+          text: "Failed to accept the request. Please try again.",
+          icon: "error",
+        });
       }
     } catch (error) {
-      showNotification("error", "Error accepting request: " + error.message);
+      showAlert({
+        title: "Error",
+        text: "Error accepting request: " + error.message,
+        icon: "error",
+      });
     }
   };
 
@@ -101,40 +92,29 @@ const UserInterest = () => {
       );
 
       if (response.status === 200) {
-        showNotification("success", "Profile request rejected successfully!");
+        showAlert({
+          title: "Success",
+          text: "Profile request rejected successfully!",
+          icon: "success",
+        });
         // Switch to rejected tab and fetch data
         await fetchProfileData("rejected");
       } else {
-        showNotification(
-          "error",
-          "Failed to reject the request. Please try again.",
-        );
+        showAlert({
+          title: "Error",
+          text: "Failed to reject the request. Please try again.",
+          icon: "error",
+        });
       }
     } catch (error) {
-      showNotification("error", "Error rejecting request: " + error.message);
+      showAlert({
+        title: "Error",
+        text: "Error rejecting request: " + error.message,
+        icon: "error",
+      });
     }
   };
 
-  // Render notification
-  const renderNotification = () => {
-    if (!notification.show) return null;
-
-    return (
-      <div
-        className={`alert ${notification.type === "success" ? "alert-success" : "alert-danger"
-          } alert-dismissible fade show`}
-        role="alert"
-      >
-        {notification.message}
-        <button
-          type="button"
-          className="btn-close"
-          aria-label="Close"
-          onClick={hideNotification}
-        ></button>
-      </div>
-    );
-  };
 
   // Render profile list
   const renderProfileList = () => {
@@ -317,8 +297,6 @@ const UserInterest = () => {
                   <div className="col-md-12 db-sec-com">
                     <h2 className="db-tit">Interest Request</h2>
 
-                    {/* Notification Display */}
-                    {renderNotification()}
 
                     <div className="db-pro-stat">
                       <div className="dropdown">

@@ -5,6 +5,7 @@ import {
   deleteEnquiry,
   updateEnquiry,
 } from "../../api/service/adminServices";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 const AdminEnquiries = () => {
   const [enquiries, setEnquiries] = useState([]);
@@ -105,13 +106,20 @@ const AdminEnquiries = () => {
 
       await fetchEnquiries();
 
-      setSuccess("Enquiry updated successfully!");
+      showAlert({
+        title: "Success",
+        text: "Enquiry updated successfully!",
+        icon: "success",
+      });
       window.$("#enquiryModal").modal("hide");
 
-      setTimeout(() => setSuccess(""), 3000);
     } catch (error) {
       console.error("Update error:", error);
-      setError("Failed to update enquiry");
+      showAlert({
+        title: "Error",
+        text: "Failed to update enquiry",
+        icon: "error",
+      });
     }
 
     setLoading(false);
@@ -119,20 +127,31 @@ const AdminEnquiries = () => {
 
   // ================= DELETE =================
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this enquiry?"
-    );
-    if (!confirmDelete) return;
+    const confirmed = await confirmAction({
+      title: "Delete Enquiry?",
+      text: "Are you sure you want to delete this enquiry?",
+      icon: "warning",
+      confirmButtonText: "Yes, Delete",
+    });
+
+    if (!confirmed) return;
 
     try {
       await deleteEnquiry(id);
       await fetchEnquiries();
 
-      setSuccess("Enquiry deleted successfully!");
-      setTimeout(() => setSuccess(""), 3000);
+      showAlert({
+        title: "Deleted",
+        text: "Enquiry deleted successfully!",
+        icon: "success",
+      });
     } catch (error) {
       console.error("Delete error:", error);
-      setError("Failed to delete enquiry");
+      showAlert({
+        title: "Error",
+        text: "Failed to delete enquiry",
+        icon: "error",
+      });
     }
   };
 

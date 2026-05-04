@@ -48,7 +48,7 @@ const AGAPE_WATERMARK_CONFIG = [
 
 const generateOrderId = () => {
   const randomNumber = Math.floor(100000 + Math.random() * 900000);
-  return `AGV${randomNumber}`;
+  return `AV${randomNumber}`;
 };
 
 

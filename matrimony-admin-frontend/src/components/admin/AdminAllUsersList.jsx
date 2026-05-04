@@ -3,6 +3,7 @@ import NewLayout from "./layout/NewLayout";
 import { getAllUserData, deleteUserById, exportUsersData } from "../../api/service/adminServices";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 
 
@@ -129,14 +130,23 @@ const AdminAllUsersList = () => {
   };
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete?");
-    if (!confirmDelete) return;
+    const confirmed = await confirmAction({
+      title: "Delete User?",
+      text: "Are you sure you want to delete this user? This will move them to Deleted Users.",
+      confirmButtonText: "Yes, Delete",
+    });
+
+    if (!confirmed) return;
 
     try {
       const response = await deleteUserById(id);
 
       if (response.status === 200) {
-        alert("User moved to Deleted Users");
+        showAlert({
+          title: "Deleted!",
+          text: "User moved to Deleted Users successfully.",
+          icon: "success",
+        });
 
         // Remove from UI instantly
         setUsers((prevUsers) =>
@@ -149,7 +159,11 @@ const AdminAllUsersList = () => {
       }
     } catch (error) {
       console.error(error);
-      alert("Delete failed");
+      showAlert({
+        title: "Error",
+        text: "Delete failed. Please try again.",
+        icon: "error",
+      });
     }
   };
 

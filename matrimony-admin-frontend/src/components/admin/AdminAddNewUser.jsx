@@ -6,6 +6,7 @@ import BasicInfomation from "./BasicInfomation";
 import * as XLSX from "xlsx";
 import { Modal } from "react-bootstrap";
 import { registerUserByAdmin, bulkRegisterUsersByAdmin } from "../../api/service/adminServices";
+import { showAlert } from "../../utils/alertService";
 
 const FormSection = ({ title, children, id, activeTab }) => (
   <div className={`tab-pane fade ${activeTab === id ? "show active" : ""}`} id={id} role="tabpanel">
@@ -334,20 +335,32 @@ const AdminAddNewUser = () => {
 
   const handleBulkSubmit = async () => {
     if (bulkData.length === 0) {
-      alert("Please upload an Excel file first.");
+      showAlert({
+        title: "No Data",
+        text: "Please upload an Excel file first.",
+        icon: "warning",
+      });
       return;
     }
     setIsBulkUploading(true);
     try {
       const response = await bulkRegisterUsersByAdmin(bulkData);
       if (response.status === 200) {
-        alert(`Bulk Registration Complete`);
+        showAlert({
+          title: "Success",
+          text: `Bulk Registration Complete`,
+          icon: "success",
+        });
         setBulkData([]);
         setShowBulkModal(false);
       }
     } catch (err) {
       console.error("Bulk upload error:", err);
-      alert(err.response?.data?.message || "Failed to upload bulk users");
+      showAlert({
+        title: "Error",
+        text: err.response?.data?.message || "Failed to upload bulk users",
+        icon: "error",
+      });
     } finally {
       setIsBulkUploading(false);
     }
@@ -356,7 +369,11 @@ const AdminAddNewUser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.userName || !formData.userEmail || !formData.password) {
-      alert("Please fill in basic authentication details (Name, Email, Password)");
+      showAlert({
+        title: "Validation Error",
+        text: "Please fill in basic authentication details (Name, Email, Password)",
+        icon: "warning",
+      });
       setActiveTab("basic");
       return;
     }
@@ -374,12 +391,20 @@ const AdminAddNewUser = () => {
     try {
       const response = await registerUserByAdmin(sanitizedData);
       if (response.data.success) {
-        alert("User Profile Created Successfully!");
+        showAlert({
+          title: "Success",
+          text: "User Profile Created Successfully!",
+          icon: "success",
+        });
         navigate(-1);
       }
     } catch (err) {
       console.error("Creation error:", err);
-      alert(err.response?.data?.message || "Failed to create user (Internal Error)");
+      showAlert({
+        title: "Error",
+        text: err.response?.data?.message || "Failed to create user (Internal Error)",
+        icon: "error",
+      });
     } finally {
       setUpdating(false);
     }

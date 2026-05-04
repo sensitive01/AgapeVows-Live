@@ -52,7 +52,7 @@ const generateAgwid = async () => {
       const randomNumber = Math.floor(Math.random() * 1000000);
       const paddedNumber = randomNumber.toString().padStart(6, "0");
 
-      agwid = `AGV${paddedNumber}`;
+      agwid = `AV${paddedNumber}`;
 
       const existingUser = await userModel.findOne({ agwid });
       if (!existingUser) {

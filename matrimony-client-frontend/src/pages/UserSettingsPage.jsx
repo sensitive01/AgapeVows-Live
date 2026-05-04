@@ -5,6 +5,7 @@ import LayoutComponent from "../components/layouts/LayoutComponent";
 import { deactivateProfile, getUserInfo } from "../api/axiosService/userAuthService";
 import { resetPasswordRequest } from "../api/axiosService/userSignUpService";
 import { toast } from "react-toastify";
+import { confirmAction } from "../utils/alertService";
 
 const UserSettingsPage = () => {
   const navigate = useNavigate();
@@ -76,9 +77,14 @@ const UserSettingsPage = () => {
       return;
     }
 
-    if (!window.confirm("Are you sure you want to deactivate your profile? You will be logged out.")) {
-      return;
-    }
+    const confirmed = await confirmAction({
+      title: "Deactivate Profile?",
+      text: "Are you sure you want to deactivate your profile? You will be logged out.",
+      icon: "warning",
+      confirmButtonText: "Yes, Deactivate",
+    });
+
+    if (!confirmed) return;
 
     setLoading(true);
     try {

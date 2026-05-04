@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import NewLayout from "./layout/NewLayout";
 import { getAllPlanData, upgradeUserPlan, getUserById } from "../../api/service/adminServices";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 const AdminUserPlan = () => {
   const { id } = useParams();
@@ -75,7 +76,14 @@ const AdminUserPlan = () => {
   };
 
   const handlePaymentAndUpgrade = async (plan) => {
-    if (!window.confirm(`Are you sure you want to upgrade ${user?.userName} to ${plan.name} plan?`)) {
+    const confirmed = await confirmAction({
+      title: "Upgrade Plan?",
+      text: `Are you sure you want to upgrade ${user?.userName} to ${plan.name} plan?`,
+      icon: "question",
+      confirmButtonText: "Yes, Upgrade",
+    });
+
+    if (!confirmed) {
       return;
     }
 
@@ -83,7 +91,11 @@ const AdminUserPlan = () => {
     const scriptLoaded = await loadRazorpayScript();
     
     if (!scriptLoaded) {
-      alert("Razorpay SDK failed to load. Please try again.");
+      showAlert({
+        title: "Error",
+        text: "Razorpay SDK failed to load. Please try again.",
+        icon: "error",
+      });
       setUpgrading(false);
       return;
     }
@@ -105,14 +117,26 @@ const AdminUserPlan = () => {
           const backendResponse = await upgradeUserPlan(id, planDataWithPayment);
           
           if (backendResponse.status === 200) {
-            alert(`Dummy Payment Successful! Upgrade completed for ${user.userName}. Payment ID: ${response.razorpay_payment_id}`);
+            showAlert({
+              title: "Success",
+              text: `Upgrade completed for ${user.userName}. Payment ID: ${response.razorpay_payment_id}`,
+              icon: "success",
+            });
             navigate(`/admin/billing-info/${id}`);
           } else {
-            alert("Payment recorded, but failed to complete manual upgrade. Please inform developer.");
+            showAlert({
+              title: "Error",
+              text: "Payment recorded, but failed to complete manual upgrade.",
+              icon: "error",
+            });
           }
         } catch (error) {
-           console.error("Error setting user plan data after payment:", error);
-           alert("Payment was successful but there was an issue processing it internally.");
+          console.error("Error setting user plan data after payment:", error);
+          showAlert({
+            title: "Error",
+            text: "Payment was successful but there was an issue processing it internally.",
+            icon: "error",
+          });
         } finally {
            setUpgrading(false);
         }
@@ -137,7 +161,11 @@ const AdminUserPlan = () => {
 
     rzp.on("payment.failed", function (response) {
       console.error("Payment dummy failed:", response.error);
-      alert(`Payment failed: ${response.error.description}`);
+      showAlert({
+        title: "Payment Failed",
+        text: response.error.description,
+        icon: "error",
+      });
       setUpgrading(false);
     });
 

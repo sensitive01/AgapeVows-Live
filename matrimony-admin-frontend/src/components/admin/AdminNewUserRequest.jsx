@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
 //import img1 from "/assets/images/profiles/1.jpg";
 import NewLayout from "./layout/NewLayout";
-import {
-  approveNewUser,
-  getNewRequestedUsers,
-  deleteUserById,
-} from "../../api/service/adminServices";
+import { approveNewUser, getNewRequestedUsers, deleteUserById } from "../../api/service/adminServices";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 export default function AdminNewUserRequest() {
   const navigate = useNavigate();
@@ -126,11 +123,19 @@ export default function AdminNewUserRequest() {
         setUsers((prevUsers) =>
           prevUsers.filter((user) => user._id !== userId)
         );
-        alert(response.data.message);
+        showAlert({
+          title: "Approved!",
+          text: response.data.message,
+          icon: "success",
+        });
       }
     } catch (error) {
       console.error("Error approving user:", error);
-      alert("Failed to approve user. Please try again.");
+      showAlert({
+        title: "Error",
+        text: "Failed to approve user. Please try again.",
+        icon: "error",
+      });
     } finally {
       setApprovingUsers((prev) => {
         const newSet = new Set(prev);
@@ -140,11 +145,14 @@ export default function AdminNewUserRequest() {
     }
   };
   const handleDeleteUser = async (userId) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this user? This action cannot be undone."
-    );
+    const confirmed = await confirmAction({
+      title: "Delete User?",
+      text: "Are you sure you want to delete this user? This action cannot be undone.",
+      icon: "warning",
+      confirmButtonText: "Yes, Delete",
+    });
 
-    if (!confirmDelete) return;
+    if (!confirmed) return;
 
     try {
       // Call your API to delete the user
@@ -154,11 +162,19 @@ export default function AdminNewUserRequest() {
         // Remove the user from the state to update the table
         setFilteredUsers((prev) => prev.filter((user) => user._id !== userId));
         setUsers((prev) => prev.filter((user) => user._id !== userId));
-        alert(response.data.message || "User deleted successfully!");
+        showAlert({
+          title: "Deleted!",
+          text: response.data.message || "User deleted successfully!",
+          icon: "success",
+        });
       }
     } catch (error) {
       console.error("Error deleting user:", error);
-      alert("Failed to delete user. Please try again.");
+      showAlert({
+        title: "Error",
+        text: "Delete failed.",
+        icon: "error",
+      });
     }
   };
 

@@ -260,6 +260,7 @@ import {
   updateIssue,
   deleteIssue,
 } from "../../api/service/adminServices";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 const AdminIssues = () => {
   const [issues, setIssues] = useState([]);
@@ -309,12 +310,20 @@ const AdminIssues = () => {
 
       await fetchIssues();
 
-      setSuccess("Issue updated successfully!");
+      showAlert({
+        title: "Success",
+        text: "Issue updated successfully!",
+        icon: "success",
+      });
       window.$("#issueModal").modal("hide");
 
-      setTimeout(() => setSuccess(""), 3000);
     } catch (error) {
       console.error("Update error:", error);
+      showAlert({
+        title: "Error",
+        text: "Failed to update issue.",
+        icon: "error",
+      });
     }
 
     setLoading(false);
@@ -322,19 +331,31 @@ const AdminIssues = () => {
 
   // ================= DELETE =================
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this issue?"
-    );
-    if (!confirmDelete) return;
+    const confirmed = await confirmAction({
+      title: "Delete Issue?",
+      text: "Are you sure you want to delete this issue?",
+      icon: "warning",
+      confirmButtonText: "Yes, Delete",
+    });
+
+    if (!confirmed) return;
 
     try {
       await deleteIssue(id);
       await fetchIssues();
 
-      setSuccess("Issue deleted successfully!");
-      setTimeout(() => setSuccess(""), 3000);
+      showAlert({
+        title: "Deleted",
+        text: "Issue deleted successfully!",
+        icon: "success",
+      });
     } catch (error) {
       console.error("Delete error:", error);
+      showAlert({
+        title: "Error",
+        text: "Failed to delete issue.",
+        icon: "error",
+      });
     }
   };
 

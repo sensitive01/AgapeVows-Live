@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import NewLayout from "./layout/NewLayout";
 import { getUserById, updateUserById } from "../../api/service/adminServices";
+import { confirmAction, showAlert } from "../../utils/alertService";
 import { Country, State, City } from "country-state-city";
 import BasicInfomation from "./BasicInfomation";
 import profImages from "/assets/images/profiles/1.jpg";
@@ -205,7 +206,11 @@ const AdminEditUser = () => {
         }
       } catch (err) {
         console.error("Error loading user:", err);
-        alert("Failed to load user data");
+        showAlert({
+          title: "Error",
+          text: "Failed to load user data",
+          icon: "error",
+        });
       } finally {
         setLoading(false);
       }
@@ -259,12 +264,20 @@ const AdminEditUser = () => {
       // But user asked for "editing all details", primarily focused on the fields.
       const response = await updateUserById(id, formData);
       if (response.status === 200) {
-        alert("User updated successfully");
+        showAlert({
+          title: "Success",
+          text: "User updated successfully",
+          icon: "success",
+        });
         navigate(-1);
       }
     } catch (err) {
       console.error("Update error:", err);
-      alert("Failed to update user");
+      showAlert({
+        title: "Error",
+        text: "Failed to update user",
+        icon: "error",
+      });
     } finally {
       setUpdating(false);
     }

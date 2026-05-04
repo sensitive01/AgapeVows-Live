@@ -5,6 +5,7 @@ import {
   deleteFeedback,
   updateFeedback,
 } from "../../api/service/adminServices";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 const AdminFeedbacks = () => {
   const [feedbacks, setFeedbacks] = useState([]);
@@ -105,13 +106,20 @@ const AdminFeedbacks = () => {
 
       await fetchFeedbacks();
 
-      setSuccess("Feedback updated successfully!");
+      showAlert({
+        title: "Success",
+        text: "Feedback updated successfully!",
+        icon: "success",
+      });
       window.$("#feedbackModal").modal("hide");
 
-      setTimeout(() => setSuccess(""), 3000);
     } catch (error) {
       console.error("Update error:", error);
-      setError("Failed to update feedback");
+      showAlert({
+        title: "Error",
+        text: "Failed to update feedback",
+        icon: "error",
+      });
     }
 
     setLoading(false);
@@ -119,20 +127,31 @@ const AdminFeedbacks = () => {
 
   // ================= DELETE =================
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this feedback?"
-    );
-    if (!confirmDelete) return;
+    const confirmed = await confirmAction({
+      title: "Delete Feedback?",
+      text: "Are you sure you want to delete this feedback?",
+      icon: "warning",
+      confirmButtonText: "Yes, Delete",
+    });
+
+    if (!confirmed) return;
 
     try {
       await deleteFeedback(id);
       await fetchFeedbacks();
 
-      setSuccess("Feedback deleted successfully!");
-      setTimeout(() => setSuccess(""), 3000);
+      showAlert({
+        title: "Deleted",
+        text: "Feedback deleted successfully!",
+        icon: "success",
+      });
     } catch (error) {
       console.error("Delete error:", error);
-      setError("Failed to delete feedback");
+      showAlert({
+        title: "Error",
+        text: "Failed to delete feedback",
+        icon: "error",
+      });
     }
   };
 

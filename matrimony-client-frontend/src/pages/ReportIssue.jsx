@@ -461,6 +461,7 @@ import LayoutComponent from "../components/layouts/LayoutComponent";
 import Footer from "../components/Footer";
 import CommonBanner from "../components/CommonBanner";
 import { getUserProfile, reportIssue } from "../api/axiosService/userAuthService";
+import { showAlert } from "../utils/alertService";
 
 const ReportIssue = () => {
   const userId = localStorage.getItem("userId");
@@ -517,7 +518,11 @@ const ReportIssue = () => {
 
     // ✅ Validation (for both guest & logged-in users)
     if (!formData.userName || !formData.userEmail || !formData.details) {
-      alert("Please fill all required fields");
+      showAlert({
+        title: "Validation Error",
+        text: "Please fill all required fields",
+        icon: "warning",
+      });
       return;
     }
 
@@ -542,7 +547,11 @@ const ReportIssue = () => {
       const res = await reportIssue(data);
 
       if (res.status === 200 || res.status === 201) {
-        alert("Issue submitted successfully ✅");
+        showAlert({
+          title: "Success",
+          text: "Issue submitted successfully ✅",
+          icon: "success",
+        });
 
         setFormData({
           userName: isLoggedIn ? formData.userName : "",
@@ -560,7 +569,11 @@ const ReportIssue = () => {
         console.log("Server Error:", error.response.data);
       }
 
-      alert("Something went wrong ❌");
+      showAlert({
+        title: "Error",
+        text: "Something went wrong ❌",
+        icon: "error",
+      });
     }
   };
 

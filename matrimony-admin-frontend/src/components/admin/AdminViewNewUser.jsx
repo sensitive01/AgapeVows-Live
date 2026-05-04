@@ -6,6 +6,7 @@ import {
     verifyIdProof,
     verifyMobile,
 } from "../../api/service/adminServices";
+import { confirmAction, showAlert } from "../../utils/alertService";
 
 export default function AdminViewNewUser() {
     const { id } = useParams();
@@ -235,31 +236,63 @@ export default function AdminViewNewUser() {
     };
 
     const handleVerifyId = async (status) => {
-        if (!window.confirm(`Are you sure you want to ${status.toLowerCase()} this ID proof?`)) return;
+        const confirmed = await confirmAction({
+            title: `${status} ID Proof?`,
+            text: `Are you sure you want to ${status.toLowerCase()} this ID proof?`,
+            icon: "warning",
+            confirmButtonText: `Yes, ${status}`,
+        });
+
+        if (!confirmed) return;
+
         try {
             const res = await verifyIdProof(id, status);
             if (res.status === 200) {
-                alert(`ID Proof ${status} successfully!`);
+                showAlert({
+                    title: "Success",
+                    text: `ID Proof ${status} successfully!`,
+                    icon: "success",
+                });
                 setUser({ ...user, idVerificationStatus: status });
             }
         } catch (error) {
             console.error("Error verifying ID:", error);
-            alert("Error updating status.");
+            showAlert({
+                title: "Error",
+                text: "Error updating status.",
+                icon: "error",
+            });
         }
     };
 
     const handleVerifyMobile = async (isVerified) => {
         const action = isVerified ? "verify" : "unverify";
-        if (!window.confirm(`Are you sure you want to ${action} this mobile number?`)) return;
+        const confirmed = await confirmAction({
+            title: `${isVerified ? "Verify" : "Unverify"} Mobile?`,
+            text: `Are you sure you want to ${action} this mobile number?`,
+            icon: "warning",
+            confirmButtonText: `Yes, ${isVerified ? "Verify" : "Unverify"}`,
+        });
+
+        if (!confirmed) return;
+
         try {
             const res = await verifyMobile(id, isVerified);
             if (res.status === 200) {
-                alert(`Mobile phone ${isVerified ? "verified" : "unverified"} successfully!`);
+                showAlert({
+                    title: "Success",
+                    text: `Mobile phone ${isVerified ? "verified" : "unverified"} successfully!`,
+                    icon: "success",
+                });
                 setUser({ ...user, isPhoneVerified: isVerified });
             }
         } catch (error) {
             console.error("Error verifying mobile:", error);
-            alert("Error updating status.");
+            showAlert({
+                title: "Error",
+                text: "Error updating status.",
+                icon: "error",
+            });
         }
     };
 
