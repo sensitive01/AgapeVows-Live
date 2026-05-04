@@ -347,7 +347,7 @@ const DisPlayProfileDetails = ({
         {/* PROFILE RHS */}
         <div className="rhs">
           {/* HELP BOX */}
-         
+
           <RelatedProfiles />
         </div>
       </div>

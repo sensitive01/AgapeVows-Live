@@ -390,4 +390,27 @@ export const submitFeedback = async (feedbackData) => {
   }
 };
 
+export const deactivateProfile = async (userId, deactivationReason) => {
+  try {
+    const response = await userInstance.post(`/deactivate-profile/${userId}`, {
+      deactivationReason,
+    });
+    return response;
+  } catch (error) {
+    console.error("Error deactivating profile:", error);
+    throw error;
+  }
+};
+
+export const submitReport = async (reportData) => {
+  try {
+    const response = await userInstance.post(`/submit-report`, reportData);
+    return response;
+  } catch (error) {
+    console.error("Error submitting report:", error);
+    throw error;
+  }
+};
+
+
 

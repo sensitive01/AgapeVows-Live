@@ -7,6 +7,8 @@ import {
   deleteUserById,
 } from "../../api/service/adminServices";
 import { useNavigate } from "react-router-dom";
+import * as XLSX from "xlsx";
+
 export default function AdminNewUserRequest() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
@@ -70,8 +72,8 @@ export default function AdminNewUserRequest() {
   // Pagination calculations
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentUsers = filteredUsers?.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const currentUsers = filteredUsers?.slice(indexOfFirstItem, indexOfLastItem) || [];
+  const totalPages = Math.ceil((filteredUsers?.length || 0) / itemsPerPage);
 
   // Helper function to format date
   const formatDate = (dateString) => {
@@ -159,6 +161,33 @@ export default function AdminNewUserRequest() {
       alert("Failed to delete user. Please try again.");
     }
   };
+
+  const handleExport = () => {
+    if (!filteredUsers || filteredUsers.length === 0) {
+      alert("No data to export");
+      return;
+    }
+
+    const exportData = filteredUsers.map((user) => {
+      const {
+        _id,
+        __v,
+        userPassword,
+        profileViews,
+        paymentDetails,
+        blockedUsers,
+        ignoredUsers,
+        ...rest
+      } = user;
+      return rest;
+    });
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "New Join Requests");
+    XLSX.writeFile(wb, `New_Join_Requests_${new Date().toISOString().split('T')[0]}.xlsx`);
+  };
+
   // Pagination component
   const Pagination = () => {
     const pageNumbers = [];
@@ -498,12 +527,22 @@ export default function AdminNewUserRequest() {
         <div className="row">
           <div className="col-md-12">
             <div className="box-com box-qui box-lig box-tab">
-              <div className="tit">
-                <h3>New join requests</h3>
-                <p>
-                  New request profiles, waiting for admin approvals (
-                  {filteredUsers.length} users)
-                </p>
+              <div className="tit d-flex justify-content-between align-items-center">
+                <div>
+                  <h3>New join requests</h3>
+                  <p>
+                    New request profiles, waiting for admin approvals (
+                    {filteredUsers.length} users)
+                  </p>
+                </div>
+                <div className="d-flex gap-2">
+                  <button
+                    className="btn btn-success btn-sm rounded-pill px-3 shadow-sm"
+                    onClick={handleExport}
+                  >
+                    <i className="fa fa-file-excel-o me-1"></i> Export List
+                  </button>
+                </div>
                 <div className="dropdown">
                   <button
                     type="button"
@@ -608,7 +647,7 @@ export default function AdminNewUserRequest() {
                     </tr>
                   </thead>
                   <tbody>
-                    {currentUsers.length > 0 ? (
+                    {currentUsers && currentUsers.length > 0 ? (
                       currentUsers.map((user, index) => {
                         const paymentInfo = getPaymentInfo(user.paymentDetails);
                         const serialNumber = indexOfFirstItem + index + 1;

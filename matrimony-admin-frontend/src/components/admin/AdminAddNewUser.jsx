@@ -33,7 +33,9 @@ const InputField = ({ label, name, type = "text", options = null, col = "6", req
     )}
   </div>
 );
+InputField.displayName = 'InputField';
 
+const RELATIONSHIP_OPTIONS = ["Self", "Father", "Mother", "Brother", "Sister", "Uncle", "Aunt", "Relative", "Friend", "Other"];
 const AdminAddNewUser = () => {
   const navigate = useNavigate();
   const [updating, setUpdating] = useState(false);
@@ -338,7 +340,7 @@ const AdminAddNewUser = () => {
     setIsBulkUploading(true);
     try {
       const response = await bulkRegisterUsersByAdmin(bulkData);
-      if (response.status===200) {
+      if (response.status === 200) {
         alert(`Bulk Registration Complete`);
         setBulkData([]);
         setShowBulkModal(false);
@@ -354,9 +356,9 @@ const AdminAddNewUser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.userName || !formData.userEmail || !formData.password) {
-        alert("Please fill in basic authentication details (Name, Email, Password)");
-        setActiveTab("basic");
-        return;
+      alert("Please fill in basic authentication details (Name, Email, Password)");
+      setActiveTab("basic");
+      return;
     }
     setUpdating(true);
 
@@ -454,15 +456,15 @@ const AdminAddNewUser = () => {
               {/* GALLERY */}
               <div className={`tab-pane fade ${activeTab === "gallery" ? "show active" : ""}`} id="gallery">
                 <div className="card border-0 p-4 text-center">
-                    <p className="text-muted mb-4 small">Upload a profile picture and additional gallery images.</p>
-                    <BasicInfomation
-                        profileImagePreview={profileImagePreview}
-                        handleProfileImageChange={handleProfileImageChange}
-                        handleAdditionalImagesChange={handleAdditionalImagesChange}
-                        additionalImagePreviews={additionalImagePreviews}
-                        removeAdditionalImage={removeAdditionalImage}
-                        handleDeleteProfileImage={handleDeleteProfileImage}
-                    />
+                  <p className="text-muted mb-4 small">Upload a profile picture and additional gallery images.</p>
+                  <BasicInfomation
+                    profileImagePreview={profileImagePreview}
+                    handleProfileImageChange={handleProfileImageChange}
+                    handleAdditionalImagesChange={handleAdditionalImagesChange}
+                    additionalImagePreviews={additionalImagePreviews}
+                    removeAdditionalImage={removeAdditionalImage}
+                    handleDeleteProfileImage={handleDeleteProfileImage}
+                  />
                 </div>
               </div>
 
@@ -506,6 +508,8 @@ const AdminAddNewUser = () => {
                 <InputField label="Pincode" name="pincode" formData={formData} handleChange={handleChange} />
                 <InputField label="Citizen Of" name="citizenOf" formData={formData} handleChange={handleChange} />
                 <InputField label="Alternate Mobile" name="alternateMobile" formData={formData} handleChange={handleChange} />
+                <InputField label="Contact Person Name" name="contactPersonName" formData={formData} handleChange={handleChange} />
+                <InputField label="Relationship" name="relationship" options={RELATIONSHIP_OPTIONS} formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* LIFESTYLE */}
@@ -527,10 +531,10 @@ const AdminAddNewUser = () => {
             </div>
 
             <div className="card-footer bg-white p-4 border-0 d-flex justify-content-end gap-3 mt-4">
-                <button className="btn btn-light px-5 rounded-pill" onClick={() => navigate(-1)}>Discard</button>
-                <button className="btn btn-success px-5 rounded-pill shadow-lg fw-bold" onClick={handleSubmit} disabled={updating}>
-                    {updating ? "Creating..." : "Create User Profile"}
-                </button>
+              <button className="btn btn-light px-5 rounded-pill" onClick={() => navigate(-1)}>Discard</button>
+              <button className="btn btn-success px-5 rounded-pill shadow-lg fw-bold" onClick={handleSubmit} disabled={updating}>
+                {updating ? "Creating..." : "Create User Profile"}
+              </button>
             </div>
           </div>
         </div>
@@ -554,10 +558,10 @@ const AdminAddNewUser = () => {
           </div>
 
           <div className="upload-box border rounded-4 p-5 bg-light mb-4 text-center" style={{ borderStyle: 'dashed', borderWidth: '2px', borderColor: '#198754' }}>
-            <input 
-              type="file" 
-              accept=".xlsx, .xls" 
-              onChange={handleFileUpload} 
+            <input
+              type="file"
+              accept=".xlsx, .xls"
+              onChange={handleFileUpload}
               className="form-control mb-3"
               id="excelUploadModal"
             />
@@ -594,8 +598,8 @@ const AdminAddNewUser = () => {
         </Modal.Body>
         <Modal.Footer className="border-0 p-4">
           <button className="btn btn-light rounded-pill px-4" onClick={() => setShowBulkModal(false)}>Close</button>
-          <button 
-            className="btn btn-success rounded-pill px-5 shadow fw-bold" 
+          <button
+            className="btn btn-success rounded-pill px-5 shadow fw-bold"
             onClick={handleBulkSubmit}
             disabled={isBulkUploading || bulkData.length === 0}
           >

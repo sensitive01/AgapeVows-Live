@@ -1238,6 +1238,14 @@ const UserProfilePage = () => {
                     icon="fa-address-card"
                   >
                     <InfoRow
+                      label="Contact Person"
+                      value={userInfo?.contactPersonName}
+                    />
+                    <InfoRow
+                      label="Relationship"
+                      value={userInfo?.relationship}
+                    />
+                    <InfoRow
                       label="Mobile Number"
                       value={userInfo?.userMobile}
                     />
@@ -1262,14 +1270,6 @@ const UserProfilePage = () => {
                     <InfoRow label="State" value={userInfo?.state} />
                     <InfoRow label="Pincode" value={userInfo?.pincode} />
                     <InfoRow label="Citizen Of" value={userInfo?.citizenOf} />
-                    <InfoRow
-                      label="Contact Person"
-                      value={userInfo?.contactPersonName}
-                    />
-                    <InfoRow
-                      label="Relationship"
-                      value={userInfo?.relationship}
-                    />
                   </ProfileSection>
 
                   {/* Lifestyle & Hobbies Section */}

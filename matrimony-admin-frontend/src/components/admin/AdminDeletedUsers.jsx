@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
 import { getDeletedUsers, restoreUserById, permanentDeleteUserById } from "../../api/service/adminServices";
 import { useNavigate } from "react-router-dom";
+import * as XLSX from "xlsx";
+
 
 const AdminDeletedUsers = () => {
   const [users, setUsers] = useState([]);
@@ -78,23 +80,60 @@ const AdminDeletedUsers = () => {
     }
   };
 
+  const handleExport = () => {
+    if (!filteredUsers || filteredUsers.length === 0) {
+      alert("No data to export");
+      return;
+    }
+
+    const exportData = filteredUsers.map((user) => {
+      const {
+        _id,
+        __v,
+        userPassword,
+        profileViews,
+        paymentDetails,
+        blockedUsers,
+        ignoredUsers,
+        ...rest
+      } = user;
+      return rest;
+    });
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Deleted Users");
+    XLSX.writeFile(wb, `Deleted_Users_${new Date().toISOString().split('T')[0]}.xlsx`);
+  };
+
+
   const getInitials = (name) =>
     name.split(" ").map((n) => n[0]).join("").toUpperCase();
 
   // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const currentItems = filteredUsers?.slice(indexOfFirstItem, indexOfLastItem) || [];
+  const totalPages = Math.ceil((filteredUsers?.length || 0) / itemsPerPage);
 
   return (
     <NewLayout>
       <div className="row">
         <div className="col-md-12">
           <div className="box-com box-qui box-lig box-tab">
-            <div className="tit">
-              <h3>Deleted Users</h3>
-              <p>Total deleted profiles ({filteredUsers.length} users)</p>
+            <div className="tit d-flex justify-content-between align-items-center">
+              <div>
+                <h3>Deleted Users</h3>
+                <p>Total deleted profiles ({filteredUsers.length} users)</p>
+              </div>
+              <div className="d-flex gap-2">
+                <button
+                  className="btn btn-success btn-sm rounded-pill px-3 shadow-sm"
+                  onClick={handleExport}
+                >
+                  <i className="fa fa-file-excel-o me-1"></i> Export List
+                </button>
+              </div>
             </div>
 
             {/* Search */}

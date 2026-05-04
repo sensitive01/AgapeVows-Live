@@ -19,6 +19,7 @@ const FAMILY_TYPE_OPTIONS = ["Joint", "Nuclear"];
 const FAMILY_STATUS_OPTIONS = ["Middle Class", "Upper Middle Class", "Rich", "Affluent"];
 const EMPLOYMENT_TYPE_OPTIONS = ["Government", "Private", "Business", "Self Employed", "Not Working"];
 const YES_NO_OPTIONS = ["No", "Yes", "Occasionally"];
+const RELATIONSHIP_OPTIONS = ["Self", "Father", "Mother", "Brother", "Sister", "Uncle", "Aunt", "Relative", "Friend", "Other"];
 
 // Memoized InputField component - prevents re-render on parent state changes
 const InputField = React.memo(({ label, name, type = "text", options = null, col = "6", value, onChange }) => (
@@ -186,7 +187,7 @@ const AdminEditUser = () => {
         if (response.status === 200) {
           const userData = response.data.data;
           console.log("AdminEditUser: Fetched user data:", userData);
-          
+
           // Map backend fields to local formData
           setFormData({
             ...userData,
@@ -245,7 +246,7 @@ const AdminEditUser = () => {
     }
     setAdditionalImagePreviews(prev => prev.filter((_, i) => i !== index));
     if (!removed.isExisting) {
-        setAdditionalImageFiles(prev => prev.filter(f => f !== removed.file));
+      setAdditionalImageFiles(prev => prev.filter(f => f !== removed.file));
     }
   };
 
@@ -412,7 +413,8 @@ const AdminEditUser = () => {
                 {renderField("Pincode", "pincode")}
                 {renderField("Citizen Of", "citizenOf")}
                 {renderField("Alternate Mobile", "alternateMobile")}
-                {renderField("Relationship to Contact", "relationship")}
+                {renderField("Contact Person Name", "contactPersonName")}
+                {renderField("Relationship", "relationship", "text", RELATIONSHIP_OPTIONS)}
               </FormSection>
 
               {/* LIFESTYLE */}
@@ -435,10 +437,10 @@ const AdminEditUser = () => {
             </div>
 
             <div className="card-footer bg-white p-4 border-0 d-flex justify-content-end gap-3 mt-4">
-                <button className="btn btn-light px-5 rounded-pill" onClick={() => navigate(-1)}>Discard</button>
-                <button className="btn btn-primary px-5 rounded-pill shadow" onClick={handleSubmit} disabled={updating}>
-                    {updating ? "Updating..." : "Save All Changes"}
-                </button>
+              <button className="btn btn-light px-5 rounded-pill" onClick={() => navigate(-1)}>Discard</button>
+              <button className="btn btn-primary px-5 rounded-pill shadow" onClick={handleSubmit} disabled={updating}>
+                {updating ? "Updating..." : "Save All Changes"}
+              </button>
             </div>
           </div>
         </div>

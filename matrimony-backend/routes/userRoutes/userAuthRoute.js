@@ -70,6 +70,7 @@ const userAuthController = require("../../controller/userController/userAuthCont
 const userChatController = require("../../controller/userController/userChatController");
 const enquiryController = require("../../controller/userController/enquiryController");
 const feedbackController = require("../../controller/userController/feedbackController");
+const reportController = require("../../controller/userController/reportController");
 // Multer storage for images & video
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -181,6 +182,11 @@ userAuthRoutes.post(
   feedbackController.postFeedback
 );
 
+userAuthRoutes.post(
+  "/submit-report",
+  reportController.submitReport
+);
+
 
 userAuthRoutes.get(
   "/get-user-counts",
@@ -191,6 +197,7 @@ userAuthRoutes.get(
 userAuthRoutes.get("/api/users/:userId/blocked-profiles", userAuthController.getBlockedProfiles);
 userAuthRoutes.post("/api/users/:userId/block", userAuthController.blockUser);
 userAuthRoutes.post("/api/users/:userId/unblock", userAuthController.unblockUser);
+userAuthRoutes.post("/deactivate-profile/:userId", userAuthController.deactivateProfile);
 userAuthRoutes.post("/clear-chat/:chatId", userChatController.clearChat);
 
 module.exports = userAuthRoutes;

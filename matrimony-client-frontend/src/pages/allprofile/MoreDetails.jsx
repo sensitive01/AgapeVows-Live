@@ -1754,7 +1754,7 @@ import CopyRights from "../../components/CopyRights";
 import ShowInterest from "./ShowInterest";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getTheProfieMoreDetails, getUserProfile, getMyActivePlanData, sendChatMessage } from "../../api/axiosService/userAuthService";
+import { getTheProfieMoreDetails, getUserProfile, getMyActivePlanData, sendChatMessage, submitReport } from "../../api/axiosService/userAuthService";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { io } from "socket.io-client";
 import ChatUi from "./ChatUi";
@@ -1846,6 +1846,41 @@ const MoreDetails = () => {
   const [loadingUser, setLoadingUser] = useState(true);
   const [showContact, setShowContact] = useState(false);
   const [showUpgradePopup, setShowUpgradePopup] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportComments, setReportComments] = useState("");
+  const [isReporting, setIsReporting] = useState(false);
+
+  const handleReportSubmit = async (e) => {
+    e.preventDefault();
+    if (!reportReason) {
+      toast.error("Please select a reason for reporting");
+      return;
+    }
+
+    setIsReporting(true);
+    try {
+      const reportData = {
+        reporterId: currentUserId,
+        reportedUserId: profileId,
+        reason: reportReason,
+        comments: reportComments,
+      };
+
+      const res = await submitReport(reportData);
+      if (res.status === 201 || res.data.success) {
+        toast.success("User reported successfully. Admin will review your report.");
+        setShowReportModal(false);
+        setReportReason("");
+        setReportComments("");
+      }
+    } catch (err) {
+      console.error("Error reporting user:", err);
+      toast.error("Failed to submit report. Please try again later.");
+    } finally {
+      setIsReporting(false);
+    }
+  };
 
   // Disable right-click
   useEffect(() => {
@@ -2125,6 +2160,36 @@ const MoreDetails = () => {
     )}
   </div>
 )}
+              
+              <button
+                onClick={() => setShowReportModal(true)}
+                className="report-user-btn"
+                style={{
+                  width: "100%",
+                  marginTop: "20px",
+                  background: "#fee2e2",
+                  color: "#dc2626",
+                  border: "1px solid #fecaca",
+                  padding: "10px 0",
+                  borderRadius: "8px",
+                  fontSize: "0.95rem",
+                  fontWeight: "600",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#fecaca";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "#fee2e2";
+                }}
+              >
+                <i className="fa fa-flag"></i> Report User
+              </button>
             </div>
           </div>
 
@@ -2445,6 +2510,105 @@ const MoreDetails = () => {
               <button onClick={() => navigate("/user/user-plan-selection")} className="upgrade-btn">Upgrade Now</button>
               <button onClick={() => setShowUpgradePopup(false)} className="cancel-btn">Cancel</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="upgrade-popup">
+          <div className="upgrade-content" style={{ maxWidth: "450px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+              <h3 style={{ margin: 0, color: "#dc2626" }}>Report User</h3>
+              <button 
+                onClick={() => setShowReportModal(false)}
+                style={{ background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer", color: "#666" }}
+              >
+                &times;
+              </button>
+            </div>
+            
+            <form onSubmit={handleReportSubmit} style={{ textAlign: "left" }}>
+              <div style={{ marginBottom: "20px" }}>
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", color: "#374151" }}>
+                  Reason for Reporting
+                </label>
+                <select
+                  value={reportReason}
+                  onChange={(e) => setReportReason(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "1px solid #d1d5db",
+                    fontSize: "0.95rem"
+                  }}
+                  required
+                >
+                  <option value="">Select a reason</option>
+                  <option value="Inappropriate profile picture">Inappropriate profile picture</option>
+                  <option value="Fake profile">Fake profile</option>
+                  <option value="Misleading information">Misleading information</option>
+                  <option value="Abusive behavior">Abusive behavior</option>
+                  <option value="Spam/Promotional content">Spam/Promotional content</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: "20px" }}>
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", color: "#374151" }}>
+                  Additional Comments (Optional)
+                </label>
+                <textarea
+                  value={reportComments}
+                  onChange={(e) => setReportComments(e.target.value)}
+                  placeholder="Provide more details about why you are reporting this user..."
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "1px solid #d1d5db",
+                    fontSize: "0.95rem",
+                    minHeight: "100px",
+                    resize: "vertical"
+                  }}
+                />
+              </div>
+
+              <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "20px" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowReportModal(false)}
+                  style={{
+                    padding: "10px 20px",
+                    borderRadius: "8px",
+                    border: "1px solid #d1d5db",
+                    background: "#fff",
+                    color: "#374151",
+                    fontWeight: "600",
+                    cursor: "pointer"
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isReporting}
+                  style={{
+                    padding: "10px 20px",
+                    borderRadius: "8px",
+                    border: "none",
+                    background: "#dc2626",
+                    color: "#fff",
+                    fontWeight: "600",
+                    cursor: isReporting ? "not-allowed" : "pointer",
+                    opacity: isReporting ? 0.7 : 1
+                  }}
+                >
+                  {isReporting ? "Submitting..." : "Submit Report"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

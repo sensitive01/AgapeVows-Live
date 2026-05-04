@@ -944,6 +944,30 @@ const bulkRegisterUsers = async (req, res) => {
   }
 };
 
+/* =========================
+   EXPORT ALL USERS DATA
+========================== */
+const exportAllUsersData = async (req, res) => {
+  try {
+    const userData = await userModel.find(
+      { isDeleted: false },
+      { userPassword: 0 }
+    ).lean();
+
+    res.status(200).json({
+      success: true,
+      message: "All user data fetched for export",
+      data: userData,
+    });
+  } catch (err) {
+    console.error("Error in exportAllUsersData:", err);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
 module.exports = {
   getPaidUsersData,
   approveNewUser,
@@ -962,4 +986,5 @@ module.exports = {
   registerUser,
   bulkRegisterUsers,
   getUnverifiedIdProofUsers,
+  exportAllUsersData,
 };

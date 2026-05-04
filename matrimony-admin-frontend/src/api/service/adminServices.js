@@ -200,6 +200,11 @@ export const bulkRegisterUsersByAdmin = async (users) => {
   return await adminInstance.post(`/bulk-register-users`, { users });
 };
 
+// Export All Users
+export const exportUsersData = async () => {
+  return await adminInstance.get(`/export-users`);
+};
+
 
 /* =========================
    PLAN MANAGEMENT
@@ -379,4 +384,18 @@ export const updateFeedback = async (id, data) => {
 // Delete Feedback
 export const deleteFeedback = async (id) => {
   return await adminInstance.delete(`/delete-feedback/${id}`);
+};
+
+/* =========================
+   REPORT MANAGEMENT
+========================== */
+
+// Get All Reports
+export const getAllReports = async () => {
+  return await adminInstance.get(`/get-all-reports`);
+};
+
+// Update Report Status
+export const updateReportStatus = async (reportId, data) => {
+  return await adminInstance.put(`/update-report/${reportId}`, data);
 };

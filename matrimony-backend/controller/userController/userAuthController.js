@@ -497,6 +497,9 @@ const getAllUserProfileData = async (req, res) => {
       {
         _id: { $ne: userId, $nin: blockedIds },
         gender: { $ne: userGender },
+        profileStatus: { $ne: "Deactivated" },
+        isApproved: true,
+        isDeleted: false,
       },
       { userPassword: 0 }
     );
@@ -517,7 +520,14 @@ const getAllUserProfileData = async (req, res) => {
 
 const getAllUserProfileDataHome = async (req, res) => {
   try {
-    const userData = await userModel.find({}, { userPassword: 0 });
+    const userData = await userModel.find(
+      { 
+        profileStatus: { $ne: "Deactivated" },
+        isApproved: true,
+        isDeleted: false
+      }, 
+      { userPassword: 0 }
+    );
 
     res.status(200).json({
       success: true,
@@ -553,6 +563,13 @@ const getProfileMoreInformation = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Profile not found",
+      });
+    }
+
+    if (profileData.profileStatus === "Deactivated") {
+      return res.status(404).json({
+        success: false,
+        message: "This profile has been deactivated",
       });
     }
 
@@ -1019,6 +1036,9 @@ const getNewProfileMatches = async (req, res) => {
       .find({
         _id: { $ne: userId },
         gender: oppositeGender,
+        profileStatus: { $ne: "Deactivated" },
+        isApproved: true,
+        isDeleted: false,
         $or: filters,
       })
       .limit(5);
@@ -1073,6 +1093,8 @@ const getSearchedProfileData = async (req, res) => {
     } = req.body;
     const query = {
       isApproved: true,
+      profileStatus: { $ne: "Deactivated" },
+      isDeleted: false,
     };
 
     // Handle Gender/LookingFor logic
@@ -2150,6 +2172,46 @@ const uploadIdProof = async (req, res) => {
   }
 };
 
+const deactivateProfile = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { deactivationReason } = req.body;
+
+    if (!deactivationReason) {
+      return res.status(400).json({
+        success: false,
+        message: "Deactivation reason is required",
+      });
+    }
+
+    const userData = await userModel.findById(userId);
+
+    if (!userData) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    userData.profileStatus = "Deactivated";
+    userData.deactivationReason = deactivationReason;
+    userData.deactivatedAt = new Date();
+    
+    await userData.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Profile deactivated successfully",
+    });
+  } catch (err) {
+    console.error("Error deactivating profile:", err);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
 module.exports = {
   getWhoViewedYou,
   getShortListedProfileData,
@@ -2179,5 +2241,6 @@ module.exports = {
   blockUser,
   unblockUser,
   getBlockedProfiles,
-  uploadIdProof
+  uploadIdProof,
+  deactivateProfile
 };

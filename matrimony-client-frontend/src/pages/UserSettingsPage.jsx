@@ -1,9 +1,52 @@
-import React from "react";
-
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import UserSideBar from "../components/UserSideBar";
 import LayoutComponent from "../components/layouts/LayoutComponent";
+import { deactivateProfile } from "../api/axiosService/userAuthService";
 
 const UserSettingsPage = () => {
+  const navigate = useNavigate();
+  const userId = localStorage.getItem("userId");
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [deactivationReason, setDeactivationReason] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const reasons = [
+    "Found my partner in AgapeVows",
+    "Found my partner elsewhere",
+    "Not interested",
+    "Need short break but will come back",
+    "Going to pursue higher studies"
+  ];
+
+  const handleDeactivate = async () => {
+    if (!deactivationReason) {
+      alert("Please select a reason for deactivation");
+      return;
+    }
+
+    if (!window.confirm("Are you sure you want to deactivate your profile? You will be logged out.")) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await deactivateProfile(userId, deactivationReason);
+      if (response.status === 200) {
+        alert("Your profile has been deactivated successfully.");
+        // Logout user
+        localStorage.clear();
+        navigate("/user/user-login");
+      }
+    } catch (error) {
+      console.error("Error deactivating profile:", error);
+      alert("Failed to deactivate profile. Please try again.");
+    } finally {
+      setLoading(false);
+      setShowDeactivateModal(false);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <div className="fixed top-0 left-0 right-0 z-50">
@@ -195,6 +238,33 @@ const UserSettingsPage = () => {
                           </ul>
                         </div>
                       </div>
+
+                      <div className="ms-write-post fol-sett-sec sett-rhs-deact">
+                        <div className="foll-set-tit fol-pro-abo-ico">
+                          <h4>Account Settings</h4>
+                        </div>
+                        <div className="fol-sett-box">
+                          <ul>
+                            <li>
+                              <div className="sett-lef">
+                                <div className="sett-rad-left">
+                                  <h5>Deactivate Profile</h5>
+                                  <p>Temporarily hide your profile from the platform. You can reactivate it later by contacting support.</p>
+                                </div>
+                              </div>
+                              <div className="sett-rig">
+                                <button 
+                                  className="btn btn-danger btn-sm"
+                                  onClick={() => setShowDeactivateModal(true)}
+                                >
+                                  Deactivate Account
+                                </button>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
                 </div>
@@ -203,6 +273,51 @@ const UserSettingsPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Deactivate Modal */}
+      {showDeactivateModal && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title text-danger">Deactivate Profile</h5>
+                <button type="button" className="btn-close" onClick={() => setShowDeactivateModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <p>We are sorry to see you go. Please tell us why you want to deactivate your profile:</p>
+                <div className="form-group mt-3">
+                  <select 
+                    className="form-control" 
+                    value={deactivationReason}
+                    onChange={(e) => setDeactivationReason(e.target.value)}
+                  >
+                    <option value="">Select a reason</option>
+                    {reasons.map((reason, index) => (
+                      <option key={index} value={reason}>{reason}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="alert alert-warning mt-4 small">
+                  <i className="fa fa-info-circle me-2"></i>
+                  Note: Deactivating your profile will hide it from all other users. Your data will be preserved, but you won't be visible in searches or lists.
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowDeactivateModal(false)}>Cancel</button>
+                <button 
+                  type="button" 
+                  className="btn btn-danger" 
+                  onClick={handleDeactivate}
+                  disabled={loading || !deactivationReason}
+                >
+                  {loading ? "Deactivating..." : "Confirm Deactivation"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       <section className="wed-hom-footer">
         <div className="container">

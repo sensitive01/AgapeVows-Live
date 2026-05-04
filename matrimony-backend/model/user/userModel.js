@@ -255,6 +255,19 @@ const userSchema = new mongoose.Schema(
          type: Date,
          default: null,
       },
+      deactivationReason: {
+         type: String,
+         default: null,
+      },
+      deactivatedAt: {
+         type: Date,
+         default: null,
+      },
+      profileStatus: {
+         type: String,
+         enum: ["Active", "Deactivated"],
+         default: "Active",
+      },
 
       /* =========================
          MEDIA

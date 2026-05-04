@@ -2542,7 +2542,7 @@ const UserProfileEditPage = () => {
                           "Vokkalinga",
                           "Yadhav",
                           "Yadhava",
-                          "Yogeeswarar", 
+                          "Yogeeswarar",
                           "Other",
                         ]}
                       />
@@ -2796,6 +2796,33 @@ const UserProfileEditPage = () => {
                         gap: "20px",
                       }}
                     >
+                      
+                      <FormInput
+                        label="Contact Person Name"
+                        name="contactPersonName"
+                        value={formData.contactPersonName}
+                        onChange={handleInputChange}
+                      />
+                      <FormInput
+                        label="Relationship"
+                        name="relationship"
+                        type="select"
+                        searchable={true}
+                        value={formData.relationship}
+                        onChange={handleInputChange}
+                        options={[
+                          "Self",
+                          "Father",
+                          "Mother",
+                          "Brother",
+                          "Sister",
+                          "Uncle",
+                          "Aunt",
+                          "Relative",
+                          "Friend",
+                          "Other",
+                        ]}
+                      />
                       <FormInput
                         label="Mobile Number"
                         name="phone"
@@ -2874,32 +2901,6 @@ const UserProfileEditPage = () => {
                         value={formData.citizenOf}
                         onChange={handleCountryChange}
                         options={countryOptions}
-                      />
-                      <FormInput
-                        label="Contact Person Name"
-                        name="contactPersonName"
-                        value={formData.contactPersonName}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Relationship"
-                        name="relationship"
-                        type="select"
-                        searchable={true}
-                        value={formData.relationship}
-                        onChange={handleInputChange}
-                        options={[
-                          "Father",
-                          "Mother",
-                          "Brother",
-                          "Sister",
-                          "Uncle",
-                          "Aunt",
-                          "Cousin",
-                          "Friend",
-                          "Self",
-                          "Other",
-                        ]}
                       />
                     </div>
                   </FormSection>

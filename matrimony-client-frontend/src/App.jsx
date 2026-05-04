@@ -92,26 +92,9 @@ function App() {
       };
     }
 
-    // Disable Right Click
-    const handleContextMenu = (e) => {
-      e.preventDefault();
-      return false;
-    };
 
     // Disable Keyboard Shortcuts (Screenshots, DevTools, Print, Save, Copy, Paste)
     const handleKeyDown = (e) => {
-      // Handle PrintScreen instantly on keydown
-      if (e.key === "PrintScreen") {
-        document.documentElement.style.display = "none";
-        navigator.clipboard.writeText("");
-        setTimeout(() => {
-          document.documentElement.style.display = "block";
-          alert("Screenshots are disabled!");
-        }, 500);
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      }
 
       // Prevent F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, and Screenshot interactions
       if (
@@ -122,9 +105,6 @@ function App() {
         (e.ctrlKey && (e.key === "U" || e.key === "u")) ||
         (e.ctrlKey && (e.key === "S" || e.key === "s")) ||
         (e.ctrlKey && (e.key === "P" || e.key === "p")) ||
-        (e.ctrlKey && (e.key === "C" || e.key === "c")) ||
-        (e.ctrlKey && (e.key === "V" || e.key === "v")) ||
-        (e.ctrlKey && (e.key === "X" || e.key === "x")) ||
         (e.metaKey && e.shiftKey && (e.key === "S" || e.key === "s"))
       ) {
         e.preventDefault();
@@ -133,27 +113,7 @@ function App() {
       }
     };
 
-    // Block Dragging
-    const handleDragStart = (e) => {
-      e.preventDefault();
-      return false;
-    };
 
-    // Blur content when window loses focus (e.g. opening Snipping Tool)
-    const handleBlur = () => {
-      document.body.style.filter = "blur(20px)";
-    };
-
-    // Restore content when window regains focus
-    const handleFocus = () => {
-      document.body.style.filter = "none";
-    };
-
-    // Block Copy/Cut/Paste
-    const handleCopyCutPaste = (e) => {
-      e.preventDefault();
-      return false;
-    };
 
     // Universal Ctrl + Click handler to force foreground navigation
     const handleGlobalClick = (e) => {
@@ -176,24 +136,13 @@ function App() {
       }
     };
 
-    window.addEventListener("contextmenu", handleContextMenu);
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("click", handleGlobalClick, true);
-    window.addEventListener("dragstart", handleDragStart);
-    window.addEventListener("blur", handleBlur);
-    window.addEventListener("focus", handleFocus);
-    window.addEventListener("copy", handleCopyCutPaste);
-    window.addEventListener("cut", handleCopyCutPaste);
-    window.addEventListener("paste", handleCopyCutPaste);
 
     // CSS to disable Text Selection & Print
     const style = document.createElement("style");
     style.innerHTML = `
       body {
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
         transition: filter 0.1s;
       }
       @media print {
@@ -205,15 +154,8 @@ function App() {
     document.head.appendChild(style);
 
     return () => {
-      window.removeEventListener("contextmenu", handleContextMenu);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("click", handleGlobalClick, true);
-      window.removeEventListener("dragstart", handleDragStart);
-      window.removeEventListener("blur", handleBlur);
-      window.removeEventListener("focus", handleFocus);
-      window.removeEventListener("copy", handleCopyCutPaste);
-      window.removeEventListener("cut", handleCopyCutPaste);
-      window.removeEventListener("paste", handleCopyCutPaste);
       window.removeEventListener("storage", handleStorageChange);
       if (document.head.contains(style)) {
         document.head.removeChild(style);

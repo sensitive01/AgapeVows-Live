@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
-import { getAllUserData } from "../../api/service/adminServices";
+import { getAllUserData, deleteUserById, exportUsersData } from "../../api/service/adminServices";
 import { useNavigate } from "react-router-dom";
-import { deleteUserById } from "../../api/service/adminServices";
+import * as XLSX from "xlsx";
+
 
 
 const AdminAllUsersList = () => {
@@ -105,8 +106,8 @@ const AdminAllUsersList = () => {
   // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const currentItems = filteredUsers?.slice(indexOfFirstItem, indexOfLastItem) || [];
+  const totalPages = Math.ceil((filteredUsers?.length || 0) / itemsPerPage);
 
   const getInitials = (name) => {
     return name
@@ -155,6 +156,41 @@ const AdminAllUsersList = () => {
   const handleEdit = (id) => {
     navigate(`/admin/edit-user/${id}`);
   };
+
+  const handleExport = async () => {
+    try {
+      const response = await exportUsersData();
+      if (response.status === 200) {
+        const data = response.data.data;
+        if (!data || data.length === 0) {
+          alert("No users to export");
+          return;
+        }
+
+        // Clean data for export - matching the re-import format as much as possible
+        const exportData = data.map(user => {
+          // Flatten some fields if necessary or remove sensitive/internal ones
+          const { _id, __v, userPassword, profileViews, paymentDetails, blockedUsers, ignoredUsers, isApproved, isDeleted, profileStatus, ...rest } = user;
+          
+          // Ensure hobbies is a string if it's an array
+          if (Array.isArray(rest.hobbies)) {
+            rest.hobbies = rest.hobbies.join(", ");
+          }
+
+          return rest;
+        });
+
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "All Users");
+        XLSX.writeFile(wb, `AgapeVows_Users_Export_${new Date().toISOString().split('T')[0]}.xlsx`);
+      }
+    } catch (error) {
+      console.error("Export failed:", error);
+      alert("Failed to export user data. Please try again.");
+    }
+  };
+
 
 
   // Pagination component
@@ -259,49 +295,25 @@ const AdminAllUsersList = () => {
       <div className="row">
         <div className="col-md-12">
           <div className="box-com box-qui box-lig box-tab">
-            <div className="tit">
-              <h3>Approved Users</h3>
-              <p>All approved user profiles ({filteredUsers.length} users)</p>
-              {/* <div className="dropdown">
+            <div className="tit d-flex justify-content-between align-items-center">
+              <div>
+                <h3>Approved Users</h3>
+                <p>All approved user profiles ({filteredUsers.length} users)</p>
+              </div>
+              <div className="d-flex gap-2">
                 <button
-                  type="button"
-                  className="btn btn-outline-secondary"
-                  data-bs-toggle="dropdown"
+                  className="btn btn-primary btn-sm rounded-pill px-3 shadow-sm"
+                  onClick={() => navigate("/admin/add-new-user")}
                 >
-                  <i className="fa fa-ellipsis-h" aria-hidden="true"></i>
+                  <i className="fa fa-user-plus me-1"></i> Add / Import
                 </button>
-                <ul className="dropdown-menu">
-                  <li>
-                    <a className="dropdown-item" href="admin-add-new-user.html">
-                      Add new user
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="dropdown-item"
-                      href="admin-settings.html#new-user-request"
-                    >
-                      User setting
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="dropdown-item"
-                      href="admin-settings.html#new-user-request"
-                    >
-                      Approval settings
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className="dropdown-item"
-                      href="admin-settings.html#plan"
-                    >
-                      User plan
-                    </a>
-                  </li>
-                </ul>
-              </div> */}
+                <button
+                  className="btn btn-success btn-sm rounded-pill px-3 shadow-sm"
+                  onClick={handleExport}
+                >
+                  <i className="fa fa-file-excel-o me-1"></i> Export Users
+                </button>
+              </div>
             </div>
 
             {/* Search and Filter Controls */}
