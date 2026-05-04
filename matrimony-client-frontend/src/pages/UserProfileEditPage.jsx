@@ -378,10 +378,12 @@ const FormSection = ({ title, children }) => (
   <div
     style={{
       padding: "32px",
-      background: "#fff",
-      borderRadius: "8px",
+      background: "rgba(255, 255, 255, 0.85)",
+      backdropFilter: "blur(10px)",
+      borderRadius: "12px",
       marginBottom: "24px",
-      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.05)",
+      border: "1px solid rgba(255, 255, 255, 0.3)",
     }}
   >
     <div
@@ -1525,17 +1527,30 @@ const UserProfileEditPage = () => {
   console.log("UserProfileEditPage Render - formData:", formData);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f5f5f5" }}>
+    <div style={{ 
+      minHeight: "100vh", 
+      backgroundImage: "url('/images/bg-profile.png')",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundAttachment: "fixed",
+      backgroundColor: "#f5f5f5"
+    }}>
       <style>{`
-        body { background: #f5f5f5 !important; }
+        body { 
+          background-image: url('/images/bg-profile.png') !important;
+          background-size: cover !important;
+          background-position: center !important;
+          background-attachment: fixed !important;
+          background-color: #f5f5f5 !important; 
+        }
         .container-fluid { background: transparent !important; }
       `}</style>
       <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 50 }}>
         <LayoutComponent />
       </div>
 
-      <div style={{ paddingTop: "160px", paddingBottom: "40px" }}>
-        <div style={{ background: "#f5f5f5", minHeight: "100vh" }}>
+      <div style={{ paddingTop: "170px", paddingBottom: "40px" }}>
+        <div style={{ background: "transparent", minHeight: "100vh" }}>
           <div
             className="container-fluid"
             style={{ paddingLeft: 0, paddingRight: 0 }}

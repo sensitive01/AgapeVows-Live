@@ -51,9 +51,11 @@ const ProfileSection = ({ title, icon, children }) => (
     <div
       style={{
         padding: "20px",
-        background: "#fff",
-        borderRadius: "8px",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+        background: "rgba(255, 255, 255, 0.85)",
+        backdropFilter: "blur(8px)",
+        borderRadius: "12px",
+        boxShadow: "0 4px 15px rgba(0,0,0,0.05)",
+        border: "1px solid rgba(255, 255, 255, 0.3)",
       }}
     >
       <h4
@@ -667,14 +669,20 @@ const UserProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{
+      backgroundImage: "url('/images/bg-profile.png')",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundAttachment: "fixed",
+      backgroundColor: "#f3f4f6"
+    }}>
       {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50">
         <LayoutComponent />
       </div>
 
       {/* Main Content Area */}
-      <div style={{ paddingTop: "40px", paddingBottom: "40px" }}>
+      <div style={{ paddingTop: "20px", paddingBottom: "40px" }}>
         <div className="db">
           <div
             className="container-fluid"
@@ -746,9 +754,11 @@ const UserProfilePage = () => {
                         gap: "25px",
                         flexWrap: "wrap",
                         padding: "25px",
-                        background: "#fff",
-                        borderRadius: "10px",
-                        boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+                        background: "rgba(255, 255, 255, 0.85)",
+                        backdropFilter: "blur(10px)",
+                        borderRadius: "12px",
+                        boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                        border: "1px solid rgba(255, 255, 255, 0.3)",
                       }}
                     >
                       <div
