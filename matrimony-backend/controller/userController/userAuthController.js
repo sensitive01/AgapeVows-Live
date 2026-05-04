@@ -2208,7 +2208,7 @@ const uploadIdProof = async (req, res) => {
 const deactivateProfile = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { deactivationReason } = req.body;
+    const { deactivationReason, deactivationDescription } = req.body;
 
     if (!deactivationReason) {
       return res.status(400).json({
@@ -2228,6 +2228,7 @@ const deactivateProfile = async (req, res) => {
 
     userData.profileStatus = "Deactivated";
     userData.deactivationReason = deactivationReason;
+    userData.deactivationDescription = deactivationDescription;
     userData.deactivatedAt = new Date();
 
     await userData.save();

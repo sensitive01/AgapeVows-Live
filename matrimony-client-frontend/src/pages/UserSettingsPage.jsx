@@ -15,6 +15,7 @@ const UserSettingsPage = () => {
   const [loading, setLoading] = useState(false);
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [deactivationReason, setDeactivationReason] = useState("");
+  const [deactivationDescription, setDeactivationDescription] = useState("");
 
   const [passwordData, setPasswordData] = useState({
     newPassword: "",
@@ -88,7 +89,7 @@ const UserSettingsPage = () => {
 
     setLoading(true);
     try {
-      const response = await deactivateProfile(userId, deactivationReason);
+      const response = await deactivateProfile(userId, { deactivationReason, deactivationDescription });
       if (response.status === 200) {
         toast.success("Your profile has been deactivated successfully.");
         localStorage.clear();
@@ -314,6 +315,16 @@ const UserSettingsPage = () => {
                       <option key={index} value={reason}>{reason}</option>
                     ))}
                   </select>
+                </div>
+                <div className="form-group mt-3">
+                  <label className="form-label small">Tell us more (optional):</label>
+                  <textarea 
+                    className="form-control" 
+                    rows="3" 
+                    placeholder="Enter additional details..."
+                    value={deactivationDescription}
+                    onChange={(e) => setDeactivationDescription(e.target.value)}
+                  ></textarea>
                 </div>
               </div>
               <div className="modal-footer bg-light border-0">

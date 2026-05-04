@@ -740,6 +740,10 @@ const getDeactivatedUsers = async (req, res) => {
           profileImage: 1,
           deactivatedAt: 1,
           deactivationReason: 1,
+          deactivationDescription: 1,
+          whatsapp: 1,
+          alternateMobile: 1,
+          currentAddress: 1,
         }
       )
       .sort({ deactivatedAt: -1 });

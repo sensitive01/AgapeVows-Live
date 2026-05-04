@@ -12,6 +12,8 @@ const AdminDeactivatedUsers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -157,10 +159,10 @@ const AdminDeactivatedUsers = () => {
                 <table className="table table-hover">
                   <thead>
                     <tr>
-                      <th>S.NO</th>
-                      <th>PROFILE</th>
-                      <th>DEACTIVATED ON</th>
-                      <th>REASON</th>
+                      <th className="text-center">S.NO</th>
+                      <th className="text-center">PROFILE</th>
+                      <th className="text-center">REASON</th>
+                      <th className="text-center">DEACTIVATED ON</th>
                       <th className="text-center">ACTION</th>
                     </tr>
                   </thead>
@@ -199,22 +201,34 @@ const AdminDeactivatedUsers = () => {
                               </div>
                             </td>
                             <td>
-                              {user.deactivatedAt ? new Date(user.deactivatedAt).toLocaleDateString() : "N/A"}
-                            </td>
-                            <td>
                               <div style={{ maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={user.deactivationReason}>
                                 {user.deactivationReason || "No reason provided"}
                               </div>
                             </td>
-                            <td className="text-center">
-                              <button
-                                className="btn btn-primary btn-sm"
-                                onClick={() => handleRestore(user._id)}
-                              >
-                                <i className="fa fa-undo me-1"></i>
-                                Reactivate
-                              </button>
+                            <td>
+                              {user.deactivatedAt ? new Date(user.deactivatedAt).toLocaleDateString() : "N/A"}
                             </td>
+                            <td className="text-center">
+                                <button
+                                  className="btn btn-info btn-sm me-2 shadow-sm text-white fw-semibold"
+                                  style={{ minWidth: "80px", borderRadius: "20px" }}
+                                  onClick={() => {
+                                    setSelectedUser(user);
+                                    setShowModal(true);
+                                  }}
+                                >
+                                  <i className="fa fa-eye me-1"></i>
+                                  View
+                                </button>
+                                <button
+                                  className="btn btn-success btn-sm shadow-sm text-white fw-semibold"
+                                  style={{ minWidth: "100px", borderRadius: "20px" }}
+                                  onClick={() => handleRestore(user._id)}
+                                >
+                                  <i className="fa fa-undo me-1"></i>
+                                  Reactivate
+                                </button>
+                              </td>
                           </tr>
                         );
                       })
@@ -253,6 +267,100 @@ const AdminDeactivatedUsers = () => {
           </div>
         </div>
       </div>
+
+      {/* Details Modal */}
+      {showModal && selectedUser && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content border-0 shadow-lg">
+              <div className="modal-header bg-info text-white">
+                <h5 className="modal-title">
+                  <i className="fa fa-user-circle me-2"></i>
+                  Deactivation Details
+                </h5>
+                <button type="button" className="btn-close btn-close-white" onClick={() => setShowModal(false)}></button>
+              </div>
+              <div className="modal-body p-4">
+                <div className="text-center mb-4">
+                  {selectedUser.profileImage ? (
+                    <img
+                      src={selectedUser.profileImage}
+                      alt={selectedUser.userName}
+                      className="rounded-circle shadow-sm"
+                      style={{ width: 80, height: 80, objectFit: "cover", border: "3px solid #eee" }}
+                    />
+                  ) : (
+                    <div
+                      className="rounded-circle bg-warning text-white d-flex align-items-center justify-content-center mx-auto shadow-sm"
+                      style={{ width: 80, height: 80, fontSize: "2rem" }}
+                    >
+                      {getInitials(selectedUser.userName)}
+                    </div>
+                  )}
+                  <h4 className="mt-2 mb-0">{selectedUser.userName}</h4>
+                  <p className="text-muted">{selectedUser.userEmail}</p>
+                </div>
+
+                <div className="detail-list">
+                  <div className="row mb-3">
+                    <div className="col-6">
+                      <label className="fw-bold text-muted small text-uppercase">Email Address</label>
+                      <div className="p-2 bg-light rounded text-truncate">
+                        <i className="fa fa-envelope me-2 text-info"></i>
+                        {selectedUser.userEmail || "N/A"}
+                      </div>
+                    </div>
+                    <div className="col-6">
+                      <label className="fw-bold text-muted small text-uppercase">Mobile Number</label>
+                      <div className="p-2 bg-light rounded">
+                        <i className="fa fa-phone me-2 text-info"></i>
+                        {selectedUser.userMobile || "N/A"}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="row mb-3">
+                    <div className="col-6">
+                      <label className="fw-bold text-muted small text-uppercase">Deactivated On</label>
+                      <div className="p-2 bg-light rounded">
+                        <i className="fa fa-calendar me-2 text-info"></i>
+                        {selectedUser.deactivatedAt ? new Date(selectedUser.deactivatedAt).toLocaleDateString() : "N/A"}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-3">
+                    <label className="fw-bold text-muted small text-uppercase">Reason for Deactivation</label>
+                    <div className="p-2 bg-light rounded border-start border-3 border-danger">
+                      <i className="fa fa-question-circle me-2 text-danger"></i>
+                      {selectedUser.deactivationReason || "No reason provided"}
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="fw-bold text-muted small text-uppercase">Detailed Description</label>
+                    <div className="p-3 bg-light rounded border-start border-4 border-info" style={{ minHeight: "80px", whiteSpace: "pre-wrap" }}>
+                      {selectedUser.deactivationDescription || "No additional description provided."}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer bg-light">
+                <button type="button" className="btn btn-secondary px-4" onClick={() => setShowModal(false)}>Close</button>
+                <button 
+                  className="btn btn-primary px-4"
+                  onClick={() => {
+                    setShowModal(false);
+                    handleRestore(selectedUser._id);
+                  }}
+                >
+                  Reactivate Profile
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </NewLayout>
   );
 };

@@ -390,10 +390,11 @@ export const submitFeedback = async (feedbackData) => {
   }
 };
 
-export const deactivateProfile = async (userId, deactivationReason) => {
+export const deactivateProfile = async (userId, { deactivationReason, deactivationDescription }) => {
   try {
     const response = await userInstance.post(`/deactivate-profile/${userId}`, {
       deactivationReason,
+      deactivationDescription,
     });
     return response;
   } catch (error) {

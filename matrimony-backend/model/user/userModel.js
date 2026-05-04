@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
       isApproved: { type: Boolean, default: false },
       isProfileCompleted: { type: Boolean, default: false },
 
-      profileStatus: { type: String, default: "Pending" },
+
       profileVisibility: {
          type: String,
          enum: ["Public", "Private"],
@@ -259,14 +259,18 @@ const userSchema = new mongoose.Schema(
          type: String,
          default: null,
       },
+      deactivationDescription: {
+         type: String,
+         default: null,
+      },
       deactivatedAt: {
          type: Date,
          default: null,
       },
       profileStatus: {
          type: String,
-         enum: ["Active", "Deactivated"],
-         default: "Active",
+         enum: ["Active", "Deactivated", "Pending"],
+         default: "Pending",
       },
 
       /* =========================
