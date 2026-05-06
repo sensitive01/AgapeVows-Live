@@ -273,7 +273,7 @@ const MoreDetails = () => {
           socket.emit("join_chat_room", { roomId });
         }
       } else {
-        handleContactClick(); // Or you can keep alert("Please subscribe to your plan.");
+        handleContactClick();
       }
     } catch (error) {
       alert("Please subscribe to your plan.");

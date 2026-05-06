@@ -49,6 +49,7 @@ import MaritalCounseling from "./pages/public/MaritalCounseling";
 import Blogs from "./pages/public/Blogs";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ScrollToTop from "./ScrollTop";
 
 // Component to handle page reloads
 function ReloadHandler() {
@@ -165,6 +166,7 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop />
       <ToastContainer position="top-right" autoClose={3000} />
       {/* <ReloadHandler /> */}
       <Routes>
