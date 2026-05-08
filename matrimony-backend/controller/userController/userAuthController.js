@@ -2205,6 +2205,56 @@ const uploadIdProof = async (req, res) => {
   }
 };
 
+const requestContactUpdate = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { requestedMobile, requestedEmail } = req.body;
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    user.requestedMobile = requestedMobile || user.requestedMobile;
+    user.requestedEmail = requestedEmail || user.requestedEmail;
+    user.contactUpdateStatus = "Pending";
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Contact update request sent to admin successfully.",
+      data: user,
+    });
+  } catch (err) {
+    console.error("Error requesting contact update:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+const acknowledgeContactUpdate = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    user.contactUpdateStatus = "None";
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Contact update acknowledged",
+    });
+  } catch (err) {
+    console.error("Error acknowledging contact update:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 const deactivateProfile = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -2261,6 +2311,9 @@ module.exports = {
   getUserProfileImage,
   getUserInformation,
   completeProfileData,
+  requestContactUpdate,
+  acknowledgeContactUpdate,
+  deactivateProfile,
   getAllUserProfileData,
   getProfileMoreInformation,
   showUserInterests,
@@ -2276,5 +2329,6 @@ module.exports = {
   unblockUser,
   getBlockedProfiles,
   uploadIdProof,
-  deactivateProfile
+  deactivateProfile,
+  requestContactUpdate
 };

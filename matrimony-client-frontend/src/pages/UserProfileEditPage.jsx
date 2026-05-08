@@ -428,6 +428,7 @@ const FormInput = ({
   required,
   placeholder,
   searchable = false,
+  readOnly = false,
 }) => (
   <div>
     <label
@@ -507,14 +508,16 @@ const FormInput = ({
         onChange={onChange}
         required={required}
         placeholder={placeholder}
+        readOnly={readOnly}
         style={{
           width: "100%",
           padding: "10px 14px",
           border: "2px solid #e5e7eb",
           borderRadius: "6px",
           fontSize: "14px",
-          color: "#374151",
-          background: "#fff",
+          color: readOnly ? "#9ca3af" : "#374151",
+          background: readOnly ? "#f3f4f6" : "#fff",
+          cursor: readOnly ? "not-allowed" : "text",
           transition: "border-color 0.2s ease",
         }}
       />
@@ -2732,6 +2735,7 @@ const UserProfileEditPage = () => {
                         value={formData.phone}
                         onChange={handleInputChange}
                         required
+                        readOnly={true}
                       />
                       <FormInput
                         label="Alternate Mobile Number"
@@ -2747,6 +2751,7 @@ const UserProfileEditPage = () => {
                         value={formData.email}
                         onChange={handleInputChange}
                         required
+                        readOnly={true}
                       />
                       <FormInput
                         label="Landline Number"

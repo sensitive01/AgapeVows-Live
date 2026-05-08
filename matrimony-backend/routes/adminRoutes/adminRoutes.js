@@ -102,6 +102,10 @@ adminRoutes.put(
   adminController.verifyMobile
 );
 
+adminRoutes.get("/contact-update-requests", adminController.getContactUpdateRequests);
+adminRoutes.put("/approve-contact-update/:userId", adminController.approveContactUpdate);
+adminRoutes.put("/reject-contact-update/:userId", adminController.rejectContactUpdate);
+
 adminRoutes.post("/register-user", adminController.registerUser);
 adminRoutes.post("/bulk-register-users", adminController.bulkRegisterUsers);
 adminRoutes.get("/export-users", adminController.exportAllUsersData);

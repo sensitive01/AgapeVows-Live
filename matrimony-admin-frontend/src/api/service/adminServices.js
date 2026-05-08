@@ -403,3 +403,19 @@ export const getAllReports = async () => {
 export const updateReportStatus = async (reportId, data) => {
   return await adminInstance.put(`/update-report/${reportId}`, data);
 };
+
+/* =========================
+   CONTACT UPDATE REQUESTS
+========================== */
+
+export const getContactUpdateRequests = async () => {
+  return await adminInstance.get(`/contact-update-requests`);
+};
+
+export const approveContactUpdate = async (userId) => {
+  return await adminInstance.put(`/approve-contact-update/${userId}`);
+};
+
+export const rejectContactUpdate = async (userId) => {
+  return await adminInstance.put(`/reject-contact-update/${userId}`);
+};

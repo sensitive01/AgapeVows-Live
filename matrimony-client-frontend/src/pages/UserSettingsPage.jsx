@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UserSideBar from "../components/UserSideBar";
 import LayoutComponent from "../components/layouts/LayoutComponent";
-import { deactivateProfile, getUserInfo } from "../api/axiosService/userAuthService";
+import { deactivateProfile, getUserInfo, requestContactUpdate, acknowledgeContactUpdate } from "../api/axiosService/userAuthService";
 import { resetPasswordRequest } from "../api/axiosService/userSignUpService";
 import { toast } from "react-toastify";
 import { confirmAction } from "../utils/alertService";
@@ -16,6 +16,8 @@ const UserSettingsPage = () => {
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [deactivationReason, setDeactivationReason] = useState("");
   const [deactivationDescription, setDeactivationDescription] = useState("");
+  const [requestedMobile, setRequestedMobile] = useState("");
+  const [requestedEmail, setRequestedEmail] = useState("");
 
   const [passwordData, setPasswordData] = useState({
     newPassword: "",
@@ -43,6 +45,51 @@ const UserSettingsPage = () => {
     };
     if (userId) fetchUserData();
   }, [userId]);
+
+  const handleContactUpdate = async (type) => {
+    let updateData = {};
+    if (type === "mobile") {
+      if (!requestedMobile) {
+        toast.warn("Please enter a new mobile number");
+        return;
+      }
+      updateData = { requestedMobile };
+    } else if (type === "email") {
+      if (!requestedEmail) {
+        toast.warn("Please enter a new email address");
+        return;
+      }
+      updateData = { requestedEmail };
+    }
+
+    setLoading(true);
+    try {
+      const res = await requestContactUpdate(userId, updateData);
+      if (res.status === 200) {
+        toast.success("Request sent to admin successfully");
+        if (type === "mobile") setRequestedMobile("");
+        if (type === "email") setRequestedEmail("");
+        // Refresh user data to show pending status
+        const infoRes = await getUserInfo(userId);
+        if (infoRes?.data?.success) {
+          setUserData(infoRes.data.data);
+        }
+      }
+    } catch (error) {
+      toast.error("Failed to send request");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAcknowledge = async () => {
+    try {
+      await acknowledgeContactUpdate(userId);
+      setUserData((prev) => ({ ...prev, contactUpdateStatus: "None" }));
+    } catch (err) {
+      console.error("Failed to acknowledge", err);
+    }
+  };
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
@@ -156,10 +203,51 @@ const UserSettingsPage = () => {
                           <label className="text-muted small mb-1">Current Mobile Number :</label>
                           <div className="h5 font-weight-bold">{userData?.userMobile || "Loading..."}</div>
                         </div>
-                        <div className="alert alert-info py-3">
-                          <i className="fa fa-phone-alt me-2"></i>
-                          Call us at <strong className="text-primary">8122234414</strong> to update your phone number
+
+                        {userData?.contactUpdateStatus === "Pending" && userData?.requestedMobile && (
+                          <div className="alert alert-warning py-3 mb-4">
+                            <i className="fa fa-clock me-2"></i>
+                            Your request to update mobile to <strong className="text-primary">{userData.requestedMobile}</strong> is pending admin approval.
+                          </div>
+                        )}
+
+                        {userData?.contactUpdateStatus === "Approved" && (
+                          <div className="alert alert-success py-3 mb-4 d-flex justify-content-between align-items-center">
+                            <div>
+                              <i className="fa fa-check-circle me-2"></i>
+                              Your recent contact update request was approved!
+                            </div>
+                            <button type="button" className="btn-close" onClick={handleAcknowledge}></button>
+                          </div>
+                        )}
+
+                        {userData?.contactUpdateStatus === "Rejected" && (
+                          <div className="alert alert-danger py-3 mb-4 d-flex justify-content-between align-items-center">
+                            <div>
+                              <i className="fa fa-times-circle me-2"></i>
+                              Your recent contact update request was rejected by the admin.
+                            </div>
+                            <button type="button" className="btn-close" onClick={handleAcknowledge}></button>
+                          </div>
+                        )}
+
+                        <div className="mb-3">
+                          <label className="form-label">New Mobile Number</label>
+                          <input
+                            type="tel"
+                            className="form-control"
+                            placeholder="Enter new mobile number"
+                            value={requestedMobile}
+                            onChange={(e) => setRequestedMobile(e.target.value)}
+                          />
                         </div>
+                        <button 
+                          className="btn btn-primary px-4" 
+                          onClick={() => handleContactUpdate("mobile")}
+                          disabled={loading}
+                        >
+                          {loading ? "Submitting..." : "Submit Request"}
+                        </button>
                       </div>
                     )}
 
@@ -173,10 +261,51 @@ const UserSettingsPage = () => {
                           <label className="text-muted small mb-1">Current Email Address :</label>
                           <div className="h5 font-weight-bold">{userData?.userEmail || "Loading..."}</div>
                         </div>
-                        <div className="alert alert-info py-3">
-                          <i className="fa fa-envelope me-2"></i>
-                          Contact support at <strong className="text-primary">support@agapevows.com</strong> to change your email
+
+                        {userData?.contactUpdateStatus === "Pending" && userData?.requestedEmail && (
+                          <div className="alert alert-warning py-3 mb-4">
+                            <i className="fa fa-clock me-2"></i>
+                            Your request to update email to <strong className="text-primary">{userData.requestedEmail}</strong> is pending admin approval.
+                          </div>
+                        )}
+
+                        {userData?.contactUpdateStatus === "Approved" && (
+                          <div className="alert alert-success py-3 mb-4 d-flex justify-content-between align-items-center">
+                            <div>
+                              <i className="fa fa-check-circle me-2"></i>
+                              Your recent contact update request was approved!
+                            </div>
+                            <button type="button" className="btn-close" onClick={handleAcknowledge}></button>
+                          </div>
+                        )}
+
+                        {userData?.contactUpdateStatus === "Rejected" && (
+                          <div className="alert alert-danger py-3 mb-4 d-flex justify-content-between align-items-center">
+                            <div>
+                              <i className="fa fa-times-circle me-2"></i>
+                              Your recent contact update request was rejected by the admin.
+                            </div>
+                            <button type="button" className="btn-close" onClick={handleAcknowledge}></button>
+                          </div>
+                        )}
+
+                        <div className="mb-3">
+                          <label className="form-label">New Email Address</label>
+                          <input
+                            type="email"
+                            className="form-control"
+                            placeholder="Enter new email address"
+                            value={requestedEmail}
+                            onChange={(e) => setRequestedEmail(e.target.value)}
+                          />
                         </div>
+                        <button 
+                          className="btn btn-primary px-4" 
+                          onClick={() => handleContactUpdate("email")}
+                          disabled={loading}
+                        >
+                          {loading ? "Submitting..." : "Submit Request"}
+                        </button>
                       </div>
                     )}
 

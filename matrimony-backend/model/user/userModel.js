@@ -287,6 +287,17 @@ const userSchema = new mongoose.Schema(
          user: { type: mongoose.Schema.Types.ObjectId, ref: "UserModel" },
          blockedAt: { type: Date, default: Date.now }
       }],
+
+      /* =========================
+         CONTACT UPDATE REQUESTS
+      ========================== */
+      requestedMobile: { type: String, default: null },
+      requestedEmail: { type: String, default: null },
+      contactUpdateStatus: {
+         type: String,
+         enum: ["Pending", "Approved", "Rejected", "None"],
+         default: "None"
+      },
    },
    { timestamps: true }
 );

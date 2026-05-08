@@ -30,6 +30,7 @@ import AdminFeedbacks from "./components/admin/AdminFeedbacks";
 import AdminReports from "./components/admin/AdminReports";
 import AdminUnverifiedIdUsers from "./components/admin/AdminUnverifiedIdUsers";
 import AdminDeactivatedUsers from "./components/admin/AdminDeactivatedUsers";
+import AdminContactUpdateRequests from "./components/admin/AdminContactUpdateRequests";
 
 function App() {
   useEffect(() => {
@@ -352,6 +353,14 @@ function App() {
           element={
             <AdminLayout>
               <AdminUnverifiedIdUsers />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/contact-update-requests"
+          element={
+            <AdminLayout>
+              <AdminContactUpdateRequests />
             </AdminLayout>
           }
         />

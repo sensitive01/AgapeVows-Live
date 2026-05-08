@@ -139,7 +139,6 @@ const MoreDetails = () => {
     }
   };
 
-  // Disable right-click
   useEffect(() => {
     const handleContextMenu = (e) => {
       e.preventDefault();
@@ -150,7 +149,6 @@ const MoreDetails = () => {
     };
   }, []);
 
-  // Chat States
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -158,7 +156,6 @@ const MoreDetails = () => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const baseUrl = import.meta.env.VITE_BASE_ROUTE;
 
-  // Socket
   useEffect(() => {
     if (!currentUserId || !baseUrl) return;
     const newSocket = io(baseUrl, {
@@ -190,11 +187,9 @@ const MoreDetails = () => {
     newSocket.on("users_online", (userIds) => setOnlineUsers(userIds));
     newSocket.on("user_joined", (id) => setOnlineUsers((prev) => [...prev, id]));
     newSocket.on("user_left", (id) => setOnlineUsers((prev) => prev.filter(uid => uid !== id)));
-
     return () => newSocket.close();
   }, [currentUserId, baseUrl]);
 
-  // Fetch current logged-in user
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
@@ -217,7 +212,6 @@ const MoreDetails = () => {
     return currentUser.paymentDetails?.some(p => p.subscriptionStatus?.toLowerCase() === "active");
   }, [currentUser]);
 
-  // Fetch profile details
   useEffect(() => {
     const fetchProfile = async () => {
       if (!profileId) return;

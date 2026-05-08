@@ -1027,6 +1027,66 @@ const exportAllUsersData = async (req, res) => {
   }
 };
 
+/* =========================
+   CONTACT UPDATE REQUESTS
+========================== */
+const getContactUpdateRequests = async (req, res) => {
+  try {
+    const requests = await userModel.find(
+      { contactUpdateStatus: "Pending" },
+      { userName: 1, userEmail: 1, userMobile: 1, requestedMobile: 1, requestedEmail: 1, agwid: 1, createdAt: 1, profileImage: 1 }
+    ).sort({ updatedAt: -1 });
+
+    res.status(200).json({ success: true, data: requests });
+  } catch (err) {
+    console.error("Error fetching contact update requests:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const approveContactUpdate = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    const user = await userModel.findById(userId);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    if (user.requestedMobile) user.userMobile = user.requestedMobile;
+    if (user.requestedEmail) user.userEmail = user.requestedEmail;
+
+    user.contactUpdateStatus = "Approved";
+    user.requestedMobile = null;
+    user.requestedEmail = null;
+
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Contact update approved" });
+  } catch (err) {
+    console.error("Error approving contact update:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const rejectContactUpdate = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await userModel.findById(userId);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    user.contactUpdateStatus = "Rejected";
+    user.requestedMobile = null;
+    user.requestedEmail = null;
+
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Contact update rejected" });
+  } catch (err) {
+    console.error("Error rejecting contact update:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 module.exports = {
   getPaidUsersData,
   approveNewUser,
@@ -1047,4 +1107,7 @@ module.exports = {
   bulkRegisterUsers,
   getUnverifiedIdProofUsers,
   exportAllUsersData,
+  getContactUpdateRequests,
+  approveContactUpdate,
+  rejectContactUpdate,
 };

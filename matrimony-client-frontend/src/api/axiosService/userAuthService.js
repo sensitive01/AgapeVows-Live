@@ -413,5 +413,25 @@ export const submitReport = async (reportData) => {
   }
 };
 
+export const requestContactUpdate = async (userId, updateData) => {
+  try {
+    const response = await userInstance.post(`/request-contact-update/${userId}`, updateData);
+    return response;
+  } catch (error) {
+    console.error("Error requesting contact update:", error);
+    throw error;
+  }
+};
+
+export const acknowledgeContactUpdate = async (userId) => {
+  try {
+    const response = await userInstance.put(`/acknowledge-contact-update/${userId}`);
+    return response;
+  } catch (error) {
+    console.error("Error acknowledging contact update:", error);
+    throw error;
+  }
+};
+
 
 

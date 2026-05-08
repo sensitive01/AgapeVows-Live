@@ -166,6 +166,10 @@ userAuthRoutes.post("/short-list-the-profile/:userId", userAuthController.shortL
 // UPDATE Interest
 userAuthRoutes.put("/change-interest-status/:userId", userAuthController.changeInterestStatus);
 
+// CONTACT UPDATE REQUEST
+userAuthRoutes.post("/request-contact-update/:userId", userAuthController.requestContactUpdate);
+userAuthRoutes.put("/acknowledge-contact-update/:userId", userAuthController.acknowledgeContactUpdate);
+
 userAuthRoutes.post(
   "/report-issue",
   upload.single("attachment"),

@@ -17,6 +17,7 @@ const Sidebar = () => {
       "/admin/billing-info/",
       "/admin/new-user/",
       "/admin/id-verification-requests",
+      "/admin/contact-update-requests",
       "/admin/reports",
       "/admin/deactivated-users"
     ];
@@ -173,6 +174,14 @@ const Sidebar = () => {
                     style={isActive("/admin/id-verification-requests") ? activeLinkStyle : normalLinkStyle}
                   >
                     ID Verification
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/admin/contact-update-requests" 
+                    style={isActive("/admin/contact-update-requests") ? activeLinkStyle : normalLinkStyle}
+                  >
+                    Contact Updates
                   </Link>
                 </li>
               </ul>
