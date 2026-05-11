@@ -37,3 +37,30 @@ export const showAlert = ({
     confirmButtonColor,
   });
 };
+export const showOtpAlert = async ({
+  title = 'Verify Email',
+  text = 'Please enter the OTP sent to your email',
+  confirmButtonText = 'Verify',
+  confirmButtonColor = '#7c3aed',
+}) => {
+  const { value: otp } = await Swal.fire({
+    title,
+    text,
+    input: 'text',
+    inputLabel: 'OTP',
+    inputPlaceholder: 'Enter 4-digit OTP',
+    showCancelButton: true,
+    confirmButtonColor,
+    confirmButtonText,
+    inputValidator: (value) => {
+      if (!value) {
+        return 'You need to enter the OTP!';
+      }
+      if (value.length !== 4) {
+        return 'OTP must be 4 digits';
+      }
+    }
+  });
+
+  return otp;
+};

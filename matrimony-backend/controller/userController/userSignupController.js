@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
+const sendEmail = require("../../utils/nodeMailerMessages");
 
 const userModel = require("../../model/user/userModel");
 
@@ -88,6 +89,15 @@ const saveSignUpData = async (req, res) => {
     if (existingUser) {
       return res.status(409).json({ message: "User already exists" });
     }
+
+    // Check if email is verified
+    const isVerified = req.app.locals[`verified_${email}`];
+    if (!isVerified) {
+      return res.status(403).json({ message: "Please verify your email first" });
+    }
+
+    // Clear verification flag after use
+    delete req.app.locals[`verified_${email}`];
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -298,6 +308,87 @@ const saveNewPassword = async (req, res) => {
   }
 };
 
+const sendRegistrationOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Email is required" });
+    }
+
+    const existingUser = await userModel.findOne({ userEmail: email });
+    if (existingUser) {
+      return res.status(409).json({ success: false, message: "User already exists" });
+    }
+
+    const otp = Math.floor(1000 + Math.random() * 9000);
+    const key = `reg_otp_${email}`;
+    
+    req.app.locals[key] = {
+      otp,
+      expiresAt: Date.now() + 5 * 60 * 1000, // 5 minutes
+    };
+
+    console.log("------------------------------------------");
+    console.log(`REGISTRATION OTP FOR ${email}: ${otp}`);
+    console.log("------------------------------------------");
+
+    try {
+      await sendEmail(email, "Verify your email - Agape Vows Matrimony", "otpVerification", [otp]);
+      return res.status(200).json({
+        success: true,
+        message: "OTP sent successfully to your email",
+      });
+    } catch (emailError) {
+      console.error("Failed to send registration email:", emailError);
+      // For development: even if email fails, we return success so user can use the console-logged OTP
+      return res.status(200).json({ 
+        success: true, 
+        message: "OTP generated (Email failed to send, please check console)",
+        devOtp: otp // Included for testing convenience
+      });
+    }
+  } catch (err) {
+    console.error("Error in sendRegistrationOtp", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+const verifyRegistrationOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({ success: false, message: "Email and OTP are required" });
+    }
+
+    const key = `reg_otp_${email}`;
+    const storedOtpData = req.app.locals[key];
+
+    if (!storedOtpData) {
+      return res.status(400).json({ success: false, message: "OTP not found or expired" });
+    }
+
+    if (Date.now() > storedOtpData.expiresAt) {
+      delete req.app.locals[key];
+      return res.status(400).json({ success: false, message: "OTP has expired" });
+    }
+
+    if (parseInt(otp) !== storedOtpData.otp) {
+      return res.status(400).json({ success: false, message: "Invalid OTP" });
+    }
+
+    // Mark as verified in session/locals
+    req.app.locals[`verified_${email}`] = true;
+    delete req.app.locals[key];
+
+    return res.status(200).json({ success: true, message: "Email verified successfully" });
+  } catch (err) {
+    console.error("Error in verifyRegistrationOtp", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 
 
 
@@ -311,4 +402,6 @@ module.exports = {
   userVerifyOtp,
   saveNewPassword,
   generateAgwid,
+  sendRegistrationOtp,
+  verifyRegistrationOtp,
 };

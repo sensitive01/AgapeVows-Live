@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import Footer from "../components/Footer";
 import CopyRights from "../components/CopyRights";
-import { sendSignUpRequest } from "../api/axiosService/userSignUpService";
-import { showAlert } from "../utils/alertService";
+import { sendSignUpRequest, sendRegistrationOtpRequest, verifyRegistrationOtpRequest } from "../api/axiosService/userSignUpService";
+import { showAlert, showOtpAlert } from "../utils/alertService";
 import LayoutComponent from "../components/layouts/LayoutComponent";
 // ✅ REMOVED SidebarLoginComponent as we use the one from MainLayout
 import PhoneInput from "react-phone-input-2";
@@ -117,22 +117,45 @@ const UserSignUp = () => {
     }
 
     try {
-      const response = await sendSignUpRequest(formData);
-      console.log(response.data);
-      if (response.status === 201) {
-        showAlert({
-          title: "Success",
-          text: response.data.message || "Account created successfully!",
-          icon: "success",
+      // Step 1: Send OTP
+      setLoading(true);
+      const otpResponse = await sendRegistrationOtpRequest(formData.email);
+      
+      if (otpResponse.status === 200) {
+        setLoading(false);
+        // Step 2: Show OTP Input Modal
+        const otp = await showOtpAlert({
+          text: `A 4-digit OTP has been sent to ${formData.email}`
         });
-        setTimeout(() => {
-          navigate("/user/user-login");
-        }, 1500);
+
+        if (!otp) return; // User cancelled
+
+        setLoading(true);
+        // Step 3: Verify OTP
+        const verifyResponse = await verifyRegistrationOtpRequest(formData.email, otp);
+
+        if (verifyResponse.status === 200) {
+          // Step 4: Final Signup
+          const response = await sendSignUpRequest(formData);
+          console.log(response.data);
+          if (response.status === 201) {
+            showAlert({
+              title: "Success",
+              text: response.data.message || "Account created successfully!",
+              icon: "success",
+            });
+            setTimeout(() => {
+              navigate("/user/user-login");
+            }, 1500);
+          }
+        }
       }
     } catch (err) {
+      console.error("Signup error:", err);
+      const errorMessage = err.response?.data?.message || "Registration failed. Please try again.";
       showAlert({
         title: "Error",
-        text: "User already exists or signup failed",
+        text: errorMessage,
         icon: "error",
       });
     } finally {

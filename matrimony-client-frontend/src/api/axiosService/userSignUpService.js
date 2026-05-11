@@ -5,6 +5,16 @@ export const sendSignUpRequest = async (formData) => {
   return response;
 };
 
+export const sendRegistrationOtpRequest = async (email) => {
+  const response = await axiosInstance.post(`/user/send-registration-otp`, { email });
+  return response;
+};
+
+export const verifyRegistrationOtpRequest = async (email, otp) => {
+  const response = await axiosInstance.post(`/user/verify-registration-otp`, { email, otp });
+  return response;
+};
+
 export const verifyUser = async (formData) => {
   const response = await axiosInstance.post(`/user/verify-login`, { formData });
   return response;

@@ -3,6 +3,7 @@ const nodemailer = require("nodemailer");
 
 const templates = {
   verifyEmail: require("./emailTemplates/emailVerification"),
+  otpVerification: require("./emailTemplates/otpVerification"),
 };
 
 const transporter = nodemailer.createTransport({
@@ -16,6 +17,11 @@ const transporter = nodemailer.createTransport({
 
 const sendEmail = async (to, subject, templateName, templateParams = []) => {
   try {
+    if (process.env.EMAIL_PASS === "your_app_password_here" || !process.env.EMAIL_USER) {
+      console.warn("Email not sent: EMAIL_USER or EMAIL_PASS not configured in .env");
+      throw new Error("Email credentials not configured");
+    }
+
     const generateTemplate = templates[templateName];
     if (!generateTemplate) {
       throw new Error(`Email template "${templateName}" not found.`);
