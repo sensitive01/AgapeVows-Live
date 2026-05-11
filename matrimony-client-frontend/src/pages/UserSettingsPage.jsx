@@ -6,6 +6,7 @@ import { deactivateProfile, getUserInfo, requestContactUpdate, acknowledgeContac
 import { resetPasswordRequest } from "../api/axiosService/userSignUpService";
 import { toast } from "react-toastify";
 import { confirmAction } from "../utils/alertService";
+import { FaEye } from "react-icons/fa";
 
 const UserSettingsPage = () => {
   const navigate = useNavigate();
@@ -23,6 +24,9 @@ const UserSettingsPage = () => {
     newPassword: "",
     confirmPassword: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordSuccess, setPasswordSuccess] = useState("");
 
   const reasons = [
     "Found my partner in AgapeVows",
@@ -110,7 +114,9 @@ const UserSettingsPage = () => {
       });
       if (res.status === 200) {
         toast.success("Password updated successfully");
+        setPasswordSuccess("Your password has been updated successfully!");
         setPasswordData({ newPassword: "", confirmPassword: "" });
+        setTimeout(() => setPasswordSuccess(""), 5000);
       }
     } catch (error) {
       toast.error("Failed to update password");
@@ -318,24 +324,58 @@ const UserSettingsPage = () => {
                         <form onSubmit={handlePasswordChange}>
                           <div className="mb-3">
                             <label className="form-label">New Password</label>
-                            <input
-                              type="password"
-                              className="form-control"
-                              required
-                              value={passwordData.newPassword}
-                              onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
-                            />
+                            <div className="position-relative">
+                              <input
+                                type={showPassword ? "text" : "password"}
+                                className="form-control"
+                                required
+                                value={passwordData.newPassword}
+                                onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                              />
+                              <FaEye
+                                style={{
+                                  position: "absolute",
+                                  right: "12px",
+                                  top: "50%",
+                                  transform: "translateY(-50%)",
+                                  cursor: "pointer",
+                                  color: showPassword ? "#A020F0" : "#555",
+                                  zIndex: 10
+                                }}
+                                onClick={() => setShowPassword(!showPassword)}
+                              />
+                            </div>
                           </div>
                           <div className="mb-3">
                             <label className="form-label">Confirm New Password</label>
-                            <input
-                              type="password"
-                              className="form-control"
-                              required
-                              value={passwordData.confirmPassword}
-                              onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
-                            />
+                            <div className="position-relative">
+                              <input
+                                type={showConfirmPassword ? "text" : "password"}
+                                className="form-control"
+                                required
+                                value={passwordData.confirmPassword}
+                                onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                              />
+                              <FaEye
+                                style={{
+                                  position: "absolute",
+                                  right: "12px",
+                                  top: "50%",
+                                  transform: "translateY(-50%)",
+                                  cursor: "pointer",
+                                  color: showConfirmPassword ? "#A020F0" : "#555",
+                                  zIndex: 10
+                                }}
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              />
+                            </div>
                           </div>
+                          {passwordSuccess && (
+                            <div className="alert alert-success py-2 small mb-3">
+                              <i className="fa fa-check-circle me-2"></i>
+                              {passwordSuccess}
+                            </div>
+                          )}
                           <button type="submit" className="btn btn-primary px-4" disabled={loading}>
                             {loading ? "Updating..." : "Update Password"}
                           </button>

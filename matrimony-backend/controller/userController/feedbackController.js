@@ -22,6 +22,19 @@ exports.postFeedback = async (req, res) => {
 
     await newFeedback.save();
 
+    // Send email notification to Admin
+    const sendEmail = require("../../utils/nodeMailerMessages");
+    try {
+      await sendEmail(
+        process.env.EMAIL_USER,
+        "New Feedback Received - Agape Vows",
+        "formSubmission",
+        ["Feedback", { Name: name, Email: email, Phone: phone, Subject: subject, Message: message }]
+      );
+    } catch (emailErr) {
+      console.error("Failed to send feedback email:", emailErr);
+    }
+
     res.status(201).json({
       success: true,
       message: "Feedback submitted successfully",

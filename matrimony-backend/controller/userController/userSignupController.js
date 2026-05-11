@@ -127,43 +127,6 @@ const saveSignUpData = async (req, res) => {
   }
 };
 
-// const verifyLogin = async (req, res) => {
-//   try {
-//     const { formData } = req.body;
-//     const { email, password, rememberMe } = formData;
-
-//     console.log("formData", formData);
-
-//     const user = await userModel.findOne({ userEmail: email });
-
-//     if (!user) {
-//       return res.status(401).json({ message: "User not found" });
-//     }
-
-//     const isMatch = await bcrypt.compare(password, user.userPassword);
-//     if (!isMatch) {
-//       return res.status(401).json({ message: "Invalid password" });
-//     }
-
-//     // if (!user.isEmailVerified) {
-//     //   return res
-//     //     .status(403)
-//     //     .json({ message: "Please verify your email before logging in" });
-//     // }
-
-//     return res.status(200).json({
-//       message: "Login successful",
-//       userId: user._id,
-//       rememberMe,
-//       userName: user.userName,
-//       profileImage: user.profileImage,
-//     });
-//   } catch (err) {
-//     console.error("Error in verifying login", err);
-//     res.status(500).send("Internal Server Error");
-//   }
-// };
-
 const verifyLogin = async (req, res) => {
   try {
     const { formData } = req.body;
@@ -202,7 +165,6 @@ const verifyLogin = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
 
 const userForgotPassword = async (req, res) => {
   try {
@@ -285,20 +247,17 @@ const saveNewPassword = async (req, res) => {
       return res.status(400).json({ success: false, message: "Missing userId or new password" });
     }
 
-    const user = await userModel.findById(userId);
-    if (!user) {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      { userPassword: hashedPassword },
+      { new: true, runValidators: false }
+    );
+
+    if (!updatedUser) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.userPassword = hashedPassword;
-
-    // Fix for validation error if profileCreatedFor is empty string
-    if (user.profileCreatedFor === "") {
-      user.profileCreatedFor = undefined;
-    }
-
-    await user.save();
 
     return res.status(200).json({ success: true, message: "Password updated successfully", userId });
 
