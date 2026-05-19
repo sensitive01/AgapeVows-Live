@@ -300,6 +300,9 @@ const UserLoginPage = () => {
       if (response.status === 200) {
         localStorage.setItem("userId", response.data.userId);
         localStorage.setItem("userName", response.data.userName);
+        if (response.data.gender) {
+          localStorage.setItem("gender", response.data.gender);
+        }
 
         if (response.data.profileImage) {
           localStorage.setItem("userImage", response.data.profileImage);

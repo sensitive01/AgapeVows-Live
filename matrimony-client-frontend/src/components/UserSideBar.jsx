@@ -517,7 +517,7 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
     { path: "/user/user-dashboard-page", icon: "fa fa-home", label: "Dashboard" },
     { path: "/user/user-profile-page", icon: "fa fa-user", label: "Profile" },
     { path: "/user/user-interest-page", icon: "fa fa-heart", label: "Interests" },
-    { path: "/user/user-chat-page", icon: "fa fa-comments", label: "Chat" },
+
     { path: "/user/short-listed-profiles-page", icon: "fa fa-bookmark", label: "Shortlist" },
     { path: "/user/who-viewed-you-page", icon: "fa fa-eye", label: "Viewed You" },
     { path: "/user/blocked-profiles-page", icon: "fa fa-ban", label: "Blocked" },

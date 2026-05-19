@@ -375,16 +375,18 @@ const BasicInfomation = ({
 };
 
 // Reusable Form Section Component
-const FormSection = ({ title, children }) => (
+const FormSection = ({ title, children, zIndex = 1 }) => (
   <div
+    className="form-section"
     style={{
-      padding: "32px",
-      background: "rgba(255, 255, 255, 0.85)",
-      backdropFilter: "blur(10px)",
+      position: "relative",
+      padding: "clamp(20px, 4vw, 32px)",
+      background: "rgba(255, 255, 255, 0.95)",
       borderRadius: "12px",
       marginBottom: "24px",
       boxShadow: "0 8px 32px rgba(0,0,0,0.05)",
-      border: "1px solid rgba(255, 255, 255, 0.3)",
+      border: "1px solid rgba(0, 0, 0, 0.05)",
+      zIndex: zIndex,
     }}
   >
     <div
@@ -429,6 +431,7 @@ const FormInput = ({
   placeholder,
   searchable = false,
   readOnly = false,
+  helpText, // Added helpText prop
 }) => (
   <div>
     <label
@@ -452,6 +455,7 @@ const FormInput = ({
         onChange={onChange}
         options={options}
         placeholder={`Select ${label}`}
+        disabled={readOnly}
       />
     ) : type === "select" ? (
       <select
@@ -459,15 +463,16 @@ const FormInput = ({
         value={value || ""}
         onChange={onChange}
         required={required}
+        disabled={readOnly}
         style={{
           width: "100%",
           padding: "10px 14px",
           border: "2px solid #e5e7eb",
           borderRadius: "6px",
           fontSize: "14px",
-          color: "#374151",
-          background: "#fff",
-          cursor: "pointer",
+          color: readOnly ? "#9ca3af" : "#374151",
+          background: readOnly ? "#f3f4f6" : "#fff",
+          cursor: readOnly ? "not-allowed" : "pointer",
           transition: "border-color 0.2s ease",
           maxHeight: "200px",
           overflowY: "auto",
@@ -487,6 +492,7 @@ const FormInput = ({
         onChange={onChange}
         required={required}
         placeholder={placeholder}
+        readOnly={readOnly}
         rows={4}
         style={{
           width: "100%",
@@ -494,8 +500,8 @@ const FormInput = ({
           border: "2px solid #e5e7eb",
           borderRadius: "6px",
           fontSize: "14px",
-          color: "#374151",
-          background: "#fff",
+          color: readOnly ? "#9ca3af" : "#374151",
+          background: readOnly ? "#f3f4f6" : "#fff",
           resize: "vertical",
           transition: "border-color 0.2s ease",
         }}
@@ -521,6 +527,11 @@ const FormInput = ({
           transition: "border-color 0.2s ease",
         }}
       />
+    )}
+    {helpText && (
+      <p style={{ fontSize: "12px", color: "#6b7280", marginTop: "4px" }}>
+        {helpText}
+      </p>
     )}
   </div>
 );
@@ -662,7 +673,9 @@ const UserProfileEditPage = () => {
     familyStatus: "",
     residenceType: "",
     numberOfBrothers: "",
+    marriedBrothers: "",
     numberOfSisters: "",
+    marriedSisters: "",
 
     // Religious Information
     denomination: "",
@@ -742,6 +755,9 @@ const UserProfileEditPage = () => {
     profileVisibility: "Public",
   });
 
+  const [isFatherOther, setIsFatherOther] = useState(false);
+  const [isMotherOther, setIsMotherOther] = useState(false);
+
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [deleteProfileImageFlag, setDeleteProfileImageFlag] = useState(false);
@@ -752,10 +768,7 @@ const UserProfileEditPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showVisibilityOptions, setShowVisibilityOptions] = useState(false);
-  const [videoFile, setVideoFile] = useState(null);
-  const [videoPreview, setVideoPreview] = useState(""); // local preview or existing video URL
-  const [deleteVideoFlag, setDeleteVideoFlag] = useState(false);
-  const [existingVideoUrl, setExistingVideoUrl] = useState(""); // video stored in DB
+
 
   const [idProofFile, setIdProofFile] = useState(null);
   const [idProofPreview, setIdProofPreview] = useState(null);
@@ -763,10 +776,8 @@ const UserProfileEditPage = () => {
   const [idProofDocument, setIdProofDocument] = useState("");
   const [isUploadingId, setIsUploadingId] = useState(false);
 
-  // Age options 18-70
   const ageOptions = Array.from({ length: 53 }, (_, i) => (i + 18).toString());
 
-  // Height options 4ft to 8ft
   const heightOptions = [
     "4ft", "4ft 1in", "4ft 2in", "4ft 3in", "4ft 4in", "4ft 5in", "4ft 6in", "4ft 7in", "4ft 8in", "4ft 9in", "4ft 10in", "4ft 11in",
     "5ft", "5ft 1in", "5ft 2in", "5ft 3in", "5ft 4in", "5ft 5in", "5ft 6in", "5ft 7in", "5ft 8in", "5ft 9in", "5ft 10in", "5ft 11in",
@@ -774,7 +785,6 @@ const UserProfileEditPage = () => {
     "7ft", "7ft 1in", "7ft 2in", "7ft 3in", "7ft 4in", "7ft 5in", "7ft 6in", "7ft 7in", "7ft 8in", "7ft 9in", "7ft 10in", "7ft 11in", "8ft",
   ];
 
-  // Hobbies options for checkboxes
   const hobbiesOptions = [
     "Reading",
     "Sports",
@@ -790,20 +800,26 @@ const UserProfileEditPage = () => {
     "Yoga",
   ];
 
-  // Location selection state
+  const parentOccupationOptions = [
+    "Retired",
+    "Business",
+    "Government Employee",
+    "Private Employee",
+    "Professional",
+    "Farmer",
+    "Homemaker",
+    "Others",
+  ];
+
   const [selectedCountryCode, setSelectedCountryCode] = useState("");
   const [selectedStateCode, setSelectedStateCode] = useState("");
 
-  // Get all countries
   const allCountries = Country.getAllCountries();
   const countryOptions = allCountries.map((country) => country.name);
 
-  // Get states for selected country
   const stateOptions = selectedCountryCode
     ? State.getStatesOfCountry(selectedCountryCode).map((state) => state.name)
     : [];
-
-  // Get cities for selected state
   const cityOptions =
     selectedCountryCode && selectedStateCode
       ? City.getCitiesOfState(selectedCountryCode, selectedStateCode).map(
@@ -811,7 +827,6 @@ const UserProfileEditPage = () => {
       )
       : [];
 
-  // Handle country change
   const handleCountryChange = (e) => {
     const countryName = e.target.value;
     const country = allCountries.find((c) => c.name === countryName);
@@ -899,6 +914,37 @@ const UserProfileEditPage = () => {
     setHasUnsavedChanges(true);
   };
 
+  // Cascading handlers for Partner Preferences
+  const handlePartnerCountryChange = (e) => {
+    const countries = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      partnerCountry: countries,
+      partnerState: [], // Clear states when country changes
+      partnerDistrict: [], // Clear districts when country changes
+    }));
+    setHasUnsavedChanges(true);
+  };
+
+  const handlePartnerStateChange = (e) => {
+    const states = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      partnerState: states,
+      partnerDistrict: [], // Clear districts when state changes
+    }));
+    setHasUnsavedChanges(true);
+  };
+
+  const handlePartnerDistrictChange = (e) => {
+    const districts = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      partnerDistrict: districts,
+    }));
+    setHasUnsavedChanges(true);
+  };
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -950,7 +996,9 @@ const UserProfileEditPage = () => {
             familyStatus: userData.familyStatus || "",
             residenceType: userData.residenceType || "",
             numberOfBrothers: userData.numberOfBrothers || "",
+            marriedBrothers: userData.marriedBrothers || "",
             numberOfSisters: userData.numberOfSisters || "",
+            marriedSisters: userData.marriedSisters || "",
             denomination: userData.denomination || "",
             church: userData.church || "",
             churchActivity: userData.churchActivity || "",
@@ -1014,6 +1062,14 @@ const UserProfileEditPage = () => {
 
           setFormData(loadedData);
 
+          // Check if occupations are "Others"
+          if (loadedData.fathersOccupation && !parentOccupationOptions.includes(loadedData.fathersOccupation)) {
+            setIsFatherOther(true);
+          }
+          if (loadedData.mothersOccupation && !parentOccupationOptions.includes(loadedData.mothersOccupation)) {
+            setIsMotherOther(true);
+          }
+
           // ===========================
           // Set profile image preview
           // ===========================
@@ -1033,13 +1089,7 @@ const UserProfileEditPage = () => {
             setExistingAdditionalImages(userData.additionalImages);
           }
 
-          // ===========================
-          // Set self-introduction video
-          // ===========================
-          if (userData.selfIntroductionVideo) {
-            setExistingVideoUrl(userData.selfIntroductionVideo);
-            setVideoPreview(userData.selfIntroductionVideo);
-          }
+
 
           if (userData.idVerificationStatus) {
             setIdVerificationStatus(userData.idVerificationStatus);
@@ -1268,15 +1318,7 @@ const UserProfileEditPage = () => {
         });
       }
 
-      // ========================
-      // Step 5: Handle self-introduction video
-      // ========================
-      if (videoFile) {
-        submitFormData.append("selfIntroductionVideo", videoFile);
-      }
-      if (deleteVideoFlag) {
-        submitFormData.append("deleteSelfIntroductionVideo", "true");
-      }
+
 
       // ========================
       // Step 6: Send FormData to backend
@@ -1289,8 +1331,6 @@ const UserProfileEditPage = () => {
         showAlert({ text: "Profile updated successfully!", icon: "success" });
 
         // Clear video file state and update preview
-        setVideoFile(null);
-        setVideoPreview(response.data.data.selfIntroductionVideo || null);
 
         // Reset flags and deleted images list
         setHasUnsavedChanges(false);
@@ -1331,25 +1371,7 @@ const UserProfileEditPage = () => {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [hasUnsavedChanges]);
 
-  // ========================
-  // Video handlers
-  // ========================
-  const handleVideoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setHasUnsavedChanges(true);
-      setVideoFile(file);
-      setDeleteVideoFlag(false); // reset delete flag
-      setVideoPreview(URL.createObjectURL(file));
-    }
-  };
 
-  const handleDeleteVideo = () => {
-    setHasUnsavedChanges(true);
-    setVideoFile(null);
-    setVideoPreview(null);
-    setDeleteVideoFlag(true); // mark for deletion
-  };
 
   const handleIdProofChange = (e) => {
     const file = e.target.files[0];
@@ -1411,6 +1433,9 @@ const UserProfileEditPage = () => {
           background-color: #f5f5f5 !important; 
         }
         .container-fluid { background: transparent !important; }
+        .form-section:focus-within {
+          z-index: 100 !important;
+        }
       `}</style>
       <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 50 }}>
         <LayoutComponent />
@@ -1532,105 +1557,7 @@ const UserProfileEditPage = () => {
                     handleDeleteProfileImage={handleDeleteProfileImage}
                   />
 
-                  {/* <FormSection title="Self Introduction Video">
-                    <div style={{ display: "flex", alignItems: "center", gap: "20px", flexWrap: "wrap" }}>
-                      {videoPreview ? (
-                        <div style={{ position: "relative", display: "inline-block" }}>
-                        <video
-                    src={videoPreview}
-                    controls
-                    style={{
-                      width: "200px", // smaller size
-                      borderRadius: "8px",
-                      border: "1px solid #e5e7eb",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                    }}
-                  />
-                          <button
-                            type="button"
-                            onClick={handleDeleteVideo}
-                            style={{
-                              position: "absolute",
-                              top: "6px",
-                              right: "6px",
-                              width: "28px",
-                              height: "28px",
-                              borderRadius: "50%",
-                              background: "#ef4444",
-                              border: "2px solid #fff",
-                              color: "#fff",
-                              cursor: "pointer",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: "14px",
-                              transition: "all 0.2s ease",
-                            }}
-                            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
-                            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                            title="Remove video"
-                          >
-                            <i className="fa fa-times"></i>
-                          </button>
-
-                          
-                          <a
-                            href={videoPreview}
-                            download="SelfIntroduction.mp4"
-                            style={{
-                              position: "absolute",
-                              bottom: "6px",
-                              right: "6px",
-                              padding: "6px 10px",
-                              background: "#667eea",
-                              color: "#fff",
-                              fontSize: "12px",
-                              fontWeight: "600",
-                              borderRadius: "6px",
-                              textDecoration: "none",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "6px",
-                              cursor: "pointer",
-                              boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                              transition: "all 0.2s ease",
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.background = "#5568d3";
-                              e.currentTarget.style.transform = "scale(1.05)";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = "#667eea";
-                              e.currentTarget.style.transform = "scale(1)";
-                            }}
-                          >
-                            <i className="fa fa-download"></i> Download
-                          </a>
-                        </div>
-                      ) : (
-                        <div>
-                          <input
-                            type="file"
-                            accept="video/*"
-                            onChange={handleVideoChange}
-                            style={{
-                              padding: "8px",
-                              border: "2px dashed #d1d5db",
-                              borderRadius: "8px",
-                              cursor: "pointer",
-                              transition: "all 0.2s ease",
-                              background: "#f9fafb",
-                            }}
-                          />
-                          <p style={{ fontSize: "13px", color: "#6b7280", marginTop: "6px" }}>
-                            Upload a short self-introduction video
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </FormSection> */}
-
-                  <FormSection title="Government ID Verification">
+                  <FormSection title="Government ID Verification" zIndex={22}>
                     <div style={{
                       background: "#f8fafc",
                       padding: "24px",
@@ -1972,12 +1899,12 @@ const UserProfileEditPage = () => {
 
 
                   {/* Basic Details Section */}
-                  <FormSection title="Basic Details">
+                  <FormSection title="Basic Details" zIndex={20}>
                     <div
                       style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "20px",
+                        gap: "24px",
                       }}
                     >
                       <div style={{ gridColumn: "1 / -1" }}>
@@ -1998,6 +1925,8 @@ const UserProfileEditPage = () => {
                         value={formData.gender}
                         onChange={handleInputChange}
                         options={["Male", "Female", "Other"]}
+                        readOnly={true}
+                        helpText="To change gender, please contact Customer Support."
                       />
                       <FormInput
                         label="Profile Created By"
@@ -2028,13 +1957,17 @@ const UserProfileEditPage = () => {
                         type="date"
                         value={formData.dateOfBirth}
                         onChange={handleInputChange}
+                        readOnly={true}
+                        helpText="To change DOB, please contact Customer Support."
                       />
                       <FormInput
                         label="Age"
                         name="age"
+                        type="select"
+                        searchable={true}
                         value={formData.age}
                         onChange={handleInputChange}
-                        placeholder="Calculated automatically"
+                        options={ageOptions}
                       />
                       <FormInput
                         label="Body Type"
@@ -2455,12 +2388,12 @@ const UserProfileEditPage = () => {
                   </FormSection>
 
                   {/* Family Details Section */}
-                  <FormSection title="Family Details">
+                  <FormSection title="Family Details" zIndex={19}>
                     <div
                       style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "20px",
+                        gap: "24px",
                       }}
                     >
                       <FormInput
@@ -2475,22 +2408,118 @@ const UserProfileEditPage = () => {
                         value={formData.mothersName}
                         onChange={handleInputChange}
                       />
-                      <FormInput
-                        label="Father's Occupation"
-                        name="fathersOccupation"
-                        value={formData.fathersOccupation}
-                        onChange={handleInputChange}
-                      />
+                      {!isFatherOther && (parentOccupationOptions.includes(formData.fathersOccupation) || !formData.fathersOccupation) ? (
+                        <FormInput
+                          label="Father's Occupation"
+                          name="fathersOccupation"
+                          type="select"
+                          value={formData.fathersOccupation}
+                          onChange={(e) => {
+                            if (e.target.value === "Others") {
+                              setIsFatherOther(true);
+                              setFormData(prev => ({ ...prev, fathersOccupation: "" }));
+                            } else {
+                              handleInputChange(e);
+                            }
+                          }}
+                          options={parentOccupationOptions}
+                        />
+                      ) : (
+                        <div style={{ position: "relative" }}>
+                          <FormInput
+                            label="Father's Occupation"
+                            name="fathersOccupation"
+                            value={formData.fathersOccupation}
+                            onChange={handleInputChange}
+                            placeholder="Enter father's occupation"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsFatherOther(false);
+                              setFormData(prev => ({ ...prev, fathersOccupation: "" }));
+                            }}
+                            style={{
+                              position: "absolute",
+                              right: "12px",
+                              top: "38px",
+                              background: "#f3f4f6",
+                              border: "none",
+                              borderRadius: "4px",
+                              width: "24px",
+                              height: "24px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              cursor: "pointer",
+                              color: "#6b7280",
+                              zIndex: 5
+                            }}
+                            title="Back to list"
+                          >
+                            <i className="fa fa-times"></i>
+                          </button>
+                        </div>
+                      )}
+
+                      {!isMotherOther && (parentOccupationOptions.includes(formData.mothersOccupation) || !formData.mothersOccupation) ? (
+                        <FormInput
+                          label="Mother's Occupation"
+                          name="mothersOccupation"
+                          type="select"
+                          value={formData.mothersOccupation}
+                          onChange={(e) => {
+                            if (e.target.value === "Others") {
+                              setIsMotherOther(true);
+                              setFormData(prev => ({ ...prev, mothersOccupation: "" }));
+                            } else {
+                              handleInputChange(e);
+                            }
+                          }}
+                          options={parentOccupationOptions}
+                        />
+                      ) : (
+                        <div style={{ position: "relative" }}>
+                          <FormInput
+                            label="Mother's Occupation"
+                            name="mothersOccupation"
+                            value={formData.mothersOccupation}
+                            onChange={handleInputChange}
+                            placeholder="Enter mother's occupation"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsMotherOther(false);
+                              setFormData(prev => ({ ...prev, mothersOccupation: "" }));
+                            }}
+                            style={{
+                              position: "absolute",
+                              right: "12px",
+                              top: "38px",
+                              background: "#f3f4f6",
+                              border: "none",
+                              borderRadius: "4px",
+                              width: "24px",
+                              height: "24px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              cursor: "pointer",
+                              color: "#6b7280",
+                              zIndex: 5
+                            }}
+                            title="Back to list"
+                          >
+                            <i className="fa fa-times"></i>
+                          </button>
+                        </div>
+                      )}
+
                       <FormInput
                         label="Father's Profession"
                         name="fathersProfession"
                         value={formData.fathersProfession}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Mother's Occupation"
-                        name="mothersOccupation"
-                        value={formData.mothersOccupation}
                         onChange={handleInputChange}
                       />
                       <FormInput
@@ -2549,25 +2578,45 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Number of Brothers"
                         name="numberOfBrothers"
+                        type="select"
                         value={formData.numberOfBrothers}
                         onChange={handleInputChange}
+                        options={["0", "1", "2", "3", "4", "5+"]}
+                      />
+                      <FormInput
+                        label="Married Brothers"
+                        name="marriedBrothers"
+                        type="select"
+                        value={formData.marriedBrothers}
+                        onChange={handleInputChange}
+                        options={["0", "1", "2", "3", "4", "5+"]}
                       />
                       <FormInput
                         label="Number of Sisters"
                         name="numberOfSisters"
+                        type="select"
                         value={formData.numberOfSisters}
                         onChange={handleInputChange}
+                        options={["0", "1", "2", "3", "4", "5+"]}
+                      />
+                      <FormInput
+                        label="Married Sisters"
+                        name="marriedSisters"
+                        type="select"
+                        value={formData.marriedSisters}
+                        onChange={handleInputChange}
+                        options={["0", "1", "2", "3", "4", "5+"]}
                       />
                     </div>
                   </FormSection>
 
                   {/* Religious Information Section */}
-                  <FormSection title="Religious Information">
+                  <FormSection title="Religious Information" zIndex={18}>
                     <div
                       style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "20px",
+                        gap: "24px",
                       }}
                     >
                       <FormInput
@@ -2693,12 +2742,20 @@ const UserProfileEditPage = () => {
                   </FormSection>
 
                   {/* Contact Information Section */}
-                  <FormSection title="Contact Information">
+                  <FormSection title="Contact Information" zIndex={17}>
+                    <div style={{ marginBottom: "20px", color: "#6b7280", fontSize: "0.95rem", lineHeight: "1.6" }}>
+                      <p style={{ fontWeight: "600", color: "#374151", marginBottom: "8px" }}>
+                        Prefer communication through a family member or representative?
+                      </p>
+                      <p>
+                        Please provide the phone number through which the interested users can contact you. If you prefer not to share your personal number directly, you may provide alternate contact details of a family member or a trusted representative who can communicate on your behalf. These details will only be shared with users interested in connecting with you.
+                      </p>
+                    </div>
                     <div
                       style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "20px",
+                        gap: "24px",
                       }}
                     >
 
@@ -2723,26 +2780,20 @@ const UserProfileEditPage = () => {
                           "Sister",
                           "Uncle",
                           "Aunt",
+                          "Pastor",
                           "Relative",
                           "Friend",
                           "Other",
                         ]}
                       />
-                      <FormInput
-                        label="Mobile Number"
-                        name="phone"
-                        type="tel"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        required
-                        readOnly={true}
-                      />
+
                       <FormInput
                         label="Alternate Mobile Number"
                         name="alternateMobile"
                         type="tel"
                         value={formData.alternateMobile}
                         onChange={handleInputChange}
+                        required
                       />
                       <FormInput
                         label="Email"
@@ -2750,8 +2801,7 @@ const UserProfileEditPage = () => {
                         type="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        required
-                        readOnly={true}
+                        readOnly={false}
                       />
                       <FormInput
                         label="Landline Number"
@@ -2813,12 +2863,12 @@ const UserProfileEditPage = () => {
                   </FormSection>
 
                   {/* Professional Information Section */}
-                  <FormSection title="Professional Information">
+                  <FormSection title="Professional Information" zIndex={16}>
                     <div
                       style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "20px",
+                        gap: "24px",
                       }}
                     >
                       <FormInput
@@ -3116,7 +3166,7 @@ const UserProfileEditPage = () => {
                   </FormSection>
 
                   {/* Lifestyle Section with Checkboxes */}
-                  <FormSection title="Lifestyle">
+                  <FormSection title="Lifestyle" zIndex={15}>
                     <div
                       style={{
                         display: "grid",
@@ -3143,7 +3193,7 @@ const UserProfileEditPage = () => {
                         style={{
                           display: "grid",
                           gridTemplateColumns: "repeat(2, 1fr)",
-                          gap: "20px",
+                          gap: "24px",
                         }}
                       >
                         <FormInput
@@ -3195,7 +3245,7 @@ const UserProfileEditPage = () => {
                   </FormSection>
 
                   {/* Partner Preferences */}
-                  <FormSection title="Partner Preference">
+                  <FormSection title="Partner Preference" zIndex={14}>
                     <div
                       style={{
                         background: "#fff",
@@ -3236,8 +3286,8 @@ const UserProfileEditPage = () => {
                         </div>
                       </div>
 
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "20px" }}>
-                        <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", alignItems: "center", gap: "20px" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "24px" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", alignItems: "center", gap: "16px" }}>
                           <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151" }}>Partner Age</label>
                           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                             <select name="partnerAgeFrom" value={formData.partnerAgeFrom} onChange={handleInputChange} style={selectStyle}>
@@ -3252,7 +3302,7 @@ const UserProfileEditPage = () => {
                           </div>
                         </div>
 
-                        <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", alignItems: "center", gap: "20px" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", alignItems: "center", gap: "16px" }}>
                           <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151" }}>Partner Height</label>
                           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                             <select name="partnerHeight" value={formData.partnerHeight} onChange={handleInputChange} style={selectStyle}>
@@ -3273,7 +3323,7 @@ const UserProfileEditPage = () => {
                       style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "20px",
+                        gap: "24px",
                         marginTop: "20px",
                       }}
                     >
@@ -3372,7 +3422,7 @@ const UserProfileEditPage = () => {
                         value={formData.partnerCaste}
                         onChange={handleInputChange}
                         options={[
-                          "Do not wish to specify",
+                          "Doesn't Matter",
                           "Achari",
                           "Adhi Karnataka",
                           "Adhi Dravidar",
@@ -3638,7 +3688,7 @@ const UserProfileEditPage = () => {
                   </FormSection>
 
                   {/* Partner Preferences - Professional */}
-                  <FormSection title="Partner Preferences - Professional">
+                  <FormSection title="Partner Preferences - Professional" zIndex={13}>
                     <div
                       style={{
                         display: "grid",
@@ -3826,15 +3876,33 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Partner Annual Income"
                         name="partnerAnnualIncome"
+                        type="select"
+                        searchable={true}
                         value={formData.partnerAnnualIncome}
                         onChange={handleInputChange}
-                        placeholder="e.g., 5-10 Lakhs"
+                        options={[
+                          "No Income",
+                          "Under 1 Lakh",
+                          "1 - 2 Lakhs",
+                          "2 - 3 Lakhs",
+                          "3 - 4 Lakhs",
+                          "4 - 5 Lakhs",
+                          "5 - 7 Lakhs",
+                          "7 - 10 Lakhs",
+                          "10 - 15 Lakhs",
+                          "15 - 20 Lakhs",
+                          "20 - 30 Lakhs",
+                          "30 - 50 Lakhs",
+                          "50 Lakhs - 1 Crore",
+                          "Above 1 Crore",
+                          "Any",
+                        ]}
                       />
                     </div>
                   </FormSection>
 
                   {/* Partner Preferences - Location */}
-                  <FormSection title="Partner Preferences - Location">
+                  <FormSection title="Partner Preferences - Location" zIndex={12}>
                     <div
                       style={{
                         display: "grid",
@@ -3847,18 +3915,18 @@ const UserProfileEditPage = () => {
                         <MultiSearchSelect
                           name="partnerCountry"
                           value={formData.partnerCountry}
-                          onChange={handleInputChange}
+                          onChange={handlePartnerCountryChange}
                           options={allCountries.map(c => c.name)}
                           placeholder="Search Country..."
                         />
                       </div>
-
+ 
                       <div>
                         <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151", marginBottom: "8px", display: "block" }}>Partner State</label>
                         <MultiSearchSelect
                           name="partnerState"
                           value={formData.partnerState}
-                          onChange={handleInputChange}
+                          onChange={handlePartnerStateChange}
                           options={
                             formData.partnerCountry.length > 0 
                               ? Array.from(new Set(formData.partnerCountry.flatMap(cName => {
@@ -3870,21 +3938,20 @@ const UserProfileEditPage = () => {
                           placeholder="Search State..."
                         />
                       </div>
-
+ 
                       <div>
                         <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151", marginBottom: "8px", display: "block" }}>Partner District / City</label>
                         <MultiSearchSelect
                           name="partnerDistrict"
                           value={formData.partnerDistrict}
-                          onChange={handleInputChange}
+                          onChange={handlePartnerDistrictChange}
                           options={
                             formData.partnerState.length > 0
                               ? Array.from(new Set(formData.partnerState.flatMap(sName => {
-                                  // This is a bit complex as we need to know which country the state belongs to.
-                                  // For simplicity, we search across all selected countries or all countries.
+                                  // Find which countries have this state
                                   const countriesToSearch = formData.partnerCountry.length > 0 
                                     ? allCountries.filter(c => formData.partnerCountry.includes(c.name))
-                                    : [allCountries.find(c => c.isoCode === "IN")];
+                                    : allCountries.filter(c => c.isoCode === "IN");
                                   
                                   return countriesToSearch.flatMap(c => {
                                     const states = State.getStatesOfCountry(c.isoCode);

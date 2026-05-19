@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
+import { Link } from "react-router-dom";
 import {
   getContactUpdateRequests,
   approveContactUpdate,
@@ -123,6 +124,7 @@ const AdminContactUpdateRequests = () => {
                     "Requested Update",
                     "Created At",
                     "Actions",
+                    "Profile",
                   ].map((head, index) => (
                     <th
                       key={index}
@@ -177,10 +179,10 @@ const AdminContactUpdateRequests = () => {
                         {req.requestedMobile && <div><strong>Mobile:</strong> {req.userMobile}</div>}
                         {req.requestedEmail && <div><strong>Email:</strong> {req.userEmail}</div>}
                       </td>
-
+ 
                       <td className="align-middle text-center text-primary fw-bold">
-                        {req.requestedMobile && <div>{req.requestedMobile} (New Mobile)</div>}
-                        {req.requestedEmail && <div>{req.requestedEmail} (New Email)</div>}
+                        {req.requestedMobile && <div>{req.requestedMobile} </div>}
+                        {req.requestedEmail && <div>{req.requestedEmail} </div>}
                       </td>
 
                       <td className="align-middle text-center">
@@ -201,11 +203,21 @@ const AdminContactUpdateRequests = () => {
                           Reject
                         </button>
                       </td>
+                      <td className="align-middle text-center">
+                        <Link 
+                          to={`/admin/new-user/${req._id}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="btn btn-sm btn-outline-primary"
+                        >
+                          <i className="fa fa-user me-1"></i> View Profile
+                        </Link>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="py-4 text-muted">
+                    <td colSpan="7" className="py-4 text-muted">
                       No pending contact update requests.
                     </td>
                   </tr>

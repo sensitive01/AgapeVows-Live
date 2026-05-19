@@ -29,6 +29,7 @@ import AdminEnquiries from "./components/admin/AdminEnquiries";
 import AdminFeedbacks from "./components/admin/AdminFeedbacks";
 import AdminReports from "./components/admin/AdminReports";
 import AdminUnverifiedIdUsers from "./components/admin/AdminUnverifiedIdUsers";
+import AdminVerifiedIdUsers from "./components/admin/AdminVerifiedIdUsers";
 import AdminDeactivatedUsers from "./components/admin/AdminDeactivatedUsers";
 import AdminContactUpdateRequests from "./components/admin/AdminContactUpdateRequests";
 
@@ -353,6 +354,14 @@ function App() {
           element={
             <AdminLayout>
               <AdminUnverifiedIdUsers />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/verified-id-users"
+          element={
+            <AdminLayout>
+              <AdminVerifiedIdUsers />
             </AdminLayout>
           }
         />

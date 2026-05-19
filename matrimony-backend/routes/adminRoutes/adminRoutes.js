@@ -97,6 +97,11 @@ adminRoutes.get(
   adminController.getUnverifiedIdProofUsers
 );
 
+adminRoutes.get(
+  "/get-verified-id-users",
+  adminController.getVerifiedIdProofUsers
+);
+
 adminRoutes.put(
   "/verify-mobile/:userId",
   adminController.verifyMobile

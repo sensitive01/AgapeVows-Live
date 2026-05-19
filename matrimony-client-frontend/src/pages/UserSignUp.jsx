@@ -28,7 +28,7 @@ const UserSignUp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  
+
   // Login Popup Logic (Using MainLayout's sidebar)
   const openLoginPopup = (e) => {
     e.preventDefault();
@@ -120,7 +120,7 @@ const UserSignUp = () => {
       // Step 1: Send OTP
       setLoading(true);
       const otpResponse = await sendRegistrationOtpRequest(formData.email);
-      
+
       if (otpResponse.status === 200) {
         setLoading(false);
         // Step 2: Show OTP Input Modal

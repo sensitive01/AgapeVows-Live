@@ -15,7 +15,7 @@ import UserProfilePage from "./pages/UserProfilePage";
 import UserProfileEditPage from "./pages/UserProfileEditPage";
 import UserPlanPage from "./pages/UserPlanPage";
 import UserInterest from "./pages/UserInterest";
-import UserChatPage from "./pages/UserChatPage";
+
 import UserDashboardPage from "./pages/UserDashboardPage";
 import UserServicePage from "./pages/UserServicePage";
 import UserAllProfilePage from "./pages/allprofile/UserAllProfilePage";
@@ -85,7 +85,7 @@ function App() {
     window.addEventListener("storage", handleStorageChange);
 
     // Feature Flag for Security
-    const ADD_SECURITY_CHECK = true;  
+    const ADD_SECURITY_CHECK = true;
 
     if (!ADD_SECURITY_CHECK) {
       return () => {
@@ -123,7 +123,7 @@ function App() {
         if (target && target.href && target.href !== "javascript:void(0)" && !target.href.startsWith("#")) {
           e.preventDefault();
           e.stopPropagation();
-          
+
           // Strategy: Programmatically click a target="_blank" link WITHOUT the Ctrl modifier.
           // This forces most browsers to treat it as a foreground tab open.
           const a = document.createElement("a");
@@ -194,7 +194,7 @@ function App() {
         />
         <Route path="/user/user-plan-page" element={<UserPlanPage />} />
         <Route path="/user/user-interest-page" element={<UserInterest />} />
-        <Route path="/user/user-chat-page" element={<UserChatPage />} />
+
 
         <Route
           path="/user/user-dashboard-page"

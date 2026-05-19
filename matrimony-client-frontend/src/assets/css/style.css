@@ -5101,56 +5101,19 @@ span.mail::before {
 /* PRICING PLAN
 /*-------------------------------------------------------*/
 .plans-ban {
-  margin-top: var(--mtop);
-  padding: 80px 0px 220px;
-  text-align: center;
-  color: rgb(255, 255, 255);
-  background: linear-gradient(to right, rgb(137, 33, 107), rgb(218, 68, 83));
-  overflow: visible;
-  float: left;
-  width: 100%;
-  position: relative;
+    margin-top: var(--mtop);
+    padding: 80px 0px 140px;
+    text-align: center;
+    color: rgb(255, 255, 255);
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../images/plans-bg.png') no-repeat center center;
+    background-size: cover;
+    overflow: hidden;
+    float: left;
+    width: 100%;
+    position: relative;
 }
 
-.plans-ban::before,
-.plans-ban::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  transition: all 0.5s ease;
-  animation: zoomout 5s infinite linear both;
-}
 
-.plans-ban::before {
-  left: -120px;
-  top: -75px;
-  width: 350px;
-  height: 350px;
-  background: rgb(158, 42, 101);
-}
-
-.plans-ban::after {
-  right: -120px;
-  bottom: -75px;
-  width: 350px;
-  height: 350px;
-  background: rgb(218, 68, 83);
-}
-
-@keyframes zoomout {
-  0% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(2);
-    opacity: 0.7;
-  }
-
-  100% {
-    transform: scale(1);
-  }
-}
 
 .plans-ban .container {
   position: relative;

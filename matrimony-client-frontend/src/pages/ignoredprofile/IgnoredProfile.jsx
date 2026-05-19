@@ -105,22 +105,54 @@ const IgnoredProfile = () => {
         <ul>
           {profileData.filter((profile) => profile).map((profile) => (
             <li key={profile._id}>
-              <div className="db-int-pro-1">
-                 <img
-                   src={profile.profileImage || "images/profiles/default.jpg"}
-                   alt={profile.userName}
-                   style={{
-                     width: "80px",
-                     height: "80px",
-                     objectFit: "cover",
-                     borderRadius: "8px",
-                     opacity: "0.6",
-                   }}
-                 />
-                 <div style={{ position: 'absolute', top: '2px', left: '2px', zIndex: 10 }}>
-                   <MembershipBadge user={profile} isMini={true} />
-                 </div>
-               </div>
+              <div className="db-int-pro-1" style={{ position: "relative" }}>
+                <img
+                  src={profile.profileImage || "images/profiles/default.jpg"}
+                  alt={profile.userName}
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    objectFit: "cover",
+                    borderRadius: "8px",
+                    opacity: "0.6",
+                  }}
+                />
+
+                {/* Watermark Overlay on the Right Side */}
+                <div
+                  style={{
+                    position: "absolute",
+                    right: "4px",
+                    top: 0,
+                    bottom: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    pointerEvents: "none",
+                    userSelect: "none",
+                    zIndex: 5,
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "rgba(255, 255, 255, 0.45)",
+                      fontFamily: "'Outfit', 'Inter', sans-serif",
+                      fontSize: "8px",
+                      fontWeight: "600",
+                      letterSpacing: "1px",
+                      whiteSpace: "nowrap",
+                      textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
+                      writingMode: "vertical-rl",
+                      transform: "rotate(180deg)",
+                    }}
+                  >
+                    AgapeVows.com
+                  </span>
+                </div>
+                <div style={{ position: 'absolute', top: '2px', left: '2px', zIndex: 10 }}>
+                  <MembershipBadge user={profile} isMini={true} />
+                </div>
+              </div>
               <div className="db-int-pro-2">
                 <h5>
                   {profile.userName}

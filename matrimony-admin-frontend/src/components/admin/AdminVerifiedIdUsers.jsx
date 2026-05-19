@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
-import { getUnverifiedIdUsers, verifyIdProof, deleteUserById } from "../../api/service/adminServices";
+import { getVerifiedIdUsers, verifyIdProof } from "../../api/service/adminServices";
 import { useNavigate, Link } from "react-router-dom";
 import { confirmAction, showAlert } from "../../utils/alertService";
 
-export default function AdminUnverifiedIdUsers() {
+export default function AdminVerifiedIdUsers() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -16,16 +16,18 @@ export default function AdminUnverifiedIdUsers() {
   const [showModal, setShowModal] = useState(false);
   const [selectedProof, setSelectedProof] = useState(null);
 
+  const [sortOrder, setSortOrder] = useState("desc"); // "desc" or "asc"
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getUnverifiedIdUsers();
+        const response = await getVerifiedIdUsers();
         if (response.data.success) {
           setUsers(response.data.data);
           setFilteredUsers(response.data.data);
         }
       } catch (error) {
-        console.error("Error fetching unverified users:", error);
+        console.error("Error fetching verified users:", error);
       } finally {
         setLoading(false);
       }
@@ -34,59 +36,60 @@ export default function AdminUnverifiedIdUsers() {
   }, []);
 
   useEffect(() => {
-    let filtered = users;
+    let filtered = [...users];
     if (searchTerm) {
       filtered = filtered.filter(
         (user) =>
           user.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
           user.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (user.agwid && user.agwid.toLowerCase().includes(searchTerm.toLowerCase())) ||
           user.userMobile.includes(searchTerm)
       );
     }
+    
+    // Sort by idVerifiedAt
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.idVerifiedAt || a.updatedAt || 0);
+      const dateB = new Date(b.idVerifiedAt || b.updatedAt || 0);
+      return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+    });
+
     setFilteredUsers(filtered);
     setCurrentPage(1);
-  }, [searchTerm, users]);
+  }, [searchTerm, users, sortOrder]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentUsers = filteredUsers?.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
-  const handleVerifyId = async (userId, status) => {
-    if (status === "Rejected") {
-      const confirmed = await confirmAction({
-        title: "Reject ID Proof?",
-        text: "Are you sure you want to reject this ID proof?",
-        icon: "warning",
-        confirmButtonText: "Yes, Reject",
-      });
-      if (!confirmed) return;
-    }
+  const handleUndoVerification = async (userId) => {
+    const confirmed = await confirmAction({
+      title: "Undo ID Verification?",
+      text: "This will revert the user status back to Uploaded.",
+      icon: "warning",
+      confirmButtonText: "Yes, Undo",
+    });
+    if (!confirmed) return;
     
     setProcessingUsers((prev) => new Set(prev).add(userId));
     try {
-      const response = await verifyIdProof(userId, status);
+      const response = await verifyIdProof(userId, "Uploaded");
       if (response.status === 200) {
-        if (status === "Verified") {
-          // Remove from list if verified
-          setFilteredUsers((prev) => prev.filter((u) => u._id !== userId));
-          setUsers((prev) => prev.filter((u) => u._id !== userId));
-        } else {
-          // Just update status if rejected
-          setUsers((prev) => prev.map(u => u._id === userId ? { ...u, idVerificationStatus: status } : u));
-          setFilteredUsers((prev) => prev.map(u => u._id === userId ? { ...u, idVerificationStatus: status } : u));
-        }
+        // Remove from verified list
+        setFilteredUsers((prev) => prev.filter((u) => u._id !== userId));
+        setUsers((prev) => prev.filter((u) => u._id !== userId));
         showAlert({
           title: "Success!",
-          text: `ID Proof ${status} successfully!`,
+          text: `ID Verification undone successfully! User is now back to Uploaded status.`,
           icon: "success",
         });
       }
     } catch (error) {
-      console.error(`Error ${status} ID:`, error);
+      console.error(`Error undoing ID verification:`, error);
       showAlert({
         title: "Error",
-        text: `Failed to ${status} ID proof.`,
+        text: `Failed to undo ID verification.`,
         icon: "error",
       });
     } finally {
@@ -96,6 +99,26 @@ export default function AdminUnverifiedIdUsers() {
         return newSet;
       });
     }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
+  const formatTime = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true
+    });
   };
 
   const handleViewProof = (docUrl) => {
@@ -138,19 +161,33 @@ export default function AdminUnverifiedIdUsers() {
         <div className="col-md-12">
           <div className="box-com box-qui box-lig box-tab">
             <div className="tit">
-              <h3>ID Verification Requests</h3>
-              <p>All users pending identity verification ({filteredUsers.length} users)</p>
+              <h3>Verified Users</h3>
+              <p>All users with verified identity ({filteredUsers.length} users)</p>
             </div>
 
-            <div className="row mb-4">
-              <div className="col-md-6">
+            <div className="row mb-4 align-items-center">
+              <div className="col-md-4">
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Search by name, email, or phone..."
+                  placeholder="Search by name, email or AV ID..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
+              </div>
+              <div className="col-md-7">
+                <div className="d-flex align-items-center gap-3 justify-content-md-end">
+                  <label className="text-nowrap mb-0 fw-bold">Sort By Date Approved:</label>
+                  <select
+                    className="form-select w-50 w-md-auto"
+                    style={{ minWidth: "260px" }}
+                    value={sortOrder}
+                    onChange={(e) => setSortOrder(e.target.value)}
+                  >
+                    <option value="desc">Latest Approved First (Newest)</option>
+                    <option value="asc">Oldest Approved First (Oldest)</option>
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -161,10 +198,10 @@ export default function AdminUnverifiedIdUsers() {
                       <th>S.No</th>
                       <th>User Details</th>
                       <th>AV ID</th>
-                      <th>Status</th>
                       <th>ID Type</th>
                       <th>ID Number</th>
                       <th>Document</th>
+                      <th>Approved Date & Time</th>
                       <th>Actions</th>
                       <th>Profile</th>
                     </tr>
@@ -188,14 +225,14 @@ export default function AdminUnverifiedIdUsers() {
                         </div>
                       </td>
                       <td>{user.agwid}</td>
-                      <td>
+                      {/* <td>
                         <span className={`badge ${
                           user.idVerificationStatus === 'Uploaded' ? 'bg-info' : 
                           user.idVerificationStatus === 'Rejected' ? 'bg-danger' : 'bg-warning'
                         }`}>
                           {user.idVerificationStatus || 'Pending'}
                         </span>
-                      </td>
+                      </td> */}
                       <td>{user.idProofType || "N/A"}</td>
                       <td>{user.idProofNumber || "N/A"}</td>
                       <td>
@@ -210,23 +247,18 @@ export default function AdminUnverifiedIdUsers() {
                           <span className="text-muted small italic">Not Uploaded</span>
                         )}
                       </td>
+                      <td className="fw-semibold text-secondary">
+                        <div>{formatDate(user.idVerifiedAt || user.updatedAt)}</div>
+                        <div className="text-muted small fw-normal mt-1">{formatTime(user.idVerifiedAt || user.updatedAt)}</div>
+                      </td>
                       <td>
-                        <div className="d-flex gap-2">
-                          <button 
-                            className="btn btn-sm btn-success"
-                            disabled={processingUsers.has(user._id)}
-                            onClick={() => handleVerifyId(user._id, "Verified")}
-                          >
-                            {processingUsers.has(user._id) ? "..." : "Verify"}
-                          </button>
-                          <button 
-                            className="btn btn-sm btn-danger"
-                            disabled={processingUsers.has(user._id)}
-                            onClick={() => handleVerifyId(user._id, "Rejected")}
-                          >
-                            {processingUsers.has(user._id) ? "..." : "Reject"}
-                          </button>
-                        </div>
+                        <button 
+                          className="btn btn-sm btn-primary rounded-pill px-3 text-light"
+                          disabled={processingUsers.has(user._id)}
+                          onClick={() => handleUndoVerification(user._id)}
+                        >
+                          {processingUsers.has(user._id) ? "..." : "Undo"}
+                        </button>
                       </td>
                       <td>
                         <Link 
@@ -242,7 +274,7 @@ export default function AdminUnverifiedIdUsers() {
                   ))}
                   {currentUsers.length === 0 && (
                     <tr>
-                      <td colSpan="9" className="text-center py-5 text-muted">No pending verification requests found.</td>
+                      <td colSpan="10" className="text-center py-5 text-muted">No verified users found.</td>
                     </tr>
                   )}
                 </tbody>

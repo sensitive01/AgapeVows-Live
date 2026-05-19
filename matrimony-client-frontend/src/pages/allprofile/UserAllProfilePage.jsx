@@ -12,11 +12,13 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ShowInterest from "./ShowInterest";
 import MembershipBadge from "../../components/common/MembershipBadge";
+import UserCardImageSlider from "../../components/common/UserCardImageSlider";
 
 const UserAllProfilePage = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
   const [users, setUsers] = useState([]);
+  const [sortBy, setSortBy] = useState("");
   const [filters, setFilters] = useState({
     gender: "",
     age: "",
@@ -26,10 +28,11 @@ const UserAllProfilePage = () => {
     profileType: "all",
   });
   const [selectedUser, setSelectedUser] = useState(null);
-  const [chatMessage, setChatMessage] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
+  const [chatMessage, setChatMessage] = useState("");
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [activeChats, setActiveChats] = useState([]);
+
   const [currentUserPlan, setCurrentUserPlan] = useState(null);
   const [showUpgradePopup, setShowUpgradePopup] = useState(false);
 
@@ -104,10 +107,24 @@ const UserAllProfilePage = () => {
       if (user.age < minAge || user.age > maxAge) return false;
     }
 
+    if (filters.religion && filters.religion !== "Any" && user.religion !== filters.religion)
+      return false;
+
     if (filters.location && user.city !== filters.location) return false;
 
     return true;
   });
+
+  const sortedFilteredUsers = useMemo(() => {
+    const list = [...filteredUsers];
+    if (sortBy === "newest") {
+      return list.sort((a, b) => new Date(b.createdAt || b.lastLogin || 0) - new Date(a.createdAt || a.lastLogin || 0));
+    }
+    if (sortBy === "oldest") {
+      return list.sort((a, b) => new Date(a.createdAt || a.lastLogin || 0) - new Date(b.createdAt || b.lastLogin || 0));
+    }
+    return list;
+  }, [filteredUsers, sortBy]);
 
   const handleSendInterest = (user) => {
     setSelectedUser(user);
@@ -203,15 +220,10 @@ const UserAllProfilePage = () => {
         <LayoutComponent />
       </div>
 
-      <div style={{ paddingTop: "40px", paddingBottom: "40px" }}>
+      <div style={{ paddingTop: "115px", paddingBottom: "40px" }}>
         <div className="all-pro-head">
           <div className="container">
             <div className="row">
-              <h1>Lakhs of Happy Marriages</h1>
-              <a href="#">
-                Join now for Free{" "}
-                <i className="fa fa-handshake-o" aria-hidden="true"></i>
-              </a>
             </div>
           </div>
         </div>
@@ -424,10 +436,22 @@ const UserAllProfilePage = () => {
                       <li>Sort by:</li>
                       <li>
                         <div className="form-group">
-                          <select className="chosen-select">
+                          <select
+                            className="form-select"
+                            style={{
+                              padding: "6px 12px",
+                              fontSize: "14px",
+                              borderRadius: "4px",
+                              border: "1px solid #ccc",
+                              outline: "none",
+                              cursor: "pointer"
+                            }}
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                          >
                             <option value="">Most relative</option>
-                            <option value="Men">Date listed: Newest</option>
-                            <option value="Men">Date listed: Oldest</option>
+                            <option value="newest">Date listed: Newest</option>
+                            <option value="oldest">Date listed: Oldest</option>
                           </select>
                         </div>
                       </li>
@@ -446,137 +470,208 @@ const UserAllProfilePage = () => {
                 </div>
                 <div className="all-list-sh">
                   <ul>
-                    {filteredUsers.map((user) => (
-                      <li key={user._id}>
+                    {sortedFilteredUsers.map((user) => (<li key={user._id} style={{ width: "100%", marginBottom: "20px" }}>
+                      <div
+                        className="search-result-card"
+                        style={{
+                          border: "1px solid #ddd",
+                          padding: "15px",
+                          backgroundColor: "#fff",
+                          borderRadius: "4px",
+                          boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                        }}
+                      >
+                        {/* Header: ID and Last Login */}
                         <div
-                          className={`all-pro-box ${Math.random() > 0.5 ? "user-avil-onli" : ""
-                            }`}
-                          data-useravil={
-                            Math.random() > 0.5 ? "avilyes" : "avilno"
-                          }
-                          data-aviltxt={
-                            Math.random() > 0.5 ? "Available online" : "Offline"
-                          }
+                          className="d-flex justify-content-between align-items-center mb-3"
+                          style={{
+                            borderBottom: "1px dashed #ccc",
+                            paddingBottom: "8px",
+                          }}
                         >
-                          <div className="pro-img">
-                            <a href="#">
-                              <img
-                                src={
-                                  user.profileImage ||
-                                  "images/default-profile.jpg"
-                                }
-                                alt={user.userName}
-                                onError={(e) => {
-                                  e.target.src = "images/default-profile.jpg";
-                                }}
-                              />
-                            </a>
-                            <div
-                              className="pro-ave"
-                              title="User currently available"
+                          <div className="d-flex align-items-center gap-2">
+                            <h5
+                              style={{
+                                color: "#C2185B",
+                                fontWeight: "bold",
+                                margin: 0,
+                                fontSize: "16px",
+                              }}
                             >
-                              <span
-                                className={`pro-ave-${Math.random() > 0.5 ? "yes" : "no"
-                                  }`}
-                              ></span>
-                            </div>
-                            <div className="pro-avl-status">
-                              {Math.random() > 0.5 ? (
-                                <h5>Available Online</h5>
-                              ) : (
-                                <>
-                                  <h5>Last login 10 mins ago</h5>
-                                  <span className="marqu">
-                                    Last login 10 mins ago | I'll be available
-                                    on 10:00 AM
-                                  </span>
-                                </>
-                              )}
-                            </div>
+                              {user.agwid}
+                            </h5>
+                          </div>
+                          <span
+                            style={{
+                              fontSize: "13px",
+                              color: "#888",
+                              fontStyle: "italic",
+                            }}
+                          >
+                            Last login:{" "}
+                            {user.lastLogin
+                              ? new Date(user.lastLogin).toLocaleDateString(
+                                "en-GB",
+                                {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                },
+                              )
+                              : "Recently"}
+                          </span>
+                        </div>
 
-                            {/* Image Overlays */}
-                            <div className="pro-img-badges" style={{
+                        <div className="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+                          {/* Left: Image */}
+                          <div
+                            onClick={(e) => handleViewProfile(e, user)}
+                            style={{
+                              height: "160px",
+                              width: "220px",
+                              flex: "0 0 220px",
+                              overflow: "hidden",
+                              borderRadius: "8px",
+                              border: "1px solid #eedc9a",
+                              cursor: "pointer",
+                              position: 'relative'
+                            }}
+                          >
+                            <UserCardImageSlider
+                              user={user}
+                              height="100%"
+                              onImageClick={(e) => handleViewProfile(e, user)}
+                            />
+                            <div style={{
                               position: 'absolute',
-                              top: '10px',
-                              left: '10px',
+                              top: '5px',
+                              left: '5px',
                               display: 'flex',
                               flexDirection: 'column',
                               gap: '6px',
-                              zIndex: 10
+                              zIndex: 10,
+                              alignItems: 'flex-start'
                             }}>
                               <MembershipBadge user={user} isMini={true} />
                               {user.idVerificationStatus === 'Verified' && (
-                                <div className="badge bg-success border border-white shadow-sm" style={{ padding: '4px 8px', fontSize: '10px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                  <i className="fa fa-check-circle"></i> ID Verified
+                                <div className="membership-badge badge-verified badge-mini shadow-sm">
+                                  <i className="fa fa-check-circle badge-icon"></i>
+                                  <span className="badge-text">ID Verified</span>
                                 </div>
                               )}
                               {user.isPhoneVerified && (
-                                <div className="badge bg-info text-white border border-white shadow-sm" style={{ padding: '4px 8px', fontSize: '10px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                  <i className="fa fa-phone"></i> Verified Mobile
+                                <div className="badge bg-info text-white p-1 shadow-sm" style={{ fontSize: '8px', borderRadius: '2px', border: '1px solid white' }}>
+                                  <i className="fa fa-phone"></i>
                                 </div>
                               )}
                             </div>
                           </div>
 
-                          <div className="pro-detail">
-                            <h4>
-                              <a href="#" onClick={(e) => handleViewProfile(e, user)}>{user.userName}</a>
-                            </h4>
-                            <div className="pro-bio">
-                              <span>{user.degree || "Not specified"}</span>
-                              <span>{user.jobType || "Not specified"}</span>
-                              <span>
-                                {user.age || "Not specified"} Years old
-                              </span>
-                              <span>
-                                Height: {user.height || "Not specified"}Cms
-                              </span>
-                            </div>
-                            <div className="links">
-                              <span
-                                className="cta-chat"
-                                onClick={() => openChat(user)}
-                              >
-                                Chat now
-                              </span>
-                              <a href={`https://wa.me/${user.whatsapp}`}>
-                                WhatsApp
-                              </a>
-                              <a
-                                href="#!"
-                                className="cta cta-sendint"
-                                onClick={(e) => {
-                                  if (!isPaidUser) {
-                                    e.preventDefault();
-                                    setShowUpgradePopup(true);
-                                    return;
-                                  }
-                                  setSelectedUser(user);
+                          {/* Center: Details */}
+                          <div className="flex-grow-1" style={{ cursor: 'pointer' }} onClick={(e) => handleViewProfile(e, user)}>
+                            <div>
+                              <h4
+                                style={{
+                                  fontSize: "16px",
+                                  fontWeight: "600",
+                                  marginBottom: "8px",
+                                  color: "#333",
                                 }}
-                                {...(isPaidUser && {
-                                  "data-bs-toggle": "modal",
-                                  "data-bs-target": "#sendInter",
-                                })}
                               >
-                                Send interest
-                              </a>
-                              <a href="#" onClick={(e) => handleViewProfile(e, user)}>
-                                More details
-                              </a>
+                                {[
+                                  user.motherTongue,
+                                  user.age && `${user.age} Yrs`,
+                                  user.height,
+                                ]
+                                  .filter(Boolean)
+                                  .join(", ")}
+                              </h4>
+                              <div
+                                style={{
+                                  fontSize: "14px",
+                                  color: "#555",
+                                  lineHeight: "1.8",
+                                }}
+                              >
+                                <div className="mb-1">
+                                  {[
+                                    user.religion,
+                                    user.caste,
+                                    user.city,
+                                    user.state,
+                                    user.citizenOf,
+                                  ]
+                                    .filter((item) => item && item !== "NA")
+                                    .join(", ")}
+                                </div>
+                                <div className="mb-1">
+                                  {[
+                                    user.education || user.degree,
+                                    user.occupation || user.jobType,
+                                  ]
+                                    .filter(Boolean)
+                                    .join(", ")}
+                                </div>
+                                <div
+                                  style={{
+                                    color: "#777",
+                                    marginTop: "8px",
+                                    fontSize: "13px",
+                                    display: "-webkit-box",
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: "vertical",
+                                    overflow: "hidden",
+                                  }}
+                                >
+                                  {user.jobDetails
+                                    ? `${user.jobDetails} - `
+                                    : ""}
+                                  {user.aboutMe ||
+                                    "No description available."}
+                                </div>
+                              </div>
                             </div>
                           </div>
-                          <span
-                            className="enq-sav"
-                            data-toggle="tooltip"
-                            title="Click to save this profile."
-                          >
-                            <i
-                              className="fa fa-thumbs-o-up"
-                              aria-hidden="true"
-                            ></i>
-                          </span>
+
+                          {/* Right: Buttons */}
+                          <div className="d-flex align-items-center justify-content-md-end justify-content-center gap-2 mt-3 mt-sm-0 px-sm-2 pe-sm-5" style={{ alignSelf: "center", flexShrink: 0 }}>
+                            <button
+                              className="btn btn-sm text-white px-3 py-2"
+                              style={{
+                                backgroundColor: "#00bcd5", // Cyan matching screenshot
+                                border: "none",
+                                borderRadius: "4px",
+                                fontWeight: "500",
+                                whiteSpace: "nowrap"
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleViewProfile(e, user);
+                              }}
+                            >
+                              View Profile
+                            </button>
+
+                            <button
+                              className="btn btn-sm text-white px-3 py-2"
+                              style={{
+                                backgroundColor: "#00bcd5", // Cyan matching screenshot
+                                border: "none",
+                                borderRadius: "4px",
+                                fontWeight: "500",
+                                whiteSpace: "nowrap"
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                shortListProfile(user);
+                              }}
+                            >
+                              Shortlist Profile
+                            </button>
+                          </div>
                         </div>
-                      </li>
+                      </div>
+                    </li>
                     ))}
                   </ul>
                 </div>
@@ -824,6 +919,7 @@ const UserAllProfilePage = () => {
         .upgrade-btn:hover { transform: scale(1.05); }
         .cancel-btn { background: #f3f4f6; color: #333; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 0.9rem; }
         @keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .all-pro-box > .pro-img-badges { display: none !important; }
       `}</style>
 
       <ToastContainer />

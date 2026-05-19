@@ -29,21 +29,7 @@ cloudinary.config({
   api_secret: CLOUDINARY_API_SECRET,
 });
 
-const AGAPE_WATERMARK_CONFIG = [
-  {
-    overlay: {
-      font_family: "Arial",
-      font_size: 45,
-      font_weight: "bold",
-      text: "AgapeVows",
-    },
-    color: "#ffffff",
-    opacity: 40,
-    gravity: "south_east",
-    x: 20,
-    y: 20
-  }
-];
+
 
 
 const generateOrderId = () => {
@@ -183,7 +169,9 @@ const completeProfileData = async (req, res) => {
       familyStatus: req.body.familyStatus,
       residenceType: req.body.residenceType,
       numberOfBrothers: req.body.numberOfBrothers,
+      marriedBrothers: req.body.marriedBrothers,
       numberOfSisters: req.body.numberOfSisters,
+      marriedSisters: req.body.marriedSisters,
 
       /* RELIGIOUS */
       religion: req.body.religion,
@@ -213,6 +201,7 @@ const completeProfileData = async (req, res) => {
       contactPersonName: req.body.contactPersonName,
       relationship: req.body.relationship,
       citizenOf: req.body.citizenOf,
+      userEmail: req.body.email,
 
       /* PROFESSIONAL */
       education: req.body.education,
@@ -272,8 +261,7 @@ const completeProfileData = async (req, res) => {
       const profile = await cloudinary.uploader.upload(
         files.profileImage[0].path,
         {
-          folder: `matrimony/users/${userId}/profileImage`,
-          transformation: AGAPE_WATERMARK_CONFIG
+          folder: `matrimony/users/${userId}/profileImage`
         }
       );
       updates.profileImage = profile.secure_url;
@@ -325,8 +313,7 @@ const completeProfileData = async (req, res) => {
       const uploadedImages = await Promise.all(
         files.additionalImages.map((file) =>
           cloudinary.uploader.upload(file.path, {
-            folder: `matrimony/users/${userId}/additionalImages`,
-            transformation: AGAPE_WATERMARK_CONFIG
+            folder: `matrimony/users/${userId}/additionalImages`
           })
         )
       );
@@ -342,22 +329,7 @@ const completeProfileData = async (req, res) => {
       updates.additionalImages = additionalImages;
     }
 
-    /* =========================
-    SELF INTRODUCTION VIDEO
- ========================== */
-    if (files?.selfIntroductionVideo?.[0]) {
-      const videoUpload = await cloudinary.uploader.upload(
-        files.selfIntroductionVideo[0].path,
-        {
-          resource_type: "video",
-          folder: `matrimony/users/${userId}/selfIntroductionVideo`,
-        }
-      );
-      updates.selfIntroductionVideo = videoUpload.secure_url;
-      fs.unlinkSync(files.selfIntroductionVideo[0].path);
-    } else if (req.body.deleteSelfIntroductionVideo === "true") {
-      updates.selfIntroductionVideo = "";
-    }
+
 
     /* =========================
        FINAL UPDATE
@@ -1103,8 +1075,35 @@ const getSearchedProfileData = async (req, res) => {
       familyStatus,
       showWithPhoto,
       lookingFor,
-      userId // Get userId from body
+      userId, // Get userId from body
+      searchType,
+      bnrId
     } = req.body;
+
+    // Handle AV ID search specifically
+    if (searchType === "bnr" && bnrId) {
+      const bnrUser = await userModel.findOne({ 
+        agwid: { $regex: new RegExp(`^${bnrId}$`, 'i') },
+        profileStatus: { $ne: "Deactivated" },
+        isApproved: true,
+        isDeleted: false
+      }).select("-userPassword -__v");
+
+      if (!bnrUser) {
+        return res.status(200).json({
+          success: true,
+          count: 0,
+          data: [],
+          message: "The AV ID you entered is incorrect or does not exist."
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        count: 1,
+        data: [bnrUser]
+      });
+    }
 
     let blockedIds = [];
     if (userId) {

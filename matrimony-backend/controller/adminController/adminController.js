@@ -772,16 +772,24 @@ const verifyIdProof = async (req, res) => {
     const { userId } = req.params;
     const { status } = req.body; // "Verified" or "Rejected"
 
-    if (!["Verified", "Rejected"].includes(status)) {
+    if (!["Verified", "Rejected", "Pending", "Uploaded"].includes(status)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid status. Must be 'Verified' or 'Rejected'.",
+        message: "Invalid status. Must be 'Verified', 'Rejected', 'Pending', or 'Uploaded'.",
       });
+    }
+
+    const updateData = { idVerificationStatus: status };
+    if (status === "Verified") {
+      updateData.idVerifiedAt = new Date();
+    } else if (status === "Pending" || status === "Uploaded") {
+      // Clear the verified date if undoing
+      updateData.idVerifiedAt = null;
     }
 
     const userData = await userModel.findByIdAndUpdate(
       userId,
-      { idVerificationStatus: status },
+      updateData,
       { new: true }
     );
 
@@ -846,14 +854,67 @@ const getUnverifiedIdProofUsers = async (req, res) => {
           idProofNumber: 1,
           idVerificationStatus: 1,
           createdAt: 1,
+          agwid: 1,
         },
       },
     ]);
 
-    res.status(200).json({ success: true, data: userData });
+    res.status(200).json({
+      success: true,
+      data: userData,
+    });
   } catch (err) {
-    console.error("Error fetching unverified ID proof users:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Error fetching unverified users:", err);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+/* =========================
+   GET VERIFIED ID USERS
+========================== */
+const getVerifiedIdProofUsers = async (req, res) => {
+  try {
+    const userData = await userModel.aggregate([
+      {
+        $match: {
+          idVerificationStatus: "Verified",
+          isDeleted: false,
+        },
+      },
+      {
+        $sort: { idVerifiedAt: -1, createdAt: -1 },
+      },
+      {
+        $project: {
+          userEmail: 1,
+          userMobile: 1,
+          userName: 1,
+          gender: 1,
+          profileImage: 1,
+          idProofDocument: 1,
+          idProofType: 1,
+          idProofNumber: 1,
+          idVerificationStatus: 1,
+          createdAt: 1,
+          idVerifiedAt: 1,
+          agwid: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: userData,
+    });
+  } catch (err) {
+    console.error("Error fetching verified users:", err);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 
@@ -1106,8 +1167,12 @@ module.exports = {
   registerUser,
   bulkRegisterUsers,
   getUnverifiedIdProofUsers,
+  
+  
+  
   exportAllUsersData,
   getContactUpdateRequests,
   approveContactUpdate,
   rejectContactUpdate,
+  getVerifiedIdProofUsers,
 };

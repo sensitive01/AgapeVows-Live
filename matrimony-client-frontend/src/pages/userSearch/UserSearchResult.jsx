@@ -15,250 +15,7 @@ import defaultProfileImg from "../../assets/images/blue-circle-with-white-user_7
 import maleDefault from "../../assets/images/profiles/men1.jpg";
 import femaleDefault from "../../assets/images/profiles/12.jpg";
 import MembershipBadge from "../../components/common/MembershipBadge";
-
-const UserCardImageSlider = ({ user, isAccepted, height = "220px", blur = false }) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isZoomOpen, setIsZoomOpen] = useState(false);
-
-  const allImages = useMemo(() => {
-    const defaultImg =
-      user.gender === "Male" || user.gender === "Groom"
-        ? maleDefault
-        : user.gender === "Female" || user.gender === "Bride"
-          ? femaleDefault
-          : defaultProfileImg;
-
-    const images = [];
-
-    if (user.profileImage) {
-      images.push(user.profileImage);
-    }
-
-    if (user.additionalImages && user.additionalImages.length > 0) {
-      images.push(...user.additionalImages);
-    }
-
-    // Remove duplicates
-    const uniqueImages = [...new Set(images)];
-
-    // Return unique images or default if empty
-    return uniqueImages.length > 0 ? uniqueImages : [defaultImg];
-  }, [user]);
-
-  const nextImage = (e) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
-  };
-
-  const prevImage = (e) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    setCurrentImageIndex((prev) =>
-      prev === 0 ? allImages.length - 1 : prev - 1,
-    );
-  };
-
-  const openZoom = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (blur) return; // Disable zoom for blurred images
-    if (isAccepted) {
-      setIsZoomOpen(true);
-    }
-  };
-
-  return (
-    <>
-      <div style={{ position: "relative", width: "100%", height: height }}>
-        <div
-          onClick={openZoom}
-          style={{
-            display: "block",
-            height: "100%",
-            cursor: isAccepted ? "pointer" : "default",
-          }}
-        >
-          <img
-            src={allImages[currentImageIndex]}
-            alt={user.userName}
-            onError={(e) => {
-              const defaultImg =
-                user.gender === "Male" || user.gender === "Groom"
-                  ? maleDefault
-                  : user.gender === "Female" || user.gender === "Bride"
-                    ? femaleDefault
-                    : defaultProfileImg;
-              e.target.src = defaultImg;
-            }}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "center",
-              display: "block",
-              filter: blur ? "blur(12px)" : "none",
-              transition: "filter 0.3s ease"
-            }}
-          />
-        </div>
-
-        {allImages.length > 1 && (
-          <>
-            <button
-              onClick={prevImage}
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "5px",
-                transform: "translateY(-50%)",
-                background: "rgba(0, 0, 0, 0.5)",
-                color: "white",
-                border: "none",
-                borderRadius: "50%",
-                width: "25px",
-                height: "25px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                zIndex: 10,
-              }}
-            >
-              <i
-                className="fa fa-chevron-left"
-                style={{ fontSize: "12px" }}
-              ></i>
-            </button>
-            <button
-              onClick={nextImage}
-              style={{
-                position: "absolute",
-                top: "50%",
-                right: "5px",
-                transform: "translateY(-50%)",
-                background: "rgba(0, 0, 0, 0.5)",
-                color: "white",
-                border: "none",
-                borderRadius: "50%",
-                width: "25px",
-                height: "25px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                zIndex: 10,
-              }}
-            >
-              <i
-                className="fa fa-chevron-right"
-                style={{ fontSize: "12px" }}
-              ></i>
-            </button>
-          </>
-        )}
-      </div>
-
-      {isZoomOpen && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.9)",
-            zIndex: 99999,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsZoomOpen(false);
-          }}
-        >
-          <div
-            style={{ position: "relative", maxWidth: "90%", maxHeight: "90%" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={allImages[currentImageIndex]}
-              style={{
-                maxWidth: "100%",
-                maxHeight: "90vh",
-                objectFit: "contain",
-              }}
-            />
-            <button
-              onClick={() => setIsZoomOpen(false)}
-              style={{
-                position: "fixed",
-                top: "20px",
-                right: "30px",
-                background: "rgba(0,0,0,0.5)",
-                border: "none",
-                color: "white",
-                fontSize: "40px",
-                cursor: "pointer",
-                padding: "0 10px",
-                borderRadius: "5px",
-                zIndex: 100000,
-              }}
-            >
-              &times;
-            </button>
-
-            {allImages.length > 1 && (
-              <>
-                <button
-                  onClick={prevImage}
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "-60px",
-                    transform: "translateY(-50%)",
-                    background: "rgba(255,255,255,0.1)",
-                    border: "none",
-                    color: "white",
-                    fontSize: "30px",
-                    cursor: "pointer",
-                    padding: "10px",
-                    borderRadius: "5px",
-                  }}
-                >
-                  &#10094;
-                </button>
-                <button
-                  onClick={nextImage}
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    right: "-60px",
-                    transform: "translateY(-50%)",
-                    background: "rgba(255,255,255,0.1)",
-                    border: "none",
-                    color: "white",
-                    fontSize: "30px",
-                    cursor: "pointer",
-                    padding: "10px",
-                    borderRadius: "5px",
-                  }}
-                >
-                  &#10095;
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
+import UserCardImageSlider from "../../components/common/UserCardImageSlider";
 
 const UserSearchResult = () => {
   const location = useLocation();
@@ -268,6 +25,17 @@ const UserSearchResult = () => {
   console.log(state);
   const userId = localStorage.getItem("userId");
   const [users, setUsers] = useState([]);
+  const [sortBy, setSortBy] = useState("");
+  const sortedUsers = useMemo(() => {
+    const list = [...users];
+    if (sortBy === "newest") {
+      return list.sort((a, b) => new Date(b.createdAt || b.lastLogin || 0) - new Date(a.createdAt || a.lastLogin || 0));
+    }
+    if (sortBy === "oldest") {
+      return list.sort((a, b) => new Date(a.createdAt || a.lastLogin || 0) - new Date(b.createdAt || b.lastLogin || 0));
+    }
+    return list;
+  }, [users, sortBy]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
     gender: "",
@@ -278,10 +46,6 @@ const UserSearchResult = () => {
     profileType: "all",
   });
   const [selectedUser, setSelectedUser] = useState(null);
-  const [chatMessage, setChatMessage] = useState("");
-  const [chatMessages, setChatMessages] = useState([]);
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [activeChats, setActiveChats] = useState([]);
   const [currentUserPlan, setCurrentUserPlan] = useState(null);
 
   /* Add viewType state */
@@ -332,7 +96,7 @@ const UserSearchResult = () => {
         setLoading(false);
       }
     },
-    [state],
+    [state, userId],
   );
 
   // Fetch current user's active plan
@@ -456,45 +220,7 @@ const UserSearchResult = () => {
     console.log("Interest sent to:", user.userName);
   };
 
-  const handleChatSend = (e) => {
-    e.preventDefault();
-    if (chatMessage.trim()) {
-      const newMessage = {
-        sender: "me",
-        message: chatMessage,
-        timestamp: new Date().toISOString(),
-      };
-      setChatMessages([...chatMessages, newMessage]);
-      setChatMessage("");
 
-      // Simulate reply after 1 second
-      setTimeout(() => {
-        setChatMessages((prev) => [
-          ...prev,
-          {
-            sender: "them",
-            message: "Thanks for your message! I'll reply soon.",
-            timestamp: new Date().toISOString(),
-          },
-        ]);
-      }, 1000);
-    }
-  };
-
-  const openChat = (user) => {
-    setSelectedUser(user);
-    setIsChatOpen(true);
-    setChatMessages([]); // Clear previous chat when opening new one
-
-    // Add to active chats if not already there
-    if (!activeChats.some((chat) => chat._id === user._id)) {
-      setActiveChats([...activeChats, user]);
-    }
-  };
-
-  const closeChat = () => {
-    setIsChatOpen(false);
-  };
 
   const handleViewProfile = (targetUser) => {
     if (!userId || state?.isGuest) {
@@ -561,7 +287,7 @@ const UserSearchResult = () => {
         <div className="all-pro-head">
           <div className="container">
             <div className="row">
-              <h1>Lakhs of Happy Marriages</h1>
+
               {/* <a href="#">
                 Join now for Free{" "}
                 <i className="fa fa-handshake-o" aria-hidden="true"></i>
@@ -594,7 +320,19 @@ const UserSearchResult = () => {
                       <li>Sort by:</li>
                       <li>
                         <div className="form-group">
-                          <select className="chosen-select">
+                          <select
+                            className="form-select"
+                            style={{
+                              padding: "6px 12px",
+                              fontSize: "14px",
+                              borderRadius: "4px",
+                              border: "1px solid #ccc",
+                              outline: "none",
+                              cursor: "pointer"
+                            }}
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                          >
                             <option value="">Most relative</option>
                             <option value="newest">Date listed: Newest</option>
                             <option value="oldest">Date listed: Oldest</option>
@@ -644,7 +382,7 @@ const UserSearchResult = () => {
                         : {}
                     }
                   >
-                    {Array.isArray(users) && users.map((user) => (
+                    {Array.isArray(sortedUsers) && sortedUsers.map((user) => (
                       <li
                         key={user._id}
                         style={
@@ -708,59 +446,57 @@ const UserSearchResult = () => {
                             </span>
                           </div>
 
-                          <div className="row">
+                          <div className="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
                             {/* Left: Image */}
                             <div
-                              className="col-md-3 col-sm-4 mb-3 mb-sm-0"
-                              style={{ margin: 0 }}
+                              onClick={() => handleViewProfile(user)}
+                              style={{
+                                height: "160px",
+                                width: "220px",
+                                flex: "0 0 220px",
+                                overflow: "hidden",
+                                borderRadius: "8px",
+                                border: "1px solid #eedc9a",
+                                cursor: "pointer",
+                                position: 'relative'
+                              }}
                             >
-                              <div
-                                style={{
-                                  height: "160px",
-                                  overflow: "hidden",
-                                  borderRadius: "4px",
-                                  border: "1px solid #eee",
-                                  cursor: "pointer",
-                                  position: 'relative'
-                                }}
-                                onClick={() => handleViewProfile(user)}
-                              >
-                                <UserCardImageSlider
-                                  user={user}
-                                  isAccepted={
-                                    user.interestStatus === "accepted"
-                                  }
-                                  height="100%"
-                                  blur={state?.isGuest}
-                                />
-                                <div style={{
-                                  position: 'absolute',
-                                  top: '5px',
-                                  left: '5px',
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  gap: '6px',
-                                  zIndex: 10,
-                                  alignItems: 'flex-start'
-                                }}>
-                                  <MembershipBadge user={user} isMini={true} />
-                                  {user.idVerificationStatus === 'Verified' && (
-                                    <div className="membership-badge badge-verified badge-mini shadow-sm">
-                                      <i className="fa fa-check-circle badge-icon"></i>
-                                      <span className="badge-text">ID Verified</span>
-                                    </div>
-                                  )}
-                                  {user.isPhoneVerified && (
-                                    <div className="badge bg-info text-white p-1 shadow-sm" style={{ fontSize: '8px', borderRadius: '2px', border: '1px solid white' }}>
-                                      <i className="fa fa-phone"></i>
-                                    </div>
-                                  )}
-                                </div>
+                              <UserCardImageSlider
+                                user={user}
+                                isAccepted={
+                                  user.interestStatus === "accepted"
+                                }
+                                height="100%"
+                                blur={state?.isGuest}
+                                onImageClick={() => handleViewProfile(user)}
+                              />
+                              <div style={{
+                                position: 'absolute',
+                                top: '5px',
+                                left: '5px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '6px',
+                                zIndex: 10,
+                                alignItems: 'flex-start'
+                              }}>
+                                <MembershipBadge user={user} isMini={true} />
+                                {user.idVerificationStatus === 'Verified' && (
+                                  <div className="membership-badge badge-verified badge-mini shadow-sm">
+                                    <i className="fa fa-check-circle badge-icon"></i>
+                                    <span className="badge-text">ID Verified</span>
+                                  </div>
+                                )}
+                                {user.isPhoneVerified && (
+                                  <div className="badge bg-info text-white p-1 shadow-sm" style={{ fontSize: '8px', borderRadius: '2px', border: '1px solid white' }}>
+                                    <i className="fa fa-phone"></i>
+                                  </div>
+                                )}
                               </div>
                             </div>
 
                             {/* Center: Details */}
-                            <div className="col-md-9 col-sm-8 d-flex flex-column" style={{ cursor: 'pointer' }} onClick={() => handleViewProfile(user)}>
+                            <div className="flex-grow-1" style={{ cursor: 'pointer' }} onClick={() => handleViewProfile(user)}>
                               <div>
                                 <h4
                                   style={{
@@ -824,40 +560,45 @@ const UserSearchResult = () => {
                                   </div>
                                 </div>
                               </div>
+                            </div>
 
-                              {/* Bottom Right: Buttons */}
-                              <div className="d-flex justify-content-end gap-2 mt-3">
-                                <button
-                                  className="btn btn-sm text-white"
-                                  style={{
-                                    backgroundColor: "#00bcd5", // Cyan matching screenshot
-                                    border: "none",
-                                    borderRadius: "4px",
-                                    padding: "6px 15px",
-                                    fontWeight: "500",
-                                  }}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleViewProfile(user);
-                                  }}
-                                >
-                                  View Profile
-                                </button>
+                            {/* Right: Buttons */}
+                            <div className="d-flex align-items-center justify-content-md-end justify-content-center gap-2 mt-3 mt-sm-0 px-sm-2 pe-sm-5" style={{ alignSelf: "center", flexShrink: 0 }}>
+                              <button
+                                className="btn btn-sm text-white"
+                                style={{
+                                  backgroundColor: "#00bcd5", // Cyan matching screenshot
+                                  border: "none",
+                                  borderRadius: "4px",
+                                  padding: "6px 15px",
+                                  fontWeight: "500",
+                                  whiteSpace: "nowrap"
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleViewProfile(user);
+                                }}
+                              >
+                                View Profile
+                              </button>
 
-                                <button
-                                  className="btn btn-sm text-white"
-                                  style={{
-                                    backgroundColor: "#00bcd5", // Cyan matching screenshot
-                                    border: "none",
-                                    borderRadius: "4px",
-                                    padding: "6px 15px",
-                                    fontWeight: "500",
-                                  }}
-                                  onClick={() => shortListProfile(user)}
-                                >
-                                  Shortlist Profile
-                                </button>
-                              </div>
+                              <button
+                                className="btn btn-sm text-white"
+                                style={{
+                                  backgroundColor: "#00bcd5", // Cyan matching screenshot
+                                  border: "none",
+                                  borderRadius: "4px",
+                                  padding: "6px 15px",
+                                  fontWeight: "500",
+                                  whiteSpace: "nowrap"
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  shortListProfile(user);
+                                }}
+                              >
+                                Shortlist Profile
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -868,9 +609,22 @@ const UserSearchResult = () => {
 
                 {/* No Results Message */}
                 {!loading && users.length === 0 && (
-                  <div className="text-center py-4">
-                    <h4>No profiles found</h4>
-                    <p>Try adjusting your search filters</p>
+                  <div className="text-center py-5">
+                    {state?.searchType === "bnr" ? (
+                      <>
+                        <h4 className="text-danger font-weight-bold" style={{ fontSize: "1.25rem" }}>
+                          The AV ID is incorrect
+                        </h4>
+                        <p className="text-muted mt-2">
+                          We couldn't find any profile with the ID "<strong>{state?.bnrId}</strong>". Please check the ID and try again.
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <h4>No profiles found</h4>
+                        <p>Try adjusting your search filters</p>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
@@ -976,212 +730,7 @@ const UserSearchResult = () => {
         />
       )}
 
-      {/* Enhanced Chat Box */}
-      {isChatOpen && selectedUser && (
-        <div
-          className="chatbox"
-          style={{
-            position: "fixed",
-            bottom: "20px",
-            right: "20px",
-            width: "350px",
-            height: "500px",
-            backgroundColor: "#fff",
-            borderRadius: "8px",
-            boxShadow: "0 0 20px rgba(0,0,0,0.2)",
-            display: "flex",
-            flexDirection: "column",
-            zIndex: 1000,
-            overflow: "hidden",
-          }}
-        >
-          <div
-            className="chat-header"
-            style={{
-              padding: "15px",
-              backgroundColor: "#f8f9fa",
-              borderBottom: "1px solid #eee",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <img
-                src={selectedUser.profileImage || "images/default-profile.jpg"}
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "50%",
-                  marginRight: "10px",
-                }}
-                alt={selectedUser.userName}
-              />
-              <h4 style={{ margin: 0 }}>{selectedUser.userName}</h4>
-            </div>
-            <span
-              className="comm-msg-pop-clo"
-              onClick={closeChat}
-              style={{
-                cursor: "pointer",
-                fontSize: "20px",
-                color: "#999",
-              }}
-            >
-              <i className="fa fa-times" aria-hidden="true"></i>
-            </span>
-          </div>
 
-          <div
-            className="chat-messages"
-            style={{
-              flex: 1,
-              padding: "15px",
-              overflowY: "auto",
-            }}
-          >
-            {chatMessages.length === 0 ? (
-              <div
-                className="chat-welcome"
-                style={{
-                  textAlign: "center",
-                  color: "#999",
-                  marginTop: "50%",
-                }}
-              >
-                Start a new conversation with {selectedUser.userName}
-              </div>
-            ) : (
-              chatMessages.map((msg, index) => (
-                <div
-                  key={index}
-                  style={{
-                    marginBottom: "10px",
-                    textAlign: msg.sender === "me" ? "right" : "left",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "inline-block",
-                      padding: "8px 12px",
-                      borderRadius:
-                        msg.sender === "me"
-                          ? "18px 18px 0 18px"
-                          : "18px 18px 18px 0",
-                      backgroundColor:
-                        msg.sender === "me" ? "#007bff" : "#f1f1f1",
-                      color: msg.sender === "me" ? "#fff" : "#333",
-                      maxWidth: "80%",
-                    }}
-                  >
-                    {msg.message}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "11px",
-                      color: "#999",
-                      marginTop: "4px",
-                      textAlign: msg.sender === "me" ? "right" : "left",
-                    }}
-                  >
-                    {new Date(msg.timestamp).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-
-          <div
-            className="chat-input"
-            style={{
-              padding: "10px",
-              borderTop: "1px solid #eee",
-              backgroundColor: "#f8f9fa",
-            }}
-          >
-            <form onSubmit={handleChatSend} style={{ display: "flex" }}>
-              <input
-                type="text"
-                value={chatMessage}
-                onChange={(e) => setChatMessage(e.target.value)}
-                placeholder="Type a message..."
-                style={{
-                  flex: 1,
-                  padding: "10px",
-                  border: "1px solid #ddd",
-                  borderRadius: "20px",
-                  outline: "none",
-                }}
-                required
-              />
-              <button
-                type="submit"
-                style={{
-                  marginLeft: "10px",
-                  padding: "10px 15px",
-                  backgroundColor: "#007bff",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "20px",
-                  cursor: "pointer",
-                }}
-              >
-                <i className="fa fa-paper-plane" aria-hidden="true"></i>
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Active Chats Indicator */}
-      {activeChats.length > 0 && !isChatOpen && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "20px",
-            right: "20px",
-            backgroundColor: "#007bff",
-            color: "#fff",
-            width: "50px",
-            height: "50px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            boxShadow: "0 0 10px rgba(0,0,0,0.2)",
-            zIndex: 999,
-          }}
-          onClick={() => setIsChatOpen(true)}
-        >
-          <i
-            className="fa fa-comments"
-            aria-hidden="true"
-            style={{ fontSize: "20px" }}
-          ></i>
-          <span
-            style={{
-              position: "absolute",
-              top: "-5px",
-              right: "-5px",
-              backgroundColor: "red",
-              color: "#fff",
-              borderRadius: "50%",
-              width: "20px",
-              height: "20px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "12px",
-            }}
-          >
-            {activeChats.length}
-          </span>
-        </div>
-      )}
 
       <Footer />
 

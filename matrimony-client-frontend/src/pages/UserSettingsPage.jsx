@@ -186,9 +186,8 @@ const UserSettingsPage = () => {
                       {tabList.map((tab) => (
                         <button
                           key={tab.id}
-                          className={`list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 ${
-                            activeTab === tab.id ? "active bg-primary text-white" : "bg-light"
-                          }`}
+                          className={`list-group-item list-group-item-action border-0 py-3 d-flex align-items-center gap-3 ${activeTab === tab.id ? "active bg-primary text-white" : "bg-light"
+                            }`}
                           onClick={() => setActiveTab(tab.id)}
                         >
                           <i className={`fa ${tab.icon} fa-fw`}></i>
@@ -247,8 +246,8 @@ const UserSettingsPage = () => {
                             onChange={(e) => setRequestedMobile(e.target.value)}
                           />
                         </div>
-                        <button 
-                          className="btn btn-primary px-4" 
+                        <button
+                          className="btn btn-primary px-4"
                           onClick={() => handleContactUpdate("mobile")}
                           disabled={loading}
                         >
@@ -305,8 +304,8 @@ const UserSettingsPage = () => {
                             onChange={(e) => setRequestedEmail(e.target.value)}
                           />
                         </div>
-                        <button 
-                          className="btn btn-primary px-4" 
+                        <button
+                          className="btn btn-primary px-4"
                           onClick={() => handleContactUpdate("email")}
                           disabled={loading}
                         >
@@ -330,7 +329,7 @@ const UserSettingsPage = () => {
                                 className="form-control"
                                 required
                                 value={passwordData.newPassword}
-                                onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                                onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                               />
                               <FaEye
                                 style={{
@@ -354,7 +353,7 @@ const UserSettingsPage = () => {
                                 className="form-control"
                                 required
                                 value={passwordData.confirmPassword}
-                                onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                                onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                               />
                               <FaEye
                                 style={{
@@ -392,10 +391,10 @@ const UserSettingsPage = () => {
                         <div className="mb-4">
                           <label className="form-label font-weight-bold">Profile Visibility</label>
                           <p className="text-muted small">Control who can view your profile details.</p>
-                          <select 
+                          <select
                             className="form-select"
                             value={userData?.profileVisibility || "Private"}
-                            onChange={() => {}} // Placeholder for now
+                            onChange={() => { }} // Placeholder for now
                           >
                             <option value="Public">All Users</option>
                             <option value="Private">Premium Users Only</option>
@@ -447,7 +446,7 @@ const UserSettingsPage = () => {
                           Deactivate Profile
                         </h4>
                         <p className="text-muted">Temporarily hide your profile from the platform. You can reactivate it later by contacting support.</p>
-                        <button 
+                        <button
                           className="btn btn-outline-danger mt-3 px-4"
                           onClick={() => setShowDeactivateModal(true)}
                         >
@@ -474,8 +473,8 @@ const UserSettingsPage = () => {
               <div className="modal-body p-4">
                 <p>We are sorry to see you go. Please tell us why you want to deactivate your profile:</p>
                 <div className="form-group mt-3">
-                  <select 
-                    className="form-select" 
+                  <select
+                    className="form-select"
                     value={deactivationReason}
                     onChange={(e) => setDeactivationReason(e.target.value)}
                   >
@@ -487,9 +486,9 @@ const UserSettingsPage = () => {
                 </div>
                 <div className="form-group mt-3">
                   <label className="form-label small">Tell us more (optional):</label>
-                  <textarea 
-                    className="form-control" 
-                    rows="3" 
+                  <textarea
+                    className="form-control"
+                    rows="3"
                     placeholder="Enter additional details..."
                     value={deactivationDescription}
                     onChange={(e) => setDeactivationDescription(e.target.value)}
@@ -498,9 +497,9 @@ const UserSettingsPage = () => {
               </div>
               <div className="modal-footer bg-light border-0">
                 <button type="button" className="btn btn-link text-muted" onClick={() => setShowDeactivateModal(false)}>Cancel</button>
-                <button 
-                  type="button" 
-                  className="btn btn-danger px-4" 
+                <button
+                  type="button"
+                  className="btn btn-danger px-4"
                   onClick={handleDeactivate}
                   disabled={loading || !deactivationReason}
                 >

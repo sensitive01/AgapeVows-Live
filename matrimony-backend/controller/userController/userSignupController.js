@@ -138,12 +138,10 @@ const verifyLogin = async (req, res) => {
       return res.status(401).json({ message: "User not found" });
     }
 
-    // BLOCK DELETED USERS
     if (user.isDeleted) {
       return res.status(403).json({ message: "This account has been deleted. Please contact admin" });
     }
 
-    // BLOCK DEACTIVATED USERS
     if (user.profileStatus === "Deactivated") {
       return res.status(403).json({ message: "Account is deactivated. Contact admin to reactivate." });
     }
@@ -159,6 +157,7 @@ const verifyLogin = async (req, res) => {
       rememberMe,
       userName: user.userName,
       profileImage: user.profileImage,
+      gender: user.gender,
     });
   } catch (err) {
     console.error("Error in verifying login", err);
@@ -227,7 +226,7 @@ const userVerifyOtp = async (req, res) => {
     if (parseInt(otp) !== storedOtpData.otp) {
       return res.status(400).json({ success: false, message: "Invalid OTP" });
     }
-
+ 
     delete req.app.locals[key];
 
     return res.status(200).json({ success: true, message: "OTP verified successfully", userId: userId });

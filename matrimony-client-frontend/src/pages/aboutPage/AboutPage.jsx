@@ -1,290 +1,138 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import LayoutComponent from "../../components/layouts/LayoutComponent";
 import Footer from "../../components/Footer";
-import { getUserCounts } from "../../api/axiosService/userAuthService";
-
-const testimonialsData = [
-  { id: 1, name: "John Smith", role: "IT Professional", img: "images/profiles/1.jpg", text: "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout." },
-  { id: 2, name: "Julia Ann", role: "Teacher", img: "images/profiles/6.jpg", text: "Finding my soulmate was so easy with Agape Vows. The platform is secure and the profiles are very genuine." },
-  { id: 3, name: "William Son", role: "Govt Staff", img: "images/profiles/7.jpg", text: "The support team was amazing. They helped me navigate through the process and find the perfect match." },
-  { id: 4, name: "Anita Roy", role: "Doctor", img: "images/profiles/2.jpg", text: "Professional service and very authentic profiles. I highly recommend Agape Vows to everyone seeking a partner." },
-  { id: 5, name: "Sarah Khan", role: "Designer", img: "images/profiles/3.jpg", text: "A truly wonderful experience. The team was supportive at each stage. Very happy with the results!" },
-];
 
 const AboutPage = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
-  const [counts, setCounts] = useState({
-    total: 0,
-    male: 0,
-    female: 0,
-  });
-
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Ensure currentIndex is valid when screen size changes
-  useEffect(() => {
-    const itemsToShow = windowWidth < 768 ? 1 : windowWidth < 1024 ? 2 : 3;
-    const maxIndex = Math.max(0, testimonialsData.length - itemsToShow);
-    if (currentIndex > maxIndex) {
-      setCurrentIndex(maxIndex);
-    }
-  }, [windowWidth, currentIndex]);
-
-  useEffect(() => {
-    const fetchCounts = async () => {
-      try {
-        const res = await getUserCounts();
-
-        if (res.data.success) {
-          setCounts({
-            total: res.data.data.totalUsers,
-            male: res.data.data.maleCount,
-            female: res.data.data.femaleCount,
-          });
-        }
-      } catch (err) {
-        console.error("Error fetching counts:", err);
-      }
-    };
-
-    fetchCounts();
-  }, []);
-
-
   return (
-    <div className="min-h-screen pt-[170px]">
-      <div className="fixed top-0 left-0 right-0 z-50">
+    <div className="min-h-screen bg-[#f8f9fa]">
+      <div className="fixed top-0 left-0 right-0 z-[100]">
         <LayoutComponent />
       </div>
 
-      {/* WELCOME SECTION */}
-      <section style={{ padding: '20px 0' }}>
-        <div className="ab-wel pt-0">
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-6">
-                <div className="ab-wel-lhs">
-                  <span className="ab-wel-3" />
-                  <img src="images/about/1.jpg" alt="" className="ab-wel-1" />
-                  <img src="images/about/2.jpg" alt="" className="ab-wel-2" />
-                  <span className="ab-wel-4" />
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="ab-wel-rhs">
-                  <div className="ab-wel-tit">
-                    <h2>
-                      Welcome to <em>Wedding matrimony</em>
-                    </h2>
-                    <p>
-                      Best wedding matrimony It is a long established fact that
-                      a reader will be distracted by the readable content of a
-                      page when looking at its layout.{" "}
-                    </p>
-                    <p>
-                      {" "}
-                      <a href="plans.html">Click here to</a> Start you matrimony
-                      service now.
-                    </p>
-                  </div>
-                  <div className="ab-wel-tit-1">
-                    <p>
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form, by injected humour, or randomised words which
-                      don't look even slightly believable.
-                    </p>
-                  </div>
-                  <div className="ab-wel-tit-2">
-                    <ul>
-                      <li>
-                        <div>
-                          <i className="fa fa-phone" aria-hidden="true" />
-                          <h4>
-                            Enquiry <em>+01 2242 3366</em>
-                          </h4>
-                        </div>
-                      </li>
-                      <li>
-                        <div>
-                          <i className="fa fa-envelope-o" aria-hidden="true" />
-                          <h4>
-                            Get Support <em>info@example.com</em>
-                          </h4>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* --- PAGE HEADER --- */}
+      <div className="pt-[160px] pb-12 bg-white border-b border-gray-100">
+        <div className="container mx-auto px-6">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900" style={{ fontFamily: 'var(--tit-font)' }}>
+            About AgapeVows
+          </h1>
+          <div className="h-1 w-16 bg-purple-600 mt-4"></div>
         </div>
-      </section>
-      {/* END */}
-      {/* START */}
-      {/* START: COUNTERS SECTION AS A SEPARATE BLOCK */}
-      <section className="py-16 my-10">
-        <div className="container mx-auto px-6 sm:px-10 lg:px-16">
-          <div className="bg-purple-50/80 p-10 md:p-16 rounded-[4rem] shadow-sm border border-purple-100">
-            <div className="row">
-              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full list-none p-0 m-0">
-                <li>
-                  <div className="ab-cont-po bg-white p-8 rounded-3xl shadow-md border border-purple-100 flex flex-col items-center text-center gap-4 transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
-                    <div className="bg-purple-100 p-4 rounded-full text-purple-600">
-                      <i className="fa fa-heart-o text-4xl" aria-hidden="true" />
-                    </div>
-                    <div>
-                      <h4 className="text-4xl font-extrabold text-gray-800">5</h4>
-                      <span className="text-gray-500 uppercase tracking-widest text-xs font-bold block mt-2">Couples paired</span>
-                    </div>
-                  </div>
-                </li>
-                <li>
-                  <div className="ab-cont-po bg-white p-8 rounded-3xl shadow-md border border-purple-100 flex flex-col items-center text-center gap-4 transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
-                    <div className="bg-blue-100 p-4 rounded-full text-blue-600">
-                      <i className="fa fa-users text-4xl" aria-hidden="true" />
-                    </div>
-                    <div>
-                      <h4 className="text-4xl font-extrabold text-gray-800">
-                        {counts.total}+
-                      </h4>
-                      <span className="text-gray-500 uppercase tracking-widest text-xs font-bold block mt-2">Registered users</span>
-                    </div>
-                  </div>
-                </li>
-                <li>
-                  <div className="ab-cont-po bg-white p-8 rounded-3xl shadow-md border border-purple-100 flex flex-col items-center text-center gap-4 transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
-                    <div className="bg-green-100 p-4 rounded-full text-green-600">
-                      <i className="fa fa-male text-4xl" aria-hidden="true" />
-                    </div>
-                    <div>
-                      <h4 className="text-4xl font-extrabold text-gray-800">
-                        {counts.male}+
-                      </h4>
-                      <span className="text-gray-500 uppercase tracking-widest text-xs font-bold block mt-2">Groom</span>
-                    </div>
-                  </div>
-                </li>
-                <li>
-                  <div className="ab-cont-po bg-white p-8 rounded-3xl shadow-md border border-purple-100 flex flex-col items-center text-center gap-4 transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
-                    <div className="bg-pink-100 p-4 rounded-full text-pink-600">
-                      <i className="fa fa-female text-4xl" aria-hidden="true" />
-                    </div>
-                    <div>
-                      <h4 className="text-4xl font-extrabold text-gray-800">
-                        {counts.female}+
-                      </h4>
-                      <span className="text-gray-500 uppercase tracking-widest text-xs font-bold block mt-2">Bride</span>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-      {/* END */}
-      {/* END */}
-      {/* END */}
-      {/* RECENT COUPLES */}
-      {/* CUSTOM TESTIMONIALS SLIDER IN PREMIUM FLOATING BLOCK */}
-      <section className="py-20 my-10">
-        <div className="container mx-auto px-6 sm:px-10 lg:px-16">
-          <div className="bg-purple-50/80 p-6 sm:p-10 md:p-16 rounded-[2.5rem] md:rounded-[4rem] shadow-sm border border-purple-100 relative group overflow-visible">
-            {/* Background Decorative Elements */}
-            <div className="absolute -top-10 -right-10 w-40 h-40 bg-purple-200/30 rounded-full blur-3xl"></div>
-            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-200/30 rounded-full blur-3xl"></div>
+      </div>
 
-            <div className="row justify-center text-center mb-16">
-              <div className="col-lg-8">
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight uppercase mb-4">
-                  <span className="text-[#af1684]">Customer</span> <span className="text-gray-900">Testimonials</span>
-                </h2>
-                <div className="w-20 h-1 bg-[#af1684] mx-auto rounded-full mb-6"></div>
-                <p className="text-[#a17e54] uppercase tracking-[0.3em] text-xs font-bold font-serif">
-                  Fusce imperdiet ullamcorper fringilla.
+      {/* --- MAIN CONTENT: FAITH & MISSION --- */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-wrap -mx-6 items-center">
+            <div className="w-full lg:w-1/2 px-6 mb-10 lg:mb-0">
+              <img 
+                src="images/about/1.jpg" 
+                alt="Our Faith" 
+                className="rounded-xl shadow-lg w-full h-[400px] object-cover" 
+              />
+            </div>
+            <div className="w-full lg:w-1/2 px-6">
+              <div className="lg:pl-10">
+                <h2 className="text-2xl font-bold text-purple-700 mb-4 uppercase tracking-wide text-sm">Built on Faith. Bound by Love.</h2>
+                <h3 className="text-3xl font-bold text-gray-900 mb-6 leading-tight">Our Sacred Covenant</h3>
+                <p className="text-gray-600 leading-relaxed mb-6">
+                  At <strong>AgapeVows</strong>, we believe that marriage is more than a legal contract, it is a sacred covenant. Our name is derived from the Greek word <em>Agape</em>, representing the highest, most selfless form of love: the love God has for us, and the love we are called to show one another.
+                </p>
+                <div className="p-5 bg-purple-50 rounded-lg border-l-4 border-purple-600">
+                  <p className="text-gray-800 font-medium italic">
+                    "Our mission is simple: To help Indian Christian singles find a life partner who shares their faith, respects their heritage, and walks the same spiritual path."
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- OUR STORY --- */}
+      <section className="py-16 bg-[#fdfcfb]">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-10">
+               <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Story</h2>
+               <div className="w-12 h-1 bg-purple-600 mx-auto"></div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <p className="text-gray-600 leading-relaxed">
+                In a world of endless scrolling and superficial connections, we noticed a gap in the Christian community. Many felt that existing platforms were either too expensive, lacked privacy, or were crowded with unverified profiles.
+              </p>
+              <p className="text-gray-600 leading-relaxed">
+                AgapeVows was born out of a desire to create a sanctuary for matchmaking. We wanted to build a platform where integrity comes first, where your privacy is respected, and where the focus remains on building Christ-centered homes.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- WHY CHOOSE US (CLEAN CARDS) --- */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-6">
+          <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">Why Choose AgapeVows?</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-8 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center text-xl mb-6">
+                <i className="fa fa-shield"></i>
+              </div>
+              <h4 className="text-xl font-bold text-gray-900 mb-3">Integrity through Verification</h4>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                We manually review every profile and implement mandatory ID verification. When you see an "ID Verified" badge, you know you’re talking to someone real.
+              </p>
+            </div>
+            
+            <div className="p-8 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center text-xl mb-6">
+                <i className="fa fa-users"></i>
+              </div>
+              <h4 className="text-xl font-bold text-gray-900 mb-3">Accessibility for All</h4>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Finding your soulmate shouldn't be a financial burden. We offer Free Premium features to ensure every member has the tools they need to connect.
+              </p>
+            </div>
+
+            <div className="p-8 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-pink-50 text-pink-600 rounded-lg flex items-center justify-center text-xl mb-6">
+                <i className="fa fa-lock"></i>
+              </div>
+              <h4 className="text-xl font-bold text-gray-900 mb-3">Privacy First</h4>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Your journey is personal. Manage who sees your photos and contact details with advanced privacy controls. You are in total control.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- TRADITIONS & VISION --- */}
+      <section className="py-16 bg-[#fffcf5]">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-10">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">One Faith, Many Traditions</h2>
+                <p className="text-gray-600 leading-relaxed">
+                  India’s Christian heritage is rich and diverse. Whether you belong to the Roman Catholic, CSI, CNI, Pentecostal, Orthodox, Evangelical, or Baptist traditions, AgapeVows is designed to honour your specific roots while celebrating our shared faith in Christ.
+                </p>
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Vision</h2>
+                <p className="text-gray-600 leading-relaxed">
+                  Our vision is to see a generation of Christian marriages that reflect the love of Christ—marriages built on prayer, shared values, and mutual respect. We provide the platform; we trust God to provide the blessing.
                 </p>
               </div>
             </div>
-
-            <div className="relative group/slider">
-              {(() => {
-                const testimonials = testimonialsData;
-                const itemsToShow = windowWidth < 768 ? 1 : windowWidth < 1024 ? 2 : 3;
-                const maxIndex = Math.max(0, testimonials.length - itemsToShow);
-                const slideWidth = 100 / itemsToShow;
-
-                return (
-                  <div className="px-2 sm:px-4 lg:px-0">
-                    <div className="overflow-hidden">
-                      <div
-                        className="flex transition-transform duration-500 ease-in-out"
-                        style={{ transform: `translateX(-${currentIndex * slideWidth}%)` }}
-                      >
-                        {testimonials.map((item) => (
-                          <div
-                            key={item.id}
-                            className="flex-shrink-0 px-2 md:px-6"
-                            style={{ width: `${slideWidth}%` }}
-                          >
-                            <div className="bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-md border border-purple-50 flex flex-col h-full transition-all duration-300 hover:shadow-xl group">
-                              <div className="flex text-orange-400 mb-6 space-x-1">
-                                {[...Array(5)].map((_, i) => <i key={i} className="fa fa-star text-sm" />)}
-                                <span className="text-gray-400 text-xs ml-2 font-medium">(50 Reviews)</span>
-                              </div>
-                              <p className="text-gray-600 italic flex-grow mb-6 md:mb-8 leading-relaxed text-sm md:text-base lg:text-lg">
-                                {item.text}
-                              </p>
-                              <div className="flex items-center gap-3 md:gap-5 mt-auto pt-6 md:pt-8 border-t border-gray-50">
-                                <img src={item.img} alt={item.name} className="w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-white shadow-sm object-cover" />
-                                <div className="text-left">
-                                  <h4 className="font-bold text-gray-900 leading-tight text-lg md:text-xl">{item.name}</h4>
-                                  <span className="text-[10px] md:text-xs text-gray-500 font-bold uppercase tracking-widest leading-loose">{item.role}</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Absolute Side Arrows */}
-                    <button
-                      onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
-                      className={`absolute -left-2 sm:-left-4 lg:-left-20 top-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 rounded-full bg-white shadow-xl border border-purple-100 flex items-center justify-center text-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-300 z-10 ${currentIndex === 0 ? 'opacity-30 cursor-not-allowed invisible lg:visible lg:opacity-20' : 'opacity-100'}`}
-                      disabled={currentIndex === 0}
-                    >
-                      <i className="fa fa-chevron-left text-base md:text-xl" />
-                    </button>
-                    <button
-                      onClick={() => setCurrentIndex(prev => Math.min(maxIndex, prev + 1))}
-                      className={`absolute -right-2 sm:-right-4 lg:-right-20 top-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 rounded-full bg-white shadow-xl border border-purple-100 flex items-center justify-center text-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-300 z-10 ${currentIndex >= maxIndex ? 'opacity-30 cursor-not-allowed invisible lg:visible lg:opacity-20' : 'opacity-100'}`}
-                      disabled={currentIndex >= maxIndex}
-                    >
-                      <i className="fa fa-chevron-right text-base md:text-xl" />
-                    </button>
-
-                    {/* Dots Pagination */}
-                    {maxIndex > 0 && (
-                      <div className="flex justify-center gap-3 mt-12">
-                        {[...Array(maxIndex + 1)].map((_, dot) => (
-                          <button
-                            key={dot}
-                            onClick={() => setCurrentIndex(dot)}
-                            className={`transition-all duration-300 rounded-full h-3 shadow-inner ${currentIndex === dot ? 'w-10 bg-purple-600' : 'w-3 bg-purple-200 hover:bg-purple-300'}`}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })()}
+            <div className="bg-purple-600 rounded-2xl p-10 text-white text-center">
+               <h3 className="text-2xl font-bold mb-4">Ready to find your partner?</h3>
+               <p className="text-purple-100 mb-8">Join thousands of verified Christian singles today.</p>
+               <a 
+                href="/user/user-sign-up" 
+                className="inline-block bg-white text-purple-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-50 transition-colors"
+               >
+                 Create Your Free Profile
+               </a>
             </div>
           </div>
         </div>

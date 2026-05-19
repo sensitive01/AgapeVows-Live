@@ -8,8 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getTheProfieMoreDetails, getUserProfile, getMyActivePlanData, sendChatMessage, submitReport } from "../../api/axiosService/userAuthService";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { io } from "socket.io-client";
-import ChatUi from "./ChatUi";
+
 import { faChurch, faHeart, faBriefcase, faInfoCircle, faUsers, faAddressCard, faMusic, faVideo } from '@fortawesome/free-solid-svg-icons';
 import profImage from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
 
@@ -34,59 +33,21 @@ const ProfileSection = ({ title, icon, children }) => (
   </div>
 );
 
-const VideoCard = ({ videoUrl }) => {
-  const [isOpen, setIsOpen] = useState(false);
 
-  if (!videoUrl) return null;
-
-  return (
-    <>
-      <div
-        className="video-card"
-        onClick={() => setIsOpen(true)}
-      >
-        <video
-          src={videoUrl}
-          muted
-          className="video-thumb"
-        />
-        <div className="video-label">
-          SelfIntroduction.mp4
-        </div>
-      </div>
-
-      {isOpen && (
-        <div className="video-modal" onClick={() => setIsOpen(false)}>
-          <div
-            className="video-modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <video
-              src={videoUrl}
-              controls
-              autoPlay
-              className="video-full"
-            />
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
 
 const MoreDetails = () => {
   const { profileId } = useParams();
   const chipStyle = {
-  background: "#f3f4f6",
-  padding: "6px 12px",
-  borderRadius: "20px",
-  fontSize: "0.9rem",
-  fontWeight: "500",
-  color: "#333",
-  display: "flex",
-  alignItems: "center",
-  gap: "5px",
-};
+    background: "#f3f4f6",
+    padding: "6px 12px",
+    borderRadius: "20px",
+    fontSize: "0.9rem",
+    fontWeight: "500",
+    color: "#333",
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+  };
   const navigate = useNavigate();
   const currentUserId = localStorage.getItem("userId");
 
@@ -102,6 +63,42 @@ const MoreDetails = () => {
   const [reportReason, setReportReason] = useState("");
   const [reportComments, setReportComments] = useState("");
   const [isReporting, setIsReporting] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const allImages = useMemo(() => {
+    if (!userInfo) return [];
+    const images = [];
+    if (userInfo.profileImage) {
+      images.push(userInfo.profileImage);
+    }
+    if (userInfo.additionalImages && userInfo.additionalImages.length > 0) {
+      images.push(...userInfo.additionalImages);
+    }
+    const unique = [...new Set(images)];
+    return unique.length > 0 ? unique : [profImage];
+  }, [userInfo]);
+
+  const nextImage = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (allImages.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
+    }
+  };
+
+  const prevImage = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (allImages.length > 0) {
+      setCurrentImageIndex((prev) =>
+        prev === 0 ? allImages.length - 1 : prev - 1
+      );
+    }
+  };
 
   const handleReportSubmit = async (e) => {
     e.preventDefault();
@@ -125,7 +122,7 @@ const MoreDetails = () => {
         setShowReportModal(false);
         setReportReason("");
         setReportComments("");
-        
+
         // Optionally redirect to blocked profiles page
         setTimeout(() => {
           navigate("/user/blocked-profiles-page");
@@ -149,46 +146,7 @@ const MoreDetails = () => {
     };
   }, []);
 
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
-  const [socket, setSocket] = useState(null);
-  const [onlineUsers, setOnlineUsers] = useState([]);
-  const baseUrl = import.meta.env.VITE_BASE_ROUTE;
 
-  useEffect(() => {
-    if (!currentUserId || !baseUrl) return;
-    const newSocket = io(baseUrl, {
-      query: { userId: currentUserId },
-      transports: ["websocket", "polling"],
-    });
-
-    newSocket.on("connect", () => {
-      setSocket(newSocket);
-    });
-
-    newSocket.on("receive_message", (message) => {
-      setChatMessages((prev) => [
-        ...prev,
-        {
-          id: message.id,
-          senderId: message.senderId,
-          sender: message.senderId === currentUserId ? "user" : "profile",
-          text: message.text,
-          message: message.text,
-          timestamp: new Date(message.timestamp).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        },
-      ]);
-    });
-
-    newSocket.on("users_online", (userIds) => setOnlineUsers(userIds));
-    newSocket.on("user_joined", (id) => setOnlineUsers((prev) => [...prev, id]));
-    newSocket.on("user_left", (id) => setOnlineUsers((prev) => prev.filter(uid => uid !== id)));
-    return () => newSocket.close();
-  }, [currentUserId, baseUrl]);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -258,50 +216,7 @@ const MoreDetails = () => {
     }
   };
 
-  const handleStartChat = async () => {
-    try {
-      if (isPaidUser) {
-        setIsChatOpen(true);
-        if (socket && userInfo?._id) {
-          const roomId = `chat_${[currentUserId, userInfo._id].sort().join("_")}`;
-          socket.emit("join_chat_room", { roomId });
-        }
-      } else {
-        handleContactClick();
-      }
-    } catch (error) {
-      alert("Please subscribe to your plan.");
-    }
-  };
 
-  const handleChatSubmit = async (e) => {
-    e.preventDefault();
-    if (!newMessage.trim() || !userInfo?._id) return;
-    try {
-      const messageData = {
-        id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        text: newMessage,
-        senderId: currentUserId,
-        recipientId: userInfo._id,
-        roomId: `chat_${[currentUserId, userInfo._id].sort().join("_")}`,
-        timestamp: new Date().toISOString(),
-      };
-      const tempMessage = {
-        id: messageData.id,
-        senderId: currentUserId,
-        sender: "user",
-        text: newMessage,
-        message: newMessage,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      };
-      setChatMessages((prev) => [...prev, tempMessage]);
-      if (socket) socket.emit("send_message", messageData);
-      await sendChatMessage(currentUserId, tempMessage, userInfo._id);
-      setNewMessage("");
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
-  };
 
   return (
     <div className="profile-page">
@@ -315,13 +230,103 @@ const MoreDetails = () => {
           {/* Left Column */}
           <div className="profile-left">
             <div className="profile-card">
-              <div className="profile-image-wrapper">
+              <div className="profile-image-wrapper" style={{ position: "relative", width: "100%", height: "400px", overflow: "hidden", borderRadius: "8px", background: "#f3f4f6" }}>
                 <img
-                  src={userInfo?.profileImage || profImage}
+                  src={allImages[currentImageIndex] || profImage}
                   alt="Profile"
                   className="profile-image"
+                  onClick={() => setZoomImage(allImages[currentImageIndex] || profImage)}
+                  style={{ width: "100%", height: "100%", cursor: "pointer", objectFit: "contain" }}
                 />
-                <div className="zoom-btn" title="Zoom" onClick={() => setZoomImage(userInfo?.profileImage || profImage)}>
+                
+                {/* Watermark Overlay on the Right Side */}
+                <div
+                  style={{
+                    position: "absolute",
+                    right: "8px",
+                    top: 0,
+                    bottom: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    pointerEvents: "none",
+                    userSelect: "none",
+                    zIndex: 5,
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "rgba(255, 255, 255, 0.45)",
+                      fontFamily: "'Outfit', 'Inter', sans-serif",
+                      fontSize: "14px",
+                      fontWeight: "600",
+                      letterSpacing: "3px",
+                      whiteSpace: "nowrap",
+                      textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
+                      writingMode: "vertical-rl",
+                      transform: "rotate(180deg)",
+                    }}
+                  >
+                    AgapeVows.com
+                  </span>
+                </div>
+
+                {allImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevImage}
+                      style={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "10px",
+                        transform: "translateY(-50%)",
+                        background: "rgba(0, 0, 0, 0.5)",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: "35px",
+                        height: "35px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        zIndex: 10,
+                        transition: "all 0.2s ease"
+                      }}
+                      onMouseEnter={(e) => e.target.style.background = "rgba(0, 0, 0, 0.8)"}
+                      onMouseLeave={(e) => e.target.style.background = "rgba(0, 0, 0, 0.5)"}
+                    >
+                      <i className="fa fa-chevron-left"></i>
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      style={{
+                        position: "absolute",
+                        top: "50%",
+                        right: "10px",
+                        transform: "translateY(-50%)",
+                        background: "rgba(0, 0, 0, 0.5)",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: "35px",
+                        height: "35px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        zIndex: 10,
+                        transition: "all 0.2s ease"
+                      }}
+                      onMouseEnter={(e) => e.target.style.background = "rgba(0, 0, 0, 0.8)"}
+                      onMouseLeave={(e) => e.target.style.background = "rgba(0, 0, 0, 0.5)"}
+                    >
+                      <i className="fa fa-chevron-right"></i>
+                    </button>
+                  </>
+                )}
+
+                <div className="zoom-btn" title="Zoom" onClick={() => setZoomImage(allImages[currentImageIndex] || profImage)}>
                   <i className="fa fa-search-plus"></i>
                 </div>
 
@@ -353,7 +358,7 @@ const MoreDetails = () => {
                 </div>
               </div>
 
-             
+
               <button
                 className="interest-btn"
                 onClick={(e) => {
@@ -371,7 +376,7 @@ const MoreDetails = () => {
                 Send Interest
               </button>
 
-               {/* View Contact Information Button moved immediately below profile picture */}
+              {/* View Contact Information Button moved immediately below profile picture */}
               {!showContact && (
                 <button
                   onClick={handleContactClick}
@@ -382,36 +387,34 @@ const MoreDetails = () => {
                 </button>
               )}
               {/* Contact Details in LEFT COLUMN */}
-{showContact && (
-  <div style={{ width: "100%", marginTop: "10px" }}>
-    <div style={{ ...chipStyle, width: "100%" }}>
-      👤 {userInfo?.userName}
-    </div>
+              {showContact && (
+                <div style={{ width: "100%", marginTop: "10px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                  {userInfo?.contactPersonName && (
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                      👤 Name: {userInfo?.contactPersonName}
+                    </div>
+                  )}
 
-    <div style={{ ...chipStyle, width: "100%" }}>
-      📞 {userInfo?.userMobile}
-    </div>
+                  {userInfo?.relationship && (
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                      🤝 Relationship: {userInfo?.relationship}
+                    </div>
+                  )}
 
-    {userInfo?.alternateMobile && (
-      <div style={{ ...chipStyle, width: "100%" }}>
-        📱 {userInfo?.alternateMobile}
-      </div>
-    )}
+                  {userInfo?.alternateMobile && (
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                      📞 Phone Number: {userInfo?.alternateMobile}
+                    </div>
+                  )}
 
-    {userInfo?.userEmail && (
-      <div style={{ ...chipStyle, width: "100%" }}>
-        📧 {userInfo?.userEmail}
-      </div>
-    )}
+                  {userInfo?.userEmail && (
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                      📧 Email: {userInfo?.userEmail}
+                    </div>
+                  )}
+                </div>
+              )}
 
-    {userInfo?.city && (
-      <div style={{ ...chipStyle, width: "100%" }}>
-        📍 {userInfo?.city}, {userInfo?.state}
-      </div>
-    )}
-  </div>
-)}
-              
               <button
                 onClick={() => setShowReportModal(true)}
                 className="report-user-btn"
@@ -467,94 +470,89 @@ const MoreDetails = () => {
                   )}
                 </div>
               </div>
-              <button
-                className="start-chat-top-btn"
-                onClick={handleStartChat}
-              >
-                Start Chat
-              </button>
+
             </div>
 
             {/* Profile Snippet at top */}
             {userInfo && (
-             <div
-  style={{
-    background: "#fff",
-    padding: "15px 20px",
-    borderRadius: "12px",
-    boxShadow: "0 4px 14px rgba(0,0,0,0.05)",
-    marginBottom: "25px",
-    borderLeft: "4px solid #7c3aed",
-  }}
->
-  <div
-    style={{
-      display: "flex",
-      flexWrap: "wrap",
-      gap: "10px",
-    }}
-  >
-    {calculateAge(userInfo?.dateOfBirth) && (
-      <span style={chipStyle}>
-        🎂 {calculateAge(userInfo.dateOfBirth)} yrs
-      </span>
-    )}
+              <div
+                style={{
+                  background: "#fff",
+                  padding: "15px 20px",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 14px rgba(0,0,0,0.05)",
+                  marginBottom: "25px",
+                  borderLeft: "4px solid #7c3aed",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "10px",
+                  }}
+                >
+                  {calculateAge(userInfo?.dateOfBirth) && (
+                    <span style={chipStyle}>
+                      🎂 {calculateAge(userInfo.dateOfBirth)} yrs
+                    </span>
+                  )}
 
-    {userInfo?.height && (
-      <span style={chipStyle}>
-        📏 {userInfo.height}
-      </span>
-    )}
+                  {userInfo?.height && (
+                    <span style={chipStyle}>
+                      📏 {userInfo.height}
+                    </span>
+                  )}
 
-    {userInfo?.motherTongue && (
-      <span style={chipStyle}>
-        🗣 {userInfo.motherTongue}
-      </span>
-    )}
+                  {userInfo?.motherTongue && (
+                    <span style={chipStyle}>
+                      🗣 {userInfo.motherTongue}
+                    </span>
+                  )}
 
-    {userInfo?.occupation && (
-      <span style={chipStyle}>
-        💼 {userInfo.occupation}
-      </span>
-    )}
+                  {userInfo?.occupation && (
+                    <span style={chipStyle}>
+                      💼 {userInfo.occupation}
+                    </span>
+                  )}
 
-    {userInfo?.annualIncome && (
-      <span style={chipStyle}>
-        💰 {userInfo.annualIncome}
-      </span>
-    )}
+                  {userInfo?.annualIncome && (
+                    <span style={chipStyle}>
+                      💰 {userInfo.annualIncome}
+                    </span>
+                  )}
 
-    {userInfo?.caste && (
-      <span style={chipStyle}>
-        🧬 {userInfo.caste}
-      </span>
-    )}
+                  {userInfo?.caste && (
+                    <span style={chipStyle}>
+                      🧬 {userInfo.caste}
+                    </span>
+                  )}
 
-    {userInfo?.fathersNative && (
-      <span style={chipStyle}>
-        📍 {userInfo.fathersNative}
-      </span>
-    )}
+                  {userInfo?.fathersNative && (
+                    <span style={chipStyle}>
+                      📍 {userInfo.fathersNative}
+                    </span>
+                  )}
 
-    {userInfo?.maritalStatus && (
-      <span style={chipStyle}>
-        💍 {userInfo.maritalStatus}
-      </span>
-    )}
+                  {userInfo?.maritalStatus && (
+                    <span style={chipStyle}>
+                      💍 {userInfo.maritalStatus}
+                    </span>
+                  )}
 
-    {userInfo?.education && (
-      <span style={chipStyle}>
-        🎓 {userInfo.education}
-      </span>
-    )}
+                  {userInfo?.education && (
+                    <span style={chipStyle}>
+                      🎓 {userInfo.education}
+                    </span>
+                  )}
 
-    {userInfo?.religion && (
-      <span style={chipStyle}>
-        ⛪ {userInfo.religion}
-      </span>
-    )}
-  </div>
-</div>
+                  {userInfo?.religion && (
+                    <span style={chipStyle}>
+                      ⛪ {userInfo.religion}
+                    </span>
+                  )}
+                </div>
+              </div>
             )}
 
             {userInfo?.aboutMe && (
@@ -563,23 +561,7 @@ const MoreDetails = () => {
                 <p>{userInfo.aboutMe}</p>
               </div>
             )}
-{/* 
-          {userInfo?.selfIntroductionVideo &&
- userInfo.selfIntroductionVideo.trim() !== "" && (
-  <div className="profile-section card">
-    <h4>Self Introduction Video</h4>
-    <VideoCard
-      videoUrl={userInfo.selfIntroductionVideo}
-    />
-  </div>
-)} */}
 
-{userInfo?.selfIntroductionVideo &&
- userInfo.selfIntroductionVideo.trim() !== "" && (
-  <ProfileSection title="Self Introduction Video" icon={faVideo}>
-    <VideoCard videoUrl={userInfo.selfIntroductionVideo} />
-  </ProfileSection>
-)}
             {/* Profile Sections */}
             {[
               {
@@ -595,10 +577,10 @@ const MoreDetails = () => {
                   { label: "Weight", value: userInfo?.weight },
                   { label: "Marital Status", value: userInfo?.maritalStatus },
                   { label: "Eating Habits", value: userInfo?.eatingHabits },
-                   { label: "Drinking Habits", value: userInfo?.drinkingHabits },
-                    { label: "Smoking Habits", value: userInfo?.smokingHabits },
-                     { label: "Mother Tongue", value: userInfo?.motherTongue },
-                      { label: "Caste", value: userInfo?.caste },
+                  { label: "Drinking Habits", value: userInfo?.drinkingHabits },
+                  { label: "Smoking Habits", value: userInfo?.smokingHabits },
+                  { label: "Mother Tongue", value: userInfo?.motherTongue },
+                  { label: "Caste", value: userInfo?.caste },
                 ],
               },
               {
@@ -610,7 +592,7 @@ const MoreDetails = () => {
                   { label: "Father's Occupation", value: userInfo?.fathersOccupation },
                   { label: "Mother's Occupation", value: userInfo?.mothersOccupation },
                   { label: "Father's Native ", value: userInfo?.fathersNative },
-                   { label: "Mother's Native ", value: userInfo?.mothersNative },
+                  { label: "Mother's Native ", value: userInfo?.mothersNative },
                   { label: "Family Value", value: userInfo?.familyValue },
                   { label: "Family Type", value: userInfo?.familyType },
                   { label: "No. of Brothers", value: userInfo?.numberOfBrothers },
@@ -706,21 +688,21 @@ const MoreDetails = () => {
             ].map((section, idx) => (
               <React.Fragment key={idx}>
 
-               <ProfileSection title={section.title} icon={section.icon}>
-  <div className="profile-section-grid">
-    <div>
-      {section.data.slice(0, 7).map((item, i) => (
-        <InfoRow key={i} {...item} />
-      ))}
-    </div>
+                <ProfileSection title={section.title} icon={section.icon}>
+                  <div className="profile-section-grid">
+                    <div>
+                      {section.data.slice(0, 7).map((item, i) => (
+                        <InfoRow key={i} {...item} />
+                      ))}
+                    </div>
 
-    <div>
-      {section.data.slice(7, 14).map((item, i) => (
-        <InfoRow key={i} {...item} />
-      ))}
-    </div>
-  </div>
-</ProfileSection>
+                    <div>
+                      {section.data.slice(7, 14).map((item, i) => (
+                        <InfoRow key={i} {...item} />
+                      ))}
+                    </div>
+                  </div>
+                </ProfileSection>
               </React.Fragment>
             ))}
           </div>
@@ -738,10 +720,77 @@ const MoreDetails = () => {
 
       {/* Zoom Image Modal */}
       {zoomImage && (
-        <div className="zoom-overlay" onClick={() => { setZoomImage(null); setZoomLevel(1); }}>
-          <div className="zoom-image-wrapper" onClick={(e) => e.stopPropagation()}>
-            <img src={zoomImage} alt="Zoomed" style={{ transform: `scale(${zoomLevel})` }} />
-            <div className="zoom-controls">
+        <div className="zoom-overlay" onClick={() => { setZoomImage(null); setZoomLevel(1); }} style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="zoom-image-wrapper" style={{ position: 'relative', width: '80vw', height: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img
+              src={allImages[currentImageIndex] || profImage}
+              alt="Zoomed"
+              style={{
+                transform: `scale(${zoomLevel})`,
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "contain",
+                cursor: allImages.length > 1 ? "pointer" : "default",
+                transition: "transform 0.2s ease"
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (allImages.length > 1) {
+                  nextImage();
+                }
+              }}
+            />
+            
+            {allImages.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "-60px",
+                    transform: "translateY(-50%)",
+                    background: "rgba(255, 255, 255, 0.25)",
+                    border: "none",
+                    color: "white",
+                    fontSize: "30px",
+                    cursor: "pointer",
+                    padding: "10px 15px",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 1000
+                  }}
+                >
+                  &#10094;
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    right: "-60px",
+                    transform: "translateY(-50%)",
+                    background: "rgba(255, 255, 255, 0.25)",
+                    border: "none",
+                    color: "white",
+                    fontSize: "30px",
+                    cursor: "pointer",
+                    padding: "10px 15px",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 1000
+                  }}
+                >
+                  &#10095;
+                </button>
+              </>
+            )}
+            
+            <div className="zoom-controls" onClick={(e) => e.stopPropagation()}>
               <button onClick={() => setZoomLevel((z) => Math.max(0.5, z - 0.2))}>-</button>
               <button onClick={() => setZoomLevel(1)}>Reset</button>
               <button onClick={() => setZoomLevel((z) => Math.min(3, z + 0.2))}>+</button>
@@ -771,14 +820,14 @@ const MoreDetails = () => {
           <div className="upgrade-content" style={{ maxWidth: "450px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
               <h3 style={{ margin: 0, color: "#dc2626" }}>Report User</h3>
-              <button 
+              <button
                 onClick={() => setShowReportModal(false)}
                 style={{ background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer", color: "#666" }}
               >
                 &times;
               </button>
             </div>
-            
+
             <form onSubmit={handleReportSubmit} style={{ textAlign: "left" }}>
               <div style={{ marginBottom: "20px" }}>
                 <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", color: "#374151" }}>
@@ -868,26 +917,7 @@ const MoreDetails = () => {
       {/* <CopyRights /> */}
       <ToastContainer />
 
-      {/* Chat Ui */}
-      {isChatOpen && userInfo && (
-        <ChatUi
-          setIsChatOpen={setIsChatOpen}
-          handleChatSubmit={handleChatSubmit}
-          profileData={{
-            userName: userInfo.userName,
-            profileImage: userInfo.profileImage || "images/profiles/2.jpg",
-            receiverId: userInfo._id,
-            isOnline: onlineUsers.includes(userInfo._id),
-          }}
-          chatMessages={chatMessages}
-          newMessage={newMessage}
-          setNewMessage={setNewMessage}
-          socket={socket}
-          userId={currentUserId}
-          setChatMessages={setChatMessages}
-          onReportUser={() => setShowReportModal(true)}
-        />
-      )}
+
 
       {/* Styles */}
       <style>{`

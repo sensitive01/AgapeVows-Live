@@ -17,6 +17,7 @@ const Sidebar = () => {
       "/admin/billing-info/",
       "/admin/new-user/",
       "/admin/id-verification-requests",
+      "/admin/verified-id-users",
       "/admin/contact-update-requests",
       "/admin/reports",
       "/admin/deactivated-users"
@@ -92,14 +93,6 @@ const Sidebar = () => {
               }}
             >
               <span style={iconStyle}>👤</span> Users
-              <i 
-                className="fa fa-angle-right float-end" 
-                style={{ 
-                  marginTop: "4px",
-                  transition: "transform 0.3s ease",
-                  transform: expandedMenus.users ? "rotate(90deg)" : "rotate(0deg)"
-                }}
-              ></i>
             </a>
 
             <div 
@@ -174,6 +167,14 @@ const Sidebar = () => {
                     style={isActive("/admin/id-verification-requests") ? activeLinkStyle : normalLinkStyle}
                   >
                     ID Verification
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/admin/verified-id-users" 
+                    style={isActive("/admin/verified-id-users") ? activeLinkStyle : normalLinkStyle}
+                  >
+                    Verified Users
                   </Link>
                 </li>
                 <li>

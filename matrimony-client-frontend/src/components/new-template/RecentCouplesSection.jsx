@@ -30,35 +30,35 @@ export default function RecentCouplesSection() {
 
   return (
     <section>
-      <div 
-        className="hom-couples-all" 
-        style={{ 
+      <div
+        className="hom-couples-all"
+        style={{
           padding: '30px 0',
           marginTop: '-30px',
-          background: 'var(--bg, #fdfcfb)', 
-          position: 'relative' 
+          background: 'var(--bg, #fdfcfb)',
+          position: 'relative'
         }}
       >
-      <div className="container" style={{ maxWidth: '1350px', width: '100%' }}>
+        <div className="container" style={{ maxWidth: '1350px', width: '100%' }}>
           <div className="row">
-            
+
             <div className="home-tit" style={{ textAlign: 'center' }}>
-              
+
               {/* 🔥 Trusted Brand → BLACK */}
-              <p style={{ 
-                color: '#000000', 
-                textTransform: 'uppercase', 
-                letterSpacing: '2px', 
+              <p style={{
+                color: '#000000',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
                 fontWeight: '500'
               }}>
                 Trusted Brand
               </p>
 
               {/* 🔥 Recent Couples → VIOLET */}
-              <h2 style={{ 
-                color: '#333', 
-                fontFamily: '"Playfair Display", serif', 
-                fontWeight: 'bold' 
+              <h2 style={{
+                color: '#333',
+                fontFamily: '"Playfair Display", serif',
+                fontWeight: 'bold'
               }}>
                 <span style={{ position: 'relative', display: 'inline-block', color: '#7c3aed' }}>
                   Recent Couples
@@ -68,7 +68,7 @@ export default function RecentCouplesSection() {
               <span className="leaf1" />
               <span className="tit-ani-" />
             </div>
-            
+
             <div className="swiper-premium-wrapper" style={{ position: 'relative', padding: '20px 0 50px 0', zIndex: 2 }}>
               <style>{`
                 .swiper-premium-wrapper .swiper-button-next,
@@ -188,7 +188,7 @@ export default function RecentCouplesSection() {
                    .swiper-premium-wrapper .swiper-button-prev { display: none; }
                 }
               `}</style>
-              
+
               <Swiper
                 modules={[Navigation, Pagination, Autoplay]}
                 spaceBetween={20}

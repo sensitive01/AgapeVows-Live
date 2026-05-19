@@ -5,19 +5,10 @@ import "../../../assets/new-template/css/style.css";
 import "../../new-template/HomeMobileResponsive.css";
 
 import MainLayout from "../layout/MainLayout";
-import CountModal from "../../CountModal";
 
 import HeroSearchSection from "../../new-template/HeroSearchSection";
 import TrustBrandsSection from "../../new-template/TrustBrandsSection";
 import QuickAccessSection from "../../new-template/QuickAccessSection";
-import AboutWelcomeSection from "../../new-template/AboutWelcomeSection";
-import WhyChooseUsSection from "../../new-template/WhyChooseUsSection";
-import FeaturesSection from "../../new-template/FeaturesSection";
-import HowItWorksSection from "../../new-template/HowItWorksSection";
-import RecentCouplesSection from "../../new-template/RecentCouplesSection";
-import TeamSection from "../../new-template/TeamSection";
-import GallerySection from "../../new-template/GallerySection";
-import BlogSection from "../../new-template/BlogSection";
 import FindYourMatchCTASection from "../../new-template/FindYourMatchCTASection";
 import HighlightedProfilesSection from "../../new-template/HighlightedProfilesSection";
 import FooterSection from "../../new-template/FooterSection";
@@ -38,29 +29,14 @@ const NewHomePageComponent = () => {
           <TrustBrandsSection />
         </div>
 
-        <QuickAccessSection />
-
-        <div className="flex flex-col gap-2 lg:gap-4 py-2 sm:py-4 overflow-hidden max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
-          <AboutWelcomeSection />
+        <div className="mt-16 lg:mt-24">
+          <QuickAccessSection />
         </div>
 
-        <WhyChooseUsSection />
-
         <div className="flex flex-col gap-2 lg:gap-4 py-2 sm:py-4 overflow-visible max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
-          <FeaturesSection />
-
-          {/* Retention: Keeping the original Count section as requested */}
-          <CountModal />
-
-          <HowItWorksSection />
-          <RecentCouplesSection />
-          <TeamSection />
         </div>
 
-        <GallerySection />
-
         <div className="flex flex-col gap-2 lg:gap-4 py-2 sm:py-4 overflow-visible max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
-          <BlogSection />
           <FindYourMatchCTASection />
         </div>
 
@@ -71,3 +47,4 @@ const NewHomePageComponent = () => {
 };
 
 export default NewHomePageComponent;
+

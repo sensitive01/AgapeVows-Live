@@ -14,15 +14,15 @@ const AGAPE_WATERMARK_CONFIG = [
   {
     overlay: {
       font_family: "Arial",
-      font_size: 45,
+      font_size: 32,
       font_weight: "bold",
-      text: "AgapeVows",
+      text: "AgapeVows.com",
     },
     color: "#ffffff",
-    opacity: 40,
-    gravity: "south_east",
-    x: 20,
-    y: 20
+    opacity: 50,
+    gravity: "east",
+    angle: 270,
+    x: 15
   }
 ];
 

@@ -99,7 +99,7 @@ const WhoViewedYou = () => {
                 </div>
 
                 {/* ✅ Profile Image */}
-               <img
+                <img
                   src={profile.profileImage || dummyProfileImage}
                   alt={profile.userName}
                   onError={(e) => {
@@ -114,6 +114,38 @@ const WhoViewedYou = () => {
                     marginTop: "15px"
                   }}
                 />
+
+                {/* Watermark Overlay on the Right Side */}
+                <div
+                  style={{
+                    position: "absolute",
+                    right: "8px",
+                    top: "15px",
+                    bottom: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    pointerEvents: "none",
+                    userSelect: "none",
+                    zIndex: 5,
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "rgba(255, 255, 255, 0.45)",
+                      fontFamily: "'Outfit', 'Inter', sans-serif",
+                      fontSize: "8px",
+                      fontWeight: "600",
+                      letterSpacing: "1px",
+                      whiteSpace: "nowrap",
+                      textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
+                      writingMode: "vertical-rl",
+                      transform: "rotate(180deg)",
+                    }}
+                  >
+                    AgapeVows.com
+                  </span>
+                </div>
               </div>
               <div className="db-int-pro-2">
                 {/* <h5>{profile.userName}</h5> */}
@@ -146,7 +178,7 @@ const WhoViewedYou = () => {
                       fontWeight: "500",
                       transition: "0.3s ease"
                     }}
-                   
+
                   >
                     View Full Profile
                   </button>

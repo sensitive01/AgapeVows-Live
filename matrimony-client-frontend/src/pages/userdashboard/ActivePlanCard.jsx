@@ -36,7 +36,7 @@ const ActivePlanCard = ({ externalPlanData }) => {
           getMyActivePlanData(userId),
           getAllPlanDetails()
         ]);
-        
+
         if (planRes.status === 200) {
           setPlanData(planRes?.data?.activePlan);
         }
@@ -93,7 +93,7 @@ const ActivePlanCard = ({ externalPlanData }) => {
   // Use the plan snapshot if available, otherwise fallback to base plan definition
   const rawMaxProfiles = planData.maxProfiles ? planData.maxProfiles : basePlan.maxProfiles;
   const rawDailyLimit = planData.dailyLimit ? planData.dailyLimit : basePlan.dailyLimit;
-  
+
   const profilesViewedCount = planData.profilesViewedCount || 0;
   const dailyViewedCount = planData.dailyViewedCount || 0;
 
@@ -104,17 +104,17 @@ const ActivePlanCard = ({ externalPlanData }) => {
 
 
   const planType = planData.subscriptionType?.toLowerCase() || "";
-  const isUnlimitedProfiles = 
-    rawMaxProfiles === "Unlimited" || 
-    rawMaxProfiles === "unlimited" || 
+  const isUnlimitedProfiles =
+    rawMaxProfiles === "Unlimited" ||
+    rawMaxProfiles === "unlimited" ||
     parseInt(rawMaxProfiles) >= 999999 ||
     planType === "platinum" ||
     planType === "gold" ||
     planType === "golden";
 
-  const isUnlimitedDaily = 
-    rawDailyLimit === "Unlimited" || 
-    rawDailyLimit === "unlimited" || 
+  const isUnlimitedDaily =
+    rawDailyLimit === "Unlimited" ||
+    rawDailyLimit === "unlimited" ||
     parseInt(rawDailyLimit) >= 999999 ||
     planType === "platinum" ||
     planType === "gold" ||
@@ -126,14 +126,14 @@ const ActivePlanCard = ({ externalPlanData }) => {
   const usagePercent = isUnlimitedProfiles
     ? 0
     : parsedMax > 0
-    ? Math.min((profilesViewedCount / parsedMax) * 100, 100)
-    : 0;
+      ? Math.min((profilesViewedCount / parsedMax) * 100, 100)
+      : 0;
 
   const dailyPercent = isUnlimitedDaily
     ? 0
     : parsedDaily > 0
-    ? Math.min((dailyViewedCount / parsedDaily) * 100, 100)
-    : 0;
+      ? Math.min((dailyViewedCount / parsedDaily) * 100, 100)
+      : 0;
 
   const remainingProfiles = isUnlimitedProfiles ? "Unlimited" : parsedMax - profilesViewedCount;
   const remainingDaily = isUnlimitedDaily ? "Unlimited" : parsedDaily - dailyViewedCount;

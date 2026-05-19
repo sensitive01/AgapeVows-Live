@@ -43,6 +43,7 @@ const userSchema = new mongoose.Schema(
          enum: ["Pending", "Uploaded", "Verified", "Rejected"],
          default: "Pending",
       },
+      idVerifiedAt: { type: Date },
 
       /* =========================
          BASIC PERSONAL DETAILS
@@ -115,7 +116,9 @@ const userSchema = new mongoose.Schema(
       residenceType: { type: String },
 
       numberOfBrothers: { type: String },
+      marriedBrothers: { type: String },
       numberOfSisters: { type: String },
+      marriedSisters: { type: String },
 
       /* =========================
          RELIGIOUS DETAILS
@@ -278,10 +281,7 @@ const userSchema = new mongoose.Schema(
       ========================== */
       profileImage: { type: String },
       additionalImages: [{ type: String }],
-      selfIntroductionVideo: {
-         type: String,
-         default: "",
-      },
+
       profileViews: [{ type: String }],
       blockedUsers: [{
          user: { type: mongoose.Schema.Types.ObjectId, ref: "UserModel" },

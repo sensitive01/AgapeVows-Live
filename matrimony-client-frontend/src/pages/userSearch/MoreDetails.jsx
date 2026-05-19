@@ -23,49 +23,87 @@ const MoreDetails = () => {
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
 
-const [userId, setUserId] = useState(() => localStorage.getItem("userId"));
+  const [userId, setUserId] = useState(() => localStorage.getItem("userId"));
   const baseUrl = import.meta.env.VITE_BASE_ROUTE;
   const navigate = useNavigate();
+  const [zoomImage, setZoomImage] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  
+  const allImages = React.useMemo(() => {
+    if (!profileData) return [];
+    const images = [];
+    if (profileData.profileImage) {
+      images.push(profileData.profileImage);
+    }
+    if (profileData.additionalImages && profileData.additionalImages.length > 0) {
+      images.push(...profileData.additionalImages);
+    }
+    const unique = [...new Set(images)];
+    return unique.length > 0 ? unique : ["images/profiles/profile-large.jpg"];
+  }, [profileData]);
 
- useEffect(() => {
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-
-      console.log("👉 Sending viewerId:", userId); // DEBUG
-
-      const response = await getTheProfieMoreDetails(profileId, userId);
-
-      if (response.status === 200) {
-        setProfileData(response.data.data);
-        window.dispatchEvent(new Event("planUpdated"));
-      } else {
-        setError("Failed to fetch profile data");
-      }
-    } catch (err) {
-      const errorMsg = err.response?.data?.message;
-      const statusCode = err.response?.status;
-
-      if (statusCode === 403) {
-        showAlert({
-          title: "Access Restricted",
-          text: errorMsg || "Access restricted",
-          icon: "error",
-        });
-
-      } else {
-        setError(errorMsg || "Error fetching profile data");
-      }
-    } finally {
-      setLoading(false);
+  const nextImage = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (allImages.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
     }
   };
 
- if (!profileId || !userId || userId === "undefined") return;
-  fetchData();
-}, [profileId, userId]);
+  const prevImage = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (allImages.length > 0) {
+      setCurrentImageIndex((prev) =>
+        prev === 0 ? allImages.length - 1 : prev - 1
+      );
+    }
+  };
+
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        console.log("👉 Sending viewerId:", userId); // DEBUG
+
+        const response = await getTheProfieMoreDetails(profileId, userId);
+
+        if (response.status === 200) {
+          setProfileData(response.data.data);
+          window.dispatchEvent(new Event("planUpdated"));
+        } else {
+          setError("Failed to fetch profile data");
+        }
+      } catch (err) {
+        const errorMsg = err.response?.data?.message;
+        const statusCode = err.response?.status;
+
+        if (statusCode === 403) {
+          showAlert({
+            title: "Access Restricted",
+            text: errorMsg || "Access restricted",
+            icon: "error",
+          });
+
+        } else {
+          setError(errorMsg || "Error fetching profile data");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (!profileId || !userId || userId === "undefined") return;
+    fetchData();
+  }, [profileId, userId]);
   useEffect(() => {
     if (!userId || !baseUrl) return;
     const newSocket = io(baseUrl, {
@@ -164,7 +202,7 @@ const [userId, setUserId] = useState(() => localStorage.getItem("userId"));
           minute: "2-digit",
         }),
       };
-      
+
       setChatMessages((prev) => [...prev, tempMessage]);
 
       if (socket) {
@@ -182,9 +220,9 @@ const [userId, setUserId] = useState(() => localStorage.getItem("userId"));
     try {
       const response = await getUserProfile(userId);
       const currentUser = response?.data?.data;
-      
+
       const isPaidUser = currentUser && currentUser.isAnySubscriptionTaken && currentUser.paymentDetails?.some(p => p.subscriptionStatus?.toLowerCase() === "active");
-      
+
       if (isPaidUser) {
         setIsChatOpen(true);
         if (socket && profileData?._id) {
@@ -253,16 +291,102 @@ const [userId, setUserId] = useState(() => localStorage.getItem("userId"));
               {/* Sticky image container */}
               <div className="profile">
                 <div className="pg-pro-big-im">
-                  <div className="s1">
-                    <img
-                      src={
-                        profileData.profileImage ||
-                        "images/profiles/profile-large.jpg"
-                      }
-                      loading="lazy"
-                      className="pro"
-                      alt={profileData.userName || "Profile"}
-                    />
+                  <div className="s1" style={{ position: "relative" }}>
+                     <img
+                       src={allImages[currentImageIndex]}
+                       loading="lazy"
+                       className="pro"
+                       alt={profileData.userName || "Profile"}
+                       onClick={() => setZoomImage(allImages[currentImageIndex])}
+                       style={{ cursor: "pointer", objectFit: "contain", background: "#f3f4f6" }}
+                     />
+
+                     {allImages.length > 1 && (
+                       <>
+                         <button
+                           onClick={prevImage}
+                           style={{
+                             position: "absolute",
+                             top: "50%",
+                             left: "10px",
+                             transform: "translateY(-50%)",
+                             background: "rgba(0, 0, 0, 0.5)",
+                             color: "white",
+                             border: "none",
+                             borderRadius: "50%",
+                             width: "35px",
+                             height: "35px",
+                             display: "flex",
+                             alignItems: "center",
+                             justifyContent: "center",
+                             cursor: "pointer",
+                             zIndex: 10,
+                             transition: "all 0.2s ease"
+                           }}
+                           onMouseEnter={(e) => e.target.style.background = "rgba(0, 0, 0, 0.8)"}
+                           onMouseLeave={(e) => e.target.style.background = "rgba(0, 0, 0, 0.5)"}
+                         >
+                           <i className="fa fa-chevron-left"></i>
+                         </button>
+                         <button
+                           onClick={nextImage}
+                           style={{
+                             position: "absolute",
+                             top: "50%",
+                             right: "10px",
+                             transform: "translateY(-50%)",
+                             background: "rgba(0, 0, 0, 0.5)",
+                             color: "white",
+                             border: "none",
+                             borderRadius: "50%",
+                             width: "35px",
+                             height: "35px",
+                             display: "flex",
+                             alignItems: "center",
+                             justifyContent: "center",
+                             cursor: "pointer",
+                             zIndex: 10,
+                             transition: "all 0.2s ease"
+                           }}
+                           onMouseEnter={(e) => e.target.style.background = "rgba(0, 0, 0, 0.8)"}
+                           onMouseLeave={(e) => e.target.style.background = "rgba(0, 0, 0, 0.5)"}
+                         >
+                           <i className="fa fa-chevron-right"></i>
+                         </button>
+                       </>
+                     )}
+                    
+                    {/* Watermark Overlay on the Right Side */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        right: "8px",
+                        top: 0,
+                        bottom: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        pointerEvents: "none",
+                        userSelect: "none",
+                        zIndex: 5,
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: "rgba(255, 255, 255, 0.45)",
+                          fontFamily: "'Outfit', 'Inter', sans-serif",
+                          fontSize: "14px",
+                          fontWeight: "600",
+                          letterSpacing: "3px",
+                          whiteSpace: "nowrap",
+                          textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
+                          writingMode: "vertical-rl",
+                          transform: "rotate(180deg)",
+                        }}
+                      >
+                        AgapeVows.com
+                      </span>
+                    </div>
                   </div>
                   <div className="s3">
                     <button
@@ -378,7 +502,7 @@ const [userId, setUserId] = useState(() => localStorage.getItem("userId"));
                     <h3>Photo gallery</h3>
                     <div id="image-gallery">
                       {profileData.additionalImages &&
-                      profileData.additionalImages.length > 0 ? (
+                        profileData.additionalImages.length > 0 ? (
                         profileData.additionalImages.map((image, index) => (
                           <div key={index} className="pro-gal-imag">
                             <div className="img-wrapper">
@@ -628,6 +752,158 @@ const [userId, setUserId] = useState(() => localStorage.getItem("userId"));
       </div>
 
       <ShowInterest />
+
+      {/* Zoom Image Modal */}
+      {zoomImage && (
+        <div
+          onClick={() => { setZoomImage(null); setZoomLevel(1); }}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.9)",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 10000,
+            cursor: "zoom-out"
+          }}
+        >
+          <div
+            style={{ position: 'relative' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={allImages[currentImageIndex]}
+              alt="Zoomed"
+              style={{
+                transform: `scale(${zoomLevel})`,
+                maxWidth: "90vw",
+                maxHeight: "80vh",
+                objectFit: "contain",
+                cursor: allImages.length > 1 ? "pointer" : "default",
+                transition: "transform 0.2s ease",
+                borderRadius: "12px"
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (allImages.length > 1) {
+                  nextImage();
+                }
+              }}
+            />
+            
+            {allImages.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "-60px",
+                    transform: "translateY(-50%)",
+                    background: "rgba(255, 255, 255, 0.25)",
+                    border: "none",
+                    color: "white",
+                    fontSize: "30px",
+                    cursor: "pointer",
+                    padding: "10px 15px",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 1000
+                  }}
+                >
+                  &#10094;
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    right: "-60px",
+                    transform: "translateY(-50%)",
+                    background: "rgba(255, 255, 255, 0.25)",
+                    border: "none",
+                    color: "white",
+                    fontSize: "30px",
+                    cursor: "pointer",
+                    padding: "10px 15px",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 1000
+                  }}
+                >
+                  &#10095;
+                </button>
+              </>
+            )}
+            
+            <div
+              style={{
+                position: "absolute",
+                bottom: "-60px",
+                display: "flex",
+                gap: "15px",
+                justifyContent: "center",
+                width: "100%"
+              }}
+            >
+              <button
+                onClick={() => setZoomLevel((z) => Math.max(0.5, z - 0.2))}
+                style={{
+                  padding: "10px 15px",
+                  fontSize: "1.2rem",
+                  borderRadius: "8px",
+                  border: "none",
+                  backgroundColor: "#7c3aed",
+                  color: "#fff",
+                  cursor: "pointer",
+                  fontWeight: "600"
+                }}
+              >
+                -
+              </button>
+              <button
+                onClick={() => setZoomLevel(1)}
+                style={{
+                  padding: "10px 15px",
+                  fontSize: "1.2rem",
+                  borderRadius: "8px",
+                  border: "none",
+                  backgroundColor: "#7c3aed",
+                  color: "#fff",
+                  cursor: "pointer",
+                  fontWeight: "600"
+                }}
+              >
+                Reset
+              </button>
+              <button
+                onClick={() => setZoomLevel((z) => Math.min(3, z + 0.2))}
+                style={{
+                  padding: "10px 15px",
+                  fontSize: "1.2rem",
+                  borderRadius: "8px",
+                  border: "none",
+                  backgroundColor: "#7c3aed",
+                  color: "#fff",
+                  cursor: "pointer",
+                  fontWeight: "600"
+                }}
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {isChatOpen && profileData && (
         <ChatUi

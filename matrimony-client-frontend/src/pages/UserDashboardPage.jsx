@@ -13,7 +13,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PlanDetails from "./userdashboard/PlanDetails";
 import ProfileCompletion from "./userdashboard/ProfileCompletion";
-import RecentChats from "./userdashboard/RecentChats";
+
 import DashboardSearchComponent from "./userdashboard/DashboardSearchComponent";
 import ActivePlanCard from "./userdashboard/ActivePlanCard";
 import MembershipBadge from "../components/common/MembershipBadge";
@@ -39,7 +39,7 @@ const UserDashboardPage = () => {
         try {
           setLoading(true);
           setPlanLoading(true);
-          
+
           const [userRes, planRes] = await Promise.all([
             getUserProfile(userId),
             getMyActivePlanData(userId)
@@ -449,12 +449,16 @@ const UserDashboardPage = () => {
                       <ul className="slider" ref={sliderRef}>
                         {profileMatches.map((profile, index) => (
                           <li key={profile._id || index}>
-                            <div className="db-new-pro" style={{ position: "relative", paddingTop: "10px" }}>
+                            <div 
+                              className="db-new-pro" 
+                              style={{ position: "relative", paddingTop: "10px", cursor: "pointer" }}
+                              onClick={() => handleProfileClick(profile)}
+                            >
                               {/* ✅ Badge - TOP LEFT */}
                               <div style={{
                                 position: 'absolute',
-                                top: '-1100px',
-                                left: '10px',
+                                top: '5px',
+                                left: '5px',
                                 zIndex: 10,
                                 transform: "scale(0.9)",
                                 transformOrigin: "top left"
@@ -473,6 +477,29 @@ const UserDashboardPage = () => {
                                   e.target.src = "images/profiles/default.jpg";
                                 }}
                               />
+
+                              {/* Watermark Overlay on the Right Side */}
+                              <span
+                                style={{
+                                  position: "absolute",
+                                  right: "5px",
+                                  top: "35%",
+                                  color: "rgba(255, 255, 255, 0.45)",
+                                  fontFamily: "'Outfit', 'Inter', sans-serif",
+                                  fontSize: "12px",
+                                  fontWeight: "600",
+                                  letterSpacing: "2px",
+                                  whiteSpace: "nowrap",
+                                  textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
+                                  writingMode: "vertical-rl",
+                                  transform: "rotate(180deg)",
+                                  pointerEvents: "none",
+                                  userSelect: "none",
+                                  zIndex: 5,
+                                }}
+                              >
+                                AgapeVows.com
+                              </span>
 
                               <div>
                                 <h5>{profile.agwid || profile.userName}</h5>
@@ -493,8 +520,6 @@ const UserDashboardPage = () => {
                               )}
                               <div
                                 className="fclick"
-                                onClick={() => handleProfileClick(profile)}
-                                style={{ cursor: "pointer" }}
                               >
                                 &nbsp;
                               </div>
@@ -515,14 +540,14 @@ const UserDashboardPage = () => {
                 {/* Additional Dashboard Components */}
                 <div className="row g-4" style={{ marginTop: "0px" }}>
                   <ProfileCompletion userData={userInfo} />
-                  
+
                   {!planLoading && (
                     <>
                       <PlanDetails externalPlanData={activePlan} />
                       {activePlan && <ActivePlanCard externalPlanData={activePlan} />}
                     </>
                   )}
-                  
+
                   {/* <RecentChats /> */}
                 </div>
               </div>

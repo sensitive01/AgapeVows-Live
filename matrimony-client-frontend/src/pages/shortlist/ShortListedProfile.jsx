@@ -87,40 +87,72 @@ const ShortListedProfile = () => {
         <ul>
           {profileData.filter((p) => p).map((profile) => (
             <li key={profile._id}>
-             <div
-  className="db-int-pro-1"
-  style={{
-    position: "relative",
-    width: "80px",
-    height: "95px" // 👈 extra space for badge
-  }}
->
-  {/* ✅ Badge - TOP CENTER */}
-  <div
-    style={{
-      position: "absolute",
-      top: "0px",
-      left: "50%",
-      transform: "translateX(-50%) scale(0.7)",
-      zIndex: 10
-    }}
-  >
-    <MembershipBadge user={profile} isMini={true} />
-  </div>
+              <div
+                className="db-int-pro-1"
+                style={{
+                  position: "relative",
+                  width: "80px",
+                  height: "95px" // 👈 extra space for badge
+                }}
+              >
+                {/* ✅ Badge - TOP CENTER */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "0px",
+                    left: "50%",
+                    transform: "translateX(-50%) scale(0.7)",
+                    zIndex: 10
+                  }}
+                >
+                  <MembershipBadge user={profile} isMini={true} />
+                </div>
 
-  {/* ✅ Profile Image */}
-  <img
-    src={profile.profileImage || "images/profiles/default.jpg"}
-    alt={profile.userName}
-    style={{
-      width: "80px",
-      height: "80px",
-      objectFit: "cover",
-      borderRadius: "8px",
-      marginTop: "15px" // 👈 push image down
-    }}
-  />
-</div>
+                {/* ✅ Profile Image */}
+                <img
+                  src={profile.profileImage || "images/profiles/default.jpg"}
+                  alt={profile.userName}
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    objectFit: "cover",
+                    borderRadius: "8px",
+                    marginTop: "15px" // 👈 push image down
+                  }}
+                />
+
+                {/* Watermark Overlay on the Right Side */}
+                <div
+                  style={{
+                    position: "absolute",
+                    right: "4px",
+                    top: "15px",
+                    bottom: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    pointerEvents: "none",
+                    userSelect: "none",
+                    zIndex: 5,
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "rgba(255, 255, 255, 0.45)",
+                      fontFamily: "'Outfit', 'Inter', sans-serif",
+                      fontSize: "8px",
+                      fontWeight: "600",
+                      letterSpacing: "1px",
+                      whiteSpace: "nowrap",
+                      textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
+                      writingMode: "vertical-rl",
+                      transform: "rotate(180deg)",
+                    }}
+                  >
+                    AgapeVows.com
+                  </span>
+                </div>
+              </div>
               <div className="db-int-pro-2">
                 <h5>{profile.userName}</h5>
                 <ol className="poi">
@@ -138,24 +170,24 @@ const ShortListedProfile = () => {
                   </li>
                 </ol>
                 <button
-  onClick={() => handleViewProfile(profile._id)}
-  className="cta-5"
-  style={{
-    backgroundColor: "#ff5e62",
-    color: "#fff",
-    border: "none",
-    padding: "5px 10px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "0.85rem",
-    fontWeight: "500",
-    transition: "0.3s ease"
-  }}
-  onMouseOver={(e) => (e.target.style.backgroundColor = "#e14b50")}
-  onMouseOut={(e) => (e.target.style.backgroundColor = "#ff5e62")}
->
-  View Full Profile
-</button>
+                  onClick={() => handleViewProfile(profile._id)}
+                  className="cta-5"
+                  style={{
+                    backgroundColor: "#ff5e62",
+                    color: "#fff",
+                    border: "none",
+                    padding: "5px 10px",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontSize: "0.85rem",
+                    fontWeight: "500",
+                    transition: "0.3s ease"
+                  }}
+                  onMouseOver={(e) => (e.target.style.backgroundColor = "#e14b50")}
+                  onMouseOut={(e) => (e.target.style.backgroundColor = "#ff5e62")}
+                >
+                  View Full Profile
+                </button>
               </div>
             </li>
           ))}

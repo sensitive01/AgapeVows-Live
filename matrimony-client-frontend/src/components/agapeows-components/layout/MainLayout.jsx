@@ -229,9 +229,8 @@ const MainLayout = () => {
 
   return (
     <>
-      {/* <PreLoader /> */}
       {/* Top Bar - Fixed Responsive */}
-      <div className="bg-purple-600 text-white text-sm py-2 px-4">
+      <div className="bg-[#2b124c] text-white text-xs py-2 px-4 border-b border-white/10">
         <div className="max-w-7xl mx-auto">
           {/* Desktop & Tablet */}
           <div className="hidden md:flex justify-between items-center">
@@ -263,18 +262,18 @@ const MainLayout = () => {
               </button>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Phone className="w-4 h-4" />
-                <span>+91 5312 5312</span>
+              <div className="flex items-center space-x-2 text-white">
+                <Phone className="w-4 h-4 !text-white" />
+                <span className="!text-white font-medium">+91 5312 5312</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <Mail className="w-4 h-4" />
-                <span>HELP@COMPANY.COM</span>
+              <div className="flex items-center space-x-2 text-white">
+                <Mail className="w-4 h-4 !text-white" />
+                <span className="!text-white font-medium uppercase">HELP@AGAPEVOWS.COM</span>
               </div>
-              <div className="flex space-x-2">
-                <Facebook className="w-4 h-4 cursor-pointer hover:text-purple-200" />
-                <Twitter className="w-4 h-4 cursor-pointer hover:text-purple-200" />
-                <MessageCircle className="w-4 h-4 cursor-pointer hover:text-purple-200" />
+              <div className="flex space-x-3 text-white">
+                <Facebook className="w-4 h-4 cursor-pointer hover:text-purple-200 !text-white" />
+                <Twitter className="w-4 h-4 cursor-pointer hover:text-purple-200 !text-white" />
+                <svg className="w-4 h-4 cursor-pointer hover:text-purple-200 !text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.332 3.608 1.308.975.975 1.246 2.242 1.308 3.607.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.332 2.633-1.308 3.608-.975.975-2.242 1.246-3.607 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.332-3.608-1.308-.975-.975-1.246-2.242-1.308-3.607-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.332-2.633 1.308-3.608.975-.975 2.242-1.246 3.607-1.308 1.266-.058 1.646-.07 4.85-.07zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.358-2.618-6.78-6.98-6.98-1.281-.058-1.689-.072-4.948-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" /></svg>
               </div>
             </div>
           </div>
@@ -366,36 +365,34 @@ const MainLayout = () => {
                   : "text-gray-800 hover:text-purple-600"
                   }`}
               >
-                About Us
+                ABOUT US
               </a>
 
-              {isUserActive && (
-                <a
-                  href="/user/find-matches"
-                  onClick={(e) => {
-                    if (!e.ctrlKey) {
-                      e.preventDefault();
-                      handleNavigate("/user/find-matches");
-                    } else {
-                      e.preventDefault();
-                      const newTab = window.open("/user/find-matches", "_blank");
-                      if (newTab) newTab.focus();
-                    }
-                  }}
-                  className={`group flex items-center space-x-2 font-medium transition-all duration-200 py-2 ${location.pathname === "/user/find-matches"
-                    ? "text-purple-600 font-bold border-b-2 border-purple-600"
-                    : "text-gray-800 hover:text-purple-600"
+              <a
+                href="/user/find-matches"
+                onClick={(e) => {
+                  if (!e.ctrlKey) {
+                    e.preventDefault();
+                    handleNavigate("/user/find-matches");
+                  } else {
+                    e.preventDefault();
+                    const newTab = window.open("/user/find-matches", "_blank");
+                    if (newTab) newTab.focus();
+                  }
+                }}
+                className={`group flex items-center space-x-1.5 font-medium transition-all duration-200 py-2 ${location.pathname === "/user/find-matches"
+                  ? "text-purple-600 font-bold border-b-2 border-purple-600"
+                  : "text-gray-800 hover:text-purple-600"
+                  }`}
+              >
+                <Search
+                  className={`w-4 h-4 transition-colors duration-200 ${location.pathname === "/user/find-matches"
+                    ? "text-purple-600"
+                    : "text-gray-800 group-hover:text-purple-600"
                     }`}
-                >
-                  <Search
-                    className={`w-4 h-4 transition-colors duration-200 ${location.pathname === "/user/find-matches"
-                      ? "text-purple-600"
-                      : "text-gray-800 group-hover:text-purple-600"
-                      }`}
-                  />
-                  <span>Search</span>
-                </a>
-              )}
+                />
+                <span className="text-sm font-medium">SEARCH</span>
+              </a>
 
               <div
                 className="relative"
@@ -415,7 +412,7 @@ const MainLayout = () => {
                     : "text-gray-800 hover:text-purple-600"
                     }`}
                 >
-                  Services <ChevronDown className="w-4 h-4 ml-1" />
+                  SERVICES <ChevronDown className="w-4 h-4 ml-1" />
                 </button>
                 <ExploreDropdown
                   isVisible={isExploreDropdownVisible}
@@ -435,15 +432,14 @@ const MainLayout = () => {
                     if (newTab) newTab.focus();
                   }
                 }}
-                className={`px-4 py-1.5 rounded-full border transition-all duration-200 font-medium ${
-                location.pathname === "/user/events-page"
-                  ? "border-purple-600 text-purple-600"
-                  : "border-gray-300 text-gray-800 hover:border-purple-600 hover:text-purple-600"
-              }`}
+                className={`nav-highlight-events transition-all duration-200 py-2 ${location.pathname === "/user/events-page"
+                  ? "border-b-2 border-purple-600"
+                  : ""
+                  }`}
               >
                 EVENTS
               </a>
- 
+
               <a
                 href="/user/user-plan-selection"
                 onClick={(e) => {
@@ -461,7 +457,7 @@ const MainLayout = () => {
                   : "text-gray-800 hover:text-purple-600"
                   }`}
               >
-                Plans
+                PLANS
               </a>
 
               <div
@@ -476,7 +472,7 @@ const MainLayout = () => {
                     : "text-gray-800 hover:text-purple-600"
                     }`}
                 >
-                  Help & Support <ChevronDown className="w-4 h-4 ml-1" />
+                  HELP & SUPPORT <ChevronDown className="w-4 h-4 ml-1" />
                 </button>
 
                 <HelpDropdown isVisible={isHelpDropdownVisible} />
@@ -508,7 +504,7 @@ const MainLayout = () => {
                         {userName}
                       </div>
                       <div className="text-gray-500 text-sm flex items-center">
-                        My Profile <ChevronDown className="w-3 h-3 ml-1" />
+                        MY PROFILE <ChevronDown className="w-3 h-3 ml-1" />
                       </div>
                     </div>
                   </div>
@@ -529,7 +525,7 @@ const MainLayout = () => {
                     }}
                     className="text-gray-800 hover:text-purple-600 font-medium"
                   >
-                    Register
+                    REGISTER
                   </a>
                   <a
                     href="/user/user-login"
@@ -541,7 +537,7 @@ const MainLayout = () => {
                     }}
                     className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors font-medium shadow-md shadow-purple-100"
                   >
-                    Login
+                    LOGIN
                   </a>
                 </>
               )}
@@ -574,7 +570,7 @@ const MainLayout = () => {
                     : "text-gray-800 hover:text-purple-600 hover:bg-gray-50"
                     }`}
                 >
-                  About Us
+                  ABOUT US
                 </button>
 
                 {isUserActive && (
@@ -588,7 +584,7 @@ const MainLayout = () => {
                       : "text-gray-800 hover:text-purple-600 hover:bg-gray-50"
                       }`}
                   >
-                    Search
+                    SEARCH
                   </button>
                 )}
 
@@ -598,7 +594,7 @@ const MainLayout = () => {
                     onClick={() => setIsMobileServicesOpen(!isMobileServicesOpen)}
                     className="w-full flex justify-between items-center font-medium p-3 rounded-md text-gray-800 hover:text-purple-600 hover:bg-gray-50 transition-colors"
                   >
-                    <span>Services</span>
+                    <span>SERVICES</span>
                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isMobileServicesOpen ? "rotate-180" : ""}`} />
                   </button>
 
@@ -656,7 +652,7 @@ const MainLayout = () => {
                     : "text-gray-800 hover:text-purple-600 hover:bg-gray-50"
                     }`}
                 >
-                  Plans
+                  PLANS
                 </a>
 
                 {/* HELP & SUPPORT Dropdown Accordion */}
@@ -665,7 +661,7 @@ const MainLayout = () => {
                     onClick={() => setIsMobileHelpOpen(!isMobileHelpOpen)}
                     className="w-full flex justify-between items-center font-medium p-3 rounded-md text-gray-800 hover:text-purple-600 hover:bg-gray-50 transition-colors"
                   >
-                    <span>Help & Support</span>
+                    <span>HELP & SUPPORT</span>
                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isMobileHelpOpen ? "rotate-180" : ""}`} />
                   </button>
 
@@ -712,7 +708,7 @@ const MainLayout = () => {
                         <div className="font-semibold text-sm" style={{ color: '#d4af37' }}>
                           {userName}
                         </div>
-                        <div className="text-purple-600 font-medium text-xs">My Profile</div>
+                        <div className="text-purple-600 font-medium text-xs">MY PROFILE</div>
                       </div>
                     </div>
 

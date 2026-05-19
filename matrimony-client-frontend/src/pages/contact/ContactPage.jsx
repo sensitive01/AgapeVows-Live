@@ -334,11 +334,11 @@ const ContactPage = () => {
           </div>
         </div>
       </section>
-    < Footer />
+      < Footer />
       {/* END */}
-      
+
       {/* END */}
-     
+
     </div>
   );
 };

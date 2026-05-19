@@ -7,6 +7,17 @@ import bannerBg from '../../assets/new-template/images/ban-bg.jpg';
 import bannerImg from '../../assets/new-template/images/banner.jpg';
 import coupleImg1 from '../../assets/new-template/images/couples/1.jpg';
 import coupleImg2 from '../../assets/new-template/images/couples/2.jpg';
+import landingPageBg from '../../assets/images/landing-page.png';
+import landingPageBg1 from '../../assets/images/landing-page1.png';
+import landingPageBg2 from '../../assets/images/landing-page2.png';
+import landingPageBg3 from '../../assets/images/landing-page3.png';
+
+const backgroundImages = [
+  landingPageBg,
+  landingPageBg1,
+  landingPageBg2,
+  landingPageBg3
+];
 
 // Communities data
 const communities = [
@@ -71,29 +82,41 @@ const SearchDropdown = ({
   showDropdown,
   onToggleDropdown,
 }) => {
-  const filteredOptions = options.filter((option) =>
-    option.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  // If the search term is the same as the selected value, show all options to allow changing
+  const isSelectedValue = searchTerm === value;
+  const filteredOptions = isSelectedValue 
+    ? options 
+    : options.filter((option) =>
+        option.toLowerCase().includes(searchTerm.toLowerCase())
+      );
 
   return (
     <div className="relative">
-      <div className="flex">
+      <div className="relative group">
         <input
           type="text"
           placeholder={placeholder}
           value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          onFocus={() => onToggleDropdown(true)}
-          className="w-full bg-white text-gray-800 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-          style={{ border: '1px solid #ddd' }}
+          onChange={(e) => {
+            onSearchChange(e.target.value);
+            onToggleDropdown(true);
+          }}
+          onFocus={(e) => {
+            e.target.select();
+            onToggleDropdown(true);
+          }}
+          className="w-full bg-white text-gray-700 px-4 py-3 rounded-lg border border-gray-200 group-hover:border-purple-300 transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200 font-medium placeholder-gray-400"
         />
         <button
           type="button"
-          onClick={() => onToggleDropdown(!showDropdown)}
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+          onClick={() => {
+            if (!showDropdown) onSearchChange(""); // Clear search to show all when opening via arrow
+            onToggleDropdown(!showDropdown);
+          }}
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-500 transition-colors"
         >
           <svg
-            className="w-4 h-4"
+            className={`w-5 h-5 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -109,7 +132,7 @@ const SearchDropdown = ({
       </div>
 
       {showDropdown && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto custom-scrollbar">
+        <div className="absolute z-[9999] w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-2xl max-h-64 overflow-y-auto custom-scrollbar">
           {filteredOptions.length > 0 ? (
             filteredOptions.map((option, index) => (
               <div
@@ -144,6 +167,14 @@ export default function HeroSearchSection() {
 
   const [communitySearch, setCommunitySearch] = useState("");
   const [showCommunityDropdown, setShowCommunityDropdown] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % backgroundImages.length);
+    }, 6000); // Transition every 6 seconds
+    return () => clearInterval(timer);
+  }, []);
 
   const ageOptions = Array.from({ length: 53 }, (_, i) => 18 + i);
 
@@ -210,41 +241,26 @@ export default function HeroSearchSection() {
     // Always navigate to search results. 
     // The results page will handle blurred profiles for guests.
     navigate("/show-searched-result", {
-      state: { 
+      state: {
         formData: formData,
-        isGuest: !userId 
+        isGuest: !userId
       },
     });
   };
   return (
     <div className="hero-main-wrapper">
-      {/* BANNER SLIDER (BACKGROUND) */}
-      <section className="hom-ban-sli">
-        <div>
-          <ul className="ban-sli">
-            <li>
-              <div>
-                <img src={bannerBg} alt="Wedding Banner 1" loading="lazy" />
-              </div>
-            </li>
-            <li>
-              <div>
-                <img src={bannerImg} alt="Wedding Banner 2" loading="lazy" />
-              </div>
-            </li>
-            <li>
-              <div>
-                <img src={coupleImg1} alt="Recent Couple 1" loading="lazy" />
-              </div>
-            </li>
-            <li>
-              <div>
-                <img src={coupleImg2} alt="Recent Couple 2" loading="lazy" />
-              </div>
-            </li>
-          </ul>
-        </div>
-      </section>
+      {/* BACKGROUND CAROUSEL */}
+      <div className="hero-static-bg">
+        {backgroundImages.map((image, index) => (
+          <img
+            key={index}
+            src={image}
+            alt={`Matrimony Landing ${index + 1}`}
+            className={`hero-carousel-slide ${index === currentImageIndex ? 'active' : ''}`}
+          />
+        ))}
+        <div className="hero-overlay"></div>
+      </div>
 
       {/* HERO CONTENT & SEARCH */}
       <section
@@ -257,26 +273,58 @@ export default function HeroSearchSection() {
             {/* Left Side: Professional Content */}
             <div className="hero-text-block">
               <div className="hero-badge">
-                <i className="fa fa-star"></i> #1 Trusted Matrimony Brand
+                <span className="hero-badge-icon">†</span> India's Trusted Christian Matrimony
               </div>
               <h1>
-                Begin Your Journey to
-                <b>Eternal Love</b>
+                Christian Matrimony,<br/>
+                <b>Built on Trust</b>
               </h1>
+              <div className="hero-divider">
+                <span className="hero-divider-line"></span>
+                <i className="fa fa-heart hero-divider-icon"></i>
+                <span className="hero-divider-line"></span>
+              </div>
               <p>
-                Discover meaningful connections and find your perfect life partner
-                among thousands of verified profiles. Join the world's most trusted
-                matrimony platform today.
+                Connect with verified Christian singles who
+                share your faith, values, and intention for
+                a meaningful marriage.
               </p>
               <div className="hero-features">
                 <div className="hero-feature-item">
-                  <i className="fa fa-check"></i> 100% Verified Profiles
+                  <div className="hero-feature-icon-wrapper">
+                    <svg className="hero-feature-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
+                  <div className="hero-feature-text">
+                    <span>100%</span>
+                    <span>Verified</span>
+                    <span>Profiles</span>
+                  </div>
                 </div>
                 <div className="hero-feature-item">
-                  <i className="fa fa-lock"></i> Secure & Private
+                  <div className="hero-feature-icon-wrapper">
+                    <svg className="hero-feature-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <div className="hero-feature-text">
+                    <span>Safe &</span>
+                    <span>Private</span>
+                    <span>Platform</span>
+                  </div>
                 </div>
                 <div className="hero-feature-item">
-                  <i className="fa fa-heart"></i> Successful Stories
+                  <div className="hero-feature-icon-wrapper">
+                    <svg className="hero-feature-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                  </div>
+                  <div className="hero-feature-text">
+                    <span>Faith-Based</span>
+                    <span>Matching</span>
+                    <span>System</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -285,27 +333,44 @@ export default function HeroSearchSection() {
             <div className="hero-form-block">
               <div className="modern-search-card">
                 <div className="search-card-head">
-                  <h3>Find Your Match</h3>
-                  <p>Fast & Efficient Way to Search</p>
+                  <h3>Search Verified Profiles</h3>
                 </div>
                 <form className="modern-form" onSubmit={handleSearchClick}>
                   <div className="form-group">
-                    <label>I'm looking for a</label>
-                    <select
-                      className="form-control"
-                      value={formData.lookingFor}
-                      onChange={(e) => handleInputChange("lookingFor", e.target.value)}
-                    >
-                      <option value="Bride">Bride (Woman)</option>
-                      <option value="Groom">Groom (Man)</option>
-                    </select>
+                    <label>I'M LOOKING FOR A</label>
+                    <div className="gender-toggle-wrapper">
+                      <button
+                        type="button"
+                        className={`gender-toggle-btn ${formData.lookingFor === 'Bride' ? 'active' : ''}`}
+                        onClick={() => handleInputChange("lookingFor", "Bride")}
+                      >
+                        {formData.lookingFor === 'Bride' ? (
+                          <i className="fa fa-check-circle gender-icon"></i>
+                        ) : (
+                          <i className="fa fa-circle-o gender-icon"></i>
+                        )}
+                        Bride
+                      </button>
+                      <button
+                        type="button"
+                        className={`gender-toggle-btn ${formData.lookingFor === 'Groom' ? 'active' : ''}`}
+                        onClick={() => handleInputChange("lookingFor", "Groom")}
+                      >
+                        {formData.lookingFor === 'Groom' ? (
+                          <i className="fa fa-check-circle gender-icon"></i>
+                        ) : (
+                          <i className="fa fa-circle-o gender-icon"></i>
+                        )}
+                        Groom
+                      </button>
+                    </div>
                   </div>
 
                   <div className="form-group age-form-group">
                     <label>AGE</label>
                     <div className="age-slider-wrapper">
                       <div className="slider-track" style={{
-                        background: `linear-gradient(to right, rgba(255,255,255,0.3) ${((formData.ageFrom - 18) / (70 - 18)) * 100}%, #9b4dff ${((formData.ageFrom - 18) / (70 - 18)) * 100}%, #9b4dff ${((formData.ageTo - 18) / (70 - 18)) * 100}%, rgba(255,255,255,0.3) ${((formData.ageTo - 18) / (70 - 18)) * 100}%)`
+                        background: `linear-gradient(to right, #e5e7eb ${((formData.ageFrom - 18) / (70 - 18)) * 100}%, #7c3aed ${((formData.ageFrom - 18) / (70 - 18)) * 100}%, #7c3aed ${((formData.ageTo - 18) / (70 - 18)) * 100}%, #e5e7eb ${((formData.ageTo - 18) / (70 - 18)) * 100}%)`
                       }}></div>
                       <input
                         type="range"
@@ -347,8 +412,8 @@ export default function HeroSearchSection() {
                     </div>
                   </div>
 
-                  <div className="form-group search-dropdown">
-                    <label>Religion / Community</label>
+                  <div className="form-group search-dropdown" style={{ marginBottom: "25px" }}>
+                    <label>CHRISTIAN COMMUNITY</label>
                     <SearchDropdown
                       placeholder="Choose your Christian Community"
                       options={communities}

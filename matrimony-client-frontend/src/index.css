@@ -33,48 +33,29 @@
   animation: fadeIn 0.4s ease-out forwards;
 }
 
-/* Navigation Events Highlight - Premium Glow Effect */
+/* Navigation Events Highlight - Slow Fade Effect */
+@keyframes slowFadeInOut {
+  0% {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.5;
+  }
+}
+
 .nav-highlight-events {
   position: relative;
-  color: #9333ea !important; /* Deep Purple */
+  color: #9333ea !important;
+  /* Deep Purple */
   font-weight: 700 !important;
   letter-spacing: 0.5px;
   transition: all 0.3s ease;
-  text-shadow: 0 0 10px rgba(147, 51, 234, 0.3);
-}
-
-.nav-highlight-events::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #9333ea, transparent);
-  box-shadow: 0 0 12px #9333ea;
-  opacity: 0.7;
-  animation: glowLineMove 3s infinite linear;
-}
-
-.nav-highlight-events::before {
-  content: '';
-  position: absolute;
-  inset: -4px -8px;
-  background: radial-gradient(circle, rgba(147, 51, 234, 0.15) 0%, transparent 75%);
-  border-radius: 8px;
-  z-index: -1;
-  animation: subtlePulse 2s infinite alternate ease-in-out;
-}
-
-@keyframes glowLineMove {
-  0% { transform: scaleX(0.5); opacity: 0.3; }
-  50% { transform: scaleX(1); opacity: 0.8; }
-  100% { transform: scaleX(0.5); opacity: 0.3; }
-}
-
-@keyframes subtlePulse {
-  from { transform: scale(0.95); opacity: 0.5; }
-  to { transform: scale(1.1); opacity: 1; }
+  animation: slowFadeInOut 3s ease-in-out infinite;
 }
 
 .nav-highlight-events:hover {
@@ -97,18 +78,19 @@
   background-color: #ffffff !important;
   border-radius: 30px !important;
   overflow: visible !important;
-  
+
   /* HEIGHT DIFFERENCE WITHOUT OVERLAP */
   padding: 85px 20px !important;
-   position: relative;
+  position: relative;
   z-index: 2;
-  margin-top: 120px; 
- 
-  
+  margin-top: 120px;
+
+
 }
 
 .plans-main {
-  padding-top: 40px; /* gives breathing space above cards */
+  padding-top: 40px;
+  /* gives breathing space above cards */
 }
 
 .pri-box-pop {
@@ -223,7 +205,8 @@
 }
 
 .badge-minimal::after {
-  display: none !important; /* Remove shine effect for platinum */
+  display: none !important;
+  /* Remove shine effect for platinum */
 }
 
 /* Consistent inner container for sections */
@@ -268,14 +251,19 @@
 }
 
 /* Ensure the main content area grows to fill space */
-.min-h-screen > .pt-16, 
-.min-h-screen > main,
-.min-h-screen > div:not(.fixed) {
+.min-h-screen>.pt-16,
+.min-h-screen>main,
+.min-h-screen>div:not(.fixed) {
   flex: 1 0 auto;
 }
 
 /* Specific fix for the general page layout used in many files */
-.login, .about, .contact, .faq, .events, .blogs {
+.login,
+.about,
+.contact,
+.faq,
+.events,
+.blogs {
   flex: 1;
 }
 
@@ -286,34 +274,41 @@ footer {
 
 
 /* Popup & Modal Styles */
-.upgrade-popup { 
-  position: fixed; 
-  top: 0; 
-  left: 0; 
-  width: 100vw; 
-  height: 100vh; 
-  background: rgba(0,0,0,0.65); 
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-  z-index: 9999; 
-  backdrop-filter: blur(4px); 
+.upgrade-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
 }
 
-.upgrade-content { 
-  background: #fff; 
-  padding: 35px 30px; 
-  border-radius: 16px; 
-  text-align: center; 
-  width: 100%; 
-  max-width: 380px; 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25); 
-  animation: fadeInScale 0.3s ease; 
+.upgrade-content {
+  background: #fff;
+  padding: 35px 30px;
+  border-radius: 16px;
+  text-align: center;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  animation: fadeInScale 0.3s ease;
 }
 
 @keyframes fadeInScale {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .cancel-btn {
