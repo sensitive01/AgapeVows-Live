@@ -239,7 +239,7 @@ const UserAllProfilePage = () => {
         <div className="all-weddpro all-jobs all-serexp chosenini">
           <div className="container">
             <div className="row">
-              <div className="col-md-3 fil-mob-view">
+              {/* <div className="col-md-3 fil-mob-view">
                 <span className="filter-clo">+</span>
                 <div className="filt-com lhs-cate">
                   <h4>
@@ -425,8 +425,8 @@ const UserAllProfilePage = () => {
                     </a>
                   </div>
                 </div>
-              </div>
-              <div className="col-md-9">
+              </div> */}
+              <div className="col-md-12">
                 <div className="short-all">
                   <div className="short-lhs">
                     Showing <b>{filteredUsers.length}</b> profiles
@@ -481,7 +481,7 @@ const UserAllProfilePage = () => {
                           boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
                         }}
                       >
-                        {/* Header: ID and Last Login */}
+                        
                         <div
                           className="d-flex justify-content-between align-items-center mb-3"
                           style={{
@@ -523,7 +523,7 @@ const UserAllProfilePage = () => {
                         </div>
 
                         <div className="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
-                          {/* Left: Image */}
+                        
                           <div
                             onClick={(e) => handleViewProfile(e, user)}
                             style={{
@@ -567,7 +567,7 @@ const UserAllProfilePage = () => {
                             </div>
                           </div>
 
-                          {/* Center: Details */}
+                    
                           <div className="flex-grow-1" style={{ cursor: 'pointer' }} onClick={(e) => handleViewProfile(e, user)}>
                             <div>
                               <h4
@@ -633,7 +633,6 @@ const UserAllProfilePage = () => {
                             </div>
                           </div>
 
-                          {/* Right: Buttons */}
                           <div className="d-flex align-items-center justify-content-md-end justify-content-center gap-2 mt-3 mt-sm-0 px-sm-2 pe-sm-5" style={{ alignSelf: "center", flexShrink: 0 }}>
                             <button
                               className="btn btn-sm text-white px-3 py-2"

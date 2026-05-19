@@ -2,12 +2,110 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchAllUserProfilesHome, getUserInfo } from "../../api/axiosService/userAuthService";
 
+// Search dropdown component
+const SearchDropdown = ({
+  placeholder,
+  options,
+  value,
+  onChange,
+  searchTerm,
+  onSearchChange,
+  showDropdown,
+  onToggleDropdown,
+}) => {
+  const isSelectedValue = searchTerm === value;
+  const filteredOptions = isSelectedValue 
+    ? options 
+    : options.filter((option) =>
+        option.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+  return (
+    <div className="relative">
+      <div className="relative group">
+        <input
+          type="text"
+          placeholder={placeholder}
+          value={searchTerm}
+          onChange={(e) => {
+            onSearchChange(e.target.value);
+            onToggleDropdown(true);
+          }}
+          onFocus={(e) => {
+            e.target.select();
+            onToggleDropdown(true);
+          }}
+          className="w-full bg-white text-gray-700 px-4 py-3 rounded-lg border border-gray-200 group-hover:border-purple-300 transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200 font-medium placeholder-gray-400"
+        />
+        <button
+          type="button"
+          onClick={() => {
+            if (!showDropdown) onSearchChange(""); // Clear search to show all when opening via arrow
+            onToggleDropdown(!showDropdown);
+          }}
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-500 transition-colors"
+        >
+          <svg
+            className={`w-5 h-5 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </button>
+      </div>
+
+      {showDropdown && (
+        <div className="absolute z-[100] w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-2xl max-h-64 overflow-y-auto custom-scrollbar">
+          {filteredOptions.length > 0 ? (
+            filteredOptions.map((option, index) => (
+              <div
+                key={index}
+                onClick={() => {
+                  onChange(option);
+                  onSearchChange(option);
+                  onToggleDropdown(false);
+                }}
+                className="px-4 py-2 hover:bg-purple-100 cursor-pointer text-gray-800 border-b border-gray-100 last:border-b-0"
+              >
+                {option}
+              </div>
+            ))
+          ) : (
+            <div className="px-4 py-2 text-gray-500">No options found</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const HighlightedProfilesSection = () => {
   const [allProfiles, setAllProfiles] = useState([]);
   const [filteredProfiles, setFilteredProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDenomination, setSelectedDenomination] = useState("All");
+  const [denominationSearch, setDenominationSearch] = useState("All");
+  const [showDenominationDropdown, setShowDenominationDropdown] = useState(false);
   const navigate = useNavigate();
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".search-dropdown-container")) {
+        setShowDenominationDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const getProfiles = async () => {
@@ -21,21 +119,21 @@ const HighlightedProfilesSection = () => {
           let userGender = localStorage.getItem("gender");
 
           if (loggedInUserId && !userGender) {
-             const loggedInUser = fetchedProfiles.find(p => p._id === loggedInUserId || p.agwid === loggedInUserId);
-             if (loggedInUser && loggedInUser.gender) {
-                 userGender = loggedInUser.gender;
-                 localStorage.setItem("gender", userGender);
-             } else {
-                 try {
-                     const userInfoRes = await getUserInfo(loggedInUserId);
-                     if (userInfoRes?.data?.data?.gender) {
-                         userGender = userInfoRes.data.data.gender;
-                         localStorage.setItem("gender", userGender);
-                     }
-                 } catch (e) {
-                     console.error("Error fetching user info:", e);
-                 }
-             }
+            const loggedInUser = fetchedProfiles.find(p => p._id === loggedInUserId || p.agwid === loggedInUserId);
+            if (loggedInUser && loggedInUser.gender) {
+              userGender = loggedInUser.gender;
+              localStorage.setItem("gender", userGender);
+            } else {
+              try {
+                const userInfoRes = await getUserInfo(loggedInUserId);
+                if (userInfoRes?.data?.data?.gender) {
+                  userGender = userInfoRes.data.data.gender;
+                  localStorage.setItem("gender", userGender);
+                }
+              } catch (e) {
+                console.error("Error fetching user info:", e);
+              }
+            }
           }
 
           let baseProfiles = fetchedProfiles;
@@ -43,21 +141,21 @@ const HighlightedProfilesSection = () => {
 
           // Filter by opposite gender if user is logged in
           if (loggedInUserId && userGender) {
-             const genderLower = userGender.toLowerCase();
-             const oppositeGender = genderLower === "male" ? "female" : "male";
-             baseProfiles = baseProfiles.filter(p => p.gender && p.gender.toLowerCase() === oppositeGender);
-             finalProfiles = baseProfiles.sort(() => 0.5 - Math.random());
+            const genderLower = userGender.toLowerCase();
+            const oppositeGender = genderLower === "male" ? "female" : "male";
+            baseProfiles = baseProfiles.filter(p => p.gender && p.gender.toLowerCase() === oppositeGender);
+            finalProfiles = baseProfiles.sort(() => 0.5 - Math.random());
           } else {
-             // Mixture of groom and bride if not logged in
-             const males = baseProfiles.filter(p => p.gender && p.gender.toLowerCase() === "male").sort(() => 0.5 - Math.random());
-             const females = baseProfiles.filter(p => p.gender && p.gender.toLowerCase() === "female").sort(() => 0.5 - Math.random());
-             
-             const maxLength = Math.max(males.length, females.length);
-             for (let i = 0; i < maxLength; i++) {
-                 // Alternate: Bride then Groom
-                 if (i < females.length) finalProfiles.push(females[i]);
-                 if (i < males.length) finalProfiles.push(males[i]);
-             }
+            // Mixture of groom and bride if not logged in
+            const males = baseProfiles.filter(p => p.gender && p.gender.toLowerCase() === "male").sort(() => 0.5 - Math.random());
+            const females = baseProfiles.filter(p => p.gender && p.gender.toLowerCase() === "female").sort(() => 0.5 - Math.random());
+
+            const maxLength = Math.max(males.length, females.length);
+            for (let i = 0; i < maxLength; i++) {
+              // Alternate: Bride then Groom
+              if (i < females.length) finalProfiles.push(females[i]);
+              if (i < males.length) finalProfiles.push(males[i]);
+            }
           }
 
           setAllProfiles(finalProfiles);
@@ -102,8 +200,65 @@ const HighlightedProfilesSection = () => {
     return age;
   };
 
-  // Distinct denominations from the fetched profiles
-  const denominations = ["All", ...new Set(allProfiles.map(p => p.denomination).filter(Boolean))];
+  // Distinct denominations aligned with the edit profile master list
+  const denominations = [
+    "All",
+    "ACI - Anglican Church Of India",
+    "Adventist",
+    "AG - Assembly of God",
+    "Anglican",
+    "Anglo Indian",
+    "Apostolic",
+    "Baptist",
+    "Believers Church",
+    "Brethren",
+    "Catholic",
+    "Catholic - Knanaya",
+    "Catholic - Latin",
+    "Catholic - Malankara",
+    "Catholic - Roman",
+    "Catholic - Syro Malabar",
+    "Chaldean Syrian",
+    "Charismatic",
+    "Christian - Others",
+    "Church Of Christ",
+    "Church Of God",
+    "CNI - Church Of North India",
+    "Congregational",
+    "CPM - Ceylon Pentecostal Mission",
+    "CSI - Church Of South India",
+    "Don't wish to specify",
+    "Evangelist",
+    "Independent Church",
+    "Jacobite",
+    "Jacobite - Knanaya",
+    "Jehovah Shammah",
+    "Jehovah's Witnesses",
+    "Knanaya",
+    "Knanaya Catholic",
+    "Knanaya Jacobite",
+    "Latin Catholic",
+    "Lutheran",
+    "Malankara Catholic",
+    "Marthoma",
+    "Methodist",
+    "Moravian",
+    "Muslim - Sunni",
+    "Orthodox",
+    "Orthodox - Knanaya",
+    "Pentecost",
+    "Presbyterian",
+    "Protestant",
+    "Reformed",
+    "Revival",
+    "Salvation Army",
+    "Seventh-day Adventist",
+    "St. Thomas Evangelical",
+    "Syro Malabar",
+    "Syrian Catholic",
+    "TPM - The Pentecostal Mission",
+    "Other",
+  ];
 
   return (
     <section className="py-12 bg-gray-50 overflow-hidden" id="highlighted-profiles-section">
@@ -127,27 +282,39 @@ const HighlightedProfilesSection = () => {
               <p className="text-gray-600 text-sm mb-6">
                 Our hand-picked profiles, May this be your soulmate.
               </p>
-              
-              <div className="flex flex-col gap-2 mt-4">
+
+              <div className="flex flex-col gap-2 mt-4 search-dropdown-container relative">
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Search By Denomination</label>
-                <select 
-                  className="w-full p-3 rounded-xl border border-gray-200 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm transition-all"
+                <SearchDropdown
+                  placeholder="Choose denomination"
+                  options={denominations}
                   value={selectedDenomination}
-                  onChange={(e) => setSelectedDenomination(e.target.value)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  {denominations.map((den, i) => (
-                    <option key={i} value={den}>{den}</option>
-                  ))}
-                </select>
+                  onChange={setSelectedDenomination}
+                  searchTerm={denominationSearch}
+                  onSearchChange={setDenominationSearch}
+                  showDropdown={showDenominationDropdown}
+                  onToggleDropdown={setShowDenominationDropdown}
+                />
               </div>
 
               <button
                 onClick={() => {
                   window.scrollTo(0, 0);
                   const userId = localStorage.getItem("userId");
-                  if (userId) navigate("/user/user-all-profile");
-                  else navigate("/user/user-login");
+                  if (userId) {
+                    if (selectedDenomination === "All") {
+                      navigate("/user/show-all-profiles");
+                    } else {
+                      navigate("/show-searched-result", {
+                        state: {
+                          formData: { denomination: selectedDenomination },
+                          isGuest: !userId
+                        }
+                      });
+                    }
+                  } else {
+                    navigate("/user/user-login");
+                  }
                 }}
                 className="w-full flex items-center justify-center gap-2 bg-white font-bold py-3 px-4 rounded-xl shadow-sm transition-all uppercase text-sm tracking-wider mt-6 border"
                 style={{ borderColor: 'var(--primary-purple)', color: 'var(--primary-purple)' }}
@@ -173,7 +340,10 @@ const HighlightedProfilesSection = () => {
                 <i className="fa fa-users text-5xl text-gray-200 mb-4"></i>
                 <h3 className="text-xl font-bold text-gray-500">No profiles found</h3>
                 <p className="text-gray-400">Try selecting a different denomination</p>
-                <button onClick={() => setSelectedDenomination("All")} className="mt-4 font-bold underline" style={{ color: 'var(--primary-purple)' }}>Reset Filter</button>
+                <button onClick={() => {
+                  setSelectedDenomination("All");
+                  setDenominationSearch("All");
+                }} className="mt-4 font-bold underline" style={{ color: 'var(--primary-purple)' }}>Reset Filter</button>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -189,7 +359,7 @@ const HighlightedProfilesSection = () => {
                         alt={profile.userName}
                         className="w-full h-full object-cover blur-[3px] scale-110 group-hover:scale-105 transition-transform duration-500"
                       />
-                      
+
                       {/* Watermark Overlay on the Right Side */}
                       <div
                         style={{
@@ -222,7 +392,7 @@ const HighlightedProfilesSection = () => {
                         </span>
                       </div>
                       <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
-                      
+
                       {/* Gender Badge */}
                       <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm z-10 border border-gray-100">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-gray-600">
@@ -267,6 +437,24 @@ const HighlightedProfilesSection = () => {
 
         </div>
       </div>
+      
+      {/* Custom scrollbar styles for community dropdown */}
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #9333ea;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #7e22ce;
+        }
+      `}</style>
     </section>
   );
 };

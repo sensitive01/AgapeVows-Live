@@ -202,6 +202,10 @@ function App() {
         />
         <Route path="/user/user-service-page" element={<UserServicePage />} />
         <Route
+          path="/user/show-all-profiles"
+          element={<UserAllProfilePage />}
+        />
+        <Route
           path="/user/show-all-profiles/:searchContent"
           element={<UserAllProfilePage />}
         />
