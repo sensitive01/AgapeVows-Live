@@ -135,6 +135,8 @@ const userSchema = new mongoose.Schema(
       /* =========================
          CONTACT DETAILS
       ========================== */
+      contactEmail: { type: String, trim: true },
+      contactPhone: { type: String, trim: true },
       whatsapp: { type: String },
       facebook: { type: String },
       instagram: { type: String },

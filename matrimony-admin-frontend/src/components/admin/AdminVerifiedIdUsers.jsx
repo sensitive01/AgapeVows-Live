@@ -16,7 +16,8 @@ export default function AdminVerifiedIdUsers() {
   const [showModal, setShowModal] = useState(false);
   const [selectedProof, setSelectedProof] = useState(null);
 
-  const [sortOrder, setSortOrder] = useState("desc"); // "desc" or "asc"
+  const [sortField, setSortField] = useState("idVerifiedAt");
+  const [sortDirection, setSortDirection] = useState("desc"); // "desc" or "asc"
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,21 +48,154 @@ export default function AdminVerifiedIdUsers() {
       );
     }
     
-    // Sort by idVerifiedAt
+    // Sort by sortField
     filtered.sort((a, b) => {
-      const dateA = new Date(a.idVerifiedAt || a.updatedAt || 0);
-      const dateB = new Date(b.idVerifiedAt || b.updatedAt || 0);
-      return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+      if (sortField === "idVerifiedAt") {
+        const dateA = new Date(a.idVerifiedAt || a.updatedAt || 0);
+        const dateB = new Date(b.idVerifiedAt || b.updatedAt || 0);
+        return sortDirection === "desc" ? dateB - dateA : dateA - dateB;
+      }
+      
+      const aValue = a[sortField]?.toString().toLowerCase() || "";
+      const bValue = b[sortField]?.toString().toLowerCase() || "";
+
+      if (sortDirection === "asc") {
+        return aValue.localeCompare(bValue);
+      } else {
+        return bValue.localeCompare(aValue);
+      }
     });
 
     setFilteredUsers(filtered);
     setCurrentPage(1);
-  }, [searchTerm, users, sortOrder]);
+  }, [searchTerm, users, sortField, sortDirection]);
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const getSortIcon = (field) => {
+    if (sortField !== field) return <i className="fa fa-sort text-muted ms-1"></i>;
+    return sortDirection === "asc" ? (
+      <i className="fa fa-sort-up ms-1"></i>
+    ) : (
+      <i className="fa fa-sort-down ms-1"></i>
+    );
+  };
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentUsers = filteredUsers?.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+
+  const Pagination = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <nav
+        aria-label="Page navigation"
+        className="d-flex justify-content-center mt-4"
+      >
+        <ul className="pagination">
+          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+            <button
+              className="page-link"
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+          </li>
+
+          {startPage > 1 && (
+            <>
+              <li className="page-item">
+                <button className="page-link" onClick={() => setCurrentPage(1)}>
+                  1
+                </button>
+              </li>
+              {startPage > 2 && (
+                <li className="page-item disabled">
+                  <span className="page-link">...</span>
+                </li>
+              )}
+            </>
+          )}
+
+          {pageNumbers.map((number) => (
+            <li
+              key={number}
+              className={`page-item ${currentPage === number ? "active" : ""}`}
+            >
+              <button
+                className="page-link"
+                onClick={() => setCurrentPage(number)}
+                style={
+                  currentPage === number
+                    ? {
+                        backgroundColor: "#1a73e8",
+                        borderColor: "#1a73e8",
+                        color: "white",
+                      }
+                    : { color: "#1a73e8" }
+                }
+              >
+                {number}
+              </button>
+            </li>
+          ))}
+
+          {endPage < totalPages && (
+            <>
+              {endPage < totalPages - 1 && (
+                <li className="page-item disabled">
+                  <span className="page-link">...</span>
+                </li>
+              )}
+              <li className="page-item">
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(totalPages)}
+                >
+                  {totalPages}
+                </button>
+              </li>
+            </>
+          )}
+
+          <li
+            className={`page-item ${currentPage === totalPages ? "disabled" : ""
+              }`}
+          >
+            <button
+              className="page-link"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </li>
+        </ul>
+      </nav>
+    );
+  };
 
   const handleUndoVerification = async (userId) => {
     const confirmed = await confirmAction({
@@ -126,34 +260,6 @@ export default function AdminVerifiedIdUsers() {
     setShowModal(true);
   };
 
-  const Pagination = () => {
-    const pageNumbers = [];
-    for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
-    return (
-      <nav className="d-flex justify-content-center mt-4">
-        <ul className="pagination">
-          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-            <button className="page-link" onClick={() => setCurrentPage(prev => prev - 1)}>Previous</button>
-          </li>
-          {pageNumbers.map(n => (
-            <li key={n} className={`page-item ${currentPage === n ? "active" : ""}`}>
-              <button className="pagination-link" onClick={() => setCurrentPage(n)} style={{
-                padding: "8px 15px",
-                border: "1px solid #dee2e6",
-                background: currentPage === n ? "#7c3aed" : "#fff",
-                color: currentPage === n ? "#fff" : "#7c3aed",
-                margin: "0 2px",
-                borderRadius: "4px"
-              }}>{n}</button>
-            </li>
-          ))}
-          <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-            <button className="page-link" onClick={() => setCurrentPage(prev => prev + 1)}>Next</button>
-          </li>
-        </ul>
-      </nav>
-    );
-  };
 
   return (
     <NewLayout>
@@ -181,8 +287,11 @@ export default function AdminVerifiedIdUsers() {
                   <select
                     className="form-select w-50 w-md-auto"
                     style={{ minWidth: "260px" }}
-                    value={sortOrder}
-                    onChange={(e) => setSortOrder(e.target.value)}
+                    value={sortField === "idVerifiedAt" ? sortDirection : ""}
+                    onChange={(e) => {
+                      setSortField("idVerifiedAt");
+                      setSortDirection(e.target.value);
+                    }}
                   >
                     <option value="desc">Latest Approved First (Newest)</option>
                     <option value="asc">Oldest Approved First (Oldest)</option>
@@ -195,22 +304,42 @@ export default function AdminVerifiedIdUsers() {
               <table className="table table-hover align-middle">
                 <thead className="bg-light">
                     <tr>
-                      <th>S.No</th>
-                      <th>User Details</th>
-                      <th>AV ID</th>
-                      <th>ID Type</th>
-                      <th>ID Number</th>
-                      <th>Document</th>
-                      <th>Approved Date & Time</th>
-                      <th>Actions</th>
-                      <th>Profile</th>
+                      <th className="text-center">S.No</th>
+                      <th 
+                        className="cursor-pointer"
+                        onClick={() => handleSort("userName")}
+                      >
+                        User Details {getSortIcon("userName")}
+                      </th>
+                      <th 
+                        className="text-center cursor-pointer"
+                        onClick={() => handleSort("agwid")}
+                      >
+                        AV ID {getSortIcon("agwid")}
+                      </th>
+                      <th 
+                        className="text-center cursor-pointer"
+                        onClick={() => handleSort("idProofType")}
+                      >
+                        ID Type {getSortIcon("idProofType")}
+                      </th>
+                      <th className="text-center">ID Number</th>
+                      <th className="text-center">Document</th>
+                      <th 
+                        className="text-center cursor-pointer"
+                        onClick={() => handleSort("idVerifiedAt")}
+                      >
+                        Approved Date & Time {getSortIcon("idVerifiedAt")}
+                      </th>
+                      <th className="text-center">Actions</th>
+                      <th className="text-center">Profile</th>
                     </tr>
                 </thead>
                 <tbody>
                   {currentUsers.map((user, index) => (
                     <tr key={user._id}>
-                      <td>{indexOfFirstItem + index + 1}</td>
-                      <td>
+                      <td className="text-center">{indexOfFirstItem + index + 1}</td>
+                      <td className="align-middle">
                         <div className="d-flex align-items-center">
                           <img 
                             src={user.profileImage || "/assets/images/user-placeholder.png"} 
@@ -218,13 +347,13 @@ export default function AdminVerifiedIdUsers() {
                             style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", marginRight: "10px" }} 
                             onError={(e) => e.target.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
                           />
-                          <div>
+                          <div className="text-start">
                             <div className="fw-bold">{user.userName}</div>
                             <small className="text-muted">{user.userEmail}</small>
                           </div>
                         </div>
                       </td>
-                      <td>{user.agwid}</td>
+                      <td className="text-center">{user.agwid}</td>
                       {/* <td>
                         <span className={`badge ${
                           user.idVerificationStatus === 'Uploaded' ? 'bg-info' : 
@@ -233,9 +362,9 @@ export default function AdminVerifiedIdUsers() {
                           {user.idVerificationStatus || 'Pending'}
                         </span>
                       </td> */}
-                      <td>{user.idProofType || "N/A"}</td>
-                      <td>{user.idProofNumber || "N/A"}</td>
-                      <td>
+                      <td className="text-center">{user.idProofType || "N/A"}</td>
+                      <td className="text-center">{user.idProofNumber || "N/A"}</td>
+                      <td className="text-center">
                         {user.idProofDocument ? (
                           <button 
                             className="btn btn-sm btn-outline-info"
@@ -247,11 +376,11 @@ export default function AdminVerifiedIdUsers() {
                           <span className="text-muted small italic">Not Uploaded</span>
                         )}
                       </td>
-                      <td className="fw-semibold text-secondary">
+                      <td className="fw-semibold text-secondary text-center">
                         <div>{formatDate(user.idVerifiedAt || user.updatedAt)}</div>
                         <div className="text-muted small fw-normal mt-1">{formatTime(user.idVerifiedAt || user.updatedAt)}</div>
                       </td>
-                      <td>
+                      <td className="text-center">
                         <button 
                           className="btn btn-sm btn-primary rounded-pill px-3 text-light"
                           disabled={processingUsers.has(user._id)}
@@ -260,7 +389,7 @@ export default function AdminVerifiedIdUsers() {
                           {processingUsers.has(user._id) ? "..." : "Undo"}
                         </button>
                       </td>
-                      <td>
+                      <td className="text-center">
                         <Link 
                           to={`/admin/new-user/${user._id}`} 
                           target="_blank" 

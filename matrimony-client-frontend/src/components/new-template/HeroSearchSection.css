@@ -71,12 +71,11 @@
 
 /* Left Side Content */
 .hero-text-block {
-    flex: 0 0 65%;
-    min-width: 65%;
+    flex: 0 0 50%;
+    min-width: 50%;
 
     text-align: left;
     color: #fff;
-
 }
 
 .hero-text-block {
@@ -485,6 +484,6 @@
 
 /* 🔥 OPTIONAL - full stretch feel */
 .hero-content-wrapper {
-    max-width: 1300px;
+    max-width: 100%;
     margin: 0 auto;
 }

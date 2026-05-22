@@ -404,6 +404,7 @@ const getAllUsersData = async (req, res) => {
           gender: 1,
           city: 1,
           profileImage: 1,
+          agwid: 1,
         }
       )
       .sort({ createdAt: -1 });
@@ -709,6 +710,7 @@ const getDeletedUsers = async (req, res) => {
           city: 1,
           profileImage: 1,
           deletedAt: 1,
+          agwid: 1,
         }
       )
       .sort({ deletedAt: -1 });
@@ -744,6 +746,7 @@ const getDeactivatedUsers = async (req, res) => {
           whatsapp: 1,
           alternateMobile: 1,
           currentAddress: 1,
+          agwid: 1,
         }
       )
       .sort({ deactivatedAt: -1 });
@@ -1148,6 +1151,40 @@ const rejectContactUpdate = async (req, res) => {
   }
 };
 
+const deactivateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deactivatedUser = await userModel.findByIdAndUpdate(
+      id,
+      {
+        profileStatus: "Deactivated",
+        deactivatedAt: new Date(),
+        deactivationReason: "Deactivated by Admin",
+      },
+      { new: true }
+    );
+
+    if (!deactivatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User deactivated successfully",
+    });
+  } catch (err) {
+    console.error("Error deactivating user:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
 module.exports = {
   getPaidUsersData,
   approveNewUser,
@@ -1162,6 +1199,7 @@ module.exports = {
   updateUser,
   getDeletedUsers,
   getDeactivatedUsers,
+  deactivateUser,
   verifyIdProof,
   verifyMobile,
   registerUser,

@@ -484,7 +484,7 @@ const UserSearchResult = () => {
                                 {user.idVerificationStatus === 'Verified' && (
                                   <div className="membership-badge badge-verified badge-mini shadow-sm">
                                     <i className="fa fa-check-circle badge-icon"></i>
-                                    <span className="badge-text">ID Verified</span>
+                                    <span className="badge-text">Verified</span>
                                   </div>
                                 )}
                                 {user.isPhoneVerified && (

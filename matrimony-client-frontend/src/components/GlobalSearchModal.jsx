@@ -727,8 +727,8 @@ const GlobalSearchModal = () => {
         <MainLayout />
       </div>
 
-      <div style={{ paddingTop: "20px" }}>
-        <div className="db">
+      <div style={{ paddingTop: "85px" }}>
+        <div className="db" style={{ padding: "0 0 50px 0" }}>
           <div
             className="container-fluid"
             style={{ paddingLeft: 0, paddingRight: 0 }}
@@ -739,8 +739,8 @@ const GlobalSearchModal = () => {
                 style={{ paddingLeft: "15px", paddingRight: "15px" }}
               >
                 {/* Main Content - Single Section */}
-                <div className="bg-white rounded-lg shadow-md">
-                  <div className="p-3 md:p-4">
+                <div className="w-full max-w-7xl mx-auto bg-white rounded-xl shadow-lg border border-gray-100">
+                  <div className="p-4 md:p-6 lg:p-8">
                     {/* Heading */}
                     <div className="flex items-center justify-between pb-4 border-b border-gray-200 mb-6">
                       <div className="flex items-center gap-3">
@@ -920,14 +920,15 @@ ${activeTab === "quick"
 
                       {/* Regular Search Fields */}
                       {activeTab === "regular" && (
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                          {/* Left Column: Age, Mother Tongue, Caste, Education */}
+                          <div className="space-y-4">
                             {/* Age */}
-                            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-0">
-                              <label className="w-full md:w-1/3 text-gray-700 font-medium text-xs md:text-sm">
+                            <div className="flex flex-col gap-2">
+                              <label className="text-gray-700 font-medium text-xs md:text-sm">
                                 Age
                               </label>
-                              <div className="flex items-center gap-2 w-full md:w-2/3">
+                              <div className="flex items-center gap-2 w-full">
                                 <CustomSelect
                                   className="w-full"
                                   options={AGE_FROM_OPTIONS}
@@ -953,12 +954,63 @@ ${activeTab === "quick"
                               </div>
                             </div>
 
+                            {/* Mother Tongue */}
+                            <div className="flex flex-col gap-2">
+                              <label className="text-gray-700 font-medium text-xs md:text-sm">
+                                Mother Tongue
+                              </label>
+                              <CustomSelect
+                                className="w-full"
+                                options={MOTHER_TONGUES}
+                                value={formData.motherTongue}
+                                onChange={(val) =>
+                                  handleInputChange("motherTongue", val)
+                                }
+                                placeholder="Select"
+                              />
+                            </div>
+
+                            {/* Caste */}
+                            <div className="flex flex-col gap-2">
+                              <label className="text-gray-700 font-medium text-xs md:text-sm">
+                                Caste
+                              </label>
+                              <CustomSelect
+                                className="w-full"
+                                options={CASTES}
+                                value={formData.caste}
+                                onChange={(val) =>
+                                  handleInputChange("caste", val)
+                                }
+                                placeholder="Select"
+                              />
+                            </div>
+
+                            {/* Education */}
+                            <div className="flex flex-col gap-2">
+                              <label className="text-gray-700 font-medium text-xs md:text-sm">
+                                Education
+                              </label>
+                              <CustomSelect
+                                className="w-full"
+                                options={EDUCATIONS}
+                                value={formData.education}
+                                onChange={(val) =>
+                                  handleInputChange("education", val)
+                                }
+                                placeholder="Select"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Right Column: Height, Marital Status, Denomination, Country */}
+                          <div className="space-y-4">
                             {/* Height */}
-                            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-0">
-                              <label className="w-full md:w-1/3 text-gray-700 font-medium text-xs md:text-sm">
+                            <div className="flex flex-col gap-2">
+                              <label className="text-gray-700 font-medium text-xs md:text-sm">
                                 Height
                               </label>
-                              <div className="flex items-center gap-2 w-full md:w-2/3">
+                              <div className="flex items-center gap-2 w-full">
                                 <CustomSelect
                                   className="w-full"
                                   options={heightOptions}
@@ -981,87 +1033,66 @@ ${activeTab === "quick"
                               </div>
                             </div>
 
-                            {/* Mother Tongue */}
-                            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-0">
-                              <label className="w-full md:w-1/3 text-gray-700 font-medium text-xs md:text-sm">
-                                Mother Tongue
+                            {/* Marital Status */}
+                            <div className="flex flex-col gap-2">
+                              <label className="text-gray-700 font-medium text-xs md:text-sm">
+                                Marital Status
                               </label>
                               <CustomSelect
-                                className="w-full md:w-2/3"
-                                options={MOTHER_TONGUES}
-                                value={formData.motherTongue}
-                                onChange={(val) =>
-                                  handleInputChange("motherTongue", val)
+                                className="w-full"
+                                options={[
+                                  "Any",
+                                  "Never Married",
+                                  "Separated",
+                                  "Divorced",
+                                  "Widow / Widower",
+                                  "Awaiting Divorce",
+                                  "Annulled",
+                                ]}
+                                value={
+                                  Array.isArray(formData.maritalStatus)
+                                    ? formData.maritalStatus[0]
+                                    : formData.maritalStatus
                                 }
+                                onChange={(val) => {
+                                  if (val === "Any") {
+                                    const allStatuses = [
+                                      "Any",
+                                      "Never Married",
+                                      "Separated",
+                                      "Divorced",
+                                      "Widow / Widower",
+                                      "Awaiting Divorce",
+                                      "Annulled",
+                                    ];
+                                    handleInputChange(
+                                      "maritalStatus",
+                                      allStatuses,
+                                    );
+                                  } else {
+                                    handleInputChange(
+                                      "maritalStatus",
+                                      val ? [val] : [],
+                                    );
+                                  }
+                                }}
                                 placeholder="Select"
                               />
                             </div>
-                          </div>
 
-                          {/* Marital Status */}
-                          <div className="flex flex-col md:flex-row items-center mt-4 gap-2 md:gap-0">
-                            <label className="w-full md:w-1/3 text-gray-700 font-medium text-xs md:text-sm">
-                              Marital Status
-                            </label>
-                            <CustomSelect
-                              className="w-full md:w-2/3"
-                              options={[
-                                "Any",
+                            {/* Child Status - Conditional Display nested right below Marital Status in the right column */}
+                            {formData.maritalStatus &&
+                              formData.maritalStatus.length > 0 &&
+                              !formData.maritalStatus.includes(
                                 "Never Married",
-                                "Separated",
-                                "Divorced",
-                                "Widow / Widower",
-                                "Awaiting Divorce",
-                                "Annulled",
-                              ]}
-                              value={
-                                Array.isArray(formData.maritalStatus)
-                                  ? formData.maritalStatus[0]
-                                  : formData.maritalStatus
-                              }
-                              onChange={(val) => {
-                                if (val === "Any") {
-                                  const allStatuses = [
-                                    "Any",
-                                    "Never Married",
-                                    "Separated",
-                                    "Divorced",
-                                    "Widow / Widower",
-                                    "Awaiting Divorce",
-                                    "Annulled",
-                                  ];
-                                  handleInputChange(
-                                    "maritalStatus",
-                                    allStatuses,
-                                  );
-                                } else {
-                                  handleInputChange(
-                                    "maritalStatus",
-                                    val ? [val] : [],
-                                  );
-                                }
-                              }}
-                              placeholder="Select"
-                            />
-                          </div>
-
-                          {/* Child Status - Conditional Display */}
-                          {formData.maritalStatus &&
-                            formData.maritalStatus.length > 0 &&
-                            !formData.maritalStatus.includes(
-                              "Never Married",
-                            ) && (
-                              <div className="flex flex-col md:flex-row items-start mt-4 gap-2 md:gap-0">
-                                <label className="w-full md:w-1/6 text-gray-700 font-medium pt-0 md:pt-1 text-xs md:text-sm">
-                                  Child Status
-                                </label>
-                                <div className="w-full md:w-5/6 flex flex-wrap gap-4">
-                                  <div className="flex items-center gap-2">
-                                    <label className="text-xs md:text-sm text-gray-600">
+                              ) && (
+                                <div className="bg-purple-50/50 p-3 rounded-lg border border-purple-100 flex flex-col gap-3">
+                                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                                    <label className="text-xs text-gray-700 font-medium whitespace-nowrap min-w-[100px]">
                                       No. of Children
                                     </label>
                                     <select
-                                      className="border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:border-purple-500"
+                                      className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm bg-white outline-none focus:border-purple-500"
                                       value={formData.numberOfChildren}
                                       onChange={(e) =>
                                         handleInputChange(
@@ -1077,12 +1108,12 @@ ${activeTab === "quick"
                                       <option value="3+">3+</option>
                                     </select>
                                   </div>
-                                  <div className="flex items-center gap-2">
-                                    <label className="text-xs md:text-sm text-gray-600">
-                                      Children Living Status
+                                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                                    <label className="text-xs text-gray-700 font-medium whitespace-nowrap min-w-[100px]">
+                                      Children Status
                                     </label>
                                     <select
-                                      className="border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:border-purple-500"
+                                      className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm bg-white outline-none focus:border-purple-500"
                                       value={formData.childrenStatus}
                                       onChange={(e) =>
                                         handleInputChange(
@@ -1101,26 +1132,9 @@ ${activeTab === "quick"
                                     </select>
                                   </div>
                                 </div>
-                              </div>
-                            )}
+                              )}
 
-                          {/* More Fields */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                            <div className="flex flex-col gap-2">
-                              <label className="text-gray-700 font-medium text-xs md:text-sm">
-                                Caste
-                              </label>
-                              <CustomSelect
-                                className="w-full"
-                                options={CASTES}
-                                value={formData.caste}
-                                onChange={(val) =>
-                                  handleInputChange("caste", val)
-                                }
-                                placeholder="Select"
-                              />
-                            </div>
-
+                            {/* Denomination */}
                             <div className="flex flex-col gap-2">
                               <label className="text-gray-700 font-medium text-xs md:text-sm">
                                 Denomination
@@ -1136,21 +1150,7 @@ ${activeTab === "quick"
                               />
                             </div>
 
-                            <div className="flex flex-col gap-2">
-                              <label className="text-gray-700 font-medium text-xs md:text-sm">
-                                Education
-                              </label>
-                              <CustomSelect
-                                className="w-full"
-                                options={EDUCATIONS}
-                                value={formData.education}
-                                onChange={(val) =>
-                                  handleInputChange("education", val)
-                                }
-                                placeholder="Select"
-                              />
-                            </div>
-
+                            {/* Country */}
                             <div className="flex flex-col gap-2">
                               <label className="text-gray-700 font-medium text-xs md:text-sm">
                                 Country
@@ -1164,10 +1164,6 @@ ${activeTab === "quick"
                                 }
                                 placeholder="Select"
                               />
-                            </div>
-
-                            <div className="flex flex-col gap-2">
-                              {/* Advanced Search uses Country, State, District/City logic */}
                             </div>
                           </div>
                         </div>

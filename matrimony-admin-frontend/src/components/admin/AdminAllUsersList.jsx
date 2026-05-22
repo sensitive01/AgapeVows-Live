@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
-import { getAllUserData, deleteUserById, exportUsersData } from "../../api/service/adminServices";
+import { getAllUserData, deleteUserById, exportUsersData, deactivateUserById } from "../../api/service/adminServices";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { confirmAction, showAlert } from "../../utils/alertService";
@@ -167,6 +167,44 @@ const AdminAllUsersList = () => {
     }
   };
 
+  const handleDeactivate = async (id) => {
+    const confirmed = await confirmAction({
+      title: "Deactivate User?",
+      text: "Are you sure you want to deactivate this user?",
+      confirmButtonText: "Yes, Deactivate",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      const response = await deactivateUserById(id);
+
+      if (response.status === 200) {
+        showAlert({
+          title: "Deactivated!",
+          text: "User has been deactivated successfully.",
+          icon: "success",
+        });
+
+        // Remove from UI instantly
+        setUsers((prevUsers) =>
+          prevUsers.filter((user) => user._id !== id)
+        );
+
+        setFilteredUsers((prevUsers) =>
+          prevUsers.filter((user) => user._id !== id)
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      showAlert({
+        title: "Error",
+        text: "Deactivation failed. Please try again.",
+        icon: "error",
+      });
+    }
+  };
+
   const handleEdit = (id) => {
     navigate(`/admin/edit-user/${id}`);
   };
@@ -311,8 +349,8 @@ const AdminAllUsersList = () => {
           <div className="box-com box-qui box-lig box-tab">
             <div className="tit d-flex justify-content-between align-items-center">
               <div>
-                <h3>Approved Users</h3>
-                <p>All approved user profiles ({filteredUsers.length} users)</p>
+                <h3>All Users</h3>
+                <p>All user profiles ({filteredUsers.length} users)</p>
               </div>
               <div className="d-flex gap-2">
                 <button
@@ -401,6 +439,12 @@ const AdminAllUsersList = () => {
                         PROFILE {getSortIcon("userName")}
                       </th>
                       <th
+                        className="cursor-pointer border-0"
+                        onClick={() => handleSort("agwid")}
+                      >
+                        AV ID {getSortIcon("agwid")}
+                      </th>
+                      <th
                         className="cursor-pointer d-none d-md-table-cell border-0"
                         onClick={() => handleSort("userMobile")}
                       >
@@ -412,20 +456,7 @@ const AdminAllUsersList = () => {
                       >
                         CITY {getSortIcon("city")}
                       </th>
-                      {/* <th style={tableStyles.th}>Plan Start</th>
-                      <th style={tableStyles.th}>Expiry Date</th>
-                      <th
-                        style={tableStyles.th}
-                        onClick={() => handleSort("payment")}
-                      >
-                        Payment {getSortIcon("payment")}
-                      </th>
-                      <th
-                        style={tableStyles.th}
-                        onClick={() => handleSort("planType")}
-                      >
-                        Plan Type {getSortIcon("planType")}
-                      </th> */}
+                      <th className="text-center border-0">VIEW PROFILE</th>
                       <th className="text-center border-0">MORE</th>
                     </tr>
                   </thead>
@@ -489,6 +520,9 @@ const AdminAllUsersList = () => {
                                 </div>
                               </div>
                             </td>
+                            <td className="align-middle border-0">
+                              <span className="fw-bold text-primary">{user.agwid || "N/A"}</span>
+                            </td>
                             <td className="align-middle d-none d-md-table-cell border-0">
                               {user.userMobile}
                             </td>
@@ -538,6 +572,17 @@ const AdminAllUsersList = () => {
                               </span>
                             </td> */}
                             <td className="align-middle text-center border-0">
+                              <button
+                                className="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  window.open(`/admin/new-user/${user._id}`, '_blank');
+                                }}
+                              >
+                                View Profile
+                              </button>
+                            </td>
+                            <td className="align-middle text-center border-0">
                               <div className="dropdown position-relative">
                                 <button
                                   type="button"
@@ -570,7 +615,7 @@ const AdminAllUsersList = () => {
                                   >
                                     <li>
                                       <a
-                                        className="dropdown-item"
+                                        className="dropdown-item text-primary"
                                         href="#"
                                         onClick={(e) => {
                                           e.preventDefault();
@@ -595,6 +640,21 @@ const AdminAllUsersList = () => {
                                       >
                                         <i className="fa fa-trash me-2"></i>
                                         Delete
+                                      </a>
+                                    </li>
+
+                                    <li>
+                                      <a
+                                        className="dropdown-item text-warning"
+                                        href="#"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          setOpenDropdown(null);
+                                          handleDeactivate(user._id);
+                                        }}
+                                      >
+                                        <i className="fa fa-ban me-2"></i>
+                                        Deactivate
                                       </a>
                                     </li>
 
@@ -633,7 +693,7 @@ const AdminAllUsersList = () => {
                                         onClick={(e) => {
                                           e.preventDefault();
                                           setOpenDropdown(null);
-                                          navigate(`/admin/new-user/${user._id}`);
+                                          window.open(`/admin/new-user/${user._id}`, '_blank');
                                         }}
                                       >
                                         <i className="fa fa-user me-2"></i>View

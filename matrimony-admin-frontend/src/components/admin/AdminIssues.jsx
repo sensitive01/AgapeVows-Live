@@ -270,6 +270,9 @@ const AdminIssues = () => {
   const [status, setStatus] = useState("Pending");
   const [success, setSuccess] = useState("");
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+
   // ================= FETCH =================
   const fetchIssues = async () => {
     try {
@@ -359,6 +362,115 @@ const AdminIssues = () => {
     }
   };
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentIssues = issues.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(issues.length / itemsPerPage);
+
+  const Pagination = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <nav
+        aria-label="Page navigation"
+        className="d-flex justify-content-center mt-4"
+      >
+        <ul className="pagination">
+          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+            <button
+              className="page-link"
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+          </li>
+
+          {startPage > 1 && (
+            <>
+              <li className="page-item">
+                <button className="page-link" onClick={() => setCurrentPage(1)}>
+                  1
+                </button>
+              </li>
+              {startPage > 2 && (
+                <li className="page-item disabled">
+                  <span className="page-link">...</span>
+                </li>
+              )}
+            </>
+          )}
+
+          {pageNumbers.map((number) => (
+            <li
+              key={number}
+              className={`page-item ${currentPage === number ? "active" : ""}`}
+            >
+              <button
+                className="page-link"
+                onClick={() => setCurrentPage(number)}
+                style={
+                  currentPage === number
+                    ? {
+                        backgroundColor: "#1a73e8",
+                        borderColor: "#1a73e8",
+                        color: "white",
+                      }
+                    : { color: "#1a73e8" }
+                }
+              >
+                {number}
+              </button>
+            </li>
+          ))}
+
+          {endPage < totalPages && (
+            <>
+              {endPage < totalPages - 1 && (
+                <li className="page-item disabled">
+                  <span className="page-link">...</span>
+                </li>
+              )}
+              <li className="page-item">
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(totalPages)}
+                >
+                  {totalPages}
+                </button>
+              </li>
+            </>
+          )}
+
+          <li
+            className={`page-item ${currentPage === totalPages ? "disabled" : ""
+              }`}
+          >
+            <button
+              className="page-link"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </li>
+        </ul>
+      </nav>
+    );
+  };
+
   return (
     <NewLayout>
       <div
@@ -411,10 +523,10 @@ const AdminIssues = () => {
               </thead>
 
               <tbody>
-                {issues.length > 0 ? (
-                  issues.map((issue, index) => (
+                {currentIssues.length > 0 ? (
+                  currentIssues.map((issue, index) => (
                     <tr key={issue._id}>
-                      <td>{index + 1}</td>
+                      <td>{indexOfFirstItem + index + 1}</td>
 
                       <td>{issue.userName || "User"}</td>
 
@@ -503,6 +615,9 @@ const AdminIssues = () => {
             </table>
           </div>
         </div>
+        
+        {/* Pagination */}
+        {totalPages > 1 && <Pagination />}
 
         {/* MODAL */}
         <div className="modal fade" id="issueModal">

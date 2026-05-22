@@ -347,7 +347,7 @@ const MoreDetails = () => {
                   )}
                   {userInfo?.idVerificationStatus === 'Verified' && (
                     <div className="badge bg-success border border-white shadow-sm" style={{ padding: '6px 12px', fontSize: '11px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <i className="fa fa-check-circle"></i> ID VERIFIED
+                      <i className="fa fa-check-circle"></i> VERIFIED
                     </div>
                   )}
                   {userInfo?.isPhoneVerified && (
@@ -389,29 +389,21 @@ const MoreDetails = () => {
               {/* Contact Details in LEFT COLUMN */}
               {showContact && (
                 <div style={{ width: "100%", marginTop: "10px", display: "flex", flexDirection: "column", gap: "10px" }}>
-                  {userInfo?.contactPersonName && (
-                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
-                      👤 Name: {userInfo?.contactPersonName}
-                    </div>
-                  )}
+                  <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                    👤 Name: {userInfo?.contactPersonName || "Not specified"}
+                  </div>
+                  
+                  <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                    🤝 Relationship: {userInfo?.relationship || "Not specified"}
+                  </div>
 
-                  {userInfo?.relationship && (
-                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
-                      🤝 Relationship: {userInfo?.relationship}
-                    </div>
-                  )}
+                  <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                    📞 Phone Number: {userInfo?.contactPhone || "Not specified"}
+                  </div>
 
-                  {userInfo?.alternateMobile && (
-                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
-                      📞 Phone Number: {userInfo?.alternateMobile}
-                    </div>
-                  )}
-
-                  {userInfo?.userEmail && (
-                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
-                      📧 Email: {userInfo?.userEmail}
-                    </div>
-                  )}
+                  <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                    📧 Email: {userInfo?.contactEmail || "Not specified"}
+                  </div>
                 </div>
               )}
 
@@ -460,7 +452,7 @@ const MoreDetails = () => {
                   )}
                   {userInfo?.idVerificationStatus === 'Verified' && (
                     <span className="badge rounded-pill bg-success" style={{ fontSize: '12px', padding: '5px 12px' }}>
-                      <i className="fa fa-check-circle me-1"></i>ID Verified
+                      <i className="fa fa-check-circle me-1"></i>Verified
                     </span>
                   )}
                   {userInfo?.isPhoneVerified && (

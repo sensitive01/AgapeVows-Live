@@ -9,6 +9,7 @@ import profImage from "../assets/images/blue-circle-with-white-user_78370-4707.a
 import LayoutComponent from "../components/layouts/LayoutComponent";
 import { showAlert } from "../utils/alertService";
 import MembershipBadge from "../components/common/MembershipBadge";
+import MaskedIdGuide from "../assets/images/Masked_ID_Guide.pdf";
 
 // Helper Components
 const InfoRow = ({ label, value }) => {
@@ -272,22 +273,26 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
       }}>
         {/* Left Side: Info */}
         <div style={{
-          flex: "1 1 300px",
+          flex: "1 1 400px",
           padding: "40px",
           background: "#f8faff",
           borderRight: "1px solid #eee",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
-          textAlign: "center"
+          alignItems: "flex-start",
+          textAlign: "left"
         }}>
-          <div style={{ marginBottom: "30px" }}>
-             <img src="/images/verify-id-icon.png" alt="Verify ID" style={{ width: "120px" }} onError={(e) => e.target.src = "https://cdn-icons-png.flaticon.com/512/7518/7518532.png"} />
-          </div>
-          <h4 style={{ fontWeight: "700", color: "#333", marginBottom: "15px" }}>Verify Your Profile</h4>
-          <p style={{ color: "#666", fontSize: "0.9rem", lineHeight: "1.6", marginBottom: "30px" }}>
-            AgapeVows.com requires proof of the candidate's identity as per the advisory on the functioning of matrimonial websites. Your ID proof is in the safe hands of us and we won't divulge it to any third party.
+          <h3 style={{ fontWeight: "700", color: "#333", marginBottom: "20px", fontSize: "1.5rem" }}>Verify Your Profile</h3>
+          <p style={{ color: "#555", fontSize: "1rem", lineHeight: "1.4", marginBottom: "25px", textAlign: "justify" }}>
+            To ensure user authenticity and platform safety, AgapeVows requires all users to upload a masked version of a valid government ID, in compliance with the Indian IT Act 2000. Your ID information is securely handled and will not be shared with any third party. This guide outlines how to correctly mask and upload your ID while safeguarding your sensitive details. Masking your ID helps protect it from misuse, even in the unlikely event of unauthorized access. Please <a href={MaskedIdGuide} target="_blank" rel="noopener noreferrer" style={{ color: "#7c3aed", fontWeight: "600", textDecoration: "underline" }}>click here</a> to download the ID masking guide.
           </p>
+          <h5 style={{ fontWeight: "700", color: "#333", marginBottom: "15px" }}>Important Notes</h5>
+          <ul style={{ color: "#555", fontSize: "0.95rem", lineHeight: "1.7", listStyleType: "disc", paddingLeft: "20px", marginBottom: "30px" }}>
+            <li style={{ marginBottom: "10px" }}>1. Do <strong>NOT</strong> upload unmasked IDs.</li>
+            <li style={{ marginBottom: "10px" }}>2. Ensure the image is clear and readable.</li>
+            <li style={{ marginBottom: "10px" }}>3. Files with improper masking may be rejected.</li>
+            <li>4. Do <strong>NOT</strong> upload fake IDs. If found, your account may be suspended and banned from AgapeVows.</li>
+          </ul>
           <div style={{ marginTop: "auto", textAlign: "left", width: "100%", fontSize: "0.85rem", color: "#888" }}>
             <p className="mb-1"><i className="fa fa-envelope me-2" style={{ color: "#7c3aed" }}></i> idproof@agapevows.com</p>
             <p className="mb-0"><i className="fa fa-phone me-2" style={{ color: "#7c3aed" }}></i> +91 9995777037</p>
@@ -305,7 +310,7 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
           </div>
 
           <p style={{ color: "#777", fontSize: "0.85rem", marginBottom: "25px", borderTop: "1px solid #eee", paddingTop: "15px" }}>
-            Upload your government approved identification proof i.e <strong>Passport / Voter ID / Aadhaar (Both Sides), or Driving License (Front Side)</strong> along with your name, date of birth, and address, immediately to avoid deactivation without notice.
+            Upload your government approved identification proof i.e <strong>Passport or Aadhaar (Both Sides)</strong> along with your name, date of birth, and address, immediately to avoid deactivation without notice.
           </p>
 
           <div className="row g-3 mb-4">
@@ -319,9 +324,7 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
               >
                 <option value="">Select ID Type</option>
                 <option value="Aadhar Number">Aadhar Number</option>
-                <option value="Driving License">Driving License</option>
                 <option value="Passport">Passport</option>
-                <option value="Voter ID">Voter ID</option>
               </select>
             </div>
             <div className="col-md-6">
@@ -497,10 +500,10 @@ const UserProfilePage = () => {
         "annualIncome",
       ],
       contact: [
-        "userMobile",
+        "contactPhone",
         "alternateMobile",
         "landlineNumber",
-        "userEmail",
+        "contactEmail",
         "currentAddress",
         "permanentAddress",
         "city",
@@ -817,7 +820,7 @@ const UserProfilePage = () => {
                           {userInfo?.idVerificationStatus === 'Verified' && (
                             <div className="membership-badge badge-verified badge-mini shadow-sm">
                               <i className="fa fa-check-circle badge-icon"></i>
-                              <span className="badge-text">ID Verified</span>
+                              <span className="badge-text">Verified</span>
                             </div>
                           )}
                           {userInfo?.isPhoneVerified && (
@@ -887,7 +890,7 @@ const UserProfilePage = () => {
                             >
                               <i className="fa fa-phone" style={{ color: "#7c3aed" }}></i>
                               <span style={{ fontWeight: "500", wordBreak: "break-word" }}>
-                                {userInfo?.userMobile || "Not provided"}
+                                {userInfo?.contactPhone || "Not provided"}
                               </span>
                             </p>
 
@@ -905,7 +908,7 @@ const UserProfilePage = () => {
                             >
                               <i className="fa fa-envelope" style={{ color: "#7c3aed" }}></i>
                               <span style={{ fontWeight: "500", wordBreak: "break-word" }}>
-                                {userInfo?.userEmail || "Not provided"}
+                                {userInfo?.contactEmail || "Not provided"}
                               </span>
                             </p>
 
@@ -968,7 +971,7 @@ const UserProfilePage = () => {
                                   }}
                                 >
                                   <i className="fa fa-check-circle"></i>
-                                  ID Verified
+                                  Verified
                                 </span>
                               )}
 
@@ -1274,17 +1277,14 @@ const UserProfilePage = () => {
                     />
                     <InfoRow
                       label="Mobile Number"
-                      value={userInfo?.userMobile}
+                      value={userInfo?.contactPhone}
                     />
-                    <InfoRow
-                      label="Alternate Mobile"
-                      value={userInfo?.alternateMobile}
-                    />
+
                     <InfoRow
                       label="Landline"
                       value={userInfo?.landlineNumber}
                     />
-                    <InfoRow label="Email" value={userInfo?.userEmail} />
+                    <InfoRow label="Email" value={userInfo?.contactEmail} />
                     <InfoRow
                       label="Current Address"
                       value={userInfo?.currentAddress}

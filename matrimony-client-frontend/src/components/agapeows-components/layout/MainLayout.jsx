@@ -360,7 +360,7 @@ const MainLayout = () => {
                     if (newTab) newTab.focus();
                   }
                 }}
-                className={`transition-all duration-200 font-medium py-2 ${location.pathname === "/about-us"
+                className={`hover-purple-shadow transition-all duration-200 font-medium py-2 ${location.pathname === "/about-us"
                   ? "text-purple-600 font-bold border-b-2 border-purple-600"
                   : "text-gray-800 hover:text-purple-600"
                   }`}
@@ -380,7 +380,7 @@ const MainLayout = () => {
                     if (newTab) newTab.focus();
                   }
                 }}
-                className={`group flex items-center space-x-1.5 font-medium transition-all duration-200 py-2 ${location.pathname === "/user/find-matches"
+                className={`hover-purple-shadow group flex items-center space-x-1.5 font-medium transition-all duration-200 py-2 ${location.pathname === "/user/find-matches"
                   ? "text-purple-600 font-bold border-b-2 border-purple-600"
                   : "text-gray-800 hover:text-purple-600"
                   }`}
@@ -400,7 +400,7 @@ const MainLayout = () => {
                 onMouseLeave={() => setIsExploreDropdownVisible(false)}
               >
                 <button
-                  className={`transition-all duration-200 font-medium flex items-center py-2 ${location.pathname.includes("/personalized-matrimony") ||
+                  className={`hover-purple-shadow transition-all duration-200 font-medium flex items-center py-2 ${location.pathname.includes("/personalized-matrimony") ||
                     location.pathname.includes("/nri-matrimony") ||
                     location.pathname.includes("/church-partner") ||
                     location.pathname.includes("/matrimonial-advisor") ||
@@ -452,7 +452,7 @@ const MainLayout = () => {
                     if (newTab) newTab.focus();
                   }
                 }}
-                className={`transition-all duration-200 font-medium py-2 ${location.pathname === "/user/user-plan-selection"
+                className={`hover-purple-shadow transition-all duration-200 font-medium py-2 ${location.pathname === "/user/user-plan-selection"
                   ? "text-purple-600 font-bold border-b-2 border-purple-600"
                   : "text-gray-800 hover:text-purple-600"
                   }`}
@@ -466,7 +466,7 @@ const MainLayout = () => {
                 onMouseLeave={() => setIsHelpDropdownVisible(false)}
               >
                 <button
-                  className={`transition-all duration-200 font-medium flex items-center py-2 ${location.pathname === "/help-support" ||
+                  className={`hover-purple-shadow transition-all duration-200 font-medium flex items-center py-2 ${location.pathname === "/help-support" ||
                     location.pathname === "/report-issue"
                     ? "text-purple-600 font-bold border-b-2 border-purple-600"
                     : "text-gray-800 hover:text-purple-600"

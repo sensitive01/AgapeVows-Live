@@ -145,6 +145,11 @@ export const permanentDeleteUserById = async (userId) => {
   return await adminInstance.delete(`/permanent-delete-user/${userId}`);
 };
 
+// Deactivate User
+export const deactivateUserById = async (userId) => {
+  return await adminInstance.put(`/deactivate-user/${userId}`);
+};
+
 // Remove User Subscription
 export const removeUserSubscription = async (userId) => {
   return await adminInstance.put(`/remove-subscription/${userId}`);

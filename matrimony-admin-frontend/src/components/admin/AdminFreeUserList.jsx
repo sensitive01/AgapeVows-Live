@@ -14,7 +14,7 @@ const AdminFreeUserList = () => {
   const [filterPlan, setFilterPlan] = useState("all");
   const [filterPayment, setFilterPayment] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(5);
   const [openDropdown, setOpenDropdown] = useState(null);
   const navigate = useNavigate();
 

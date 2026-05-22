@@ -147,6 +147,110 @@ const AdminDeletedUsers = () => {
   const currentItems = filteredUsers?.slice(indexOfFirstItem, indexOfLastItem) || [];
   const totalPages = Math.ceil((filteredUsers?.length || 0) / itemsPerPage);
 
+  const Pagination = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <nav
+        aria-label="Page navigation"
+        className="d-flex justify-content-center mt-4"
+      >
+        <ul className="pagination">
+          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+            <button
+              className="page-link"
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+          </li>
+
+          {startPage > 1 && (
+            <>
+              <li className="page-item">
+                <button className="page-link" onClick={() => setCurrentPage(1)}>
+                  1
+                </button>
+              </li>
+              {startPage > 2 && (
+                <li className="page-item disabled">
+                  <span className="page-link">...</span>
+                </li>
+              )}
+            </>
+          )}
+
+          {pageNumbers.map((number) => (
+            <li
+              key={number}
+              className={`page-item ${currentPage === number ? "active" : ""}`}
+            >
+              <button
+                className="page-link"
+                onClick={() => setCurrentPage(number)}
+                style={
+                  currentPage === number
+                    ? {
+                        backgroundColor: "#1a73e8",
+                        borderColor: "#1a73e8",
+                        color: "white",
+                      }
+                    : { color: "#1a73e8" }
+                }
+              >
+                {number}
+              </button>
+            </li>
+          ))}
+
+          {endPage < totalPages && (
+            <>
+              {endPage < totalPages - 1 && (
+                <li className="page-item disabled">
+                  <span className="page-link">...</span>
+                </li>
+              )}
+              <li className="page-item">
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(totalPages)}
+                >
+                  {totalPages}
+                </button>
+              </li>
+            </>
+          )}
+
+          <li
+            className={`page-item ${currentPage === totalPages ? "disabled" : ""
+              }`}
+          >
+            <button
+              className="page-link"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </li>
+        </ul>
+      </nav>
+    );
+  };
+
   return (
     <NewLayout>
       <div className="row">
@@ -178,14 +282,6 @@ const AdminDeletedUsers = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <div className="col-md-2">
-                <button
-                  className="btn btn-secondary w-100"
-                  onClick={() => setSearchTerm("")}
-                >
-                  Clear
-                </button>
-              </div>
             </div>
 
             {loading ? (
@@ -197,10 +293,11 @@ const AdminDeletedUsers = () => {
                 <table className="table table-hover">
                   <thead>
                     <tr>
-                      <th>S.NO</th>
+                      <th className="text-center">S.NO</th>
                       <th>PROFILE</th>
-                      <th className="d-none d-md-table-cell">PHONE</th>
-                      <th className="d-none d-lg-table-cell">CITY</th>
+                      <th className="text-center">AV ID</th>
+                      <th className="d-none d-md-table-cell text-center">PHONE</th>
+                      <th className="d-none d-lg-table-cell text-center">CITY</th>
                       <th className="text-center">MORE</th>
                     </tr>
                   </thead>
@@ -210,8 +307,8 @@ const AdminDeletedUsers = () => {
                         const serialNumber = indexOfFirstItem + index + 1;
                         return (
                           <tr key={user._id}>
-                            <td>{serialNumber}</td>
-                            <td>
+                            <td className="text-center align-middle">{serialNumber}</td>
+                            <td className="align-middle">
                               <div className="d-flex align-items-center">
                                 {user.profileImage ? (
                                   <img
@@ -238,26 +335,29 @@ const AdminDeletedUsers = () => {
                                 </div>
                               </div>
                             </td>
-                            <td className="d-none d-md-table-cell">
+                            <td className="text-center align-middle">
+                              <span className="fw-bold text-primary">{user.agwid || "N/A"}</span>
+                            </td>
+                            <td className="d-none d-md-table-cell text-center align-middle">
                               {user.userMobile}
                             </td>
-                            <td className="d-none d-lg-table-cell">
-                              {user.city}
+                            <td className="d-none d-lg-table-cell text-center align-middle">
+                              {user.city || "N/A"}
                             </td>
-                            <td className="text-center">
+                            <td className="text-center align-middle">
                               <div className="d-flex gap-2 justify-content-center">
                                 <button
-                                  className="btn btn-success btn-sm"
+                                  className="btn btn-success btn-sm text-white"
                                   onClick={() => handleRestore(user._id)}
                                 >
-                                  <i className="fa fa-undo me-1"></i>
+                                  <i className="fa fa-undo me-1 text-white"></i>
                                   Restore
                                 </button>
                                 <button
-                                  className="btn btn-danger btn-sm"
+                                  className="btn btn-danger btn-sm text-white"
                                   onClick={() => handlePermanentDelete(user._id)}
                                 >
-                                  <i className="fa fa-trash me-1"></i>
+                                  <i className="fa fa-trash me-1 text-white"></i>
                                   Delete
                                 </button>
                               </div>
@@ -276,6 +376,9 @@ const AdminDeletedUsers = () => {
                 </table>
               </div>
             )}
+            
+            {/* Pagination */}
+            {totalPages > 1 && <Pagination />}
           </div>
         </div>
       </div>

@@ -536,6 +536,84 @@ const FormInput = ({
   </div>
 );
 
+// NEW: Inline Form Input Component for Address Fields
+const InlineFormInput = ({
+  label,
+  name,
+  type = "text",
+  value,
+  onChange,
+  options,
+  required,
+  placeholder,
+  searchable = false,
+  readOnly = false,
+}) => (
+  <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", alignItems: "center", gap: "24px", gridColumn: "1 / -1", marginBottom: "8px" }}>
+    <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151", margin: 0 }}>
+      {label}
+      {required && <span style={{ color: "#ef4444", marginLeft: "4px" }}>*</span>}
+    </label>
+    <div>
+      {type === "select" && searchable ? (
+        <SearchableSelect
+          name={name}
+          value={value}
+          onChange={onChange}
+          options={options}
+          placeholder={`Select ${label}`}
+          disabled={readOnly}
+        />
+      ) : type === "select" ? (
+        <select
+          name={name}
+          value={value || ""}
+          onChange={onChange}
+          required={required}
+          disabled={readOnly}
+          style={{
+            width: "100%",
+            padding: "10px 14px",
+            border: "2px solid #e5e7eb",
+            borderRadius: "6px",
+            fontSize: "14px",
+            color: readOnly ? "#9ca3af" : "#374151",
+            background: readOnly ? "#f3f4f6" : "#fff",
+            cursor: readOnly ? "not-allowed" : "pointer",
+            transition: "border-color 0.2s ease",
+          }}
+        >
+          <option value="" disabled>Select {label}</option>
+          {options?.map((opt, i) => (
+            <option key={i} value={opt}>{opt}</option>
+          ))}
+        </select>
+      ) : (
+        <input
+          type={type}
+          name={name}
+          value={value || ""}
+          onChange={onChange}
+          required={required}
+          placeholder={placeholder}
+          readOnly={readOnly}
+          style={{
+            width: "100%",
+            padding: "10px 14px",
+            border: "2px solid #e5e7eb",
+            borderRadius: "6px",
+            fontSize: "14px",
+            color: readOnly ? "#9ca3af" : "#374151",
+            background: readOnly ? "#f3f4f6" : "#fff",
+            cursor: readOnly ? "not-allowed" : "text",
+            transition: "border-color 0.2s ease",
+          }}
+        />
+      )}
+    </div>
+  </div>
+);
+
 // NEW: Checkbox Group Component for Hobbies
 const CheckboxGroup = ({ label, name, options, selectedValues, onChange }) => {
   const handleCheckboxChange = (option) => {
@@ -638,8 +716,8 @@ const UserProfileEditPage = () => {
     gender: "",
     profileCreatedFor: "",
     name: "",
-    email: "",
-    phone: "",
+    contactEmail: "",
+    contactPhone: "",
     dateOfBirth: "",
     age: "",
     bodyType: "",
@@ -689,7 +767,22 @@ const UserProfileEditPage = () => {
     alternateMobile: "",
     landlineNumber: "",
     currentAddress: "",
+    currentDoorNo: "",
+    currentLocality: "",
+    currentCountry: "",
+    currentState: "",
+    currentDistrict: "",
+    currentPincode: "",
+
     permanentAddress: "",
+    sameAsCurrentAddress: false,
+    permanentDoorNo: "",
+    permanentLocality: "",
+    permanentCountry: "",
+    permanentState: "",
+    permanentDistrict: "",
+    permanentPincode: "",
+    
     contactPersonName: "",
     relationship: "",
     citizenOf: "",
@@ -956,16 +1049,32 @@ const UserProfileEditPage = () => {
           const userData = response.data.data;
           console.log("User Data Received:", userData);
 
+          const parseAddress = (addrStr) => {
+            if (!addrStr) return {};
+            const parts = addrStr.split('|||');
+            if (parts.length >= 6) {
+              return {
+                 doorNo: parts[0] || "",
+                 locality: parts[1] || "",
+                 country: parts[2] || "",
+                 state: parts[3] || "",
+                 district: parts[4] || "",
+                 pincode: parts[5] || ""
+              };
+            }
+            return { doorNo: addrStr }; // Legacy fallback
+          };
+          const parsedCurrent = parseAddress(userData.currentAddress);
+          const parsedPermanent = parseAddress(userData.permanentAddress);
+
           const loadedData = {
             aboutMe: userData.aboutMe || "",
             gender: userData.gender || "",
             profileCreatedFor: userData.profileCreatedFor || "",
             name: userData.userName || "",
-            email: userData.userEmail || "",
-            phone: userData.userMobile || "",
-            dateOfBirth: userData.dateOfBirth
-              ? userData.dateOfBirth.split("T")[0]
-              : "",
+            contactEmail: userData.contactEmail || "",
+            contactPhone: userData.contactPhone || "",
+            dateOfBirth: userData.dateOfBirth ? userData.dateOfBirth.split("T")[0] : "",
             age: userData.age ? userData.age.toString() : "",
             bodyType: userData.bodyType || "",
             physicalStatus: userData.physicalStatus || "",
@@ -1008,7 +1117,20 @@ const UserProfileEditPage = () => {
             alternateMobile: userData.alternateMobile || "",
             landlineNumber: userData.landlineNumber || "",
             currentAddress: userData.currentAddress || "",
+            currentDoorNo: parsedCurrent.doorNo || "",
+            currentLocality: parsedCurrent.locality || "",
+            currentCountry: parsedCurrent.country || "",
+            currentState: parsedCurrent.state || "",
+            currentDistrict: parsedCurrent.district || "",
+            currentPincode: parsedCurrent.pincode || "",
             permanentAddress: userData.permanentAddress || "",
+            sameAsCurrentAddress: false,
+            permanentDoorNo: parsedPermanent.doorNo || "",
+            permanentLocality: parsedPermanent.locality || "",
+            permanentCountry: parsedPermanent.country || "",
+            permanentState: parsedPermanent.state || "",
+            permanentDistrict: parsedPermanent.district || "",
+            permanentPincode: parsedPermanent.pincode || "",
             contactPersonName: userData.contactPersonName || "",
             relationship: userData.relationship || "",
             citizenOf: userData.citizenOf || "",
@@ -1129,6 +1251,28 @@ const UserProfileEditPage = () => {
       }
     }
   }, [formData.citizenOf, formData.state, allCountries]);
+
+  const handleSameAsCurrentChange = (e) => {
+    const isChecked = e.target.checked;
+    setHasUnsavedChanges(true);
+    if (isChecked) {
+      setFormData((prev) => ({
+        ...prev,
+        sameAsCurrentAddress: true,
+        permanentDoorNo: prev.currentDoorNo,
+        permanentLocality: prev.currentLocality,
+        permanentCountry: prev.currentCountry,
+        permanentState: prev.currentState,
+        permanentDistrict: prev.currentDistrict,
+        permanentPincode: prev.currentPincode,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        sameAsCurrentAddress: false,
+      }));
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -1277,18 +1421,28 @@ const UserProfileEditPage = () => {
       // ========================
       const submitFormData = new FormData();
 
+      // Serialize Address fields
+      const submitCurrentAddress = `${formData.currentDoorNo || ""}|||${formData.currentLocality || ""}|||${formData.currentCountry || ""}|||${formData.currentState || ""}|||${formData.currentDistrict || ""}|||${formData.currentPincode || ""}`;
+      const submitPermanentAddress = formData.sameAsCurrentAddress 
+        ? submitCurrentAddress 
+        : `${formData.permanentDoorNo || ""}|||${formData.permanentLocality || ""}|||${formData.permanentCountry || ""}|||${formData.permanentState || ""}|||${formData.permanentDistrict || ""}|||${formData.permanentPincode || ""}`;
+        
+      const modifiedFormData = { ...formData };
+      modifiedFormData.currentAddress = submitCurrentAddress;
+      modifiedFormData.permanentAddress = submitPermanentAddress;
+
       // Append all form fields
-      Object.keys(formData).forEach((key) => {
+      Object.keys(modifiedFormData).forEach((key) => {
         if (key === "hobbies") {
-          if (Array.isArray(formData[key]) && formData[key].length > 0) {
-            formData[key].forEach((hobby, index) => {
+          if (Array.isArray(modifiedFormData[key]) && modifiedFormData[key].length > 0) {
+            modifiedFormData[key].forEach((hobby, index) => {
               submitFormData.append(`hobbies[${index}]`, hobby);
             });
           } else {
             submitFormData.append("hobbies", "");
           }
         } else {
-          submitFormData.append(key, formData[key] || "");
+          submitFormData.append(key, modifiedFormData[key] || "");
         }
       });
 
@@ -2787,21 +2941,21 @@ const UserProfileEditPage = () => {
                         ]}
                       />
 
+
                       <FormInput
-                        label="Alternate Mobile Number"
-                        name="alternateMobile"
-                        type="tel"
-                        value={formData.alternateMobile}
+                        label="Contact Email"
+                        name="contactEmail"
+                        type="email"
+                        value={formData.contactEmail}
                         onChange={handleInputChange}
-                        required
                       />
                       <FormInput
-                        label="Email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
+                        label="Alternate Mobile Number"
+                        name="contactPhone"
+                        type="tel"
+                        value={formData.contactPhone}
                         onChange={handleInputChange}
-                        readOnly={false}
+                        required
                       />
                       <FormInput
                         label="Landline Number"
@@ -2809,56 +2963,38 @@ const UserProfileEditPage = () => {
                         value={formData.landlineNumber}
                         onChange={handleInputChange}
                       />
-                      <div style={{ gridColumn: "1 / -1" }}>
-                        <FormInput
-                          label="Current Address"
-                          name="currentAddress"
-                          type="textarea"
-                          value={formData.currentAddress}
-                          onChange={handleInputChange}
-                        />
+                      {/* Current Address Block */}
+                      <div style={{ gridColumn: "1 / -1", marginTop: "16px", marginBottom: "0px", borderBottom: "1px solid #e5e7eb", paddingBottom: "4px" }}>
+                        <h4 style={{ fontSize: "16px", fontWeight: "700", color: "#1f2937", margin: 0 }}>
+                          Current Address: <span style={{ fontSize: "13px", fontWeight: "normal", color: "#6b7280" }}>(Enter current location, if you are working away from home)</span>
+                        </h4>
                       </div>
-                      <div style={{ gridColumn: "1 / -1" }}>
-                        <FormInput
-                          label="Permanent Address"
-                          name="permanentAddress"
-                          type="textarea"
-                          value={formData.permanentAddress}
-                          onChange={handleInputChange}
-                        />
+
+                      <InlineFormInput label="Door / Flat No (Name), Street" name="currentDoorNo" value={formData.currentDoorNo} onChange={handleInputChange} />
+                      <InlineFormInput label="Locality / Area" name="currentLocality" value={formData.currentLocality} onChange={handleInputChange} />
+                      <InlineFormInput label="Country" name="currentCountry" type="select" searchable={true} options={countryOptions} value={formData.currentCountry} onChange={handleInputChange} />
+                      <InlineFormInput label="State" name="currentState" type="select" searchable={true} options={stateOptions} value={formData.currentState} onChange={handleInputChange} />
+                      <InlineFormInput label="District / City" name="currentDistrict" value={formData.currentDistrict} onChange={handleInputChange} />
+                      <InlineFormInput label="Pincode" name="currentPincode" value={formData.currentPincode} onChange={handleInputChange} />
+                      <InlineFormInput label="Citizen Of" name="citizenOf" type="select" searchable={true} options={countryOptions} value={formData.citizenOf} onChange={handleCountryChange} />
+
+                      {/* Permanent Address Block */}
+                      <div style={{ gridColumn: "1 / -1", marginTop: "24px", marginBottom: "0px", borderBottom: "1px solid #e5e7eb", paddingBottom: "4px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <h4 style={{ fontSize: "16px", fontWeight: "700", color: "#1f2937", margin: 0 }}>
+                          Permanent Address
+                        </h4>
+                        <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "14px", color: "#374151", cursor: "pointer", fontWeight: "600" }}>
+                          <input type="checkbox" checked={formData.sameAsCurrentAddress} onChange={handleSameAsCurrentChange} style={{ width: "16px", height: "16px", cursor: "pointer" }} />
+                          Same as current address
+                        </label>
                       </div>
-                      <FormInput
-                        label="City"
-                        name="city"
-                        type="text"
-                        placeholder="Enter city name"
-                        value={formData.city}
-                        onChange={handleCityChange}
-                      />
-                      <FormInput
-                        label="State"
-                        name="state"
-                        type="select"
-                        searchable={true}
-                        value={formData.state}
-                        onChange={handleStateChange}
-                        options={stateOptions}
-                      />
-                      <FormInput
-                        label="Pincode"
-                        name="pincode"
-                        value={formData.pincode}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Country"
-                        name="citizenOf"
-                        type="select"
-                        searchable={true}
-                        value={formData.citizenOf}
-                        onChange={handleCountryChange}
-                        options={countryOptions}
-                      />
+
+                      <InlineFormInput label="Door / Flat No (Name), Street" name="permanentDoorNo" value={formData.permanentDoorNo} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
+                      <InlineFormInput label="Locality / Area" name="permanentLocality" value={formData.permanentLocality} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
+                      <InlineFormInput label="Country" name="permanentCountry" type="select" searchable={true} options={countryOptions} value={formData.permanentCountry} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
+                      <InlineFormInput label="State" name="permanentState" type="select" searchable={true} options={stateOptions} value={formData.permanentState} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
+                      <InlineFormInput label="District / City" name="permanentDistrict" value={formData.permanentDistrict} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
+                      <InlineFormInput label="Pincode" name="permanentPincode" value={formData.permanentPincode} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
                     </div>
                   </FormSection>
 

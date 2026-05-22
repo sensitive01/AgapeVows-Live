@@ -401,29 +401,29 @@ const HighlightedProfilesSection = () => {
                       </div>
                     </div>
 
-                    <div className="p-5 flex-grow">
-                      <div className="flex flex-col gap-1.5">
-                        <div className="flex justify-between items-start">
-                          <span className="text-gray-800 font-bold text-lg">{profile.agwid || "AV0000"}</span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-md font-bold uppercase" style={{ color: 'var(--primary-purple)', backgroundColor: 'rgba(94, 44, 165, 0.05)' }}>
+                    <div className="p-2.5 flex-grow bg-white">
+                      <div className="flex flex-col gap-0.5">
+                        <div className="flex justify-between items-center">
+                          <span className="font-bold text-base leading-none" style={{ color: '#9333ea' }}>{profile.agwid || "AV0000"}</span>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase" style={{ color: '#9333ea', backgroundColor: 'rgba(94, 44, 165, 0.05)' }}>
                             {profile.denomination || "Christian"}
                           </span>
                         </div>
 
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-gray-600 text-sm font-semibold line-clamp-1">
+                        <div className="flex flex-col">
+                          <span className="text-xs font-semibold line-clamp-1 leading-tight mt-0.5" style={{ color: '#9333ea' }}>
                             {profile.occupation || profile.jobType || "Professional"}
                           </span>
-                          <span className="text-gray-400 text-xs font-medium line-clamp-1">
+                          <span className="text-[10px] font-medium line-clamp-1 leading-tight" style={{ color: '#9333ea', opacity: 0.8 }}>
                             {profile.education || profile.degree || "Qualified Professional"}
                           </span>
                         </div>
 
-                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-50">
-                          <span className="text-gray-500 text-sm flex items-center gap-1">
+                        <div className="flex items-center justify-between mt-1 pt-1 border-t" style={{ borderColor: 'rgba(147, 51, 234, 0.1)' }}>
+                          <span className="text-xs flex items-center gap-1" style={{ color: '#9333ea', opacity: 0.9 }}>
                             {profile.city || "Location N/A"}
                           </span>
-                          <span className="text-gray-700 text-sm font-bold bg-gray-50 px-3 py-1 rounded-lg">
+                          <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ color: '#9333ea', backgroundColor: 'rgba(94, 44, 165, 0.05)' }}>
                             {calculateAge(profile.dateOfBirth)} Yrs
                           </span>
                         </div>

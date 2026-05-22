@@ -109,6 +109,110 @@ const AdminDeactivatedUsers = () => {
   const currentItems = filteredUsers?.slice(indexOfFirstItem, indexOfLastItem) || [];
   const totalPages = Math.ceil((filteredUsers?.length || 0) / itemsPerPage);
 
+  const Pagination = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <nav
+        aria-label="Page navigation"
+        className="d-flex justify-content-center mt-4"
+      >
+        <ul className="pagination">
+          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+            <button
+              className="page-link"
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+          </li>
+
+          {startPage > 1 && (
+            <>
+              <li className="page-item">
+                <button className="page-link" onClick={() => setCurrentPage(1)}>
+                  1
+                </button>
+              </li>
+              {startPage > 2 && (
+                <li className="page-item disabled">
+                  <span className="page-link">...</span>
+                </li>
+              )}
+            </>
+          )}
+
+          {pageNumbers.map((number) => (
+            <li
+              key={number}
+              className={`page-item ${currentPage === number ? "active" : ""}`}
+            >
+              <button
+                className="page-link"
+                onClick={() => setCurrentPage(number)}
+                style={
+                  currentPage === number
+                    ? {
+                        backgroundColor: "#1a73e8",
+                        borderColor: "#1a73e8",
+                        color: "white",
+                      }
+                    : { color: "#1a73e8" }
+                }
+              >
+                {number}
+              </button>
+            </li>
+          ))}
+
+          {endPage < totalPages && (
+            <>
+              {endPage < totalPages - 1 && (
+                <li className="page-item disabled">
+                  <span className="page-link">...</span>
+                </li>
+              )}
+              <li className="page-item">
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(totalPages)}
+                >
+                  {totalPages}
+                </button>
+              </li>
+            </>
+          )}
+
+          <li
+            className={`page-item ${currentPage === totalPages ? "disabled" : ""
+              }`}
+          >
+            <button
+              className="page-link"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </li>
+        </ul>
+      </nav>
+    );
+  };
+
   return (
     <NewLayout>
       <div className="row">
@@ -140,14 +244,6 @@ const AdminDeactivatedUsers = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <div className="col-md-2">
-                <button
-                  className="btn btn-secondary w-100"
-                  onClick={() => setSearchTerm("")}
-                >
-                  Clear
-                </button>
-              </div>
             </div>
 
             {loading ? (
@@ -160,7 +256,8 @@ const AdminDeactivatedUsers = () => {
                   <thead>
                     <tr>
                       <th className="text-center">S.NO</th>
-                      <th className="text-center">PROFILE</th>
+                      <th>PROFILE</th>
+                      <th className="text-center">AV ID</th>
                       <th className="text-center">REASON</th>
                       <th className="text-center">DEACTIVATED ON</th>
                       <th className="text-center">ACTION</th>
@@ -172,8 +269,8 @@ const AdminDeactivatedUsers = () => {
                         const serialNumber = indexOfFirstItem + index + 1;
                         return (
                           <tr key={user._id}>
-                            <td>{serialNumber}</td>
-                            <td>
+                            <td className="text-center align-middle">{serialNumber}</td>
+                            <td className="align-middle">
                               <div className="d-flex align-items-center">
                                 {user.profileImage ? (
                                   <img
@@ -200,15 +297,18 @@ const AdminDeactivatedUsers = () => {
                                 </div>
                               </div>
                             </td>
-                            <td>
+                            <td className="text-center align-middle">
+                              <span className="fw-bold text-primary">{user.agwid || "N/A"}</span>
+                            </td>
+                            <td className="text-center align-middle">
                               <div style={{ maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={user.deactivationReason}>
                                 {user.deactivationReason || "No reason provided"}
                               </div>
                             </td>
-                            <td>
+                            <td className="text-center align-middle">
                               {user.deactivatedAt ? new Date(user.deactivatedAt).toLocaleDateString() : "N/A"}
                             </td>
-                            <td className="text-center">
+                            <td className="text-center align-middle">
                                 <button
                                   className="btn btn-info btn-sm me-2 shadow-sm text-white fw-semibold"
                                   style={{ minWidth: "80px", borderRadius: "20px" }}
@@ -217,7 +317,7 @@ const AdminDeactivatedUsers = () => {
                                     setShowModal(true);
                                   }}
                                 >
-                                  <i className="fa fa-eye me-1"></i>
+                                  <i className="fa fa-eye me-1 text-white"></i>
                                   View
                                 </button>
                                 <button
@@ -225,7 +325,7 @@ const AdminDeactivatedUsers = () => {
                                   style={{ minWidth: "100px", borderRadius: "20px" }}
                                   onClick={() => handleRestore(user._id)}
                                 >
-                                  <i className="fa fa-undo me-1"></i>
+                                  <i className="fa fa-undo me-1 text-white"></i>
                                   Reactivate
                                 </button>
                               </td>
@@ -244,26 +344,9 @@ const AdminDeactivatedUsers = () => {
               </div>
             )}
             
+
             {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="d-flex justify-content-center mt-3">
-                <nav>
-                  <ul className="pagination">
-                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                      <button className="page-link" onClick={() => setCurrentPage(prev => prev - 1)}>Previous</button>
-                    </li>
-                    {[...Array(totalPages)].map((_, i) => (
-                      <li key={i} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
-                        <button className="page-link" onClick={() => setCurrentPage(i + 1)}>{i + 1}</button>
-                      </li>
-                    ))}
-                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                      <button className="page-link" onClick={() => setCurrentPage(prev => prev + 1)}>Next</button>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
-            )}
+            {totalPages > 1 && <Pagination />}
           </div>
         </div>
       </div>

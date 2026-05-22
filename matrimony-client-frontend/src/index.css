@@ -50,8 +50,8 @@
 
 .nav-highlight-events {
   position: relative;
-  color: #9333ea !important;
-  /* Deep Purple */
+  color: black !important;
+  /* Black */
   font-weight: 700 !important;
   letter-spacing: 0.5px;
   transition: all 0.3s ease;
@@ -59,6 +59,14 @@
 }
 
 .nav-highlight-events:hover {
+  text-shadow: 0 0 15px rgba(147, 51, 234, 0.6);
+  transform: translateY(-1px);
+}
+
+.hover-purple-shadow {
+  transition: all 0.3s ease;
+}
+.hover-purple-shadow:hover {
   text-shadow: 0 0 15px rgba(147, 51, 234, 0.6);
   transform: translateY(-1px);
 }

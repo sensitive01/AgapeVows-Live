@@ -86,6 +86,7 @@ adminRoutes.delete("/permanent-delete-user/:id", adminController.permanentDelete
 adminRoutes.put("/restore-user/:id", adminController.restoreUser);
 adminRoutes.get("/deleted-users", adminController.getDeletedUsers);
 adminRoutes.get("/deactivated-users", adminController.getDeactivatedUsers);
+adminRoutes.put("/deactivate-user/:id", adminController.deactivateUser);
 
 adminRoutes.put(
   "/verify-id-proof/:userId",

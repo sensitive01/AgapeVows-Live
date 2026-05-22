@@ -11,8 +11,7 @@ import PopupSearch from './PopupSearch';
 import TopMenu from './TopMenu';
 import MainMenu from './MainMenu';
 import HeroSearchSection from './HeroSearchSection';
-import QuickAccessSection from './QuickAccessSection';
-import TrustBrandsSection from './TrustBrandsSection';
+
 
 import AboutWelcomeSection from './AboutWelcomeSection';
 import WhyChooseUsSection from './WhyChooseUsSection';
@@ -40,11 +39,7 @@ export default function UserHomePage() {
       <HeroSearchSection />
       
       
-      {/* Social Proof & Reviews */}
-      <TrustBrandsSection />
 
-      {/* Quick Access & Services */}
-      <QuickAccessSection />
       
       {/* About Us Section */}
       <AboutWelcomeSection />

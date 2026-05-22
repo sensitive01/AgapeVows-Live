@@ -84,7 +84,6 @@ const FloatingContactSidebar = () => {
             ? "opacity-100 translate-x-0 scale-100 rotate-0"
             : "opacity-0 translate-x-10 scale-90 -rotate-2 pointer-events-none"
           }`}
-        onMouseEnter={() => setShowForm(true)}
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-[#0071bc] text-xl font-bold font-sans">Write us!, Let's Talk!</h2>
@@ -176,7 +175,7 @@ const FloatingContactSidebar = () => {
           {/* Enquire Now Panel */}
           <div
             className="bg-purple-600 text-white flex flex-col items-center justify-center py-6 px-1 hover:bg-purple-700 transition-all w-[50px] min-h-[180px] border-b border-white/10 cursor-pointer group shine-effect"
-            onMouseEnter={() => setShowForm(true)}
+            onClick={() => setShowForm(!showForm)}
           >
             <Mail size={22} className="mb-4 group-hover:scale-110 transition-transform" />
             <span

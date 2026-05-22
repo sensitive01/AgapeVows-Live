@@ -220,54 +220,15 @@ export default function AdminNewUserRequest() {
       pageNumbers.push(i);
     }
 
-    const paginationStyles = {
-      pagination: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        listStyle: "none",
-        padding: "0",
-        margin: "20px 0",
-        gap: "5px",
-      },
-      pageItem: {
-        display: "inline-block",
-      },
-      pageLink: {
-        display: "block",
-        padding: "8px 12px",
-        textDecoration: "none",
-        color: "#007bff",
-        backgroundColor: "#fff",
-        border: "1px solid #dee2e6",
-        borderRadius: "4px",
-        fontSize: "14px",
-        fontWeight: "500",
-        transition: "all 0.2s ease-in-out",
-        cursor: "pointer",
-      },
-      activePage: {
-        backgroundColor: "#007bff",
-        color: "#fff",
-        borderColor: "#007bff",
-      },
-      disabledPage: {
-        color: "#6c757d",
-        backgroundColor: "#f8f9fa",
-        borderColor: "#dee2e6",
-        cursor: "not-allowed",
-      },
-    };
-
     return (
-      <nav aria-label="Page navigation">
-        <ul style={paginationStyles.pagination}>
-          <li style={paginationStyles.pageItem}>
+      <nav
+        aria-label="Page navigation"
+        className="d-flex justify-content-center mt-4"
+      >
+        <ul className="pagination">
+          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
             <button
-              style={{
-                ...paginationStyles.pageLink,
-                ...(currentPage === 1 ? paginationStyles.disabledPage : {}),
-              }}
+              className="page-link"
               onClick={() => setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
             >
@@ -277,36 +238,36 @@ export default function AdminNewUserRequest() {
 
           {startPage > 1 && (
             <>
-              <li style={paginationStyles.pageItem}>
-                <button
-                  style={paginationStyles.pageLink}
-                  onClick={() => setCurrentPage(1)}
-                >
+              <li className="page-item">
+                <button className="page-link" onClick={() => setCurrentPage(1)}>
                   1
                 </button>
               </li>
               {startPage > 2 && (
-                <li style={paginationStyles.pageItem}>
-                  <span
-                    style={{ ...paginationStyles.pageLink, cursor: "default" }}
-                  >
-                    ...
-                  </span>
+                <li className="page-item disabled">
+                  <span className="page-link">...</span>
                 </li>
               )}
             </>
           )}
 
           {pageNumbers.map((number) => (
-            <li key={number} style={paginationStyles.pageItem}>
+            <li
+              key={number}
+              className={`page-item ${currentPage === number ? "active" : ""}`}
+            >
               <button
-                style={{
-                  ...paginationStyles.pageLink,
-                  ...(currentPage === number
-                    ? paginationStyles.activePage
-                    : {}),
-                }}
+                className="page-link"
                 onClick={() => setCurrentPage(number)}
+                style={
+                  currentPage === number
+                    ? {
+                        backgroundColor: "#1a73e8",
+                        borderColor: "#1a73e8",
+                        color: "white",
+                      }
+                    : { color: "#1a73e8" }
+                }
               >
                 {number}
               </button>
@@ -316,17 +277,13 @@ export default function AdminNewUserRequest() {
           {endPage < totalPages && (
             <>
               {endPage < totalPages - 1 && (
-                <li style={paginationStyles.pageItem}>
-                  <span
-                    style={{ ...paginationStyles.pageLink, cursor: "default" }}
-                  >
-                    ...
-                  </span>
+                <li className="page-item disabled">
+                  <span className="page-link">...</span>
                 </li>
               )}
-              <li style={paginationStyles.pageItem}>
+              <li className="page-item">
                 <button
-                  style={paginationStyles.pageLink}
+                  className="page-link"
                   onClick={() => setCurrentPage(totalPages)}
                 >
                   {totalPages}
@@ -335,14 +292,12 @@ export default function AdminNewUserRequest() {
             </>
           )}
 
-          <li style={paginationStyles.pageItem}>
+          <li
+            className={`page-item ${currentPage === totalPages ? "disabled" : ""
+              }`}
+          >
             <button
-              style={{
-                ...paginationStyles.pageLink,
-                ...(currentPage === totalPages
-                  ? paginationStyles.disabledPage
-                  : {}),
-              }}
+              className="page-link"
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage === totalPages}
             >
@@ -733,7 +688,7 @@ export default function AdminNewUserRequest() {
                                     : tableStyles.femaleBadge),
                                 }}
                               >
-                                {user.gender}
+                                {user.gender || "N/A"}
                               </span>
                             </td>
                             <td style={tableStyles.td}>
@@ -904,11 +859,7 @@ export default function AdminNewUserRequest() {
               </div>
 
               {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="mt-4">
-                  <Pagination />
-                </div>
-              )}
+              {totalPages > 1 && <Pagination />}
             </div>
           </div>
         </div>

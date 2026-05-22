@@ -1,55 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { submitFeedback } from '../api/axiosService/userAuthService';
-import logoBImg from '../assets/new-template/images/logo-b.png';
-import social1 from '../assets/new-template/images/social/1.png';
-import social2 from '../assets/new-template/images/social/2.png';
-import social3 from '../assets/new-template/images/social/3.png';
-import social5 from '../assets/new-template/images/social/5.png';
-import gal1 from '../assets/new-template/images/gallery/1.jpg';
-import gal2 from '../assets/new-template/images/gallery/2.jpg';
-import gal3 from '../assets/new-template/images/gallery/3.jpg';
-import gal4 from '../assets/new-template/images/gallery/4.jpg';
-import gal5 from '../assets/new-template/images/gallery/5.jpg';
-import gal6 from '../assets/new-template/images/gallery/6.jpg';
+import { Facebook, Instagram, Youtube, Phone, MessageSquare, MessageCircle } from 'lucide-react';
 
 const Footer = ({ paddingTop = '80px' }) => {
-  const [feedbackData, setFeedbackData] = useState({
-    name: '',
-    email: '',
-    message: ''
-  });
-  const [submitting, setSubmitting] = useState(false);
-
-  const handleFeedbackChange = (e) => {
-    const { name, value } = e.target;
-    setFeedbackData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleFeedbackSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
-    try {
-      const response = await submitFeedback(feedbackData);
-      if (response.status === 201 || response.data.success) {
-        toast.success('Thank you for your feedback!');
-        setFeedbackData({ name: '', email: '', message: '' });
-      } else {
-        toast.error('Failed to submit feedback. Please try again.');
-      }
-    } catch (error) {
-      console.error('Feedback Error:', error);
-      toast.error('An error occurred while submitting feedback.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   return (
     <>
       <footer className="agape-vows-footer mt-auto" style={{
-        background: 'linear-gradient(135deg, #7b2ff7, #9333ea, #6a11cb)',
+        background: '#2b124c',
         color: '#fff',
         paddingTop: paddingTop,
         paddingBottom: '8px',
@@ -73,6 +30,19 @@ const Footer = ({ paddingTop = '80px' }) => {
             color: #d4af37 !important;
           }
 
+          .agape-vows-footer a.contact-link-override {
+            color: #fff !important;
+            text-decoration: none;
+            display: inline-block !important;
+            padding: 0 !important;
+            border-bottom: none !important;
+          }
+
+          .agape-vows-footer a.contact-link-override:hover {
+            padding-left: 0 !important;
+            color: #06b6d4 !important;
+          }
+
           .agape-vows-footer ul { list-style: none; padding: 0; }
 
           .footer-section-title {
@@ -83,41 +53,10 @@ const Footer = ({ paddingTop = '80px' }) => {
             text-shadow: 0 0 10px rgba(255,213,79,0.6);
           }
 
-          .footer-input {
-            width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-          }
-
-          .footer-input:focus {
-            border: 1px solid #d4af37;
-            box-shadow: 0 0 10px rgba(255,213,79,0.5);
-            outline: none;
-          }
-
-          .footer-submit {
-            background: linear-gradient(45deg, #d4af37, #d4af37);
-            color: #000;
-            border: none;
-            padding: 12px;
-            border-radius: 50px;
-            font-weight: 700;
-            cursor: pointer;
-            width: 100%;
-          }
-
-          .footer-submit:hover {
-            transform: scale(1.05);
-          }
-
           .soc-icon-wrap {
             width: 55px;
             height: 55px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
             border-radius: 50%;
             display: flex !important;
             align-items: center !important;
@@ -125,32 +64,22 @@ const Footer = ({ paddingTop = '80px' }) => {
             padding: 0 !important;
             border-bottom: none !important;
             transition: transform 0.25s ease, background 0.25s ease;
+            color: white !important;
           }
 
-          .soc-icon-wrap img {
+          .soc-icon-wrap svg {
             width: 22px;
+            height: 22px;
             transition: transform 0.25s ease;
           }
 
           .soc-icon-wrap:hover {
             transform: scale(1.1);   
-            background: rgba(255,255,255,0.35);  
+            background: rgba(255,255,255,0.25);  
           }
 
-          .soc-icon-wrap:hover img {
+          .soc-icon-wrap:hover svg {
             transform: scale(1.1);  
-          }
-
-          .gal-grid-item {
-            width: 100%;
-            aspect-ratio: 1;
-            object-fit: cover;
-            border-radius: 12px;
-            transition: 0.3s;
-          }
-
-          .gal-grid-item:hover {
-            transform: scale(1.1);
           }
         `}</style>
 
@@ -161,56 +90,107 @@ const Footer = ({ paddingTop = '80px' }) => {
           paddingRight: '15px'
         }}>
 
+          {/* Support and Contact Info Row */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '30px',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+            paddingBottom: '30px',
+            marginBottom: '40px',
+            width: '100%'
+          }}>
+            {/* Call Us */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <div style={{
+                color: '#06b6d4',
+                background: 'rgba(6, 182, 212, 0.1)',
+                padding: '12px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <Phone size={24} style={{ color: '#06b6d4' }} />
+              </div>
+              <div>
+                <div style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '2px' }}>Call Us</div>
+                <div style={{ fontSize: '16px', fontWeight: '600', color: '#fff' }}>+91 484 4080333</div>
+              </div>
+            </div>
+
+            {/* Toll Free */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <div style={{
+                color: '#06b6d4',
+                background: 'rgba(6, 182, 212, 0.1)',
+                padding: '12px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <Phone size={24} style={{ color: '#06b6d4' }} />
+              </div>
+              <div>
+                <div style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '2px' }}>Toll Free - India</div>
+                <div style={{ fontSize: '16px', fontWeight: '600', color: '#fff' }}>1800 - 103 - 4080</div>
+              </div>
+            </div>
+
+            {/* Support Request */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <div style={{
+                color: '#06b6d4',
+                background: 'rgba(6, 182, 212, 0.1)',
+                padding: '12px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <MessageSquare size={24} style={{ color: '#06b6d4' }} />
+              </div>
+              <div>
+                <div style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '2px' }}>Support Request</div>
+                <div style={{ fontSize: '16px', fontWeight: '600', color: '#fff' }}>
+                  <Link to="/contact-page" className="contact-link-override" style={{ color: '#fff', textDecoration: 'none', display: 'inline', padding: 0, borderBottom: 'none' }}>Write to Us</Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Chat Support */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <div style={{
+                color: '#06b6d4',
+                background: 'rgba(6, 182, 212, 0.1)',
+                padding: '12px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <MessageCircle size={24} style={{ color: '#06b6d4' }} />
+              </div>
+              <div>
+                <div style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '2px' }}>Chat Support</div>
+                <div style={{ fontSize: '16px', fontWeight: '600', color: '#fff' }}>Live Support Chat</div>
+              </div>
+            </div>
+          </div>
+
           <div style={{
             display: 'flex',
             flexWrap: 'wrap',
             gap: '50px',
-            justifyContent: 'space-between'
+            justifyContent: 'center',
+            alignItems: 'flex-start'
           }}>
 
-            {/* Branding */}
-            <div style={{
-              flex: '1 1 220px',
-              minWidth: '200px',
-              background: "rgba(255,255,255,0.15)",
-              backdropFilter: "blur(15px)",
-              padding: "25px",
-              borderRadius: "20px",
-              textAlign: "center",
-              border: "1px solid rgba(255,255,255,0.2)"
-            }}>
-              <h2 style={{ fontSize: '32px', fontWeight: 800 }}>AgapeVows</h2>
-
-              <p>India's No.1 Christian Matrimony</p>
-
-              <img
-                src={logoBImg}
-                alt="Logo"
-                style={{
-                  maxWidth: '200px',
-                  margin: '20px 0',
-                  filter: 'brightness(0) invert(1) contrast(200%)'
-                }}
-              />
-
-              <p style={{ fontSize: '14px' }}>
-                Helping you find your perfect life partner with trust & faith.
-              </p>
-
-              <p style={{ marginTop: '15px' }}>info@agapevows.com</p>
-
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '15px' }}>
-                <a href="#" className="soc-icon-wrap"><img src={social1} /></a>
-                <a href="#" className="soc-icon-wrap"><img src={social2} /></a>
-                <a href="#" className="soc-icon-wrap"><img src={social3} /></a>
-                <a href="#" className="soc-icon-wrap"><img src={social5} /></a>
-              </div>
-            </div>
-
             {/* Quick Links */}
-            <div style={{ flex: '1 1 220px', minWidth: '200px' }}>
+            <div style={{ flex: '2 1 400px', minWidth: '300px' }}>
               <h4 className="footer-section-title">Quick Links</h4>
-              <ul>
+              <ul style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '40px' }}>
                 <li><Link to="/about-us">About Us</Link></li>
                 <li><Link to="/faq">FAQs</Link></li>
                 <li><Link to="/user/events-page" style={{ display: 'flex', alignItems: 'center' }}>Events </Link></li>
@@ -221,55 +201,21 @@ const Footer = ({ paddingTop = '80px' }) => {
               </ul>
             </div>
 
-            {/* Gallery */}
-            <div style={{ flex: '1 1 220px', minWidth: '200px' }}>
-              <h4 className="footer-section-title">Gallery</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '12px' }}>
-                {[gal1, gal2, gal3, gal4, gal5, gal6].map((img, i) => (
-                  <img key={i} src={img} className="gal-grid-item" alt="" />
-                ))}
+            {/* Social Icons */}
+            <div style={{
+              flex: '1 1 220px',
+              minWidth: '200px',
+              textAlign: "center",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center"
+            }}>
+              <h4 className="footer-section-title">Connect With Us</h4>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '10px' }}>
+                <a href="#" className="soc-icon-wrap"><Facebook /></a>
+                <a href="#" className="soc-icon-wrap"><Instagram /></a>
+                <a href="#" className="soc-icon-wrap"><Youtube /></a>
               </div>
-            </div>
-
-            {/* Feedback */}
-            <div style={{ flex: '1 1 220px', minWidth: '200px' }}>
-              <h4 className="footer-section-title">Feedback</h4>
-              <form onSubmit={handleFeedbackSubmit}>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Name"
-                  className="footer-input"
-                  value={feedbackData.name}
-                  onChange={handleFeedbackChange}
-                  required
-                />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  className="footer-input"
-                  value={feedbackData.email}
-                  onChange={handleFeedbackChange}
-                  required
-                />
-                <textarea
-                  name="message"
-                  rows="4"
-                  placeholder="Message"
-                  className="footer-input"
-                  value={feedbackData.message}
-                  onChange={handleFeedbackChange}
-                  required
-                ></textarea>
-                <button
-                  type="submit"
-                  className="footer-submit"
-                  disabled={submitting}
-                >
-                  {submitting ? "Submitting..." : "Submit"}
-                </button>
-              </form>
             </div>
 
           </div>
