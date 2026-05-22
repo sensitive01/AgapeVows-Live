@@ -1161,9 +1161,7 @@ const UserHomePage = () => {
                 <li>
                   <a href="#!" style={{color:"white"}}>Contact us</a>
                 </li>
-                <li>
-                  <a href="#!" style={{color:"white"}}>Feedback</a>
-                </li>
+                
                 <li>
                   <a href="#" style={{color:"white"}}>FAQs</a>
                 </li>

@@ -271,7 +271,6 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
         flexDirection: "row",
         flexWrap: "wrap"
       }}>
-        {/* Left Side: Info */}
         <div style={{
           flex: "1 1 400px",
           padding: "40px",

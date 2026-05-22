@@ -159,24 +159,7 @@ const Footer = ({ paddingTop = '80px' }) => {
               </div>
             </div>
 
-            {/* Chat Support */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-              <div style={{
-                color: '#06b6d4',
-                background: 'rgba(6, 182, 212, 0.1)',
-                padding: '12px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <MessageCircle size={24} style={{ color: '#06b6d4' }} />
-              </div>
-              <div>
-                <div style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '2px' }}>Chat Support</div>
-                <div style={{ fontSize: '16px', fontWeight: '600', color: '#fff' }}>Live Support Chat</div>
-              </div>
-            </div>
+
           </div>
 
           <div style={{

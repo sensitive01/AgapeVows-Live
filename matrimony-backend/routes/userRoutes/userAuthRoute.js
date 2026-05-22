@@ -69,7 +69,7 @@ const userAuthRoutes = express.Router();
 const userAuthController = require("../../controller/userController/userAuthController");
 const userChatController = require("../../controller/userController/userChatController");
 const enquiryController = require("../../controller/userController/enquiryController");
-const feedbackController = require("../../controller/userController/feedbackController");
+
 const reportController = require("../../controller/userController/reportController");
 // Multer storage for images & video
 const storage = multer.diskStorage({
@@ -180,10 +180,7 @@ userAuthRoutes.post(
   enquiryController.createEnquiry
 );
 
-userAuthRoutes.post(
-  "/submit-feedback",
-  feedbackController.postFeedback
-);
+
 
 userAuthRoutes.post(
   "/submit-report",

@@ -155,15 +155,7 @@ const handleLogout = () => {
                             Enquiries{" "}
                           </a>
                         </li>
-                        <li>
-                          <a href="/admin/feedbacks" className="waves-effect">
-                            <i
-                              className="fa fa-comments-o"
-                              aria-hidden="true"
-                            ></i>{" "}
-                            Feedbacks{" "}
-                          </a>
-                        </li>
+
                       </ul>
                     </div>
                   </div>

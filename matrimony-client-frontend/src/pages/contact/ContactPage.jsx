@@ -1,9 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 import LayoutComponent from "../../components/layouts/LayoutComponent";
 import Footer from "../../components/Footer";
-
+import { submitEnquiry } from "../../api/axiosService/userAuthService";
 
 const ContactPage = () => {
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" });
+  const [statusMsg, setStatusMsg] = useState("");
+  const [isError, setIsError] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setStatusMsg("");
+    try {
+      await submitEnquiry(formData);
+      setStatusMsg("Your message was sent successfully.");
+      setIsError(false);
+      setFormData({ name: "", email: "", phone: "", message: "" });
+    } catch (error) {
+      setStatusMsg("Failed to send your message. Please try again.");
+      setIsError(true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <div className="min-h-screen">
       <div className="fixed top-0 left-0 right-0 z-50">
@@ -111,18 +136,15 @@ const ContactPage = () => {
                       <h1>Send your enquiry now</h1>
                     </div>
                     <div className="form-login">
-                      <form
-                        className="cform fvali"
-                        method="post"
-                        action="https://rn53themes.net/themes/matrimo/mail/mail-contact.php"
-                      >
-                        <div
-                          className="alert alert-success cmessage"
-                          style={{ display: "none" }}
-                          role="alert"
-                        >
-                          Your message was sent successfully.
-                        </div>
+                      <form className="cform fvali" onSubmit={handleSubmit}>
+                        {statusMsg && (
+                          <div
+                            className={`alert ${isError ? "alert-danger" : "alert-success"} cmessage`}
+                            role="alert"
+                          >
+                            {statusMsg}
+                          </div>
+                        )}
                         <div className="form-group">
                           <label className="lb">Name:</label>
                           <input
@@ -131,7 +153,9 @@ const ContactPage = () => {
                             className="form-control"
                             placeholder="Enter your full name"
                             name="name"
-                            required=""
+                            value={formData.name}
+                            onChange={handleChange}
+                            required
                           />
                         </div>
                         <div className="form-group">
@@ -142,7 +166,9 @@ const ContactPage = () => {
                             id="email"
                             placeholder="Enter email"
                             name="email"
-                            required=""
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
                           />
                         </div>
                         <div className="form-group">
@@ -153,7 +179,9 @@ const ContactPage = () => {
                             id="phone"
                             placeholder="Enter phone number"
                             name="phone"
-                            required=""
+                            value={formData.phone}
+                            onChange={handleChange}
+                            required
                           />
                         </div>
                         <div className="form-group">
@@ -163,12 +191,13 @@ const ContactPage = () => {
                             className="form-control"
                             id="message"
                             placeholder="Enter message"
-                            required=""
-                            defaultValue={""}
+                            value={formData.message}
+                            onChange={handleChange}
+                            required
                           />
                         </div>
-                        <button type="submit" className="btn btn-primary">
-                          Send Enquiry
+                        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                          {isSubmitting ? "Sending..." : "Send Enquiry"}
                         </button>
                       </form>
                     </div>

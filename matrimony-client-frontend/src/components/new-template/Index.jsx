@@ -2071,9 +2071,7 @@ export default function Index() {
             <li>
               <a href="#!">Contact us</a>
             </li>
-            <li>
-              <a href="#!">Feedback</a>
-            </li>
+            
             <li>
               <a href="about-us.html#faq">FAQs</a>
             </li>

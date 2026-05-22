@@ -26,7 +26,7 @@ import AdminUserPlan from "./components/admin/AdminUserPlan";
 
 import AdminBlogs from "./components/admin/AdminBlogs";
 import AdminEnquiries from "./components/admin/AdminEnquiries";
-import AdminFeedbacks from "./components/admin/AdminFeedbacks";
+
 import AdminReports from "./components/admin/AdminReports";
 import AdminUnverifiedIdUsers from "./components/admin/AdminUnverifiedIdUsers";
 import AdminVerifiedIdUsers from "./components/admin/AdminVerifiedIdUsers";
@@ -333,14 +333,7 @@ function App() {
             </AdminLayout>
           }
         />
-        <Route
-          path="/admin/feedbacks"
-          element={
-            <AdminLayout>
-              <AdminFeedbacks />
-            </AdminLayout>
-          }
-        />
+
         <Route
           path="/admin/reports"
           element={

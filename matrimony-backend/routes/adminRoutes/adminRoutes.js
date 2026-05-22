@@ -52,7 +52,7 @@ const eventController = require("../../controller/adminController/eventControlle
 const blogController = require("../../controller/adminController/blogController");
 const issueController = require("../../controller/adminController/issueController");
 const enquiryController = require("../../controller/adminController/enquiryController");
-const feedbackController = require("../../controller/adminController/feedbackController");
+
 const reportController = require("../../controller/userController/reportController");
 const upload = require("../../middleware/multer");
 
@@ -163,13 +163,6 @@ adminRoutes.delete(
   "/delete-enquiry/:id",
   enquiryController.deleteEnquiry
 );
-
-/* =========================
-   FEEDBACK MANAGEMENT
-========================== */
-adminRoutes.get("/get-all-feedbacks", feedbackController.getAllFeedbacks);
-adminRoutes.put("/update-feedback/:id", feedbackController.updateFeedbackStatus);
-adminRoutes.delete("/delete-feedback/:id", feedbackController.deleteFeedback);
 
 /* =========================
    REPORT MANAGEMENT

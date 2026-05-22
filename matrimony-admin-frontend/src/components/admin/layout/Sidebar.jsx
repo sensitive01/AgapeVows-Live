@@ -229,15 +229,7 @@ const Sidebar = () => {
             </Link>
           </li>
 
-          {/* FEEDBACKS */}
-          <li>
-            <Link 
-              to="/admin/feedbacks" 
-              style={isActive("/admin/feedbacks") ? activeLinkStyle : normalLinkStyle}
-            >
-              <span style={iconStyle}>💬</span> Feedbacks
-            </Link>
-          </li>
+
 
           {/* REPORTS */}
           <li>

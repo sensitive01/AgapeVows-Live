@@ -512,9 +512,7 @@ const UserWeddingVideoPage = () => {
                 <li>
                   <a href="#!">Contact us</a>
                 </li>
-                <li>
-                  <a href="#!">Feedback</a>
-                </li>
+                
                 <li>
                   <a href="#">FAQs</a>
                 </li>
