@@ -13,36 +13,77 @@ import MaskedIdGuide from "../assets/images/Masked_ID_Guide.pdf";
 
 // Helper Components
 const InfoRow = ({ label, value }) => {
-  if (!value) return null;
+  if (value === null || value === undefined || value === "") return null;
+
+  // Normalize arrays to string
+  let displayValue = value;
+  if (Array.isArray(value)) displayValue = value.join(", ");
+
+  // Detect our serialized address format "part1|||part2|||part3..." and render nicely
+  const isSerializedAddress =
+    typeof displayValue === "string" && displayValue.includes("|||");
+
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "4px",
+        gap: "6px",
         padding: "10px 0",
         borderBottom: "1px solid #f3f4f6",
       }}
     >
-      <span style={{ 
-        color: "#6b7280", 
-        fontSize: "0.85rem", 
-        fontWeight: "500",
-        textTransform: "uppercase",
-        letterSpacing: "0.5px"
-      }}>
-        {label}
-      </span>
       <span
         style={{
-          color: "#1f2937",
-          fontSize: "1rem",
-          fontWeight: "600",
-          wordBreak: "break-word",
+          color: "#6b7280",
+          fontSize: "0.85rem",
+          fontWeight: "500",
+          textTransform: "uppercase",
+          letterSpacing: "0.5px",
         }}
       >
-        {value}
+        {label}
       </span>
+
+      {isSerializedAddress ? (
+        (() => {
+          const parts = String(displayValue)
+            .split("|||")
+            .map((p) => p && p.trim())
+            .filter(Boolean);
+
+          // parts expected: [doorNo, locality, country, state, district, pincode]
+          const lines = [];
+          if (parts[0]) lines.push(parts[0]); // door / flat
+          if (parts[1]) lines.push(parts[1]); // locality
+
+          const cityStatePincode = [parts[4], parts[3], parts[5]]
+            .filter(Boolean)
+            .join(", ");
+          if (cityStatePincode) lines.push(cityStatePincode);
+
+          if (parts[2] && !lines.includes(parts[2])) lines.push(parts[2]); // country
+
+          return (
+            <div style={{ color: "#1f2937", fontSize: "1rem", fontWeight: 600 }}>
+              {lines.map((ln, idx) => (
+                <div key={idx} style={{ marginBottom: 2 }}>{ln}</div>
+              ))}
+            </div>
+          );
+        })()
+      ) : (
+        <span
+          style={{
+            color: "#1f2937",
+            fontSize: "1rem",
+            fontWeight: "600",
+            wordBreak: "break-word",
+          }}
+        >
+          {displayValue}
+        </span>
+      )}
     </div>
   );
 };
@@ -889,7 +930,7 @@ const UserProfilePage = () => {
                             >
                               <i className="fa fa-phone" style={{ color: "#7c3aed" }}></i>
                               <span style={{ fontWeight: "500", wordBreak: "break-word" }}>
-                                {userInfo?.contactPhone || "Not provided"}
+                                {userInfo?.userMobile || "Not provided"}
                               </span>
                             </p>
 
@@ -907,7 +948,7 @@ const UserProfilePage = () => {
                             >
                               <i className="fa fa-envelope" style={{ color: "#7c3aed" }}></i>
                               <span style={{ fontWeight: "500", wordBreak: "break-word" }}>
-                                {userInfo?.contactEmail || "Not provided"}
+                                {userInfo?.userEmail || "Not provided"}
                               </span>
                             </p>
 
@@ -1279,11 +1320,13 @@ const UserProfilePage = () => {
                       value={userInfo?.contactPhone}
                     />
 
+                    <InfoRow label="Email" value={userInfo?.contactEmail} />
+
                     <InfoRow
                       label="Landline"
                       value={userInfo?.landlineNumber}
                     />
-                    <InfoRow label="Email" value={userInfo?.contactEmail} />
+                    <InfoRow label="Citizen Of" value={userInfo?.citizenOf} />
                     <InfoRow
                       label="Current Address"
                       value={userInfo?.currentAddress}
@@ -1292,10 +1335,10 @@ const UserProfilePage = () => {
                       label="Permanent Address"
                       value={userInfo?.permanentAddress}
                     />
-                    <InfoRow label="City" value={userInfo?.city} />
+                    {/* <InfoRow label="City" value={userInfo?.city} />
                     <InfoRow label="State" value={userInfo?.state} />
-                    <InfoRow label="Pincode" value={userInfo?.pincode} />
-                    <InfoRow label="Citizen Of" value={userInfo?.citizenOf} />
+                    <InfoRow label="Pincode" value={userInfo?.pincode} /> */}
+                    
                   </ProfileSection>
 
                   {/* Lifestyle & Hobbies Section */}

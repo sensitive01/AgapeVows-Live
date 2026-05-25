@@ -249,9 +249,6 @@ const userSchema = new mongoose.Schema(
          },
       ],
 
-      /* =========================
-   SOFT DELETE
-========================== */
       isDeleted: {
          type: Boolean,
          default: false,

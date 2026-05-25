@@ -184,6 +184,8 @@ const completeProfileData = async (req, res) => {
 
       /* CONTACT */
       userMobile: req.body.phone,
+      contactEmail: req.body.contactEmail,
+      contactPhone: req.body.contactPhone,
       whatsapp: req.body.whatsapp,
       facebook: req.body.facebook,
       instagram: req.body.instagram,
