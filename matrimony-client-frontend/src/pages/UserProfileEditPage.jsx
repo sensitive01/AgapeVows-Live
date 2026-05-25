@@ -701,6 +701,7 @@ const UserProfileEditPage = () => {
 
   const selectStyle = {
     flex: 1,
+    minWidth: "140px",
     padding: "10px 14px",
     border: "2px solid #e5e7eb",
     borderRadius: "6px",
@@ -708,6 +709,7 @@ const UserProfileEditPage = () => {
     color: "#374151",
     background: "#fff",
     cursor: "pointer",
+    boxSizing: "border-box",
   };
 
   const [formData, setFormData] = useState({
@@ -3458,14 +3460,14 @@ const UserProfileEditPage = () => {
                       </div>
 
                       <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "24px" }}>
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", alignItems: "center", gap: "16px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                           <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151" }}>Partner Age</label>
-                          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
                             <select name="partnerAgeFrom" value={formData.partnerAgeFrom} onChange={handleInputChange} style={selectStyle}>
                               <option value="">Select Age</option>
                               {ageOptions.map(age => <option key={age} value={age}>{age}</option>)}
                             </select>
-                            <span style={{ fontSize: "14px", color: "#6b7280" }}>To</span>
+                            <span style={{ fontSize: "14px", color: "#6b7280", whiteSpace: "nowrap" }}>To</span>
                             <select name="partnerAgeTo" value={formData.partnerAgeTo} onChange={handleInputChange} style={selectStyle}>
                               <option value="">Select Age</option>
                               {ageOptions.map(age => <option key={age} value={age}>{age}</option>)}
@@ -3473,14 +3475,14 @@ const UserProfileEditPage = () => {
                           </div>
                         </div>
 
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", alignItems: "center", gap: "16px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                           <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151" }}>Partner Height</label>
-                          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
                             <select name="partnerHeight" value={formData.partnerHeight} onChange={handleInputChange} style={selectStyle}>
                               <option value="">Select Height</option>
                               {heightOptions.map(h => <option key={h} value={h}>{h}</option>)}
                             </select>
-                            <span style={{ fontSize: "14px", color: "#6b7280" }}>To</span>
+                            <span style={{ fontSize: "14px", color: "#6b7280", whiteSpace: "nowrap" }}>To</span>
                             <select name="partnerHeightTo" value={formData.partnerHeightTo} onChange={handleInputChange} style={selectStyle}>
                               <option value="">Select Height</option>
                               {heightOptions.map(h => <option key={h} value={h}>{h}</option>)}
