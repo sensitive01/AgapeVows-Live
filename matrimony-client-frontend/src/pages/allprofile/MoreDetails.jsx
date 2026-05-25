@@ -6,8 +6,9 @@ import CopyRights from "../../components/CopyRights";
 import ShowInterest from "./ShowInterest";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getTheProfieMoreDetails, getUserProfile, getMyActivePlanData, sendChatMessage, submitReport } from "../../api/axiosService/userAuthService";
+import { getTheProfieMoreDetails, getUserProfile, viewContactDetails, sendChatMessage, submitReport } from "../../api/axiosService/userAuthService";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { showAlert } from "../../utils/alertService";
 
 import { faChurch, faHeart, faBriefcase, faInfoCircle, faUsers, faAddressCard, faMusic, faVideo } from '@fortawesome/free-solid-svg-icons';
 import profImage from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
@@ -182,7 +183,11 @@ const MoreDetails = () => {
       } catch (err) {
         if (err.response && err.response.status === 403) {
           const errMsg = err.response.data?.message || "Limit Reached";
-          toast.error(errMsg, { position: "top-center" });
+          showAlert({
+            title: "Limit Reached",
+            text: errMsg,
+            icon: "error",
+          });
           setTimeout(() => navigate(-1), 1500);
         } else {
           console.error("Error fetching profile details:", err);
@@ -190,7 +195,7 @@ const MoreDetails = () => {
       }
     };
     fetchProfile();
-  }, [profileId]);
+  }, [profileId, currentUserId, navigate]);
 
   const calculateAge = (dob) => {
     if (!dob) return null;
@@ -208,11 +213,33 @@ const MoreDetails = () => {
 
   if (loadingUser) return null;
 
-  const handleContactClick = () => {
+  const handleContactClick = async () => {
+    console.log("📞 handleContactClick triggered");
+    console.log("📞 isPaidUser:", isPaidUser);
+
     if (!isPaidUser) {
+      console.log("❌ User is not paid, showing upgrade popup");
       setShowUpgradePopup(true);
-    } else {
-      setShowContact(true);
+      return;
+    }
+
+    try {
+      console.log("🔄 Calling viewContactDetails API...");
+      const response = await viewContactDetails(profileId, currentUserId);
+      console.log("✅ viewContactDetails response:", response);
+
+      if (response?.data?.success) {
+        setShowContact(true);
+        toast.success(response.data.message || "Contact details unlocked.", {
+          position: "top-center",
+          autoClose: 2500,
+        });
+        window.dispatchEvent(new Event("planUpdated"));
+      }
+    } catch (err) {
+      console.log("❌ viewContactDetails error:", err.response?.data);
+      const errMsg = err.response?.data?.message || "Unable to view contact details right now.";
+      toast.error(errMsg, { position: "top-center", autoClose: 3000 });
     }
   };
 
@@ -706,7 +733,9 @@ const MoreDetails = () => {
         <ShowInterest
           selectedUser={showInterestModalUser}
           userId={userInfo?._id}
-          onSuccess={() => alert("Interest sent successfully!")}
+          onSuccess={() => {
+            // Optional: Any additional state updates or refreshes can happen here
+          }}
         />
       )}
 

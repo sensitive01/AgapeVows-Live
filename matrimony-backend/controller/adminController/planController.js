@@ -17,7 +17,10 @@ const addNewPlanData = async (req, res) => {
       "canViewProfiles",
       "viewContactDetails",
       "sendInterestRequest",
-      "startChat",
+      "maxSendInterest",
+      "dailyLimitSendInterest",
+      "maxViewContact",
+      "dailyLimitViewContact",
       "dedicatedManager",
       "status",
     ];
@@ -49,7 +52,10 @@ const addNewPlanData = async (req, res) => {
       canViewProfiles: planData.canViewProfiles,
       viewContactDetails: planData.viewContactDetails,
       sendInterestRequest: planData.sendInterestRequest,
-      startChat: planData.startChat,
+      maxSendInterest: planData.maxSendInterest,
+      dailyLimitSendInterest: planData.dailyLimitSendInterest,
+      maxViewContact: planData.maxViewContact,
+      dailyLimitViewContact: planData.dailyLimitViewContact,
       dedicatedManager: planData.dedicatedManager,
       status: planData.status,
     };

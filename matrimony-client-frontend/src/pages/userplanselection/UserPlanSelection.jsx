@@ -64,6 +64,15 @@ const UserPlanSelection = () => {
     return number.toString();
   };
 
+  const formatPlanDuration = (duration, type) => {
+    if (!type) return `${duration}mo`;
+    const t = type.toLowerCase();
+    if (t === "days" || t === "day") return `${duration} days`;
+    if (t === "months" || t === "month") return `${duration}mo`;
+    if (t === "years" || t === "year") return `${duration}yr`;
+    return `${duration} ${type}`;
+  };
+
   // Carousel controls - show 3 plans at a time
   const plansPerSlide = isMobile ? 1 : 3;
   const totalSlides = Math.ceil(plans.length / plansPerSlide);
@@ -127,6 +136,50 @@ const UserPlanSelection = () => {
       return;
     }
 
+    if (plan.price === 0 || plan.price === "0") {
+      const paymentData = {
+        razorpayPaymentId: `free_${Date.now()}`,
+        razorpayOrderId: `order_${Date.now()}`,
+        razorpaySignature: "free_plan_no_signature",
+        userId: userId,
+        planId: plan._id,
+        planName: plan.name,
+        amount: 0,
+        currency: "INR",
+        paymentStatus: "success",
+        paymentMethod: "free",
+        timestamp: new Date().toISOString(),
+        planDetails: {
+          name: plan.name,
+          price: 0,
+          duration: plan.duration,
+          durationType: plan.durationType,
+          maxProfiles: plan.maxProfiles,
+          profilesType: plan.profilesType,
+          dailyLimit: plan.dailyLimit,
+          canViewProfiles: plan.canViewProfiles,
+          viewContactDetails: plan.viewContactDetails,
+          sendInterestRequest: plan.sendInterestRequest,
+          maxSendInterest: plan.maxSendInterest,
+          dailyLimitSendInterest: plan.dailyLimitSendInterest,
+          maxViewContact: plan.maxViewContact,
+          dailyLimitViewContact: plan.dailyLimitViewContact,
+        }
+      };
+
+      try {
+        const backendResponse = await sendPaymentDataToBackend(paymentData, userId);
+        if (backendResponse) {
+          showAlert({ text: "Free Plan Activated Successfully!", icon: "success" });
+          window.location.href = "/user/user-dashboard-page";
+        }
+      } catch (error) {
+        console.error("Error activating free plan:", error);
+        showAlert({ text: "There was an issue activating your free plan. Please contact support.", icon: "error" });
+      }
+      return;
+    }
+
     const scriptLoaded = await loadRazorpayScript();
     if (!scriptLoaded) {
       showAlert({ text: "Razorpay SDK failed to load. Please try again.", icon: "error" });
@@ -164,7 +217,10 @@ const UserPlanSelection = () => {
               canViewProfiles: plan.canViewProfiles,
               viewContactDetails: plan.viewContactDetails,
               sendInterestRequest: plan.sendInterestRequest,
-              startChat: plan.startChat,
+              maxSendInterest: plan.maxSendInterest,
+              dailyLimitSendInterest: plan.dailyLimitSendInterest,
+              maxViewContact: plan.maxViewContact,
+              dailyLimitViewContact: plan.dailyLimitViewContact,
             }
 
           };
@@ -180,7 +236,7 @@ const UserPlanSelection = () => {
           if (backendResponse) {
             showAlert({ text: "Payment Successful! Your plan has been activated.", icon: "success" });
             // Optionally redirect to dashboard or plans page
-            window.location.href = "/";
+            window.location.href = "/user/user-dashboard-page";
           } else {
             showAlert({
               text: "Payment received but there was an issue activating your plan. Please contact support.",
@@ -248,8 +304,7 @@ const UserPlanSelection = () => {
         return "View contact details";
       case "sendInterest":
         return "Send interest";
-      case "startChat":
-        return "Start Chat";
+
       default:
         return "";
     }
@@ -400,9 +455,7 @@ const UserPlanSelection = () => {
 
                         <span className="pri-cou">
                           <b>₹{plan.price}</b>/
-                          {plan.durationType === "months"
-                            ? `${plan.duration}mo`
-                            : `${plan.duration}yr`}
+                          {formatPlanDuration(plan.duration, plan.durationType)}
                         </span>
 
                         <ol>
@@ -424,18 +477,20 @@ const UserPlanSelection = () => {
                           </li>
 
                           <li>
-                            {renderFeatureIcon(plan.viewContactDetails)}
-                            {getFeatureText(plan, "contactDetails")}
+                            {renderFeatureIcon("Yes")}
+                            Send interest: {plan.maxSendInterest === "Unlimited" || (typeof plan.maxSendInterest === 'string' && plan.maxSendInterest.toLowerCase() === 'unlimited') ? "Unlimited" : plan.maxSendInterest}
                           </li>
-
                           <li>
-                            {renderFeatureIcon(plan.sendInterestRequest)}
-                            {getFeatureText(plan, "sendInterest")}
+                            {renderFeatureIcon("Yes")}
+                            Daily interest limit: {plan.dailyLimitSendInterest}
                           </li>
-
                           <li>
-                            {renderFeatureIcon(plan.startChat)}
-                            {getFeatureText(plan, "startChat")}
+                            {renderFeatureIcon("Yes")}
+                            View contact details: {plan.maxViewContact === "Unlimited" || (typeof plan.maxViewContact === 'string' && plan.maxViewContact.toLowerCase() === 'unlimited') ? "Unlimited" : plan.maxViewContact}
+                          </li>
+                          <li>
+                            {renderFeatureIcon("Yes")}
+                            Daily view contact limit: {plan.dailyLimitViewContact}
                           </li>
                         </ol>
 

@@ -61,6 +61,13 @@ export const sendInterestData = async (interestData, userId) => {
   return response;
 };
 
+export const viewContactDetails = async (targetUserId, viewerId) => {
+  const response = await userInstance.post(`/view-contact-details/${viewerId}`, {
+    targetUserId,
+  });
+  return response;
+};
+
 export const getInterestedProfile = async (userId, reqStatus) => {
   const response = await userInstance.post(
     `/get-interested-profile-request/${userId}`,
@@ -434,4 +441,4 @@ export const acknowledgeContactUpdate = async (userId) => {
 };
 
 
-
+

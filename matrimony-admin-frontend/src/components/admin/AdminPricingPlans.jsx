@@ -23,7 +23,10 @@ const AdminPricingPlans = () => {
     canViewProfiles: "",
     viewContactDetails: "",
     sendInterestRequest: "",
-    startChat: "",
+    maxSendInterest: "",
+    dailyLimitSendInterest: "",
+    maxViewContact: "",
+    dailyLimitViewContact: "",
     dedicatedManager: "No",
     status: "Active",
   });
@@ -65,7 +68,10 @@ const AdminPricingPlans = () => {
       canViewProfiles: "",
       viewContactDetails: "",
       sendInterestRequest: "",
-      startChat: "",
+      maxSendInterest: "",
+      dailyLimitSendInterest: "",
+      maxViewContact: "",
+      dailyLimitViewContact: "",
       dedicatedManager: "No",
       status: "Active",
     });
@@ -86,7 +92,10 @@ const AdminPricingPlans = () => {
       canViewProfiles: plan.canViewProfiles || "",
       viewContactDetails: plan.viewContactDetails || "",
       sendInterestRequest: plan.sendInterestRequest || "",
-      startChat: plan.startChat || "",
+      maxSendInterest: plan.maxSendInterest?.toString() || "",
+      dailyLimitSendInterest: plan.dailyLimitSendInterest?.toString() || "",
+      maxViewContact: plan.maxViewContact?.toString() || "",
+      dailyLimitViewContact: plan.dailyLimitViewContact?.toString() || "",
       dedicatedManager: plan.dedicatedManager || "No",
       status: plan.status,
     });
@@ -710,24 +719,78 @@ const AdminPricingPlans = () => {
                         <div className="row">
                           <div className="col-md-6">
                             <div className="form-group mb-3">
-                              <label className="lb">Start Chat:</label>
-                              <select
-                                name=""
-                                className="form-control chosen-select"
-                                value={currentPlan.startChat}
+                              <label className="lb">Max send interest:</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter number or 'unlimited'"
+                                value={currentPlan.maxSendInterest}
                                 onChange={(e) =>
                                   setCurrentPlan({
                                     ...currentPlan,
-                                    startChat: e.target.value,
+                                    maxSendInterest: e.target.value,
                                   })
                                 }
-                              >
-                                <option value="">Select</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                              </select>
+                              />
                             </div>
                           </div>
+                          <div className="col-md-6">
+                            <div className="form-group mb-3">
+                              <label className="lb">Daily send interest limit:</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="e.g., 10, unlimited"
+                                value={currentPlan.dailyLimitSendInterest}
+                                onChange={(e) =>
+                                  setCurrentPlan({
+                                    ...currentPlan,
+                                    dailyLimitSendInterest: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="row">
+                          <div className="col-md-6">
+                            <div className="form-group mb-3">
+                              <label className="lb">Max view contact:</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter number or 'unlimited'"
+                                value={currentPlan.maxViewContact}
+                                onChange={(e) =>
+                                  setCurrentPlan({
+                                    ...currentPlan,
+                                    maxViewContact: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="form-group mb-3">
+                              <label className="lb">Daily view contact limit:</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="e.g., 10, unlimited"
+                                value={currentPlan.dailyLimitViewContact}
+                                onChange={(e) =>
+                                  setCurrentPlan({
+                                    ...currentPlan,
+                                    dailyLimitViewContact: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="row">
                           <div className="col-md-6">
                             <div className="form-group mb-3">
                               <label className="lb">Dedicated Account Manager:</label>

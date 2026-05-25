@@ -100,7 +100,15 @@ const ActivePlanCard = ({ externalPlanData }) => {
   const canViewProfiles = planData.canViewProfiles || basePlan.canViewProfiles;
   const viewContactDetails = planData.viewContactDetails || basePlan.viewContactDetails;
   const sendInterestRequest = planData.sendInterestRequest || basePlan.sendInterestRequest;
-  const startChat = planData.startChat || basePlan.startChat;
+  const rawMaxSendInterest = planData.maxSendInterest ?? basePlan.maxSendInterest ?? 0;
+  const rawDailyLimitSendInterest = planData.dailyLimitSendInterest ?? basePlan.dailyLimitSendInterest ?? 0;
+  const interestSentCount = planData.interestSentCount || 0;
+  const dailyInterestSentCount = planData.dailyInterestSentCount || 0;
+  const rawMaxViewContact = planData.maxViewContact ?? basePlan.maxViewContact ?? 0;
+  const rawDailyLimitViewContact = planData.dailyLimitViewContact ?? basePlan.dailyLimitViewContact ?? 0;
+  const contactViewCount = planData.contactViewCount || 0;
+  const dailyContactViewCount = planData.dailyContactViewCount || 0;
+
 
 
   const planType = planData.subscriptionType?.toLowerCase() || "";
@@ -237,6 +245,30 @@ const ActivePlanCard = ({ externalPlanData }) => {
           </div>
         )}
 
+        {/* Interest Usage */}
+        <div className="mb-4">
+          <strong>Interest Requests</strong>
+          <div className="d-flex justify-content-between small text-muted">
+            <span>{interestSentCount} used</span>
+            <span>{rawMaxSendInterest === "Unlimited" || rawMaxSendInterest === "unlimited" ? "Unlimited" : rawMaxSendInterest} total</span>
+          </div>
+          <small className="text-muted">
+            Daily: {dailyInterestSentCount} / {rawDailyLimitSendInterest === "Unlimited" || rawDailyLimitSendInterest === "unlimited" ? "Unlimited" : rawDailyLimitSendInterest}
+          </small>
+        </div>
+
+        {/* Contact View Usage */}
+        <div className="mb-4">
+          <strong>Contact Views</strong>
+          <div className="d-flex justify-content-between small text-muted">
+            <span>{contactViewCount} used</span>
+            <span>{rawMaxViewContact === "Unlimited" || rawMaxViewContact === "unlimited" ? "Unlimited" : rawMaxViewContact} total</span>
+          </div>
+          <small className="text-muted">
+            Daily: {dailyContactViewCount} / {rawDailyLimitViewContact === "Unlimited" || rawDailyLimitViewContact === "unlimited" ? "Unlimited" : rawDailyLimitViewContact}
+          </small>
+        </div>
+
         {/* Benefits List */}
         <ul className="list-unstyled mt-3 mb-0">
 
@@ -258,11 +290,6 @@ const ActivePlanCard = ({ externalPlanData }) => {
               : "✖ Cannot send interest"}
           </li>
 
-          <li className="mb-2">
-            {startChat === "Yes"
-              ? "✔ Chat enabled"
-              : "✖ Chat not available"}
-          </li>
         </ul>
 
         {/* Expiry */}

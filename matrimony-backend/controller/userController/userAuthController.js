@@ -587,8 +587,11 @@ const getProfileMoreInformation = async (req, res) => {
 
           console.log("👉 Viewer Plan:", viewerPlanName);
 
-          // ✅ PLAN-BASED RESTRICTION (PREMIUM USER LOGIC)
-          if (viewerPlanName.toLowerCase() === "premium") {
+          const viewerCanViewRaw = actualPlan.canViewProfiles || "All Profiles";
+          const viewerCanView = viewerCanViewRaw.toString().trim().toLowerCase();
+
+          // ✅ PLAN-BASED RESTRICTION (DYNAMIC LOGIC)
+          if (!viewerCanView.includes("all")) {
             const targetActivePlan = profileData.paymentDetails?.find(
               (p) =>
                 p.subscriptionStatus === "Active" &&
@@ -596,17 +599,23 @@ const getProfileMoreInformation = async (req, res) => {
             );
 
             if (targetActivePlan) {
-              const targetPlanName = targetActivePlan.subscriptionType || "";
+              const targetPlanName = targetActivePlan.subscriptionType?.toLowerCase() || "basic";
               console.log("👉 Target Plan:", targetPlanName);
 
-              if (
-                targetPlanName.toLowerCase() === "platinum" ||
-                targetPlanName.toLowerCase() === "gold" ||
-                targetPlanName.toLowerCase() === "golden"
-              ) {
+              const isTargetPlatinumOrGold = 
+                targetPlanName.includes("platinum") || 
+                targetPlanName.includes("gold") || 
+                targetPlanName.includes("golden");
+
+              if (viewerCanView === "only basic" && targetPlanName !== "basic") {
                 return res.status(403).json({
                   success: false,
-                  message: "You cannot view platinum and gold profiles.",
+                  message: "Your plan only allows viewing Basic profiles.",
+                });
+              } else if (viewerCanView === "only premium" && isTargetPlatinumOrGold) {
+                return res.status(403).json({
+                  success: false,
+                  message: "You cannot view Platinum and Gold profiles.",
                 });
               }
             }
@@ -627,20 +636,18 @@ const getProfileMoreInformation = async (req, res) => {
           if (lastViewStr !== todayString) {
             console.log("🔄 Resetting daily count");
 
-            await userModel.updateOne(
-              { _id: viewerId },
-              {
-                $set: {
-                  "paymentDetails.$[elem].dailyViewedCount": 0,
-                  "paymentDetails.$[elem].lastViewDate": today,
-                },
-              },
-              {
-                arrayFilters: [
-                  { "elem._id": actualPlan._id }
-                ],
-              }
-            );
+            const resetIndex = viewerData.paymentDetails.findIndex(p => p._id.toString() === actualPlan._id.toString());
+            if (resetIndex !== -1) {
+              await userModel.updateOne(
+                { _id: viewerId },
+                {
+                  $set: {
+                    [`paymentDetails.${resetIndex}.dailyViewedCount`]: 0,
+                    [`paymentDetails.${resetIndex}.lastViewDate`]: today,
+                  },
+                }
+              );
+            }
 
             actualPlan.dailyViewedCount = 0;
           }
@@ -649,7 +656,14 @@ const getProfileMoreInformation = async (req, res) => {
           let maxP = actualPlan.maxProfiles;
           let dailyL = actualPlan.dailyLimit;
 
-          if (maxP === undefined || dailyL === undefined) {
+          if (
+            !maxP ||
+            maxP === 0 ||
+            maxP === "0" ||
+            !dailyL ||
+            dailyL === 0 ||
+            dailyL === "0"
+          ) {
             const planModel = require("../../model/admin/planModel");
             const planDef = await planModel.findOne({
               name: actualPlan.subscriptionType,
@@ -723,19 +737,19 @@ const getProfileMoreInformation = async (req, res) => {
           if (profileWithNewView) {
             console.log("🔥 New Unique View! Incrementing counts...");
 
-            // ✅ INCREMENT (ONLY FOR NEW VIEW TO PREVENT DOUBLE COUNTING)
-            await userModel.updateOne(
-              { _id: viewerId },
-              {
-                $inc: {
-                  "paymentDetails.$[elem].profilesViewedCount": 1,
-                  "paymentDetails.$[elem].dailyViewedCount": 1,
-                },
-              },
-              {
-                arrayFilters: [{ "elem._id": actualPlan._id }],
-              }
-            );
+            // ✅ ATOMIC INCREMENT WITH PRECISE INDEX
+            const incIndex = viewerData.paymentDetails.findIndex(p => p._id.toString() === actualPlan._id.toString());
+            if (incIndex !== -1) {
+              await userModel.updateOne(
+                { _id: viewerId },
+                {
+                  $inc: {
+                    [`paymentDetails.${incIndex}.profilesViewedCount`]: 1,
+                    [`paymentDetails.${incIndex}.dailyViewedCount`]: 1,
+                  },
+                }
+              );
+            }
 
             if (!profileData.profileViews) profileData.profileViews = [];
             profileData.profileViews.push(viewerId);
@@ -805,6 +819,74 @@ const showUserInterests = async (req, res) => {
     console.log("permissions", permissions);
     console.log("message", message);
 
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const now = new Date();
+    // Find latest active plan by checking status and valid to date
+    const activePlansIndices = user.paymentDetails
+      ?.map((plan, index) => ({ plan, index }))
+      .filter(({ plan }) => plan.subscriptionStatus === "Active" && new Date(plan.subscriptionValidTo) > now)
+      .sort((a, b) => new Date(b.plan.subscriptionValidFrom) - new Date(a.plan.subscriptionValidFrom));
+
+    if (!activePlansIndices || activePlansIndices.length === 0) {
+      return res.status(403).json({ success: false, message: "No active subscription plan found." });
+    }
+
+    const activePlanIndex = activePlansIndices[0].index;
+    const activePlan = user.paymentDetails[activePlanIndex];
+
+    let sendInterestRequest = activePlan.sendInterestRequest;
+    let maxSendInterest = activePlan.maxSendInterest;
+    let dailyLimitSendInterest = activePlan.dailyLimitSendInterest;
+
+    // Fallback to plan model if limits are undefined, null, or 0 (schema defaults)
+    if (!sendInterestRequest || !maxSendInterest || maxSendInterest === 0 || maxSendInterest === "0" || maxSendInterest === undefined) {
+      const planModel = require("../../model/admin/planModel");
+      const planDef = await planModel.findOne({ name: activePlan.subscriptionType });
+      if (planDef) {
+        sendInterestRequest = planDef.sendInterestRequest;
+        maxSendInterest = planDef.maxSendInterest;
+        dailyLimitSendInterest = planDef.dailyLimitSendInterest;
+      }
+    }
+
+    if (sendInterestRequest === "No") {
+      return res.status(403).json({ success: false, message: "Your current plan does not allow sending interest requests." });
+    }
+
+    // Limit check logic
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let lastSent = activePlan.lastInterestSentDate ? new Date(activePlan.lastInterestSentDate) : null;
+    if (lastSent) {
+      lastSent.setHours(0, 0, 0, 0);
+    }
+
+    let dailyCount = activePlan.dailyInterestSentCount || 0;
+    if (!lastSent || lastSent.getTime() !== today.getTime()) {
+      dailyCount = 0; // Reset daily count
+    }
+
+    let totalCount = activePlan.interestSentCount || 0;
+
+    const isUnlimitedTotal = (typeof maxSendInterest === 'string' && maxSendInterest.toLowerCase() === 'unlimited') || activePlan.subscriptionType?.toLowerCase() === "platinum" || activePlan.subscriptionType?.toLowerCase() === "gold" || activePlan.subscriptionType?.toLowerCase() === "golden membership";
+    
+    const isUnlimitedDaily = (typeof dailyLimitSendInterest === 'string' && dailyLimitSendInterest.toLowerCase() === 'unlimited') || activePlan.subscriptionType?.toLowerCase() === "platinum" || activePlan.subscriptionType?.toLowerCase() === "gold" || activePlan.subscriptionType?.toLowerCase() === "golden membership";
+
+    const parsedMaxSendInterest = parseInt(maxSendInterest);
+    if (!isUnlimitedTotal && !isNaN(parsedMaxSendInterest) && totalCount >= parsedMaxSendInterest) {
+      return res.status(403).json({ success: false, message: `You have reached your total interest limit of ${maxSendInterest}.` });
+    }
+
+    const parsedDailyLimitSendInterest = parseInt(dailyLimitSendInterest);
+    if (!isUnlimitedDaily && !isNaN(parsedDailyLimitSendInterest) && dailyCount >= parsedDailyLimitSendInterest) {
+      return res.status(403).json({ success: false, message: `You have reached your daily interest limit of ${dailyLimitSendInterest}.` });
+    }
+
     // Check if any interest already exists between the two users
     const existingInterest = await interestModel.findOne({
       senderId: userId,
@@ -825,6 +907,13 @@ const showUserInterests = async (req, res) => {
       };
 
       await existingInterest.save();
+
+      // Increment counters
+      user.paymentDetails[activePlanIndex].interestSentCount = totalCount + 1;
+      user.paymentDetails[activePlanIndex].dailyInterestSentCount = dailyCount + 1;
+      user.paymentDetails[activePlanIndex].lastInterestSentDate = new Date();
+      user.markModified("paymentDetails");
+      await user.save();
 
       return res.status(200).json({
         success: true,
@@ -851,6 +940,13 @@ const showUserInterests = async (req, res) => {
 
     await newInterest.save();
 
+    // Increment counters
+    user.paymentDetails[activePlanIndex].interestSentCount = totalCount + 1;
+    user.paymentDetails[activePlanIndex].dailyInterestSentCount = dailyCount + 1;
+    user.paymentDetails[activePlanIndex].lastInterestSentDate = new Date();
+    user.markModified("paymentDetails");
+    await user.save();
+
     return res.status(200).json({
       success: true,
       message: "Interest sent successfully",
@@ -862,6 +958,121 @@ const showUserInterests = async (req, res) => {
       success: false,
       message: "Failed to send interest",
     });
+  }
+};
+
+const viewContactDetails = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { targetUserId } = req.body;
+
+    console.log("🔍 viewContactDetails called:", { userId, targetUserId });
+
+    if (!userId || !targetUserId) {
+      return res.status(400).json({ success: false, message: "Missing required data." });
+    }
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    const now = new Date();
+    const activePlansIndices = user.paymentDetails
+      ?.map((plan, index) => ({ plan, index }))
+      .filter(({ plan }) => plan.subscriptionStatus === "Active" && new Date(plan.subscriptionValidTo) > now)
+      .sort((a, b) => new Date(b.plan.subscriptionValidFrom) - new Date(a.plan.subscriptionValidFrom));
+
+    console.log("📊 activePlans count:", activePlansIndices?.length);
+    console.log("📊 user.paymentDetails length:", user.paymentDetails?.length);
+
+    if (!activePlansIndices || activePlansIndices.length === 0) {
+      console.log("❌ No active plan found");
+      return res.status(403).json({ success: false, message: "No active subscription plan found." });
+    }
+
+    const activePlanIndex = activePlansIndices[0].index;
+    const activePlan = user.paymentDetails[activePlanIndex];
+
+    let viewContact = activePlan.viewContactDetails;
+    let maxViewContact = activePlan.maxViewContact;
+    let dailyLimitViewContact = activePlan.dailyLimitViewContact;
+
+    // Fallback to plan model if limits are undefined, null, or 0 (schema defaults)
+    if (!viewContact || viewContact === undefined || !maxViewContact || maxViewContact === 0 || maxViewContact === "0") {
+      const planModel = require("../../model/admin/planModel");
+      const planDef = await planModel.findOne({ name: activePlan.subscriptionType });
+      if (planDef) {
+        viewContact = planDef.viewContactDetails;
+        maxViewContact = planDef.maxViewContact;
+        dailyLimitViewContact = planDef.dailyLimitViewContact;
+      }
+    }
+
+    console.log("📋 activePlan viewContactDetails raw value:", viewContact);
+    console.log("📋 activePlan type:", typeof viewContact);
+
+    const canViewContact = viewContact?.toString()?.trim()?.toLowerCase() === "yes";
+    
+    console.log("✅ canViewContact after normalization:", canViewContact);
+
+    if (!canViewContact) {
+      console.log("❌ Contact view not allowed:", viewContact);
+      return res.status(403).json({ success: false, message: "Your current plan does not allow viewing contact details." });
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let lastViewed = activePlan.lastContactViewDate ? new Date(activePlan.lastContactViewDate) : null;
+    if (lastViewed) {
+      lastViewed.setHours(0, 0, 0, 0);
+    }
+
+    let dailyCount = activePlan.dailyContactViewCount || 0;
+    if (!lastViewed || lastViewed.getTime() !== today.getTime()) {
+      dailyCount = 0;
+    }
+
+    const totalCount = activePlan.contactViewCount || 0;
+
+    const isUnlimitedTotal =
+      (typeof maxViewContact === 'string' && maxViewContact.toLowerCase() === 'unlimited') ||
+      activePlan.subscriptionType?.toLowerCase() === 'platinum' ||
+      activePlan.subscriptionType?.toLowerCase() === 'gold' ||
+      activePlan.subscriptionType?.toLowerCase() === 'golden membership';
+
+    const isUnlimitedDaily =
+      (typeof dailyLimitViewContact === 'string' && dailyLimitViewContact.toLowerCase() === 'unlimited') ||
+      activePlan.subscriptionType?.toLowerCase() === 'platinum' ||
+      activePlan.subscriptionType?.toLowerCase() === 'gold' ||
+      activePlan.subscriptionType?.toLowerCase() === 'golden membership';
+
+    const parsedMaxViewContact = parseInt(maxViewContact);
+    if (!isUnlimitedTotal && !isNaN(parsedMaxViewContact) && totalCount >= parsedMaxViewContact) {
+      return res.status(403).json({ success: false, message: `You have reached your total contact view limit of ${maxViewContact}.` });
+    }
+
+    const parsedDailyLimitViewContact = parseInt(dailyLimitViewContact);
+    if (!isUnlimitedDaily && !isNaN(parsedDailyLimitViewContact) && dailyCount >= parsedDailyLimitViewContact) {
+      return res.status(403).json({ success: false, message: `You have reached your daily contact view limit of ${dailyLimitViewContact}.` });
+    }
+
+    user.paymentDetails[activePlanIndex].contactViewCount = totalCount + 1;
+    user.paymentDetails[activePlanIndex].dailyContactViewCount = dailyCount + 1;
+    user.paymentDetails[activePlanIndex].lastContactViewDate = new Date();
+    user.markModified("paymentDetails");
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Contact details viewed successfully.",
+      contactViewCount: user.paymentDetails[activePlanIndex].contactViewCount,
+      dailyContactViewCount: user.paymentDetails[activePlanIndex].dailyContactViewCount,
+    });
+  } catch (err) {
+    console.error("Error in viewing contact details", err);
+    return res.status(500).json({ success: false, message: "Failed to process contact view request." });
   }
 };
 
@@ -1221,7 +1432,9 @@ const savePlanDetails = async (req, res) => {
   try {
     const { paymentData } = req.body;
 
-    console.log("paymentData", paymentData);
+    console.log("📦 paymentData received:", JSON.stringify(paymentData, null, 2));
+    console.log("📦 planDetails.viewContactDetails:", paymentData.planDetails?.viewContactDetails);
+    console.log("📦 planDetails.sendInterestRequest:", paymentData.planDetails?.sendInterestRequest);
 
     // ✅ VALID FROM
     const validFrom = new Date(paymentData.timestamp);
@@ -1253,44 +1466,53 @@ const savePlanDetails = async (req, res) => {
     await payment.save();
 
     // ✅ UPDATE USER
-    await userModel.findByIdAndUpdate(
-      paymentData.userId,
-      {
-        $push: {
-          paymentDetails: {
-            subscriptionValidFrom: validFrom,
-            subscriptionValidTo: validTo, // ✅ FIXED
-            subscriptionType: paymentData.planName,
-            subscriptionAmount: paymentData.amount,
-            subscriptionStatus:
-              paymentData.paymentStatus === "success"
-                ? "Active"
-                : "Pending",
-            subscriptionTransactionDate: validFrom,
-            subscriptionTransactionId:
-              paymentData.razorpayPaymentId,
-            subscriptionOrderId: orderId,
-            isEmployeeAssisted: false,
-            assistedEmployeeId: "",
-            assistedEmployeeName: "",
-            // LIMITS
-            maxProfiles: paymentData.planDetails.maxProfiles,
-            profilesViewedCount: 0,
-            dailyLimit: paymentData.planDetails.dailyLimit,
-            dailyViewedCount: 0,
-            lastViewDate: new Date(),
-            canViewProfiles: paymentData.planDetails.canViewProfiles,
-            viewContactDetails: paymentData.planDetails.viewContactDetails,
-            sendInterestRequest: paymentData.planDetails.sendInterestRequest,
-            startChat: paymentData.planDetails.startChat,
-          },
-        },
-        $set: {
-          isAnySubscriptionTaken: true,
+    const updateData = {
+      $push: {
+        paymentDetails: {
+          subscriptionValidFrom: validFrom,
+          subscriptionValidTo: validTo, // ✅ FIXED
+          subscriptionType: paymentData.planName,
+          subscriptionAmount: paymentData.amount,
+          subscriptionStatus:
+            paymentData.paymentStatus === "success"
+              ? "Active"
+              : "Pending",
+          subscriptionTransactionDate: validFrom,
+          subscriptionTransactionId:
+            paymentData.razorpayPaymentId,
+          subscriptionOrderId: orderId,
+          isEmployeeAssisted: false,
+          assistedEmployeeId: "",
+          assistedEmployeeName: "",
+          // LIMITS
+          maxProfiles: paymentData.planDetails.maxProfiles,
+          profilesViewedCount: 0,
+          dailyLimit: paymentData.planDetails.dailyLimit,
+          dailyViewedCount: 0,
+          lastViewDate: new Date(),
+          canViewProfiles: paymentData.planDetails.canViewProfiles,
+          viewContactDetails: paymentData.planDetails.viewContactDetails,
+          sendInterestRequest: paymentData.planDetails.sendInterestRequest,
+          maxSendInterest: paymentData.planDetails.maxSendInterest,
+          dailyLimitSendInterest: paymentData.planDetails.dailyLimitSendInterest,
+          interestSentCount: 0,
+          dailyInterestSentCount: 0,
+          lastInterestSentDate: new Date(),
+          maxViewContact: paymentData.planDetails.maxViewContact,
+          dailyLimitViewContact: paymentData.planDetails.dailyLimitViewContact,
+          contactViewCount: 0,
+          dailyContactViewCount: 0,
+          lastContactViewDate: new Date(),
         },
       },
-      { new: true }
-    );
+      $set: {
+        isAnySubscriptionTaken: true,
+      },
+    };
+
+    console.log("📝 Saving to paymentDetails:", JSON.stringify(updateData.$push.paymentDetails, null, 2));
+
+    await userModel.findByIdAndUpdate(paymentData.userId, updateData, { new: true });
 
     return res.status(200).json({
       success: true,
@@ -1312,6 +1534,8 @@ const savePlanDetails = async (req, res) => {
 const getMyActivePlanDetails = async (req, res) => {
   try {
     const { userId } = req.params;
+
+    console.log("📤 getMyActivePlanDetails called for userId:", userId);
 
     const userData = await userModel.findById(userId, {
       paymentDetails: 1,
@@ -1342,6 +1566,8 @@ const getMyActivePlanDetails = async (req, res) => {
       (plan) => new Date(plan.subscriptionValidTo) > now
     );
 
+    console.log("📊 Valid plans count:", validPlans.length);
+
     // ✅ Update DB (clean expired plans)
     await userModel.findByIdAndUpdate(userId, {
       paymentDetails: validPlans,
@@ -1352,6 +1578,8 @@ const getMyActivePlanDetails = async (req, res) => {
     const activePlans = validPlans.filter(
       (plan) => plan.subscriptionStatus === "Active"
     );
+
+    console.log("📊 Active plans count:", activePlans.length);
 
     if (activePlans.length === 0) {
       return res.status(404).json({
@@ -1368,6 +1596,12 @@ const getMyActivePlanDetails = async (req, res) => {
 
     const latestPlan = activePlans[0];
 
+    console.log("📝 Latest plan:", {
+      type: latestPlan.subscriptionType,
+      viewContactDetails: latestPlan.viewContactDetails,
+      canViewProfiles: latestPlan.canViewProfiles,
+    });
+
     const formatDate = (date) =>
       new Date(date).toLocaleString("en-IN", {
         timeZone: "Asia/Kolkata",
@@ -1375,6 +1609,7 @@ const getMyActivePlanDetails = async (req, res) => {
 
     const response = {
       subscriptionType: latestPlan.subscriptionType,
+      subscriptionStatus: latestPlan.subscriptionStatus || "Active",
       subscriptionAmount: latestPlan.subscriptionAmount,
       subscriptionValidFrom: formatDate(latestPlan.subscriptionValidFrom),
       subscriptionValidTo: formatDate(latestPlan.subscriptionValidTo),
@@ -1390,11 +1625,21 @@ const getMyActivePlanDetails = async (req, res) => {
       dailyLimit: (latestPlan.subscriptionType.toLowerCase() === "platinum" || latestPlan.subscriptionType.toLowerCase() === "gold" || latestPlan.subscriptionType.toLowerCase() === "golden") ? "Unlimited" : (latestPlan.dailyLimit || 0),
       dailyViewedCount: latestPlan.dailyViewedCount || 0,
 
-      canViewProfiles: latestPlan.canViewProfiles,
-      viewContactDetails: latestPlan.viewContactDetails,
+      canViewProfiles: latestPlan.canViewProfiles?.toString()?.trim() || "All Profiles",
+      viewContactDetails: latestPlan.viewContactDetails?.toString()?.trim() || "No",
       sendInterestRequest: latestPlan.sendInterestRequest,
-      startChat: latestPlan.startChat,
+      maxSendInterest: latestPlan.maxSendInterest || "0",
+      dailyLimitSendInterest: latestPlan.dailyLimitSendInterest || "0",
+      interestSentCount: latestPlan.interestSentCount || 0,
+      dailyInterestSentCount: latestPlan.dailyInterestSentCount || 0,
+      maxViewContact: latestPlan.maxViewContact || "0",
+      dailyLimitViewContact: latestPlan.dailyLimitViewContact || "0",
+      contactViewCount: latestPlan.contactViewCount || 0,
+      dailyContactViewCount: latestPlan.dailyContactViewCount || 0,
     };
+
+    console.log("📤 Sending response with viewContactDetails:", response.viewContactDetails);
+    console.log("📤 Full response object:", JSON.stringify(response, null, 2));
 
     return res.status(200).json({
       success: true,
@@ -1660,7 +1905,16 @@ const savePaymentAndActivatePlan = async (req, res) => {
           canViewProfiles: planDetails.canViewProfiles,
           viewContactDetails: planDetails.viewContactDetails,
           sendInterestRequest: planDetails.sendInterestRequest,
-          startChat: planDetails.startChat,
+          maxSendInterest: planDetails.maxSendInterest,
+          dailyLimitSendInterest: planDetails.dailyLimitSendInterest,
+          interestSentCount: 0,
+          dailyInterestSentCount: 0,
+          lastInterestSentDate: new Date(),
+          maxViewContact: planDetails.maxViewContact,
+          dailyLimitViewContact: planDetails.dailyLimitViewContact,
+          contactViewCount: 0,
+          dailyContactViewCount: 0,
+          lastContactViewDate: new Date(),
         },
       },
     });
@@ -2376,6 +2630,7 @@ module.exports = {
   getAllUserProfileData,
   getProfileMoreInformation,
   showUserInterests,
+  viewContactDetails,
   isUserMadeTheInterest,
   deleteAdditionalImages,
   savePaymentAndActivatePlan,

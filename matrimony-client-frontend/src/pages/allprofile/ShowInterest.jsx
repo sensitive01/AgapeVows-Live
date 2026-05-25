@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { sendInterestData } from "../../api/axiosService/userAuthService";
+import { showAlert } from "../../utils/alertService";
 
 const ShowInterest = ({ selectedUser, userId, onSuccess }) => {
     const senderId = localStorage.getItem("userId");
@@ -45,7 +46,11 @@ const ShowInterest = ({ selectedUser, userId, onSuccess }) => {
       await sendInterestData(interestData, senderId);
 
       // Show success message
-      alert("Interest sent successfully!");
+      showAlert({
+        title: "Success",
+        text: "Interest sent successfully!",
+        icon: "success",
+      });
 
       // Update parent state
       if (onSuccess) {
@@ -78,7 +83,12 @@ const ShowInterest = ({ selectedUser, userId, onSuccess }) => {
       });
     } catch (error) {
       console.error("Error sending interest:", error);
-      alert(`Failed to send interest: ${error.message || "Please try again."}`);
+      const errMsg = error.response?.data?.message || error.message || "Please try again.";
+      showAlert({
+        title: "Error",
+        text: `Failed to send interest: ${errMsg}`,
+        icon: "error",
+      });
     } finally {
       setIsLoading(false);
     }

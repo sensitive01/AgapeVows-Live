@@ -389,12 +389,7 @@ const MoreDetails = () => {
                     </div>
                   </div>
                   <div className="s3">
-                    <button
-                      className="cta fol cta-chat"
-                      onClick={handleStartChat}
-                    >
-                      Start Chat
-                    </button>
+
                     <span
                       className="cta cta-sendint"
                       data-toggle="modal"
@@ -905,23 +900,7 @@ const MoreDetails = () => {
         </div>
       )}
 
-      {isChatOpen && profileData && (
-        <ChatUi
-          setIsChatOpen={setIsChatOpen}
-          handleChatSubmit={handleChatSubmit}
-          profileData={{
-            userName: profileData.userName,
-            profileImage: profileData.profileImage || "images/profiles/2.jpg",
-            receiverId: profileData._id,
-            isOnline: onlineUsers.includes(profileData._id),
-          }}
-          chatMessages={chatMessages}
-          newMessage={newMessage}
-          setNewMessage={setNewMessage}
-          socket={socket}
-          userId={userId}
-        />
-      )}
+
 
       <Footer />
       <CopyRights />

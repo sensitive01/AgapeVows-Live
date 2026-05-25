@@ -234,7 +234,8 @@ const UserDashboardPage = () => {
         new Date(p.subscriptionValidTo) > new Date()
     );
 
-    const myPlanName = myActivePlan?.subscriptionType?.toLowerCase() || "";
+    const myCanViewRaw = myActivePlan?.canViewProfiles || "All Profiles";
+    const myCanView = myCanViewRaw.toString().trim().toLowerCase();
 
     // ✅ TARGET USER PLAN
     const targetActivePlan = targetUser?.paymentDetails?.find(
@@ -245,16 +246,30 @@ const UserDashboardPage = () => {
 
     const targetPlanName = targetActivePlan?.subscriptionType?.toLowerCase() || "";
 
-    console.log("My Dashboard Plan:", myPlanName);
+    console.log("My Dashboard Plan:", myCanView);
     console.log("Target Dashboard Plan:", targetPlanName);
 
-    const isTargetRestricted =
+    const isTargetPlatinumOrGold =
       targetPlanName.includes("platinum") ||
       targetPlanName.includes("gold") ||
       targetPlanName.includes("golden");
 
-    if (myPlanName.includes("premium")) {
-      if (isTargetRestricted) {
+    if (!myCanView.includes("all")) {
+      if (myCanView === "only basic" && targetPlanName && !targetPlanName.includes("basic")) {
+        console.log("🚫 Restricted: Basic user clicking non-Basic profile");
+        toast.error("Your plan only allows viewing Basic profiles. Please upgrade to access other profiles.", {
+          position: "top-center",
+          autoClose: 30000, // 30 seconds
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+        return;
+      }
+
+      if (myCanView === "only premium" && isTargetPlatinumOrGold) {
         console.log("🚫 Restricted: Premium user clicking Golden/Platinum profile");
         toast.error("Upgrade your plan to view Platinum and Golden Membership profiles.", {
           position: "top-center",

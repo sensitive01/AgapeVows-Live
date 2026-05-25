@@ -191,20 +191,26 @@ const UserAllProfilePage = () => {
     console.log("My Plan (AllProfiles):", myPlanName);
     console.log("Target Plan (AllProfiles):", targetPlanName);
 
-    const isTargetRestricted =
-      targetPlanName.includes("platinum") ||
-      targetPlanName.includes("gold") ||
-      targetPlanName.includes("golden");
+    const myCanViewRaw = currentUserPlan?.canViewProfiles || "All Profiles";
+    const myCanView = myCanViewRaw.trim().toLowerCase();
 
-    if (myPlanName.includes("premium")) {
-      if (isTargetRestricted) {
+    if (!myCanView.includes("all")) {
+      const isTargetPlatinumOrGold =
+        targetPlanName.includes("platinum") ||
+        targetPlanName.includes("gold") ||
+        targetPlanName.includes("golden");
+
+      if (myCanView === "only basic" && targetPlanName !== "basic" && targetPlanName !== "") {
+        toast.error("Your plan only allows viewing Basic profiles. Please upgrade.", {
+          position: "top-center",
+          autoClose: 3000,
+          theme: "colored",
+        });
+        return;
+      } else if (myCanView === "only premium" && isTargetPlatinumOrGold) {
         toast.error("Upgrade your plan to view Platinum and Golden Membership profiles.", {
           position: "top-center",
-          autoClose: 30000, // 30 seconds
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
+          autoClose: 3000,
           theme: "colored",
         });
         return;
@@ -685,212 +691,9 @@ const UserAllProfilePage = () => {
         <ShowInterest selectedUser={selectedUser} userId={userId} />
       )}
 
-      {/* Enhanced Chat Box */}
-      {isChatOpen && selectedUser && (
-        <div
-          className="chatbox"
-          style={{
-            position: "fixed",
-            bottom: "20px",
-            right: "20px",
-            width: "350px",
-            height: "500px",
-            backgroundColor: "#fff",
-            borderRadius: "8px",
-            boxShadow: "0 0 20px rgba(0,0,0,0.2)",
-            display: "flex",
-            flexDirection: "column",
-            zIndex: 1000,
-            overflow: "hidden",
-          }}
-        >
-          <div
-            className="chat-header"
-            style={{
-              padding: "15px",
-              backgroundColor: "#f8f9fa",
-              borderBottom: "1px solid #eee",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <img
-                src={selectedUser.profileImage || "images/default-profile.jpg"}
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "50%",
-                  marginRight: "10px",
-                }}
-                alt={selectedUser.userName}
-              />
-              <h4 style={{ margin: 0 }}>{selectedUser.userName}</h4>
-            </div>
-            <span
-              className="comm-msg-pop-clo"
-              onClick={closeChat}
-              style={{
-                cursor: "pointer",
-                fontSize: "20px",
-                color: "#999",
-              }}
-            >
-              <i className="fa fa-times" aria-hidden="true"></i>
-            </span>
-          </div>
 
-          <div
-            className="chat-messages"
-            style={{
-              flex: 1,
-              padding: "15px",
-              overflowY: "auto",
-            }}
-          >
-            {chatMessages.length === 0 ? (
-              <div
-                className="chat-welcome"
-                style={{
-                  textAlign: "center",
-                  color: "#999",
-                  marginTop: "50%",
-                }}
-              >
-                Start a new conversation with {selectedUser.userName}
-              </div>
-            ) : (
-              chatMessages.map((msg, index) => (
-                <div
-                  key={index}
-                  style={{
-                    marginBottom: "10px",
-                    textAlign: msg.sender === "me" ? "right" : "left",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "inline-block",
-                      padding: "8px 12px",
-                      borderRadius:
-                        msg.sender === "me"
-                          ? "18px 18px 0 18px"
-                          : "18px 18px 18px 0",
-                      backgroundColor:
-                        msg.sender === "me" ? "#007bff" : "#f1f1f1",
-                      color: msg.sender === "me" ? "#fff" : "#333",
-                      maxWidth: "80%",
-                    }}
-                  >
-                    {msg.message}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "11px",
-                      color: "#999",
-                      marginTop: "4px",
-                      textAlign: msg.sender === "me" ? "right" : "left",
-                    }}
-                  >
-                    {new Date(msg.timestamp).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
 
-          <div
-            className="chat-input"
-            style={{
-              padding: "10px",
-              borderTop: "1px solid #eee",
-              backgroundColor: "#f8f9fa",
-            }}
-          >
-            <form onSubmit={handleChatSend} style={{ display: "flex" }}>
-              <input
-                type="text"
-                value={chatMessage}
-                onChange={(e) => setChatMessage(e.target.value)}
-                placeholder="Type a message..."
-                style={{
-                  flex: 1,
-                  padding: "10px",
-                  border: "1px solid #ddd",
-                  borderRadius: "20px",
-                  outline: "none",
-                }}
-                required
-              />
-              <button
-                type="submit"
-                style={{
-                  marginLeft: "10px",
-                  padding: "10px 15px",
-                  backgroundColor: "#007bff",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "20px",
-                  cursor: "pointer",
-                }}
-              >
-                <i className="fa fa-paper-plane" aria-hidden="true"></i>
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
 
-      {/* Active Chats Indicator */}
-      {activeChats.length > 0 && !isChatOpen && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "20px",
-            right: "20px",
-            backgroundColor: "#007bff",
-            color: "#fff",
-            width: "50px",
-            height: "50px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            boxShadow: "0 0 10px rgba(0,0,0,0.2)",
-            zIndex: 999,
-          }}
-          onClick={() => setIsChatOpen(true)}
-        >
-          <i
-            className="fa fa-comments"
-            aria-hidden="true"
-            style={{ fontSize: "20px" }}
-          ></i>
-          <span
-            style={{
-              position: "absolute",
-              top: "-5px",
-              right: "-5px",
-              backgroundColor: "red",
-              color: "#fff",
-              borderRadius: "50%",
-              width: "20px",
-              height: "20px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "12px",
-            }}
-          >
-            {activeChats.length}
-          </span>
-        </div>
-      )}
 
       {/* Upgrade Popup */}
       {showUpgradePopup && (

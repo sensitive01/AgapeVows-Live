@@ -305,9 +305,6 @@ export default function MainMenu() {
                                   <a href="user-interests.html">Interests</a>
                                 </li>
                                 <li>
-                                  <a href="user-chat.html">Chat lists</a>
-                                </li>
-                                <li>
                                   <a href="user-plan.html">My plan details</a>
                                 </li>
                                 <li>
@@ -393,9 +390,7 @@ export default function MainMenu() {
                         <li>
                           <a href="user-interests.html">Interests</a>
                         </li>
-                        <li>
-                          <a href="user-chat.html">Chat lists</a>
-                        </li>
+
                         <li>
                           <a href="user-plan.html">My plan details</a>
                         </li>

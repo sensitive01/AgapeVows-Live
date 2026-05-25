@@ -96,7 +96,7 @@ const paymentSchema = new mongoose.Schema(
     },
 
     amount: {
-      type: Number,
+      type: mongoose.Schema.Types.Mixed,
       required: true,
     },
 
@@ -113,7 +113,7 @@ const paymentSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["razorpay", "wallet", "cash"],
+      enum: ["razorpay", "wallet", "cash", "free"],
       required: true,
     },
 
@@ -130,16 +130,17 @@ const paymentSchema = new mongoose.Schema(
     // ✅ PLAN DETAILS
     planDetails: {
       name: String,
-      price: Number,
-      duration: Number,
+      price: mongoose.Schema.Types.Mixed,
+      duration: mongoose.Schema.Types.Mixed,
       durationType: String,
-      maxProfiles: Number,
+      maxProfiles: mongoose.Schema.Types.Mixed,
       profilesType: String,
-      dailyLimit: String,
+      dailyLimit: mongoose.Schema.Types.Mixed,
       canViewProfiles: String,
-      viewContactDetails: String,
-      sendInterestRequest: String,
-      startChat: String,
+      maxSendInterest: mongoose.Schema.Types.Mixed,
+      dailyLimitSendInterest: mongoose.Schema.Types.Mixed,
+      maxViewContact: mongoose.Schema.Types.Mixed,
+      dailyLimitViewContact: mongoose.Schema.Types.Mixed,
     },
   },
   { timestamps: true }

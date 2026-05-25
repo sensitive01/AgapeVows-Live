@@ -15,7 +15,16 @@ const AdminUserPlan = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const plansPerView = 3;
-  const maxSlide = Math.max(0, plans.length - plansPerView);
+  const maxSlide = Math.max(0, Math.ceil(plans.length / plansPerView) - 1);
+
+  const formatPlanDuration = (duration, type) => {
+    if (!type) return `${duration}mo`;
+    const t = type.toLowerCase();
+    if (t === "days" || t === "day") return `${duration} days`;
+    if (t === "months" || t === "month") return `${duration}mo`;
+    if (t === "years" || t === "year") return `${duration}yr`;
+    return `${duration} ${type}`;
+  };
 
   const nextSlide = () => {
     setCurrentSlide((prev) => Math.min(prev + 1, maxSlide));
@@ -88,6 +97,39 @@ const AdminUserPlan = () => {
     }
 
     setUpgrading(true);
+
+    if (plan.price === 0 || plan.price === "0") {
+      try {
+        const planDataWithPayment = { ...plan, paymentId: `free_${Date.now()}` };
+        const backendResponse = await upgradeUserPlan(id, planDataWithPayment);
+        
+        if (backendResponse.status === 200) {
+          showAlert({
+            title: "Success",
+            text: `Free Upgrade completed for ${user.userName}.`,
+            icon: "success",
+          });
+          navigate(`/admin/billing-info/${id}`);
+        } else {
+          showAlert({
+            title: "Error",
+            text: "Failed to complete manual upgrade.",
+            icon: "error",
+          });
+        }
+      } catch (error) {
+        console.error("Error processing free upgrade:", error);
+        showAlert({
+          title: "Error",
+          text: "An error occurred while upgrading.",
+          icon: "error",
+        });
+      } finally {
+        setUpgrading(false);
+      }
+      return;
+    }
+
     const scriptLoaded = await loadRazorpayScript();
     
     if (!scriptLoaded) {
@@ -287,7 +329,7 @@ const AdminUserPlan = () => {
                     <div className="text-center mb-4">
                       <h2 className="fw-bold mb-0 fs-1">
                         {plan.priceType || '₹'}{plan.price}
-                        <span className="fs-5 text-muted fw-normal">/{plan.duration}{plan.durationType?.substring(0, 2)}</span>
+                        <span className="fs-5 text-muted fw-normal">/{formatPlanDuration(plan.duration, plan.durationType)}</span>
                       </h2>
                     </div>
 
@@ -305,16 +347,20 @@ const AdminUserPlan = () => {
                         <span className="small">{plan.canViewProfiles || 'Only Premium'} user profile can view</span>
                       </li>
                       <li className="mb-3 d-flex align-items-center">
-                        <i className={`fa ${plan.viewContactDetails === 'Yes' ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'} me-3 fs-5`}></i>
-                        <span className="small">View contact details</span>
+                        <i className={`fa fa-check-circle text-success me-3 fs-5`}></i>
+                        <span className="small">Send interest: {plan.maxSendInterest === "Unlimited" || (typeof plan.maxSendInterest === 'string' && plan.maxSendInterest.toLowerCase() === 'unlimited') ? "Unlimited" : plan.maxSendInterest}</span>
                       </li>
                       <li className="mb-3 d-flex align-items-center">
-                        <i className={`fa ${plan.sendInterestRequest === 'Yes' ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'} me-3 fs-5`}></i>
-                        <span className="small">Send interest</span>
+                        <i className={`fa fa-check-circle text-success me-3 fs-5`}></i>
+                        <span className="small">Daily send interest limit: {plan.dailyLimitSendInterest}</span>
                       </li>
                       <li className="mb-3 d-flex align-items-center">
-                        <i className={`fa ${plan.startChat === 'Yes' ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'} me-3 fs-5`}></i>
-                        <span className="small">Start Chat</span>
+                        <i className={`fa fa-check-circle text-success me-3 fs-5`}></i>
+                        <span className="small">View contact details: {plan.maxViewContact === "Unlimited" || (typeof plan.maxViewContact === 'string' && plan.maxViewContact.toLowerCase() === 'unlimited') ? "Unlimited" : plan.maxViewContact}</span>
+                      </li>
+                      <li className="mb-3 d-flex align-items-center">
+                        <i className={`fa fa-check-circle text-success me-3 fs-5`}></i>
+                        <span className="small">Daily view contact limit: {plan.dailyLimitViewContact}</span>
                       </li>
                     </ul>
                   </div>

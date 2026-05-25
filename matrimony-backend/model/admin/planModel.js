@@ -57,9 +57,20 @@ const planSchema = new mongoose.Schema(
       enum: ["Yes", "No"],
       required: true,
     },
-    startChat: {
-      type: String,
-      enum: ["Yes", "No"],
+    maxSendInterest: {
+      type: mongoose.Schema.Types.Mixed,
+      required: true,
+    },
+    dailyLimitSendInterest: {
+      type: mongoose.Schema.Types.Mixed,
+      required: true,
+    },
+    maxViewContact: {
+      type: mongoose.Schema.Types.Mixed,
+      required: true,
+    },
+    dailyLimitViewContact: {
+      type: mongoose.Schema.Types.Mixed,
       required: true,
     },
     // NEW: Dedicated manager field

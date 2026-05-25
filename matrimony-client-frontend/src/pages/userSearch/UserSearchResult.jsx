@@ -237,24 +237,33 @@ const UserSearchResult = () => {
 
     const targetPlanName =
       targetUserActivePlan?.subscriptionType?.toLowerCase() || "";
-    const myPlanName = currentUserPlan?.subscriptionType?.toLowerCase() || "";
+    const myCanViewRaw = currentUserPlan?.canViewProfiles || "All Profiles";
 
-    console.log("My Plan (Search):", myPlanName);
+    console.log("My Can View (Search):", myCanViewRaw);
     console.log("Target Plan (Search):", targetPlanName);
+    const myCanView = myCanViewRaw.toString().trim().toLowerCase();
 
-    const isTargetRestricted =
+    const isTargetPlatinumOrGold =
       targetPlanName.includes("platinum") ||
       targetPlanName.includes("gold") ||
       targetPlanName.includes("golden");
 
-    if (myPlanName.includes("premium")) {
-      if (isTargetRestricted) {
+    if (!myCanView.includes("all")) {
+      if (myCanView === "only basic" && targetPlanName && !targetPlanName.includes("basic")) {
+        showAlert({
+          title: "Upgrade Required",
+          text: "Your plan only allows viewing Basic profiles. Please upgrade to access other profiles.",
+          icon: "info",
+        });
+        return;
+      }
+
+      if (myCanView === "only premium" && isTargetPlatinumOrGold) {
         showAlert({
           title: "Upgrade Required",
           text: "Upgrade your plan to view Platinum and Golden Membership profiles.",
           icon: "info",
         });
-
         return;
       }
     }

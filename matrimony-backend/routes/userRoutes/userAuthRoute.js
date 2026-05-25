@@ -67,7 +67,6 @@ const multer = require("multer");
 
 const userAuthRoutes = express.Router();
 const userAuthController = require("../../controller/userController/userAuthController");
-const userChatController = require("../../controller/userController/userChatController");
 const enquiryController = require("../../controller/userController/enquiryController");
 
 const reportController = require("../../controller/userController/reportController");
@@ -121,17 +120,15 @@ userAuthRoutes.get("/new-profile-matches/:userId", userAuthController.getNewProf
 userAuthRoutes.get("/get-profile-more-information/:profileId", userAuthController.getProfileMoreInformation);
 userAuthRoutes.get("/get-plan-details", userAuthController.getPlanDetails);
 userAuthRoutes.get("/get-my-active-plan-details/:userId", userAuthController.getMyActivePlanDetails);
+userAuthRoutes.post("/view-contact-details/:userId", userAuthController.viewContactDetails);
 userAuthRoutes.get("/get-short-listed-profile-data/:userId", userAuthController.getShortListedProfileData);
 userAuthRoutes.get("/users/:userId/who-viewed-you-page", userAuthController.getWhoViewedYou);
 
 userAuthRoutes.get("/get-events", userAuthController.getAllEvents);
 userAuthRoutes.get(
-  "/get-blogs",
+    "/get-blogs",
   userAuthController.getAllBlogs
 );
-userAuthRoutes.get("/get-all-chat-done-by-the-users/:senderId/:receiverId", userChatController.getAllChatDoneByTheUsers);
-userAuthRoutes.get("/send-my-chat-list/:senderId", userChatController.getMyChatList);
-userAuthRoutes.get("/send-my-individual-chat-list/:chatId", userChatController.getMyIndividualChat);
 
 // PDF invoice download
 userAuthRoutes.get("/download-invoice/:userId/:transactionId", userAuthController.downloadInvoice);
@@ -157,9 +154,8 @@ userAuthRoutes.post("/delete-additional-images/:userId", userAuthController.dele
 
 // UPDATED BELOW
 
-// PLAN & CHAT
+// PLAN
 userAuthRoutes.post("/save-plan-details/:userId", userAuthController.savePlanDetails);
-userAuthRoutes.post("/send-my-chat/:senderId/:receiverId", userChatController.saveMyChats);
 userAuthRoutes.post("/short-list-the-profile/:userId", userAuthController.shortListTheProfile);
 
 // UPDATE Interest
@@ -198,6 +194,5 @@ userAuthRoutes.get("/api/users/:userId/blocked-profiles", userAuthController.get
 userAuthRoutes.post("/api/users/:userId/block", userAuthController.blockUser);
 userAuthRoutes.post("/api/users/:userId/unblock", userAuthController.unblockUser);
 userAuthRoutes.post("/deactivate-profile/:userId", userAuthController.deactivateProfile);
-userAuthRoutes.post("/clear-chat/:chatId", userChatController.clearChat);
 
 module.exports = userAuthRoutes;
