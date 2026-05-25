@@ -3441,22 +3441,6 @@ const UserProfileEditPage = () => {
                         <span style={{ fontSize: "14px", fontWeight: "700", color: "#374151" }}>
                           Basic & Religion Preferences
                         </span>
-                        <div
-                          style={{
-                            background: "#1f2937",
-                            color: "#fff",
-                            width: "20px",
-                            height: "20px",
-                            borderRadius: "4px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            cursor: "pointer",
-                            fontSize: "12px",
-                          }}
-                        >
-                          <i className="fa fa-times"></i>
-                        </div>
                       </div>
 
                       <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "24px" }}>

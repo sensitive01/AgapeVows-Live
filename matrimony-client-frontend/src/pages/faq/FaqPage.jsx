@@ -1,6 +1,7 @@
 import React from "react";
 import LayoutComponent from "../../components/layouts/LayoutComponent";
 import Footer from "../../components/Footer";
+import faqHero from "../../assets/images/ban-bg.jpg";
 
 const FaqPage = () => {
   const faqs = [
@@ -53,32 +54,43 @@ const FaqPage = () => {
       </div>
 
       {/* --- PAGE HEADER --- */}
-      <div className="pt-[160px] pb-12 bg-white border-b border-gray-100">
-        <div className="container mx-auto px-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900" style={{ fontFamily: 'var(--tit-font)' }}>
-            Frequently Asked Questions
-          </h1>
-          <div className="h-1 w-16 bg-purple-600 mt-4"></div>
+      <div className="pt-[160px] pb-12">
+        <div className="relative overflow-hidden rounded-b-[40px] shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${faqHero})` }}
+          />
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="relative container mx-auto px-6 py-24 text-center">
+            <span className="inline-flex items-center rounded-full bg-white/90 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-purple-700 mb-6">
+              AgapeVows Help Center
+            </span>
+            <h1 className="text-4xl md:text-5xl font-bold text-white" style={{ fontFamily: 'var(--tit-font)' }}>
+              Frequently Asked Questions
+            </h1>
+            <p className="mt-4 mx-auto max-w-2xl text-white/85 text-base md:text-lg leading-relaxed">
+              Answers to the most common questions about how AgapeVows works, your safety, membership, and matchmaking.
+            </p>
+          </div>
         </div>
       </div>
 
       {/* --- FAQ CONTENT --- */}
-      <section className="py-16">
+      <section className="py-20 bg-[#f2f4f9]">
         <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto space-y-6">
+          <div className="max-w-5xl mx-auto grid gap-6">
             {faqs.map((faq, index) => (
-              <div 
-                key={index} 
-                className="bg-white border border-gray-100 rounded-xl p-8 shadow-sm hover:shadow-md transition-shadow"
+              <div
+                key={index}
+                className="bg-white border border-slate-200 rounded-[28px] p-8 shadow-[0_24px_48px_rgba(15,23,42,0.06)] transition-transform duration-300 hover:-translate-y-1"
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center font-bold">
+                  <div className="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-700 rounded-2xl flex items-center justify-center font-semibold text-sm">
                     {index + 1}
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-4">{faq.q}</h3>
-                    <div className="h-px w-12 bg-gray-100 mb-4"></div>
-                    <p className="text-gray-600 leading-relaxed">
+                    <h3 className="text-2xl font-semibold text-slate-900 mb-3">{faq.q}</h3>
+                    <p className="text-slate-600 leading-relaxed">
                       {faq.a}
                     </p>
                   </div>
@@ -92,12 +104,14 @@ const FaqPage = () => {
       {/* --- CONTACT CTA --- */}
       <section className="pb-24">
         <div className="container mx-auto px-6 text-center">
-          <div className="bg-purple-600 rounded-2xl p-12 text-white max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold mb-4">Still have questions?</h2>
-            <p className="text-purple-100 mb-8">Our support team is here to help you 24/7.</p>
-            <a 
-              href="/help-support" 
-              className="inline-block bg-white text-purple-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-50 transition-colors"
+          <div className="bg-purple-600 rounded-3xl p-12 text-white max-w-4xl mx-auto shadow-[0_30px_60px_rgba(99,102,241,0.18)]">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Still have questions?</h2>
+            <p className="text-purple-100 mb-8 text-lg leading-relaxed">
+              Our support team is here to help you with your matchmaking journey and answer every question.
+            </p>
+            <a
+              href="/help-support"
+              className="inline-block bg-white text-purple-600 px-8 py-3 rounded-full font-semibold hover:bg-slate-50 transition-colors"
             >
               Contact Support
             </a>
