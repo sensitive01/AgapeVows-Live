@@ -913,6 +913,41 @@ const UserProfileEditPage = () => {
   const stateOptions = selectedCountryCode
     ? State.getStatesOfCountry(selectedCountryCode).map((state) => state.name)
     : [];
+
+  const currentStateOptions = formData.currentCountry
+    ? (() => {
+        const c = allCountries.find((country) => country.name === formData.currentCountry);
+        return c ? State.getStatesOfCountry(c.isoCode).map((s) => s.name) : [];
+      })()
+    : [];
+
+  const permanentStateOptions = formData.permanentCountry
+    ? (() => {
+        const c = allCountries.find((country) => country.name === formData.permanentCountry);
+        return c ? State.getStatesOfCountry(c.isoCode).map((s) => s.name) : [];
+      })()
+    : [];
+
+  const currentDistrictOptions = formData.currentCountry && formData.currentState
+    ? (() => {
+        const c = allCountries.find((country) => country.name === formData.currentCountry);
+        if (!c) return [];
+        const states = State.getStatesOfCountry(c.isoCode);
+        const s = states.find((state) => state.name === formData.currentState);
+        return s ? City.getCitiesOfState(c.isoCode, s.isoCode).map((city) => city.name) : [];
+      })()
+    : [];
+
+  const permanentDistrictOptions = formData.permanentCountry && formData.permanentState
+    ? (() => {
+        const c = allCountries.find((country) => country.name === formData.permanentCountry);
+        if (!c) return [];
+        const states = State.getStatesOfCountry(c.isoCode);
+        const s = states.find((state) => state.name === formData.permanentState);
+        return s ? City.getCitiesOfState(c.isoCode, s.isoCode).map((city) => city.name) : [];
+      })()
+    : [];
+
   const cityOptions =
     selectedCountryCode && selectedStateCode
       ? City.getCitiesOfState(selectedCountryCode, selectedStateCode).map(
@@ -2973,8 +3008,8 @@ const UserProfileEditPage = () => {
                       <InlineFormInput label="Door / Flat No (Name), Street" name="currentDoorNo" value={formData.currentDoorNo} onChange={handleInputChange} />
                       <InlineFormInput label="Locality / Area" name="currentLocality" value={formData.currentLocality} onChange={handleInputChange} />
                       <InlineFormInput label="Country" name="currentCountry" type="select" searchable={true} options={countryOptions} value={formData.currentCountry} onChange={handleInputChange} />
-                      <InlineFormInput label="State" name="currentState" type="select" searchable={true} options={stateOptions} value={formData.currentState} onChange={handleInputChange} />
-                      <InlineFormInput label="District / City" name="currentDistrict" value={formData.currentDistrict} onChange={handleInputChange} />
+                      <InlineFormInput label="State" name="currentState" type="select" searchable={true} options={currentStateOptions} value={formData.currentState} onChange={handleInputChange} />
+                      <InlineFormInput label="District / City" name="currentDistrict" type="select" searchable={true} options={currentDistrictOptions} value={formData.currentDistrict} onChange={handleInputChange} />
                       <InlineFormInput label="Pincode" name="currentPincode" value={formData.currentPincode} onChange={handleInputChange} />
                       <InlineFormInput label="Citizen Of" name="citizenOf" type="select" searchable={true} options={countryOptions} value={formData.citizenOf} onChange={handleCountryChange} />
 
@@ -2992,8 +3027,8 @@ const UserProfileEditPage = () => {
                       <InlineFormInput label="Door / Flat No (Name), Street" name="permanentDoorNo" value={formData.permanentDoorNo} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
                       <InlineFormInput label="Locality / Area" name="permanentLocality" value={formData.permanentLocality} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
                       <InlineFormInput label="Country" name="permanentCountry" type="select" searchable={true} options={countryOptions} value={formData.permanentCountry} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
-                      <InlineFormInput label="State" name="permanentState" type="select" searchable={true} options={stateOptions} value={formData.permanentState} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
-                      <InlineFormInput label="District / City" name="permanentDistrict" value={formData.permanentDistrict} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
+                      <InlineFormInput label="State" name="permanentState" type="select" searchable={true} options={permanentStateOptions} value={formData.permanentState} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
+                      <InlineFormInput label="District / City" name="permanentDistrict" type="select" searchable={true} options={permanentDistrictOptions} value={formData.permanentDistrict} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
                       <InlineFormInput label="Pincode" name="permanentPincode" value={formData.permanentPincode} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
                     </div>
                   </FormSection>
