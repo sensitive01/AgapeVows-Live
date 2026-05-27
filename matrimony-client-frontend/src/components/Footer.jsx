@@ -179,8 +179,7 @@ const Footer = ({ paddingTop = '80px' }) => {
                 <li><Link to="/user/events-page" style={{ display: 'flex', alignItems: 'center' }}>Events </Link></li>
                 <li><Link to="/church-partner">Churches</Link></li>
                 <li><Link to="/privacy-policy">Privacy Policy</Link></li>
-                <li><Link to="/terms">Terms</Link></li>
-                <li><Link to="/refund">Refund</Link></li>
+                <li><Link to="/terms">Terms of use</Link></li>
               </ul>
             </div>
 

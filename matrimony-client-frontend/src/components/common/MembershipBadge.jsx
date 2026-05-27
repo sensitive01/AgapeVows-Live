@@ -17,9 +17,6 @@ const MembershipBadge = ({ user, isMini = false, isMinimal = false }) => {
     }
   }
 
-  // If no specific plan name found but isAnySubscriptionTaken is true, 
-  // we might have to fallback or it might be a legacy field.
-  // In some cases, subscriptionType might be directly on the user object (if the backend sends it)
   if (!planName) {
       // Check for legacy or direct field
       planName = user.subscriptionType || user.planName || "";

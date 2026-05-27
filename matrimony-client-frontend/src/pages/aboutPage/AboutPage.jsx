@@ -1,6 +1,7 @@
 import React from "react";
 import LayoutComponent from "../../components/layouts/LayoutComponent";
 import Footer from "../../components/Footer";
+import landingPageBg from '../../assets/images/landing-page1.png'; 
 
 const AboutPage = () => {
   return (
@@ -22,23 +23,23 @@ const AboutPage = () => {
       {/* --- MAIN CONTENT: FAITH & MISSION --- */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-6">
-          <div className="flex flex-wrap -mx-6 items-center">
+          <div className="flex flex-wrap -mx-6 items-start">
             <div className="w-full lg:w-1/2 px-6 mb-10 lg:mb-0">
               <img 
-                src="images/about/1.jpg" 
+                src={landingPageBg} 
                 alt="Our Faith" 
                 className="rounded-xl shadow-lg w-full h-[400px] object-cover" 
               />
             </div>
             <div className="w-full lg:w-1/2 px-6">
               <div className="lg:pl-10">
-                <h2 className="text-2xl font-bold text-purple-700 mb-4 uppercase tracking-wide text-sm">Built on Faith. Bound by Love.</h2>
-                <h3 className="text-3xl font-bold text-gray-900 mb-6 leading-tight">Our Sacred Covenant</h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
+                <h1 className="text-5xl lg:text-7xl font-bold text-purple-700 mb-4 uppercase tracking-wide break-words">Built on Faith. Bound by Love.</h1>
+                <h3 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">Our Sacred Covenant</h3>
+                <p className="text-2xl text-gray-600 leading-snug mb-4">
                   At <strong>AgapeVows</strong>, we believe that marriage is more than a legal contract, it is a sacred covenant. Our name is derived from the Greek word <em>Agape</em>, representing the highest, most selfless form of love: the love God has for us, and the love we are called to show one another.
                 </p>
                 <div className="p-5 bg-purple-50 rounded-lg border-l-4 border-purple-600">
-                  <p className="text-gray-800 font-medium italic">
+                  <p className="text-2xl text-gray-800 font-medium italic">
                     "Our mission is simple: To help Indian Christian singles find a life partner who shares their faith, respects their heritage, and walks the same spiritual path."
                   </p>
                 </div>
@@ -53,14 +54,14 @@ const AboutPage = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-10">
-               <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Story</h2>
+               <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Story</h2>
                <div className="w-12 h-1 bg-purple-600 mx-auto"></div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-2xl text-gray-600 leading-snug">
                 In a world of endless scrolling and superficial connections, we noticed a gap in the Christian community. Many felt that existing platforms were either too expensive, lacked privacy, or were crowded with unverified profiles.
               </p>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-2xl text-gray-600 leading-snug">
                 AgapeVows was born out of a desire to create a sanctuary for matchmaking. We wanted to build a platform where integrity comes first, where your privacy is respected, and where the focus remains on building Christ-centered homes.
               </p>
             </div>
@@ -78,7 +79,7 @@ const AboutPage = () => {
                 <i className="fa fa-shield"></i>
               </div>
               <h4 className="text-xl font-bold text-gray-900 mb-3">Integrity through Verification</h4>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <p className="text-xl text-gray-600 leading-snug">
                 We manually review every profile and implement mandatory ID verification. When you see an "ID Verified" badge, you know you’re talking to someone real.
               </p>
             </div>
@@ -88,7 +89,7 @@ const AboutPage = () => {
                 <i className="fa fa-users"></i>
               </div>
               <h4 className="text-xl font-bold text-gray-900 mb-3">Accessibility for All</h4>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <p className="text-xl text-gray-600 leading-snug">
                 Finding your soulmate shouldn't be a financial burden. We offer Free Premium features to ensure every member has the tools they need to connect.
               </p>
             </div>
@@ -98,7 +99,7 @@ const AboutPage = () => {
                 <i className="fa fa-lock"></i>
               </div>
               <h4 className="text-xl font-bold text-gray-900 mb-3">Privacy First</h4>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <p className="text-xl text-gray-600 leading-snug">
                 Your journey is personal. Manage who sees your photos and contact details with advanced privacy controls. You are in total control.
               </p>
             </div>
@@ -113,13 +114,13 @@ const AboutPage = () => {
             <div className="space-y-10">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">One Faith, Many Traditions</h2>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-600 leading-snug">
                   India’s Christian heritage is rich and diverse. Whether you belong to the Roman Catholic, CSI, CNI, Pentecostal, Orthodox, Evangelical, or Baptist traditions, AgapeVows is designed to honour your specific roots while celebrating our shared faith in Christ.
                 </p>
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Vision</h2>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-600 leading-snug">
                   Our vision is to see a generation of Christian marriages that reflect the love of Christ—marriages built on prayer, shared values, and mutual respect. We provide the platform; we trust God to provide the blessing.
                 </p>
               </div>

@@ -146,6 +146,58 @@ const ActivePlanCard = ({ externalPlanData }) => {
   const remainingProfiles = isUnlimitedProfiles ? "Unlimited" : parsedMax - profilesViewedCount;
   const remainingDaily = isUnlimitedDaily ? "Unlimited" : parsedDaily - dailyViewedCount;
 
+  // Interest Calculations
+  const isUnlimitedInterest =
+    rawMaxSendInterest === "Unlimited" ||
+    rawMaxSendInterest === "unlimited" ||
+    parseInt(rawMaxSendInterest) >= 999999 ||
+    planType === "platinum" ||
+    planType === "gold" ||
+    planType === "golden";
+
+  const isUnlimitedDailyInterest =
+    rawDailyLimitSendInterest === "Unlimited" ||
+    rawDailyLimitSendInterest === "unlimited" ||
+    parseInt(rawDailyLimitSendInterest) >= 999999 ||
+    planType === "platinum" ||
+    planType === "gold" ||
+    planType === "golden";
+
+  const parsedMaxInterest = parseInt(rawMaxSendInterest) || 0;
+  const parsedDailyInterest = parseInt(rawDailyLimitSendInterest) || 0;
+
+  const interestUsagePercent = isUnlimitedInterest ? 0 : parsedMaxInterest > 0 ? Math.min((interestSentCount / parsedMaxInterest) * 100, 100) : 0;
+  const interestDailyPercent = isUnlimitedDailyInterest ? 0 : parsedDailyInterest > 0 ? Math.min((dailyInterestSentCount / parsedDailyInterest) * 100, 100) : 0;
+
+  const remainingInterest = isUnlimitedInterest ? "Unlimited" : parsedMaxInterest - interestSentCount;
+  const remainingDailyInterest = isUnlimitedDailyInterest ? "Unlimited" : parsedDailyInterest - dailyInterestSentCount;
+
+  // Contact Calculations
+  const isUnlimitedContact =
+    rawMaxViewContact === "Unlimited" ||
+    rawMaxViewContact === "unlimited" ||
+    parseInt(rawMaxViewContact) >= 999999 ||
+    planType === "platinum" ||
+    planType === "gold" ||
+    planType === "golden";
+
+  const isUnlimitedDailyContact =
+    rawDailyLimitViewContact === "Unlimited" ||
+    rawDailyLimitViewContact === "unlimited" ||
+    parseInt(rawDailyLimitViewContact) >= 999999 ||
+    planType === "platinum" ||
+    planType === "gold" ||
+    planType === "golden";
+
+  const parsedMaxContact = parseInt(rawMaxViewContact) || 0;
+  const parsedDailyContact = parseInt(rawDailyLimitViewContact) || 0;
+
+  const contactUsagePercent = isUnlimitedContact ? 0 : parsedMaxContact > 0 ? Math.min((contactViewCount / parsedMaxContact) * 100, 100) : 0;
+  const contactDailyPercent = isUnlimitedDailyContact ? 0 : parsedDailyContact > 0 ? Math.min((dailyContactViewCount / parsedDailyContact) * 100, 100) : 0;
+
+  const remainingContact = isUnlimitedContact ? "Unlimited" : parsedMaxContact - contactViewCount;
+  const remainingDailyContact = isUnlimitedDailyContact ? "Unlimited" : parsedDailyContact - dailyContactViewCount;
+
   return (
     <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com h-100">
       <h2 className="db-tit">Active plan benefits</h2>
@@ -247,26 +299,72 @@ const ActivePlanCard = ({ externalPlanData }) => {
 
         {/* Interest Usage */}
         <div className="mb-4">
-          <strong>Interest Requests</strong>
+          <strong>Interest Requests (Total)</strong>
           <div className="d-flex justify-content-between small text-muted">
             <span>{interestSentCount} used</span>
-            <span>{rawMaxSendInterest === "Unlimited" || rawMaxSendInterest === "unlimited" ? "Unlimited" : rawMaxSendInterest} total</span>
+            <span>{isUnlimitedInterest ? "Unlimited" : parsedMaxInterest} total</span>
           </div>
-          <small className="text-muted">
-            Daily: {dailyInterestSentCount} / {rawDailyLimitSendInterest === "Unlimited" || rawDailyLimitSendInterest === "unlimited" ? "Unlimited" : rawDailyLimitSendInterest}
+          {!isUnlimitedInterest && (
+            <div className="progress mt-2" style={{ height: "8px" }}>
+              <div className="progress-bar bg-warning" style={{ width: `${interestUsagePercent}%` }}></div>
+            </div>
+          )}
+          <small className="text-muted d-block mb-3">
+            Remaining: {remainingInterest > 0 || isUnlimitedInterest ? remainingInterest : 0}
           </small>
+
+          {(isUnlimitedDailyInterest || parsedDailyInterest > 0) && (
+            <>
+              <strong>Interest Requests (Daily)</strong>
+              <div className="d-flex justify-content-between small text-muted">
+                <span>{dailyInterestSentCount} used</span>
+                <span>{isUnlimitedDailyInterest ? "Unlimited" : parsedDailyInterest} total</span>
+              </div>
+              {!isUnlimitedDailyInterest && (
+                <div className="progress mt-2" style={{ height: "8px" }}>
+                  <div className="progress-bar bg-info" style={{ width: `${interestDailyPercent}%` }}></div>
+                </div>
+              )}
+              <small className="text-muted d-block">
+                Remaining Today: {remainingDailyInterest > 0 || isUnlimitedDailyInterest ? remainingDailyInterest : 0}
+              </small>
+            </>
+          )}
         </div>
 
         {/* Contact View Usage */}
         <div className="mb-4">
-          <strong>Contact Views</strong>
+          <strong>Contact Views (Total)</strong>
           <div className="d-flex justify-content-between small text-muted">
             <span>{contactViewCount} used</span>
-            <span>{rawMaxViewContact === "Unlimited" || rawMaxViewContact === "unlimited" ? "Unlimited" : rawMaxViewContact} total</span>
+            <span>{isUnlimitedContact ? "Unlimited" : parsedMaxContact} total</span>
           </div>
-          <small className="text-muted">
-            Daily: {dailyContactViewCount} / {rawDailyLimitViewContact === "Unlimited" || rawDailyLimitViewContact === "unlimited" ? "Unlimited" : rawDailyLimitViewContact}
+          {!isUnlimitedContact && (
+            <div className="progress mt-2" style={{ height: "8px" }}>
+              <div className="progress-bar bg-warning" style={{ width: `${contactUsagePercent}%` }}></div>
+            </div>
+          )}
+          <small className="text-muted d-block mb-3">
+            Remaining: {remainingContact > 0 || isUnlimitedContact ? remainingContact : 0}
           </small>
+
+          {(isUnlimitedDailyContact || parsedDailyContact > 0) && (
+            <>
+              <strong>Contact Views (Daily)</strong>
+              <div className="d-flex justify-content-between small text-muted">
+                <span>{dailyContactViewCount} used</span>
+                <span>{isUnlimitedDailyContact ? "Unlimited" : parsedDailyContact} total</span>
+              </div>
+              {!isUnlimitedDailyContact && (
+                <div className="progress mt-2" style={{ height: "8px" }}>
+                  <div className="progress-bar bg-info" style={{ width: `${contactDailyPercent}%` }}></div>
+                </div>
+              )}
+              <small className="text-muted d-block">
+                Remaining Today: {remainingDailyContact > 0 || isUnlimitedDailyContact ? remainingDailyContact : 0}
+              </small>
+            </>
+          )}
         </div>
 
         {/* Benefits List */}
@@ -292,7 +390,6 @@ const ActivePlanCard = ({ externalPlanData }) => {
 
         </ul>
 
-        {/* Expiry */}
         <div className="mt-4 pt-3 border-top small text-muted">
           Valid Till: <strong>{subscriptionValidTo}</strong>
         </div>

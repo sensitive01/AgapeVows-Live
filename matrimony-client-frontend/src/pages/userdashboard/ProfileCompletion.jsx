@@ -50,6 +50,7 @@ const ProfileCompletion = ({ userData }) => {
         "fathersOccupation",
         "fathersProfession",
         "mothersOccupation",
+        "mothersProfession",
         "fathersNative",
         "mothersNative",
         "familyValue",
@@ -248,6 +249,8 @@ const ProfileCompletion = ({ userData }) => {
     return percentage;
   };
 
+  const [displayPercentage, setDisplayPercentage] = useState(0);
+
   // Update completion percentage whenever userData changes
   useEffect(() => {
     console.log("ProfileCompletion useEffect triggered with userData:", {
@@ -263,35 +266,35 @@ const ProfileCompletion = ({ userData }) => {
       console.log("ProfileCompletion: Setting completionPercentage to:", percentage);
       setCompletionPercentage(percentage);
       
-      // Re-trigger jQuery animation for the count element
-      if (typeof window.$ !== 'undefined' && window.$.fn) {
-        const countElement = document.querySelector('.db-pro-pgog .count');
-        if (countElement) {
-          // Stop any running animation
-          window.$(countElement).stop(true, true);
-          // Reset the counter
-          window.$(countElement).prop('Counter', 0);
-          // Restart animation with new value
-          window.$(countElement).animate(
-            {
-              Counter: percentage,
-            },
-            {
-              duration: 1000,
-              easing: 'swing',
-              step: function (now) {
-                window.$(this).text(Math.ceil(now));
-              },
-              complete: function () {
-                window.$(this).text(percentage);
-              },
-            }
-          );
-        }
+      // React-based smooth counter animation
+      let start = 0;
+      const end = percentage;
+      if (start === end) {
+        setDisplayPercentage(end);
+        return;
       }
+      
+      const duration = 1000;
+      const incrementTime = 20; // ms
+      const totalSteps = Math.ceil(duration / incrementTime);
+      const stepValue = end / totalSteps;
+      
+      let currentStep = 0;
+      const timer = setInterval(() => {
+        currentStep++;
+        if (currentStep >= totalSteps) {
+          setDisplayPercentage(end);
+          clearInterval(timer);
+        } else {
+          setDisplayPercentage(Math.ceil(currentStep * stepValue));
+        }
+      }, incrementTime);
+      
+      return () => clearInterval(timer);
     } else {
       console.log("ProfileCompletion: userData is empty or invalid");
       setCompletionPercentage(0);
+      setDisplayPercentage(0);
     }
   }, [userData]);
 
@@ -349,7 +352,7 @@ const ProfileCompletion = ({ userData }) => {
         </div>
         <div className="db-pro-pgog">
           <span>
-            <b className="count">{completionPercentage}</b>%
+            <b className="profile-count">{displayPercentage}</b>%
           </span>
         </div>
         <ul className="pro-stat-ic">

@@ -6,7 +6,7 @@ import CopyRights from "../../components/CopyRights";
 import ShowInterest from "./ShowInterest";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getTheProfieMoreDetails, getUserProfile, viewContactDetails, sendChatMessage, submitReport } from "../../api/axiosService/userAuthService";
+import { getTheProfieMoreDetails, getUserProfile, viewContactDetails, sendChatMessage, submitReport, isUserMadeTheInterest } from "../../api/axiosService/userAuthService";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { showAlert } from "../../utils/alertService";
 
@@ -65,6 +65,23 @@ const MoreDetails = () => {
   const [reportComments, setReportComments] = useState("");
   const [isReporting, setIsReporting] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [interestStatus, setInterestStatus] = useState(null);
+
+  useEffect(() => {
+    const fetchInterestStatus = async () => {
+      if (currentUserId && profileId) {
+        try {
+          const response = await isUserMadeTheInterest(currentUserId, profileId);
+          if (response.data && response.data.success) {
+            setInterestStatus(response.data.status);
+          }
+        } catch (error) {
+          console.error("Error fetching interest status", error);
+        }
+      }
+    };
+    fetchInterestStatus();
+  }, [currentUserId, profileId]);
 
   const allImages = useMemo(() => {
     if (!userInfo) return [];
@@ -388,6 +405,7 @@ const MoreDetails = () => {
 
               <button
                 className="interest-btn"
+                style={{ backgroundColor: interestStatus ? "#10b981" : "" }}
                 onClick={(e) => {
                   if (!isPaidUser) {
                     setShowUpgradePopup(true);
@@ -400,7 +418,7 @@ const MoreDetails = () => {
                   "data-bs-target": "#sendInter",
                 })}
               >
-                Send Interest
+                {interestStatus ? "Already Interest Sent" : "Send Interest"}
               </button>
 
               {/* View Contact Information Button moved immediately below profile picture */}
@@ -610,6 +628,8 @@ const MoreDetails = () => {
                   { label: "Mother's Name", value: userInfo?.mothersName },
                   { label: "Father's Occupation", value: userInfo?.fathersOccupation },
                   { label: "Mother's Occupation", value: userInfo?.mothersOccupation },
+                  { label: "Father's Profession", value: userInfo?.fathersProfession },
+                  { label: "Mother's Profession", value: userInfo?.mothersProfession },
                   { label: "Father's Native ", value: userInfo?.fathersNative },
                   { label: "Mother's Native ", value: userInfo?.mothersNative },
                   { label: "Family Value", value: userInfo?.familyValue },
@@ -732,10 +752,8 @@ const MoreDetails = () => {
       {showInterestModalUser && (
         <ShowInterest
           selectedUser={showInterestModalUser}
-          userId={userInfo?._id}
-          onSuccess={() => {
-            // Optional: Any additional state updates or refreshes can happen here
-          }}
+          userId={currentUserId}
+          onSuccess={() => setInterestStatus("pending")}
         />
       )}
 

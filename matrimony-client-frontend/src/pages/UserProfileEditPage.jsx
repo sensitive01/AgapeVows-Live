@@ -16,6 +16,25 @@ import LayoutComponent from "../components/layouts/LayoutComponent";
 import SearchableSelect from "../components/SearchableSelect";
 import MultiSearchSelect from "../components/MultiSearchSelect";
 import { Country, State, City } from "country-state-city";
+import { indianDistricts } from "../utils/indianDistricts";
+
+// Helper function to get districts or fallback to cities
+const getDistrictsForState = (countryName, stateName, allCountries) => {
+  if (!countryName || !stateName) return [];
+  
+  if (countryName === "India") {
+    const indianState = indianDistricts.states.find(s => s.state.toLowerCase() === stateName.toLowerCase());
+    if (indianState && indianState.districts) {
+      return indianState.districts;
+    }
+  }
+  
+  const c = allCountries.find((country) => country.name === countryName);
+  if (!c) return [];
+  const states = State.getStatesOfCountry(c.isoCode);
+  const s = states.find((state) => state.name === stateName);
+  return s ? City.getCitiesOfState(c.isoCode, s.isoCode).map((city) => city.name) : [];
+};
 
 // BasicInfomation Component
 const BasicInfomation = ({
@@ -485,6 +504,23 @@ const FormInput = ({
           </option>
         ))}
       </select>
+    ) : type === "radio" ? (
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", marginTop: "4px" }}>
+        {options.map((option) => (
+          <label key={option} style={{ display: "flex", alignItems: "center", gap: "6px", cursor: readOnly ? "not-allowed" : "pointer", fontSize: "14px", color: "#374151", fontWeight: "normal" }}>
+            <input
+              type="radio"
+              name={name}
+              value={option}
+              checked={value === option}
+              onChange={onChange}
+              disabled={readOnly}
+              style={{ cursor: readOnly ? "not-allowed" : "pointer", width: "16px", height: "16px", accentColor: "#7c3aed" }}
+            />
+            {option}
+          </label>
+        ))}
+      </div>
     ) : type === "textarea" ? (
       <textarea
         name={name}
@@ -548,6 +584,7 @@ const InlineFormInput = ({
   placeholder,
   searchable = false,
   readOnly = false,
+  autoComplete,
 }) => (
   <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", alignItems: "center", gap: "24px", gridColumn: "1 / -1", marginBottom: "8px" }}>
     <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151", margin: 0 }}>
@@ -597,6 +634,7 @@ const InlineFormInput = ({
           required={required}
           placeholder={placeholder}
           readOnly={readOnly}
+          autoComplete={autoComplete}
           style={{
             width: "100%",
             padding: "10px 14px",
@@ -746,6 +784,7 @@ const UserProfileEditPage = () => {
     fathersOccupation: "",
     fathersProfession: "",
     mothersOccupation: "",
+    mothersProfession: "",
     fathersNative: "",
     mothersNative: "",
     familyValue: "",
@@ -825,6 +864,7 @@ const UserProfileEditPage = () => {
     partnerAgeFrom: "",
     partnerAgeTo: "",
     partnerHeight: "",
+    partnerHeightTo: "",
     partnerMaritalStatus: "",
     partnerMotherTongue: "",
     partnerCaste: "",
@@ -930,25 +970,9 @@ const UserProfileEditPage = () => {
       })()
     : [];
 
-  const currentDistrictOptions = formData.currentCountry && formData.currentState
-    ? (() => {
-        const c = allCountries.find((country) => country.name === formData.currentCountry);
-        if (!c) return [];
-        const states = State.getStatesOfCountry(c.isoCode);
-        const s = states.find((state) => state.name === formData.currentState);
-        return s ? City.getCitiesOfState(c.isoCode, s.isoCode).map((city) => city.name) : [];
-      })()
-    : [];
+  const currentDistrictOptions = getDistrictsForState(formData.currentCountry, formData.currentState, allCountries);
 
-  const permanentDistrictOptions = formData.permanentCountry && formData.permanentState
-    ? (() => {
-        const c = allCountries.find((country) => country.name === formData.permanentCountry);
-        if (!c) return [];
-        const states = State.getStatesOfCountry(c.isoCode);
-        const s = states.find((state) => state.name === formData.permanentState);
-        return s ? City.getCitiesOfState(c.isoCode, s.isoCode).map((city) => city.name) : [];
-      })()
-    : [];
+  const permanentDistrictOptions = getDistrictsForState(formData.permanentCountry, formData.permanentState, allCountries);
 
   const cityOptions =
     selectedCountryCode && selectedStateCode
@@ -1135,6 +1159,7 @@ const UserProfileEditPage = () => {
             fathersOccupation: userData.fathersOccupation || "",
             fathersProfession: userData.fathersProfession || "",
             mothersOccupation: userData.mothersOccupation || "",
+            mothersProfession: userData.mothersProfession || "",
             fathersNative: userData.fathersNative || "",
             mothersNative: userData.mothersNative || "",
             familyValue: userData.familyValue || "",
@@ -1200,6 +1225,7 @@ const UserProfileEditPage = () => {
             partnerAgeFrom: userData.partnerAgeFrom || "",
             partnerAgeTo: userData.partnerAgeTo || "",
             partnerHeight: userData.partnerHeight || "",
+            partnerHeightTo: userData.partnerHeightTo || "",
             partnerMaritalStatus: userData.partnerMaritalStatus || "",
             partnerMotherTongue: userData.partnerMotherTongue || "",
             partnerCaste: userData.partnerCaste || "",
@@ -1672,7 +1698,7 @@ const UserProfileEditPage = () => {
               {/* Main Content - Right Column */}
               <div
                 className="col-md-9 col-lg-10"
-                style={{ paddingLeft: "20px", paddingRight: "15px" }}
+                style={{ paddingLeft: "20px", paddingRight: "80px" }}
               >
                 <form onSubmit={handleSubmit}>
                   {/* Top Buttons Section */}
@@ -2047,8 +2073,11 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Weight (kg)"
                         name="weight"
+                        type="select"
+                        searchable={true}
                         value={formData.weight}
                         onChange={handleInputChange}
+                        options={Array.from({ length: 101 }, (_, i) => String(i + 40))}
                       />
                       <FormInput
                         label="Marital Status"
@@ -2509,6 +2538,12 @@ const UserProfileEditPage = () => {
                         onChange={handleInputChange}
                       />
                       <FormInput
+                        label="Mother's Profession"
+                        name="mothersProfession"
+                        value={formData.mothersProfession}
+                        onChange={handleInputChange}
+                      />
+                      <FormInput
                         label="Father's Native"
                         name="fathersNative"
                         value={formData.fathersNative}
@@ -2523,7 +2558,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Family Value"
                         name="familyValue"
-                        type="select"
+                        type="radio"
                         value={formData.familyValue}
                         onChange={handleInputChange}
                         options={[
@@ -2536,7 +2571,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Family Type"
                         name="familyType"
-                        type="select"
+                        type="radio"
                         value={formData.familyType}
                         onChange={handleInputChange}
                         options={["Joint Family", "Nuclear Family"]}
@@ -2544,7 +2579,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Family Status"
                         name="familyStatus"
-                        type="select"
+                        type="radio"
                         value={formData.familyStatus}
                         onChange={handleInputChange}
                         options={[
@@ -2556,7 +2591,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Residence Type"
                         name="residenceType"
-                        type="select"
+                        type="radio"
                         value={formData.residenceType}
                         onChange={handleInputChange}
                         options={["Own House", "Rented House", "Company Lease"]}
@@ -2802,11 +2837,11 @@ const UserProfileEditPage = () => {
                         </h4>
                       </div>
 
-                      <InlineFormInput label="Door / Flat No (Name), Street" name="currentDoorNo" value={formData.currentDoorNo} onChange={handleInputChange} />
-                      <InlineFormInput label="Locality / Area" name="currentLocality" value={formData.currentLocality} onChange={handleInputChange} />
+                      <InlineFormInput label="Door / Flat No (Name), Street" name="currentDoorNo" value={formData.currentDoorNo} onChange={handleInputChange} autoComplete="new-password" />
+                      <InlineFormInput label="Locality / Area" name="currentLocality" value={formData.currentLocality} onChange={handleInputChange} autoComplete="new-password" />
                       <InlineFormInput label="Country" name="currentCountry" type="select" searchable={true} options={countryOptions} value={formData.currentCountry} onChange={handleInputChange} />
                       <InlineFormInput label="State" name="currentState" type="select" searchable={true} options={currentStateOptions} value={formData.currentState} onChange={handleInputChange} />
-                      <InlineFormInput label="District / City" name="currentDistrict" type="select" searchable={true} options={currentDistrictOptions} value={formData.currentDistrict} onChange={handleInputChange} />
+                      <InlineFormInput label="District" name="currentDistrict" type="select" searchable={true} options={currentDistrictOptions} value={formData.currentDistrict} onChange={handleInputChange} />
                       <InlineFormInput label="Pincode" name="currentPincode" value={formData.currentPincode} onChange={handleInputChange} />
                       <InlineFormInput label="Citizen Of" name="citizenOf" type="select" searchable={true} options={countryOptions} value={formData.citizenOf} onChange={handleCountryChange} />
 
@@ -2821,11 +2856,11 @@ const UserProfileEditPage = () => {
                         </label>
                       </div>
 
-                      <InlineFormInput label="Door / Flat No (Name), Street" name="permanentDoorNo" value={formData.permanentDoorNo} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
-                      <InlineFormInput label="Locality / Area" name="permanentLocality" value={formData.permanentLocality} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
+                      <InlineFormInput label="Door / Flat No (Name), Street" name="permanentDoorNo" value={formData.permanentDoorNo} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} autoComplete="new-password" />
+                      <InlineFormInput label="Locality / Area" name="permanentLocality" value={formData.permanentLocality} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} autoComplete="new-password" />
                       <InlineFormInput label="Country" name="permanentCountry" type="select" searchable={true} options={countryOptions} value={formData.permanentCountry} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
                       <InlineFormInput label="State" name="permanentState" type="select" searchable={true} options={permanentStateOptions} value={formData.permanentState} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
-                      <InlineFormInput label="District / City" name="permanentDistrict" type="select" searchable={true} options={permanentDistrictOptions} value={formData.permanentDistrict} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
+                      <InlineFormInput label="District" name="permanentDistrict" type="select" searchable={true} options={permanentDistrictOptions} value={formData.permanentDistrict} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
                       <InlineFormInput label="Pincode" name="permanentPincode" value={formData.permanentPincode} onChange={handleInputChange} readOnly={formData.sameAsCurrentAddress} />
                     </div>
                   </FormSection>
@@ -3906,6 +3941,10 @@ const UserProfileEditPage = () => {
                                     : allCountries.filter(c => c.isoCode === "IN");
                                   
                                   return countriesToSearch.flatMap(c => {
+                                    if (c.name === "India") {
+                                       const indianState = indianDistricts.states.find(s => s.state.toLowerCase() === sName.toLowerCase());
+                                       if (indianState && indianState.districts) return indianState.districts;
+                                    }
                                     const states = State.getStatesOfCountry(c.isoCode);
                                     const s = states.find(curr => curr.name === sName);
                                     return s ? City.getCitiesOfState(c.isoCode, s.isoCode).map(city => city.name) : [];

@@ -9380,7 +9380,8 @@ h2.db-tit {
   color: #fff;
 }
 
-.db-pro-pgog span b.count {
+.db-pro-pgog span b.count,
+.db-pro-pgog span b.profile-count {
   font-size: 50px;
   line-height: 109px;
   padding: 0;

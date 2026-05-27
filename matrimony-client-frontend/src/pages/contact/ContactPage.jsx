@@ -54,8 +54,7 @@ const ContactPage = () => {
           </div>
         </div>
       </div>
-      {/* END */}
-      {/* START */}
+
       <section>
         <div className="ab-sec2 pg-cont">
           <div className="container">
@@ -85,12 +84,12 @@ const ContactPage = () => {
                 <li>
                   <div className="we-cont">
                     <img src="images/icon/trust.png" alt="" />
-                    <h4>Customer Relations</h4>
+                    <h4>Enquire Now</h4>
                     <p>
                       Most Trusted and premium Matrimony Service in the World.
                     </p>
-                    <a href="#!" className="cta-rou-line">
-                      Get Support
+                    <a href="#enquire-form" className="cta-rou-line">
+                      Enquire Now
                     </a>
                   </div>
                 </li>
@@ -111,10 +110,9 @@ const ContactPage = () => {
           </div>
         </div>
       </section>
-      {/* END */}
-      {/* REGISTER */}
-      <section>
-        <div className="login pg-cont">
+
+      <section id="enquire-form">
+        <div className="login pg-cont pb-4">
           <div className="container">
             <div className="row">
               <div className="inn">
@@ -208,165 +206,8 @@ const ContactPage = () => {
           </div>
         </div>
       </section>
-      {/* END */}
-      {/* START */}
-      <section>
-        <div className="ab-team pg-abo-ab-team">
-          <div className="container">
-            <div className="row">
-              <div className="home-tit">
-                <p>OUR PROFESSIONALS</p>
-                <h2>
-                  <span>Meet Our Team</span>
-                </h2>
-                <span className="leaf1" />
-              </div>
-              <ul>
-                <li>
-                  <div>
-                    <img src="images/profiles/6.jpg" alt="" loading="lazy" />
-                    <h4>Ashley Jen</h4>
-                    <p>Marketing Manager</p>
-                    <ul className="social-light">
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-facebook" aria-hidden="true" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-twitter" aria-hidden="true" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-whatsapp" aria-hidden="true" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-linkedin" aria-hidden="true" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-instagram" aria-hidden="true" />
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </li>
-                <li>
-                  <div>
-                    <img src="images/profiles/7.jpg" alt="" loading="lazy" />
-                    <h4>Ashley Jen</h4>
-                    <p>Marketing Manager</p>
-                    <ul className="social-light">
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-facebook" aria-hidden="true" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-twitter" aria-hidden="true" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-whatsapp" aria-hidden="true" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-linkedin" aria-hidden="true" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-instagram" aria-hidden="true" />
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </li>
-                <li>
-                  <div>
-                    <img src="images/profiles/8.jpg" alt="" loading="lazy" />
-                    <h4>Emily Arrov</h4>
-                    <p>Creative Manager</p>
-                    <ul className="social-light">
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-facebook" aria-hidden="true" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-twitter" aria-hidden="true" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-whatsapp" aria-hidden="true" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-linkedin" aria-hidden="true" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-instagram" aria-hidden="true" />
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </li>
-                <li>
-                  <div>
-                    <img src="images/profiles/9.jpg" alt="" loading="lazy" />
-                    <h4>Julia sear</h4>
-                    <p>Client Coordinator</p>
-                    <ul className="social-light">
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-facebook" aria-hidden="true" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-twitter" aria-hidden="true" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-whatsapp" aria-hidden="true" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-linkedin" aria-hidden="true" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#!">
-                          <i className="fa fa-instagram" aria-hidden="true" />
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-      < Footer />
-      {/* END */}
 
-      {/* END */}
+      < Footer />
 
     </div>
   );

@@ -11,10 +11,11 @@ import landingPageBg from '../../assets/images/landing-page.png';
 import landingPageBg1 from '../../assets/images/landing-page1.png';
 import landingPageBg2 from '../../assets/images/landing-page2.png';
 import landingPageBg3 from '../../assets/images/landing-page3.png';
+import landingPageBg4 from '../../assets/images/landing-pagee.png'; 
 
 const backgroundImages = [
+  landingPageBg4,
   landingPageBg,
-  landingPageBg1,
   landingPageBg2,
   landingPageBg3
 ];
@@ -272,7 +273,7 @@ export default function HeroSearchSection() {
 
             {/* Left Side: Professional Content */}
             <div className="hero-text-block">
-              <div className="hero-badge">
+              <div className="hero-badge" style={{ fontSize: "18px" }}>
                 <span className="hero-badge-icon">†</span> India's Trusted Christian Matrimony
               </div>
               <h1>

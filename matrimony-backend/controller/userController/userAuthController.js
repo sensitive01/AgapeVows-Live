@@ -143,9 +143,9 @@ const completeProfileData = async (req, res) => {
       eatingHabits: req.body.eatingHabits,
       drinkingHabits: req.body.drinkingHabits,
       smokingHabits: req.body.smokingHabits,
-      diet: req.body.diet,
-      drinking: req.body.drinking,
-      smoking: req.body.smoking,
+      diet: req.body.eatingHabits,
+      drinking: req.body.drinkingHabits,
+      smoking: req.body.smokingHabits,
       exercise: req.body.exercise,
 
       hobbies,
@@ -162,6 +162,7 @@ const completeProfileData = async (req, res) => {
       fathersOccupation: req.body.fathersOccupation,
       fathersProfession: req.body.fathersProfession,
       mothersOccupation: req.body.mothersOccupation,
+      mothersProfession: req.body.mothersProfession,
       fathersNative: req.body.fathersNative,
       mothersNative: req.body.mothersNative,
       familyValue: req.body.familyValue,
@@ -183,7 +184,6 @@ const completeProfileData = async (req, res) => {
       religiousDetail: req.body.religiousDetail,
 
       /* CONTACT */
-      userMobile: req.body.phone,
       contactEmail: req.body.contactEmail,
       contactPhone: req.body.contactPhone,
       whatsapp: req.body.whatsapp,
@@ -196,15 +196,13 @@ const completeProfileData = async (req, res) => {
       landlineNumber: req.body.landlineNumber,
       currentAddress: req.body.currentAddress,
       permanentAddress: req.body.permanentAddress,
-      city: req.body.city,
-      state: req.body.state,
-      pincode: req.body.pincode,
+      city: req.body.city || req.body.currentDistrict,
+      state: req.body.state || req.body.currentState,
+      pincode: req.body.pincode || req.body.currentPincode,
       address: req.body.address,
       contactPersonName: req.body.contactPersonName,
       relationship: req.body.relationship,
       citizenOf: req.body.citizenOf,
-      userEmail: req.body.email,
-
       /* PROFESSIONAL */
       education: req.body.education,
       additionalEducation: req.body.additionalEducation,
@@ -227,6 +225,7 @@ const completeProfileData = async (req, res) => {
       partnerAgeFrom: req.body.partnerAgeFrom,
       partnerAgeTo: req.body.partnerAgeTo,
       partnerHeight: req.body.partnerHeight,
+      partnerHeightTo: req.body.partnerHeightTo,
       partnerMaritalStatus: req.body.partnerMaritalStatus,
       partnerMotherTongue: req.body.partnerMotherTongue,
       partnerCaste: req.body.partnerCaste,
@@ -336,6 +335,11 @@ const completeProfileData = async (req, res) => {
     /* =========================
        FINAL UPDATE
     ========================== */
+    if (req.body.phone) updates.userMobile = req.body.phone;
+    if (req.body.email) updates.userEmail = req.body.email;
+
+    Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key]);
+
     console.log("🔄 Final Updates:", updates);
 
     const updatedUser = await userModel.findByIdAndUpdate(userId, updates, {
@@ -602,9 +606,9 @@ const getProfileMoreInformation = async (req, res) => {
               const targetPlanName = targetActivePlan.subscriptionType?.toLowerCase() || "basic";
               console.log("👉 Target Plan:", targetPlanName);
 
-              const isTargetPlatinumOrGold = 
-                targetPlanName.includes("platinum") || 
-                targetPlanName.includes("gold") || 
+              const isTargetPlatinumOrGold =
+                targetPlanName.includes("platinum") ||
+                targetPlanName.includes("gold") ||
                 targetPlanName.includes("golden");
 
               if (viewerCanView === "only basic" && targetPlanName !== "basic") {
@@ -874,7 +878,7 @@ const showUserInterests = async (req, res) => {
     let totalCount = activePlan.interestSentCount || 0;
 
     const isUnlimitedTotal = (typeof maxSendInterest === 'string' && maxSendInterest.toLowerCase() === 'unlimited') || activePlan.subscriptionType?.toLowerCase() === "platinum" || activePlan.subscriptionType?.toLowerCase() === "gold" || activePlan.subscriptionType?.toLowerCase() === "golden membership";
-    
+
     const isUnlimitedDaily = (typeof dailyLimitSendInterest === 'string' && dailyLimitSendInterest.toLowerCase() === 'unlimited') || activePlan.subscriptionType?.toLowerCase() === "platinum" || activePlan.subscriptionType?.toLowerCase() === "gold" || activePlan.subscriptionType?.toLowerCase() === "golden membership";
 
     const parsedMaxSendInterest = parseInt(maxSendInterest);
@@ -1013,7 +1017,7 @@ const viewContactDetails = async (req, res) => {
     console.log("📋 activePlan type:", typeof viewContact);
 
     const canViewContact = viewContact?.toString()?.trim()?.toLowerCase() === "yes";
-    
+
     console.log("✅ canViewContact after normalization:", canViewContact);
 
     if (!canViewContact) {
@@ -1049,20 +1053,38 @@ const viewContactDetails = async (req, res) => {
       activePlan.subscriptionType?.toLowerCase() === 'golden membership';
 
     const parsedMaxViewContact = parseInt(maxViewContact);
-    if (!isUnlimitedTotal && !isNaN(parsedMaxViewContact) && totalCount >= parsedMaxViewContact) {
-      return res.status(403).json({ success: false, message: `You have reached your total contact view limit of ${maxViewContact}.` });
-    }
-
     const parsedDailyLimitViewContact = parseInt(dailyLimitViewContact);
-    if (!isUnlimitedDaily && !isNaN(parsedDailyLimitViewContact) && dailyCount >= parsedDailyLimitViewContact) {
-      return res.status(403).json({ success: false, message: `You have reached your daily contact view limit of ${dailyLimitViewContact}.` });
-    }
 
-    user.paymentDetails[activePlanIndex].contactViewCount = totalCount + 1;
-    user.paymentDetails[activePlanIndex].dailyContactViewCount = dailyCount + 1;
-    user.paymentDetails[activePlanIndex].lastContactViewDate = new Date();
-    user.markModified("paymentDetails");
-    await user.save();
+    // ✅ ATOMIC UNIQUE VIEW CHECK
+    const targetUserWithNewView = await userModel.findOneAndUpdate(
+      { _id: targetUserId, contactViews: { $ne: userId } },
+      { $push: { contactViews: userId } },
+      { new: true }
+    );
+
+    if (targetUserWithNewView) {
+      console.log("🔥 New Unique Contact View! Incrementing limits...");
+
+      if (!isUnlimitedTotal && !isNaN(parsedMaxViewContact) && totalCount >= parsedMaxViewContact) {
+        // Revert the push since limit reached
+        await userModel.updateOne({ _id: targetUserId }, { $pull: { contactViews: userId } });
+        return res.status(403).json({ success: false, message: `You have reached your total contact view limit of ${maxViewContact}.` });
+      }
+
+      if (!isUnlimitedDaily && !isNaN(parsedDailyLimitViewContact) && dailyCount >= parsedDailyLimitViewContact) {
+        // Revert the push since limit reached
+        await userModel.updateOne({ _id: targetUserId }, { $pull: { contactViews: userId } });
+        return res.status(403).json({ success: false, message: `You have reached your daily contact view limit of ${dailyLimitViewContact}.` });
+      }
+
+      user.paymentDetails[activePlanIndex].contactViewCount = totalCount + 1;
+      user.paymentDetails[activePlanIndex].dailyContactViewCount = dailyCount + 1;
+      user.paymentDetails[activePlanIndex].lastContactViewDate = new Date();
+      user.markModified("paymentDetails");
+      await user.save();
+    } else {
+      console.log("ℹ️ User already viewed this contact before. Skipping limits check.");
+    }
 
     return res.status(200).json({
       success: true,
@@ -1187,6 +1209,7 @@ const getNewProfileMatches = async (req, res) => {
       partnerCaste,
       partnerDistrict,
       partnerHeight,
+      partnerHeightTo,
       religion,
     } = currentUser;
 
@@ -1201,31 +1224,33 @@ const getNewProfileMatches = async (req, res) => {
     const minDOB = new Date(currentYear - ageTo, 0, 1);
     const maxDOB = new Date(currentYear - ageFrom, 11, 31);
 
-    // Convert height to number logic
     const heightFrom = partnerHeight ? parseFloat(partnerHeight) : null;
+    const heightTo = partnerHeightTo ? parseFloat(partnerHeightTo) : null;
+
+    // Build the height filter condition
+    let heightFilter = null;
+    if ((heightFrom && !isNaN(heightFrom)) || (heightTo && !isNaN(heightTo))) {
+      const heightConditions = [];
+      if (heightFrom && !isNaN(heightFrom)) {
+        heightConditions.push({ $gte: [{ $convert: { input: "$height", to: "double", onError: 0, onNull: 0 } }, heightFrom] });
+      }
+      if (heightTo && !isNaN(heightTo)) {
+        heightConditions.push({ $lte: [{ $convert: { input: "$height", to: "double", onError: 0, onNull: 0 } }, heightTo] });
+      }
+      
+      heightFilter = {
+        $expr: {
+          $and: heightConditions
+        }
+      };
+    }
 
     const filters = [
       { dateOfBirth: { $gte: minDOB, $lte: maxDOB } },
       religion ? { religion: religion } : null,
       partnerCaste ? { caste: partnerCaste } : null,
       partnerDistrict ? { city: partnerDistrict } : null,
-      (heightFrom && !isNaN(heightFrom))
-        ? {
-          $expr: {
-            $gte: [
-              {
-                $convert: {
-                  input: "$height",
-                  to: "double",
-                  onError: 0,
-                  onNull: 0
-                }
-              },
-              heightFrom
-            ]
-          }
-        }
-        : null,
+      heightFilter,
     ].filter(Boolean);
 
     const blockedIds = currentUser.blockedUsers?.map(b => b.user.toString()) || [];
@@ -1241,7 +1266,6 @@ const getNewProfileMatches = async (req, res) => {
       })
       .limit(5);
 
-    // Return only selected fields + calculated age
     const matches = rawMatches.map((user) => {
       const dob = new Date(user.dateOfBirth);
       const age = new Date().getFullYear() - dob.getFullYear();
@@ -1253,7 +1277,11 @@ const getNewProfileMatches = async (req, res) => {
         profileImage: user.profileImage,
         city: user.city,
         age,
-        paymentDetails: user.paymentDetails, // ✅ ADD THIS
+        paymentDetails: user.paymentDetails,
+        isAnySubscriptionTaken: user.isAnySubscriptionTaken,
+        subscriptionType: user.subscriptionType,
+        planName: user.planName,
+        idVerificationStatus: user.idVerificationStatus,
       };
     });
 
@@ -1295,7 +1323,7 @@ const getSearchedProfileData = async (req, res) => {
 
     // Handle AV ID search specifically
     if (searchType === "bnr" && bnrId) {
-      const bnrUser = await userModel.findOne({ 
+      const bnrUser = await userModel.findOne({
         agwid: { $regex: new RegExp(`^${bnrId}$`, 'i') },
         profileStatus: { $ne: "Deactivated" },
         isApproved: true,
@@ -1360,7 +1388,7 @@ const getSearchedProfileData = async (req, res) => {
     }
     if (religion && religion !== "Any" && religion !== "all") query.religion = religion;
     if (motherTongue) query.motherTongue = motherTongue;
-    if (caste) query.caste = caste;
+    if (caste && caste !== "All") query.caste = caste;
     if (denomination) query.denomination = denomination;
     if (education) query.education = education;
     if (occupation) query.occupation = occupation;
@@ -1514,6 +1542,17 @@ const savePlanDetails = async (req, res) => {
 
     await userModel.findByIdAndUpdate(paymentData.userId, updateData, { new: true });
 
+    // ✅ CLEAR OLD VIEW COUNTS ACROSS ALL USERS
+    // This allows the user to be charged again if they re-view the same profiles on their new plan.
+    await userModel.updateMany(
+      { profileViews: paymentData.userId },
+      { $pull: { profileViews: paymentData.userId } }
+    );
+    await userModel.updateMany(
+      { contactViews: paymentData.userId },
+      { $pull: { contactViews: paymentData.userId } }
+    );
+
     return res.status(200).json({
       success: true,
       message: "Subscription updated successfully",
@@ -1568,11 +1607,7 @@ const getMyActivePlanDetails = async (req, res) => {
 
     console.log("📊 Valid plans count:", validPlans.length);
 
-    // ✅ Update DB (clean expired plans)
-    await userModel.findByIdAndUpdate(userId, {
-      paymentDetails: validPlans,
-      isAnySubscriptionTaken: validPlans.length > 0,
-    });
+    // Expired plans are filtered out below, no need to overwrite DB here
 
     // ✅ Filter active plans only
     const activePlans = validPlans.filter(
@@ -1747,15 +1782,6 @@ const getAllEvents = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
-
-
-
-
-
-
-
-
 
 
 const isUserMadeTheInterest = async (req, res) => {
@@ -2223,13 +2249,13 @@ const reportIssue = async (req, res) => {
         process.env.EMAIL_USER,
         "New Technical Issue Reported - Agape Vows",
         "formSubmission",
-        ["Technical Issue", { 
-          "User ID": userId, 
-          "Name": userName, 
-          "Email": userEmail, 
-          "Mobile": userMobile, 
-          "AGW ID": agwid, 
-          "Details": details 
+        ["Technical Issue", {
+          "User ID": userId,
+          "Name": userName,
+          "Email": userEmail,
+          "Mobile": userMobile,
+          "AGW ID": agwid,
+          "Details": details
         }]
       );
     } catch (emailErr) {
@@ -2503,12 +2529,12 @@ const requestContactUpdate = async (req, res) => {
         process.env.EMAIL_USER,
         "Contact Update Request - Agape Vows",
         "formSubmission",
-        ["Contact Update Request", { 
-          "User ID": userId, 
-          "Name": user.userName, 
-          "AGW ID": user.agwid, 
-          "Requested Mobile": requestedMobile || "N/A", 
-          "Requested Email": requestedEmail || "N/A" 
+        ["Contact Update Request", {
+          "User ID": userId,
+          "Name": user.userName,
+          "AGW ID": user.agwid,
+          "Requested Mobile": requestedMobile || "N/A",
+          "Requested Email": requestedEmail || "N/A"
         }]
       );
     } catch (emailErr) {
@@ -2584,12 +2610,12 @@ const deactivateProfile = async (req, res) => {
         process.env.EMAIL_USER,
         "Profile Deactivation Alert - Agape Vows",
         "formSubmission",
-        ["Profile Deactivation", { 
-          "User ID": userId, 
-          "Name": userData.userName, 
-          "AGW ID": userData.agwid, 
-          "Reason": deactivationReason, 
-          "Description": deactivationDescription || "No description provided" 
+        ["Profile Deactivation", {
+          "User ID": userId,
+          "Name": userData.userName,
+          "AGW ID": userData.agwid,
+          "Reason": deactivationReason,
+          "Description": deactivationDescription || "No description provided"
         }]
       );
     } catch (emailErr) {

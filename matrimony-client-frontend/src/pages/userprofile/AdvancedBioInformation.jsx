@@ -210,14 +210,17 @@ const AdvancedBioInformation = ({formData, handleInputChange, setFormData}) => {
       <div className="row">
         <div className="col-md-6 form-group">
           <label className="lb">Weight:(in kg)</label>
-          <input
-            type="text"
-            className="form-control"
+          <select
+            className="form-select chosen-select"
             name="weight"
             value={formData.weight}
             onChange={handleInputChange}
-            placeholder="e.g., 65 kg or 143 lbs"
-          />
+          >
+            <option value="">Select Weight</option>
+            {Array.from({ length: 101 }, (_, i) => (
+              <option key={i} value={i + 40}>{i + 40} kg</option>
+            ))}
+          </select>
         </div>
         <div className="col-md-6 form-group">
           <label className="lb">Fathers name:</label>

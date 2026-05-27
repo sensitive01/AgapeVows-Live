@@ -209,7 +209,7 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
       formData.append("idProof", file);
 
       const userId = localStorage.getItem("userId");
-      
+
       const response = await uploadIdProof(userId, formData);
 
       if (response.status === 200) {
@@ -356,9 +356,9 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
           <div className="row g-3 mb-4">
             <div className="col-md-6">
               <label style={{ fontSize: "0.85rem", fontWeight: "600", color: "#555", marginBottom: "8px", display: "block" }}>ID Proof Type*</label>
-              <select 
-                className="form-select" 
-                value={idType} 
+              <select
+                className="form-select"
+                value={idType}
                 onChange={(e) => setIdType(e.target.value)}
                 style={{ borderRadius: "6px", padding: "10px" }}
               >
@@ -369,10 +369,10 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
             </div>
             <div className="col-md-6">
               <label style={{ fontSize: "0.85rem", fontWeight: "600", color: "#555", marginBottom: "8px", display: "block" }}>ID Proof Number*</label>
-              <input 
-                type="text" 
-                className="form-control" 
-                placeholder="Enter ID Number" 
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Enter ID Number"
                 value={idNumber}
                 onChange={(e) => setIdNumber(e.target.value)}
                 style={{ borderRadius: "6px", padding: "10px" }}
@@ -380,7 +380,7 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
             </div>
           </div>
 
-          <div 
+          <div
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
@@ -397,10 +397,10 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
             }}
             onClick={() => document.getElementById("id-file-input").click()}
           >
-            <input 
-              type="file" 
-              id="id-file-input" 
-              className="d-none" 
+            <input
+              type="file"
+              id="id-file-input"
+              className="d-none"
               onChange={handleFileChange}
               accept=".png,.jpg,.jpeg,.pdf"
             />
@@ -418,7 +418,7 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
           </div>
 
           <div style={{ marginTop: "30px", textAlign: "center" }}>
-            <button 
+            <button
               onClick={handleSubmit}
               disabled={isUploading}
               style={{
@@ -510,6 +510,7 @@ const UserProfilePage = () => {
         "fathersOccupation",
         "fathersProfession",
         "mothersOccupation",
+        "mothersProfession",
         "fathersNative",
         "mothersNative",
         "familyValue",
@@ -745,7 +746,7 @@ const UserProfilePage = () => {
                 className="col-12 col-md-9 col-lg-10"
                 style={{
                   paddingLeft: "20px",
-                  paddingRight: "15px",
+                  paddingRight: "80px",
                   height: "auto",
                   overflow: "visible",
                   overflowX: "hidden",
@@ -963,12 +964,12 @@ const UserProfilePage = () => {
                             >
                               <span
                                 className={`badge ${completionPercentage >= 75
-                                    ? "bg-success"
-                                    : completionPercentage >= 50
-                                      ? "bg-info"
-                                      : completionPercentage >= 25
-                                        ? "bg-warning text-dark"
-                                        : "bg-secondary"
+                                  ? "bg-success"
+                                  : completionPercentage >= 50
+                                    ? "bg-info"
+                                    : completionPercentage >= 25
+                                      ? "bg-warning text-dark"
+                                      : "bg-secondary"
                                   }`}
                                 style={{
                                   padding: "6px 12px",
@@ -1040,15 +1041,15 @@ const UserProfilePage = () => {
                     </div>
                   </div>
 
-                  <DocumentVerificationSection 
-                    userInfo={userInfo} 
+                  <DocumentVerificationSection
+                    userInfo={userInfo}
                     onUploadSuccess={() => {
                       // Refresh profile data
                       const sanitizedId = (userId && userId.length > 24) ? userId.substring(0, 24) : userId;
                       getUserProfile(sanitizedId).then(res => {
                         if (res.status === 200) setUserInfo(res.data.data);
                       });
-                    }} 
+                    }}
                   />
                   {/* About Me Section */}
                   {userInfo?.aboutMe && (
@@ -1201,12 +1202,16 @@ const UserProfilePage = () => {
                       value={userInfo?.fathersOccupation}
                     />
                     <InfoRow
+                      label="Mother's Occupation"
+                      value={userInfo?.mothersOccupation}
+                    />
+                    <InfoRow
                       label="Father's Profession"
                       value={userInfo?.fathersProfession}
                     />
                     <InfoRow
-                      label="Mother's Occupation"
-                      value={userInfo?.mothersOccupation}
+                      label="Mother's Profession"
+                      value={userInfo?.mothersProfession}
                     />
                     <InfoRow
                       label="Father's Native"
@@ -1335,10 +1340,10 @@ const UserProfilePage = () => {
                       label="Permanent Address"
                       value={userInfo?.permanentAddress}
                     />
-                    {/* <InfoRow label="City" value={userInfo?.city} />
+                    <InfoRow label="City" value={userInfo?.city} />
                     <InfoRow label="State" value={userInfo?.state} />
-                    <InfoRow label="Pincode" value={userInfo?.pincode} /> */}
-                    
+                    <InfoRow label="Pincode" value={userInfo?.pincode} />
+
                   </ProfileSection>
 
                   {/* Lifestyle & Hobbies Section */}
@@ -1360,6 +1365,10 @@ const UserProfilePage = () => {
                     <InfoRow
                       label="Favourite Cuisines"
                       value={userInfo?.favouriteCuisines}
+                    />
+                    <InfoRow
+                      label="Exercise"
+                      value={userInfo?.exercise}
                     />
                     <InfoRow
                       label="Sports/Activities"
@@ -1401,8 +1410,10 @@ const UserProfilePage = () => {
                     <InfoRow
                       label="Height"
                       value={
-                        userInfo?.partnerHeight
-                          ? `${userInfo.partnerHeight} cm`
+                        userInfo?.partnerHeight && userInfo?.partnerHeightTo
+                          ? `${userInfo.partnerHeight} to ${userInfo.partnerHeightTo}`
+                          : userInfo?.partnerHeight
+                          ? `${userInfo.partnerHeight}`
                           : null
                       }
                     />

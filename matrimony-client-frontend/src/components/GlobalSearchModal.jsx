@@ -25,7 +25,7 @@ const heightOptions = generateHeightOptions();
 
 // Sample Data for Dropdowns
 const CASTES = [
-  "Do not wish to specify",
+  "All",
   "Achari",
   "Adhi Karnataka",
   "Adhi Dravidar",

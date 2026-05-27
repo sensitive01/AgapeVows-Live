@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import LayoutComponent from "../../components/layouts/LayoutComponent";
 import { useParams, useNavigate } from "react-router-dom";
-import { getTheProfieMoreDetails, getUserProfile, getChatMessages, sendChatMessage } from "../../api/axiosService/userAuthService";
+import { getTheProfieMoreDetails, getUserProfile, getChatMessages, sendChatMessage, isUserMadeTheInterest } from "../../api/axiosService/userAuthService";
 
 import { io } from "socket.io-client";
 import ChatUi from "../allprofile/ChatUi";
@@ -29,6 +29,23 @@ const MoreDetails = () => {
   const [zoomImage, setZoomImage] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [interestStatus, setInterestStatus] = useState(null);
+
+  useEffect(() => {
+    const fetchInterestStatus = async () => {
+      if (userId && profileId) {
+        try {
+          const response = await isUserMadeTheInterest(userId, profileId);
+          if (response.data && response.data.success) {
+            setInterestStatus(response.data.status);
+          }
+        } catch (error) {
+          console.error("Error fetching interest status", error);
+        }
+      }
+    };
+    fetchInterestStatus();
+  }, [userId, profileId]);
 
   const allImages = React.useMemo(() => {
     if (!profileData) return [];
@@ -392,10 +409,11 @@ const MoreDetails = () => {
 
                     <span
                       className="cta cta-sendint"
+                      style={{ backgroundColor: interestStatus ? "#10b981" : "", borderColor: interestStatus ? "#10b981" : "", color: interestStatus ? "#fff" : "" }}
                       data-toggle="modal"
                       data-target="#sendInter"
                     >
-                      Send interest
+                      {interestStatus ? "Already Interest Sent" : "Send interest"}
                     </span>
                   </div>
                 </div>
@@ -568,6 +586,22 @@ const MoreDetails = () => {
                       <li>
                         <b>Mother's name:</b>{" "}
                         {profileData.mothersName || "Not provided"}
+                      </li>
+                      <li>
+                        <b>Father's Occupation:</b>{" "}
+                        {profileData.fathersOccupation || "Not provided"}
+                      </li>
+                      <li>
+                        <b>Mother's Occupation:</b>{" "}
+                        {profileData.mothersOccupation || "Not provided"}
+                      </li>
+                      <li>
+                        <b>Father's Profession:</b>{" "}
+                        {profileData.fathersProfession || "Not provided"}
+                      </li>
+                      <li>
+                        <b>Mother's Profession:</b>{" "}
+                        {profileData.mothersProfession || "Not provided"}
                       </li>
                       <li>
                         <b>Age:</b>{" "}
@@ -746,7 +780,7 @@ const MoreDetails = () => {
         </div>
       </div>
 
-      <ShowInterest />
+      <ShowInterest selectedUser={profileData} userId={userId} onSuccess={() => setInterestStatus("pending")} />
 
       {/* Zoom Image Modal */}
       {zoomImage && (

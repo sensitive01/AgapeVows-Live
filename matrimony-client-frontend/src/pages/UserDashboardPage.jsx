@@ -221,7 +221,7 @@ const UserDashboardPage = () => {
   };
 
   // Handle profile click navigation
-  const handleProfileClick = (targetUser) => {
+  const handleProfileClick = (targetUser, e) => {
     if (!userId) {
       navigate("/user/user-login");
       return;
@@ -285,7 +285,12 @@ const UserDashboardPage = () => {
     }
 
     console.log("✅ Navigating to profile detail");
-    navigate(`/profile-more-details/${targetUser._id}`);
+    if (e && (e.ctrlKey || e.metaKey)) {
+      const newTab = window.open(`/profile-more-details/${targetUser._id}`, '_blank');
+      if (newTab) newTab.focus();
+    } else {
+      navigate(`/profile-more-details/${targetUser._id}`);
+    }
   };
 
   // Initialize components on first load
@@ -464,22 +469,52 @@ const UserDashboardPage = () => {
                       <ul className="slider" ref={sliderRef}>
                         {profileMatches.map((profile, index) => (
                           <li key={profile._id || index}>
-                            <div 
-                              className="db-new-pro" 
+                            <div
+                              className="db-new-pro"
                               style={{ position: "relative", paddingTop: "10px", cursor: "pointer" }}
-                              onClick={() => handleProfileClick(profile)}
+                              onClick={(e) => handleProfileClick(profile, e)}
                             >
-                              {/* ✅ Badge - TOP LEFT */}
-                              <div style={{
+                              {/* ✅ Badges - TOP LEFT */}
+                              <style>
+                                {`
+                                  .db-new-pro .top-left-badges div {
+                                    position: relative !important;
+                                    bottom: auto !important;
+                                    left: auto !important;
+                                    right: auto !important;
+                                  }
+                                  .badge-card-wrapper {
+                                    background: rgba(255, 255, 255, 0.9);
+                                    padding: 3px;
+                                    border-radius: 6px;
+                                    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                                    display: inline-flex;
+                                  }
+                                  .badge-card-wrapper:empty {
+                                    display: none !important;
+                                    padding: 0;
+                                  }
+                                `}
+                              </style>
+                              <span className="top-left-badges" style={{
                                 position: 'absolute',
-                                top: '5px',
-                                left: '5px',
+                                top: '8px',
+                                left: '8px',
                                 zIndex: 10,
-                                transform: "scale(0.9)",
-                                transformOrigin: "top left"
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '6px',
+                                alignItems: 'flex-start',
                               }}>
-                                <MembershipBadge user={profile} isMini={true} isMinimal={true} />
-                              </div>
+                                <span className="badge-card-wrapper">
+                                  <MembershipBadge user={profile} isMini={true} isMinimal={true} />
+                                </span>
+                                {profile.idVerificationStatus === 'Verified' && (
+                                  <span className="badge bg-success shadow-sm" style={{ fontSize: "11px", display: "flex", alignItems: "center", gap: "4px", padding: "4px 8px", margin: 0 }}>
+                                    <i className="fa fa-check-circle"></i> Verified
+                                  </span>
+                                )}
+                              </span>
 
                               <img
                                 src={
@@ -517,7 +552,9 @@ const UserDashboardPage = () => {
                               </span>
 
                               <div>
-                                <h5>{profile.agwid || profile.userName}</h5>
+                                <h5>
+                                  {profile.agwid || profile.userName}
+                                </h5>
                                 <span className="city mr-5">
                                   {profile.city}
                                 </span>

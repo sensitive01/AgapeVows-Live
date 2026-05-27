@@ -92,7 +92,7 @@ const UserCardImageSlider = ({ user, height = "220px", blur = false, onImageClic
               objectFit: "cover",
               objectPosition: "center",
               display: "block",
-              filter: blur ? "blur(12px)" : "none",
+              filter: blur ? "blur(8px)" : "none",
               transition: "filter 0.3s ease"
             }}
           />

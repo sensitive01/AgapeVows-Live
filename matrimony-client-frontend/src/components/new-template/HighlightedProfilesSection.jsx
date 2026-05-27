@@ -180,12 +180,17 @@ const HighlightedProfilesSection = () => {
     }
   }, [selectedDenomination, allProfiles]);
 
-  const handleCardClick = (id) => {
+  const handleCardClick = (id, e) => {
     window.scrollTo(0, 0);
     const userId = localStorage.getItem("userId");
     if (userId) {
       // If logged in, take them to the specific person's profile
-      navigate(`/profile-more-details/${id}`);
+      if (e && (e.ctrlKey || e.metaKey)) {
+        const newTab = window.open(`/profile-more-details/${id}`, '_blank');
+        if (newTab) newTab.focus();
+      } else {
+        navigate(`/profile-more-details/${id}`);
+      }
     } else {
       // If not logged in, take to registration/login
       navigate("/user/user-login");
@@ -350,14 +355,14 @@ const HighlightedProfilesSection = () => {
                 {filteredProfiles.map((profile) => (
                   <div
                     key={profile._id}
-                    onClick={() => handleCardClick(profile._id)}
+                    onClick={(e) => handleCardClick(profile._id, e)}
                     className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-100 transform hover:-translate-y-1 h-full flex flex-col"
                   >
                     <div className="relative h-[280px] overflow-hidden">
                       <img
                         src={profile.profileImage || "https://res.cloudinary.com/dl92xeqq8/image/upload/v1711440000/default-profile.png"}
                         alt={profile.userName}
-                        className="w-full h-full object-cover blur-[3px] scale-110 group-hover:scale-105 transition-transform duration-500"
+                        className={`w-full h-full object-cover ${!localStorage.getItem("userId") ? "blur-[8px]" : "blur-none"} scale-110 group-hover:scale-105 transition-transform duration-500`}
                       />
 
                       {/* Watermark Overlay on the Right Side */}
@@ -404,26 +409,26 @@ const HighlightedProfilesSection = () => {
                     <div className="p-2.5 flex-grow bg-white">
                       <div className="flex flex-col gap-0.5">
                         <div className="flex justify-between items-center">
-                          <span className="font-bold text-base leading-none" style={{ color: '#9333ea' }}>{profile.agwid || "AV0000"}</span>
-                          <span className="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase" style={{ color: '#9333ea', backgroundColor: 'rgba(94, 44, 165, 0.05)' }}>
+                          <span className="font-bold text-base leading-none" style={{ color: '#46047cff' }}>{profile.agwid || "AV0000"}</span>
+                          <span className="text-[11px] px-2 py-0.5 rounded font-bold uppercase" style={{ color: '#46047cff', backgroundColor: 'rgba(107, 33, 168, 0.05)' }}>
                             {profile.denomination || "Christian"}
                           </span>
                         </div>
 
                         <div className="flex flex-col">
-                          <span className="text-xs font-semibold line-clamp-1 leading-tight mt-0.5" style={{ color: '#9333ea' }}>
+                          <span className="text-sm font-semibold line-clamp-1 leading-tight mt-0.5" style={{ color: '#46047cff' }}>
                             {profile.occupation || profile.jobType || "Professional"}
                           </span>
-                          <span className="text-[10px] font-medium line-clamp-1 leading-tight" style={{ color: '#9333ea', opacity: 0.8 }}>
+                          <span className="text-xs font-medium line-clamp-1 leading-tight" style={{ color: '#46047cff', opacity: 0.8 }}>
                             {profile.education || profile.degree || "Qualified Professional"}
                           </span>
                         </div>
 
-                        <div className="flex items-center justify-between mt-1 pt-1 border-t" style={{ borderColor: 'rgba(147, 51, 234, 0.1)' }}>
-                          <span className="text-xs flex items-center gap-1" style={{ color: '#9333ea', opacity: 0.9 }}>
+                        <div className="flex items-center justify-between mt-1 pt-1 border-t" style={{ borderColor: 'rgba(107, 33, 168, 0.1)' }}>
+                          <span className="text-sm flex items-center gap-1" style={{ color: '#46047cff', opacity: 0.9 }}>
                             {profile.city || "Location N/A"}
                           </span>
-                          <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ color: '#9333ea', backgroundColor: 'rgba(94, 44, 165, 0.05)' }}>
+                          <span className="text-sm font-bold px-1.5 py-0.5 rounded" style={{ color: '#46047cff', backgroundColor: 'rgba(107, 33, 168, 0.05)' }}>
                             {calculateAge(profile.dateOfBirth)} Yrs
                           </span>
                         </div>

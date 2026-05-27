@@ -152,69 +152,13 @@ const ShowInterest = ({ selectedUser, userId, onSuccess }) => {
                 </div>
 
                 {/* Right Column - Form */}
-                <div className="col-md-7">
-                  <h6
-                    className="mb-3 text-secondary"
-                    style={{ lineHeight: "1.5" }}
-                  >
-                    Permissions:{" "}
-                    <strong className="text-dark">
+                <div className="col-md-7 d-flex align-items-center">
+                  <h5 className="text-dark" style={{ lineHeight: "1.5" }}>
+                    Are you sure you want to send an interest to{" "}
+                    <strong style={{ color: "#e91e63" }}>
                       {selectedUser?.userName}
-                    </strong>{" "}
-                    will be able to view:
-                  </h6>
-
-                  <div className="row g-2 mb-4">
-                    {[
-                      { id: "about", label: "About section" },
-                      { id: "photo", label: "Photo gallery" },
-                      { id: "contact", label: "Contact info" },
-                      { id: "personal", label: "Personal info" },
-                      { id: "hobbies", label: "Hobbies" },
-                      { id: "social", label: "Social media" },
-                    ].map((perm) => (
-                      <div key={perm.id} className="col-6">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id={`pro_${perm.id}`}
-                            checked={selectedPermissions[perm.id]}
-                            onChange={() => handleCheckboxChange(perm.id)}
-                            style={{ cursor: "pointer" }}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor={`pro_${perm.id}`}
-                            style={{ cursor: "pointer", fontSize: "14px" }}
-                          >
-                            {perm.label}
-                          </label>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="form-group">
-                    <label
-                      htmlFor="comment"
-                      className="form-label fw-bold mb-2"
-                    >
-                      Message to{" "}
-                      <span style={{ color: "#e91e63" }}>
-                        {selectedUser?.userName}
-                      </span>
-                    </label>
-                    <textarea
-                      className="form-control"
-                      id="comment"
-                      rows="3"
-                      placeholder="Write your message here..."
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      style={{ resize: "none", width: "100%" }}
-                    />
-                  </div>
+                    </strong>?
+                  </h5>
                 </div>
               </div>
             </div>

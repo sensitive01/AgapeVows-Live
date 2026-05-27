@@ -27,12 +27,12 @@ export const SERVICE_CATEGORIES = [
   { title: "Become a Matrimonial Advisor", path: "/matrimonial-advisor" },
   { title: "Pre-Marital and Marital Counseling", path: "/marital-counseling" },
   { title: "Bridal Make-up", path: "/bridal-makeup" },
-  { title: "Insurance Services", path: "/insurance-services" },
 ];
 
 export const HELP_OPTIONS = [
   { title: "Help & Support", path: "/help-support" },
   { title: "Report an Issue", path: "/report-issue" },
+  { title: "FAQ's", path: "/faq"}
 ];
 
 // ExploreDropdown Component - Redesigned as List
@@ -531,7 +531,7 @@ const MainLayout = () => {
                     onClick={(e) => {
                       if (!e.ctrlKey) {
                         e.preventDefault();
-                        openLoginPopup(e);
+                        handleNavigate("/user/user-login");
                       }
                     }}
                     className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors font-medium shadow-md shadow-purple-100"
@@ -783,7 +783,8 @@ const MainLayout = () => {
                     </button>
                     <button
                       onClick={(e) => {
-                        openLoginPopup(e);
+                        e.preventDefault();
+                        handleNavigate("/user/user-login");
                         setIsMobileMenuOpen(false);
                       }}
                       className="w-full bg-purple-600 text-white py-2.5 rounded-lg font-medium hover:bg-purple-700 transition-colors shadow-sm"

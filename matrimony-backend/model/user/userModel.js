@@ -106,6 +106,7 @@ const userSchema = new mongoose.Schema(
       fathersOccupation: { type: String },
       fathersProfession: { type: String },
       mothersOccupation: { type: String },
+      mothersProfession: { type: String },
 
       fathersNative: { type: String },
       mothersNative: { type: String },
@@ -186,6 +187,7 @@ const userSchema = new mongoose.Schema(
       partnerAgeFrom: { type: String },
       partnerAgeTo: { type: String },
       partnerHeight: { type: String },
+      partnerHeightTo: { type: String },
 
       partnerMaritalStatus: { type: String },
       partnerMotherTongue: { type: String },
@@ -291,6 +293,7 @@ const userSchema = new mongoose.Schema(
       additionalImages: [{ type: String }],
 
       profileViews: [{ type: String }],
+      contactViews: [{ type: String }],
       blockedUsers: [{
          user: { type: mongoose.Schema.Types.ObjectId, ref: "UserModel" },
          blockedAt: { type: Date, default: Date.now }

@@ -222,7 +222,7 @@ const UserSearchResult = () => {
 
 
 
-  const handleViewProfile = (targetUser) => {
+  const handleViewProfile = (targetUser, e) => {
     if (!userId || state?.isGuest) {
       setShowLoginModal(true);
       return;
@@ -268,7 +268,12 @@ const UserSearchResult = () => {
       }
     }
 
-    navigate(`/profile-more-details/${targetUser._id}`, { state: targetUser });
+    if (e && (e.ctrlKey || e.metaKey)) {
+      const newTab = window.open(`/profile-more-details/${targetUser._id}`, '_blank');
+      if (newTab) newTab.focus();
+    } else {
+      navigate(`/profile-more-details/${targetUser._id}`, { state: targetUser });
+    }
   };
 
   const shortListProfile = async (user) => {
@@ -458,7 +463,7 @@ const UserSearchResult = () => {
                           <div className="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
                             {/* Left: Image */}
                             <div
-                              onClick={() => handleViewProfile(user)}
+                              onClick={(e) => handleViewProfile(user, e)}
                               style={{
                                 height: "160px",
                                 width: "220px",
@@ -476,8 +481,8 @@ const UserSearchResult = () => {
                                   user.interestStatus === "accepted"
                                 }
                                 height="100%"
-                                blur={state?.isGuest}
-                                onImageClick={() => handleViewProfile(user)}
+                                blur={!userId}
+                                onImageClick={(e) => handleViewProfile(user, e)}
                               />
                               <div style={{
                                 position: 'absolute',
@@ -505,7 +510,7 @@ const UserSearchResult = () => {
                             </div>
 
                             {/* Center: Details */}
-                            <div className="flex-grow-1" style={{ cursor: 'pointer' }} onClick={() => handleViewProfile(user)}>
+                            <div className="flex-grow-1" style={{ cursor: 'pointer' }} onClick={(e) => handleViewProfile(user, e)}>
                               <div>
                                 <h4
                                   style={{
@@ -585,7 +590,7 @@ const UserSearchResult = () => {
                                 }}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleViewProfile(user);
+                                  handleViewProfile(user, e);
                                 }}
                               >
                                 View Profile
