@@ -189,25 +189,32 @@
 
 /* Right Side Form */
 .hero-form-block {
-    flex: 0 0 450px;
+    flex: 0 0 380px;
+    margin-right: 25px;
     animation: fadeInRight 1s ease;
+}
+
+@media (max-width: 1024px) {
+    .hero-form-block {
+        margin-right: 0;
+    }
 }
 
 .modern-search-card {
     background: #ffffff;
-    padding: 40px;
+    padding: 25px;
     border-radius: 20px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .search-card-head {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     text-align: left;
 }
 
 .search-card-head h3 {
-    font-size: 32px;
+    font-size: 24px;
     color: #4c1d95;
     margin-bottom: 20px;
     font-weight: 700;
@@ -216,16 +223,16 @@
 }
 
 .modern-form .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     position: relative;
 }
 
 .modern-form label {
     display: block;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     color: #1f2937;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -241,16 +248,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px;
+    padding: 10px;
     border-radius: 50px;
     border: 1px solid #e5e7eb;
     background: #fff;
     color: #374151;
     font-weight: 600;
-    font-size: 17px;
+    font-size: 15px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .gender-toggle-btn.active {
@@ -268,11 +275,11 @@
 .modern-form input[type="text"],
 .modern-form input[type="number"] {
     width: 100%;
-    padding: 10px 15px;
+    padding: 8px 12px;
     background: #ffffff;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 15px;
     color: #374151;
     outline: none;
     transition: all 0.2s ease;
@@ -362,11 +369,11 @@
 
 .age-select {
     flex: 1;
-    padding: 10px 15px;
+    padding: 8px 12px;
     background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 15px;
     color: #374151;
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
@@ -384,12 +391,12 @@
 /* BUTTON */
 .hero-search-btn {
     width: 100%;
-    padding: 16px;
+    padding: 12px;
     background: #eab308;
     color: #000;
     border: none;
     border-radius: 12px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 800;
     cursor: pointer;
     margin-top: 10px;
@@ -433,6 +440,7 @@
         flex: 100%;
         width: 100%;
         max-width: 500px;
+        margin-right: 0;
     }
 
     .hero-features {
