@@ -68,7 +68,6 @@ const UserDashboardPage = () => {
     fetchData();
   }, [userId]);
 
-  // Function to safely destroy slider
   const destroySlider = () => {
     if (
       sliderRef.current &&
@@ -83,7 +82,6 @@ const UserDashboardPage = () => {
     }
   };
 
-  // Function to initialize slider
   const initializeSlider = () => {
     if (
       profileMatches.length > 0 &&
@@ -139,7 +137,6 @@ const UserDashboardPage = () => {
     }
   };
 
-  // Function to fetch profile matches
   const fetchProfileMatches = async () => {
     try {
       setLoading(true);
@@ -159,13 +156,11 @@ const UserDashboardPage = () => {
       setError(null);
     } catch (err) {
       console.error("Error fetching profile matches:", err);
-      // setError("Failed to load profile matches. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle search functionality
   const handleSearch = async (searchData) => {
     try {
       setSearchLoading(true);
@@ -220,14 +215,12 @@ const UserDashboardPage = () => {
     }
   };
 
-  // Handle profile click navigation
   const handleProfileClick = (targetUser, e) => {
     if (!userId) {
       navigate("/user/user-login");
       return;
     }
 
-    // ✅ CURRENT USER PLAN (from userInfo / paymentDetails)
     const myActivePlan = userInfo?.paymentDetails?.find(
       (p) =>
         p.subscriptionStatus === "Active" &&
@@ -237,7 +230,6 @@ const UserDashboardPage = () => {
     const myCanViewRaw = myActivePlan?.canViewProfiles || "All Profiles";
     const myCanView = myCanViewRaw.toString().trim().toLowerCase();
 
-    // ✅ TARGET USER PLAN
     const targetActivePlan = targetUser?.paymentDetails?.find(
       (p) =>
         p.subscriptionStatus === "Active" &&
@@ -259,7 +251,7 @@ const UserDashboardPage = () => {
         console.log("🚫 Restricted: Basic user clicking non-Basic profile");
         toast.error("Your plan only allows viewing Basic profiles. Please upgrade to access other profiles.", {
           position: "top-center",
-          autoClose: 30000, // 30 seconds
+          autoClose: 30000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -273,7 +265,7 @@ const UserDashboardPage = () => {
         console.log("🚫 Restricted: Premium user clicking Golden/Platinum profile");
         toast.error("Upgrade your plan to view Platinum and Golden Membership profiles.", {
           position: "top-center",
-          autoClose: 30000, // 30 seconds
+          autoClose: 30000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -528,7 +520,6 @@ const UserDashboardPage = () => {
                                 }}
                               />
 
-                              {/* Watermark Overlay on the Right Side */}
                               <span
                                 style={{
                                   position: "absolute",
@@ -589,7 +580,6 @@ const UserDashboardPage = () => {
                   </div>
                 </div>
 
-                {/* Additional Dashboard Components */}
                 <div className="row g-4" style={{ marginTop: "0px" }}>
                   <ProfileCompletion userData={userInfo} />
 
@@ -600,7 +590,6 @@ const UserDashboardPage = () => {
                     </>
                   )}
 
-                  {/* <RecentChats /> */}
                 </div>
               </div>
             </div>
@@ -608,10 +597,8 @@ const UserDashboardPage = () => {
         </div>
       </div>
 
-      {/* Footer */}
       <ToastContainer />
       <Footer />
-      {/*<CopyRights />*/}
     </div>
   );
 };

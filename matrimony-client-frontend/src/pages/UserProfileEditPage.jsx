@@ -18,7 +18,7 @@ import MultiSearchSelect from "../components/MultiSearchSelect";
 import { Country, State, City } from "country-state-city";
 import { indianDistricts } from "../utils/indianDistricts";
 
-// Helper function to get districts or fallback to cities
+
 const getDistrictsForState = (countryName, stateName, allCountries) => {
   if (!countryName || !stateName) return [];
   
@@ -36,7 +36,6 @@ const getDistrictsForState = (countryName, stateName, allCountries) => {
   return s ? City.getCitiesOfState(c.isoCode, s.isoCode).map((city) => city.name) : [];
 };
 
-// BasicInfomation Component
 const BasicInfomation = ({
   profileImagePreview,
   handleProfileImageChange,
@@ -393,7 +392,7 @@ const BasicInfomation = ({
   );
 };
 
-// Reusable Form Section Component
+
 const FormSection = ({ title, children, zIndex = 1 }) => (
   <div
     className="form-section"
@@ -438,7 +437,7 @@ const FormSection = ({ title, children, zIndex = 1 }) => (
   </div>
 );
 
-// Reusable Form Input Component
+
 const FormInput = ({
   label,
   name,
@@ -450,7 +449,7 @@ const FormInput = ({
   placeholder,
   searchable = false,
   readOnly = false,
-  helpText, // Added helpText prop
+  helpText,
 }) => (
   <div>
     <label
@@ -572,7 +571,6 @@ const FormInput = ({
   </div>
 );
 
-// NEW: Inline Form Input Component for Address Fields
 const InlineFormInput = ({
   label,
   name,
@@ -652,7 +650,6 @@ const InlineFormInput = ({
   </div>
 );
 
-// NEW: Checkbox Group Component for Hobbies
 const CheckboxGroup = ({ label, name, options, selectedValues, onChange }) => {
   const handleCheckboxChange = (option) => {
     const updatedValues = selectedValues.includes(option)
@@ -729,7 +726,7 @@ const CheckboxGroup = ({ label, name, options, selectedValues, onChange }) => {
   );
 };
 
-// Main UserProfileEditPage Component
+
 const UserProfileEditPage = () => {
   const { userId: rawUserId } = useParams();
   const userId = (rawUserId && typeof rawUserId === "string" && rawUserId.length > 24)
@@ -751,7 +748,6 @@ const UserProfileEditPage = () => {
   };
 
   const [formData, setFormData] = useState({
-    // Basic Details
     aboutMe: "",
     gender: "",
     profileCreatedFor: "",
@@ -778,7 +774,6 @@ const UserProfileEditPage = () => {
     motherTongue: "",
     caste: "",
 
-    // Family Details
     fathersName: "",
     mothersName: "",
     fathersOccupation: "",
@@ -796,7 +791,6 @@ const UserProfileEditPage = () => {
     numberOfSisters: "",
     marriedSisters: "",
 
-    // Religious Information
     denomination: "",
     church: "",
     churchActivity: "",
@@ -804,7 +798,6 @@ const UserProfileEditPage = () => {
     spirituality: "",
     religiousDetail: "",
 
-    // Contact Information
     alternateMobile: "",
     landlineNumber: "",
     currentAddress: "",
@@ -831,7 +824,6 @@ const UserProfileEditPage = () => {
     state: "",
     pincode: "",
 
-    // Professional Information
     education: "",
     additionalEducation: "",
     college: "",
@@ -842,7 +834,6 @@ const UserProfileEditPage = () => {
     companyName: "",
     annualIncome: "",
 
-    // Lifestyle
     exercise: "",
     hobbies: [],
     interests: "",
@@ -852,7 +843,6 @@ const UserProfileEditPage = () => {
     sportsActivities: "",
     dressStyles: "",
 
-    // Social Media
     whatsapp: "",
     facebook: "",
     instagram: "",
@@ -860,7 +850,6 @@ const UserProfileEditPage = () => {
     youtube: "",
     linkedin: "",
 
-    // Partner Preferences - Basic & Religion
     partnerAgeFrom: "",
     partnerAgeTo: "",
     partnerHeight: "",
@@ -875,18 +864,15 @@ const UserProfileEditPage = () => {
     partnerDenomination: "",
     partnerSpirituality: "",
 
-    // Partner Preferences - Professional
     partnerEducation: "",
     partnerEmploymentType: "",
     partnerOccupation: "",
     partnerAnnualIncome: "",
 
-    // Partner Preferences - Location
     partnerCountry: [],
     partnerState: [],
     partnerDistrict: [],
 
-    // Profile Visibility
     profileVisibility: "Public",
   });
 
@@ -910,6 +896,7 @@ const UserProfileEditPage = () => {
   const [idVerificationStatus, setIdVerificationStatus] = useState("Pending");
   const [idProofDocument, setIdProofDocument] = useState("");
   const [isUploadingId, setIsUploadingId] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const ageOptions = Array.from({ length: 53 }, (_, i) => (i + 18).toString());
 
@@ -921,29 +908,13 @@ const UserProfileEditPage = () => {
   ];
 
   const hobbiesOptions = [
-    "Reading",
-    "Sports",
-    "Music",
-    "Traveling",
-    "Cooking",
-    "Photography",
-    "Dancing",
-    "Gaming",
-    "Painting",
-    "Writing",
-    "Gardening",
-    "Yoga",
+    "Reading", "Sports", "Music", "Traveling", "Cooking", "Photography", 
+    "Dancing", "Gaming", "Painting", "Writing", "Gardening", "Yoga",
   ];
 
   const parentOccupationOptions = [
-    "Retired",
-    "Business",
-    "Government Employee",
-    "Private Employee",
-    "Professional",
-    "Farmer",
-    "Homemaker",
-    "Others",
+    "Retired", "Business", "Government Employee", "Private Employee", 
+    "Professional", "Farmer", "Homemaker", "Others",
   ];
 
   const [selectedCountryCode, setSelectedCountryCode] = useState("");
@@ -995,7 +966,6 @@ const UserProfileEditPage = () => {
     setHasUnsavedChanges(true);
   };
 
-  // Handle state change
   const handleStateChange = (e) => {
     const stateName = e.target.value;
     const states = State.getStatesOfCountry(selectedCountryCode) || [];
@@ -1009,7 +979,6 @@ const UserProfileEditPage = () => {
     setHasUnsavedChanges(true);
   };
 
-  // Handle city change - Auto-populate state and country
   const handleCityChange = (e) => {
     const cityName = e.target.value;
 
@@ -1022,7 +991,6 @@ const UserProfileEditPage = () => {
       return;
     }
 
-    // Find the country and state for this city
     let foundCountryCode = "";
     let foundStateCode = "";
     let foundCountryName = "";
@@ -1049,7 +1017,6 @@ const UserProfileEditPage = () => {
       }
     }
 
-    // Update form data with city, state, and country
     setFormData((prev) => ({
       ...prev,
       city: cityName,
@@ -1057,7 +1024,6 @@ const UserProfileEditPage = () => {
       citizenOf: foundCountryName || prev.citizenOf,
     }));
 
-    // Update state codes for proper dropdown management
     if (foundCountryCode) {
       setSelectedCountryCode(foundCountryCode);
     }
@@ -1068,14 +1034,13 @@ const UserProfileEditPage = () => {
     setHasUnsavedChanges(true);
   };
 
-  // Cascading handlers for Partner Preferences
   const handlePartnerCountryChange = (e) => {
     const countries = e.target.value;
     setFormData((prev) => ({
       ...prev,
       partnerCountry: countries,
-      partnerState: [], // Clear states when country changes
-      partnerDistrict: [], // Clear districts when country changes
+      partnerState: [],
+      partnerDistrict: [],
     }));
     setHasUnsavedChanges(true);
   };
@@ -1085,7 +1050,7 @@ const UserProfileEditPage = () => {
     setFormData((prev) => ({
       ...prev,
       partnerState: states,
-      partnerDistrict: [], // Clear districts when state changes
+      partnerDistrict: [],
     }));
     setHasUnsavedChanges(true);
   };
@@ -1102,13 +1067,10 @@ const UserProfileEditPage = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        console.log("Fetching user data for userId:", userId);
         const response = await getUserInfo(userId);
-        console.log("API Response:", response);
 
         if (response.status === 200) {
           const userData = response.data.data;
-          console.log("User Data Received:", userData);
 
           const parseAddress = (addrStr) => {
             if (!addrStr) return {};
@@ -1470,7 +1432,6 @@ const UserProfileEditPage = () => {
         try {
           const deleteResponse = await deleteAdditionalImages(userId, deletedAdditionalImages);
           if (deleteResponse.status === 200) {
-            console.log("Deleted images successfully from Cloudinary");
             setDeletedAdditionalImages([]);
           }
         } catch (deleteError) {
@@ -1540,9 +1501,7 @@ const UserProfileEditPage = () => {
       // ========================
       // Step 6: Send FormData to backend
       // ========================
-      console.log("Submitting form data...");
       const response = await savePersonalInfo(submitFormData, userId);
-      console.log("Response:", response);
 
       if (response.status === 200 || response.data?.success) {
         showAlert({ text: "Profile updated successfully!", icon: "success" });
@@ -1612,7 +1571,6 @@ const UserProfileEditPage = () => {
       // Using manual axios for direct control
       const baseUrl = import.meta.env.VITE_BASE_ROUTE;
       const url = `${baseUrl}/test-upload-id-proof/${userId}`;
-      console.log("HITTING TEST URL:", url);
 
       const response = await axios.post(url, formData, {
         headers: { "Content-Type": "multipart/form-data" }

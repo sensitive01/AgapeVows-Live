@@ -487,7 +487,7 @@ const UserAllProfilePage = () => {
                           boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
                         }}
                       >
-                        
+
                         <div
                           className="d-flex justify-content-between align-items-center mb-3"
                           style={{
@@ -529,7 +529,7 @@ const UserAllProfilePage = () => {
                         </div>
 
                         <div className="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
-                        
+
                           <div
                             onClick={(e) => handleViewProfile(e, user)}
                             style={{
@@ -573,7 +573,7 @@ const UserAllProfilePage = () => {
                             </div>
                           </div>
 
-                    
+
                           <div className="flex-grow-1" style={{ cursor: 'pointer' }} onClick={(e) => handleViewProfile(e, user)}>
                             <div>
                               <h4

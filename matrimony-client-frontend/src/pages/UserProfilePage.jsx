@@ -202,7 +202,6 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
 
     setIsUploading(true);
     try {
-      console.log("Submitting ID Proof:", { idType, idNumber, fileName: file.name });
       const formData = new FormData();
       formData.append("idProofType", idType);
       formData.append("idProofNumber", idNumber);
