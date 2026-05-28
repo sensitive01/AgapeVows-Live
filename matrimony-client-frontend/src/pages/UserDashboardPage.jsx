@@ -458,7 +458,7 @@ const UserDashboardPage = () => {
                     )}
 
                     {profileMatches.length > 0 ? (
-                      <ul className="slider" ref={sliderRef}>
+                      <ul className="slider" ref={sliderRef} key={profileMatches.map((p, i) => p._id || i).join('-')}>
                         {profileMatches.map((profile, index) => (
                           <li key={profile._id || index}>
                             <div

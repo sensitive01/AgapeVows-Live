@@ -191,7 +191,7 @@
 .hero-form-block {
     flex: 0 0 380px;
     margin-right: 45px;
-    animation: fadeInRight 1s ease;
+    animation: fadeInRight 1s ease; 
 }
 
 @media (max-width: 1024px) {

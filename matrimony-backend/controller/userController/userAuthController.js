@@ -1210,61 +1210,98 @@ const getNewProfileMatches = async (req, res) => {
       partnerDistrict,
       partnerHeight,
       partnerHeightTo,
-      religion,
+      partnerDenomination,
     } = currentUser;
 
     const oppositeGender = gender === "Male" ? "Female" : "Male";
+    
+    // Ensure blockedIds are ObjectIds
+    const blockedIds = currentUser.blockedUsers?.map(b => b.user) || [];
 
-    // Defaults to avoid Invalid Date
-    const ageFrom = partnerAgeFrom ? Number(partnerAgeFrom) : 18;
-    const ageTo = partnerAgeTo ? Number(partnerAgeTo) : 100;
+    const baseQuery = {
+      _id: { $ne: new mongoose.Types.ObjectId(userId), $nin: blockedIds },
+      gender: oppositeGender,
+      profileStatus: { $ne: "Deactivated" },
+      isApproved: true,
+      isDeleted: false,
+    };
 
-    // Calculate DOB range
-    const currentYear = new Date().getFullYear();
-    const minDOB = new Date(currentYear - ageTo, 0, 1);
-    const maxDOB = new Date(currentYear - ageFrom, 11, 31);
+    const hasPreferences = !!(
+      partnerAgeFrom ||
+      partnerAgeTo ||
+      partnerCaste ||
+      (partnerDistrict && partnerDistrict.length > 0) ||
+      partnerHeight ||
+      partnerHeightTo ||
+      partnerDenomination
+    );
 
-    const heightFrom = partnerHeight ? parseFloat(partnerHeight) : null;
-    const heightTo = partnerHeightTo ? parseFloat(partnerHeightTo) : null;
+    let rawMatches = [];
 
-    // Build the height filter condition
-    let heightFilter = null;
-    if ((heightFrom && !isNaN(heightFrom)) || (heightTo && !isNaN(heightTo))) {
-      const heightConditions = [];
-      if (heightFrom && !isNaN(heightFrom)) {
-        heightConditions.push({ $gte: [{ $convert: { input: "$height", to: "double", onError: 0, onNull: 0 } }, heightFrom] });
+    if (hasPreferences) {
+      const strictFilters = [];
+
+      if (partnerAgeFrom || partnerAgeTo) {
+        const ageFrom = partnerAgeFrom ? Number(partnerAgeFrom) : 18;
+        const ageTo = partnerAgeTo ? Number(partnerAgeTo) : 100;
+        const currentYear = new Date().getFullYear();
+        const minDOB = new Date(currentYear - ageTo, 0, 1);
+        const maxDOB = new Date(currentYear - ageFrom, 11, 31);
+        strictFilters.push({ dateOfBirth: { $gte: minDOB, $lte: maxDOB } });
       }
-      if (heightTo && !isNaN(heightTo)) {
-        heightConditions.push({ $lte: [{ $convert: { input: "$height", to: "double", onError: 0, onNull: 0 } }, heightTo] });
+
+      if (partnerDenomination) {
+        strictFilters.push({ denomination: partnerDenomination });
       }
-      
-      heightFilter = {
-        $expr: {
-          $and: heightConditions
+      if (partnerCaste) {
+        strictFilters.push({ caste: partnerCaste });
+      }
+      if (partnerDistrict && partnerDistrict.length > 0) {
+        strictFilters.push({ city: { $in: partnerDistrict } });
+      }
+
+      const heightFrom = partnerHeight ? parseFloat(partnerHeight) : null;
+      const heightTo = partnerHeightTo ? parseFloat(partnerHeightTo) : null;
+      if ((heightFrom && !isNaN(heightFrom)) || (heightTo && !isNaN(heightTo))) {
+        const heightConditions = [];
+        if (heightFrom && !isNaN(heightFrom)) {
+          heightConditions.push({ $gte: [{ $convert: { input: "$height", to: "double", onError: 0, onNull: 0 } }, heightFrom] });
         }
-      };
+        if (heightTo && !isNaN(heightTo)) {
+          heightConditions.push({ $lte: [{ $convert: { input: "$height", to: "double", onError: 0, onNull: 0 } }, heightTo] });
+        }
+        strictFilters.push({ $expr: { $and: heightConditions } });
+      }
+
+      const matchQuery = { ...baseQuery };
+      if (strictFilters.length > 0) {
+        matchQuery.$and = strictFilters;
+      }
+
+      rawMatches = await userModel.aggregate([
+        { $match: matchQuery },
+        { $sample: { size: 5 } }
+      ]);
     }
 
-    const filters = [
-      { dateOfBirth: { $gte: minDOB, $lte: maxDOB } },
-      religion ? { religion: religion } : null,
-      partnerCaste ? { caste: partnerCaste } : null,
-      partnerDistrict ? { city: partnerDistrict } : null,
-      heightFilter,
-    ].filter(Boolean);
+    // If less than 5 matches found, fill the rest with random profiles
+    if (rawMatches.length < 5) {
+      const existingMatchIds = rawMatches.map(m => m._id);
+      const allExcludedIds = [...blockedIds, ...existingMatchIds];
 
-    const blockedIds = currentUser.blockedUsers?.map(b => b.user.toString()) || [];
+      const fallbackQuery = {
+        ...baseQuery,
+        _id: { $ne: new mongoose.Types.ObjectId(userId), $nin: allExcludedIds }
+      };
 
-    const rawMatches = await userModel
-      .find({
-        _id: { $ne: userId, $nin: blockedIds },
-        gender: oppositeGender,
-        profileStatus: { $ne: "Deactivated" },
-        isApproved: true,
-        isDeleted: false,
-        $or: filters,
-      })
-      .limit(5);
+      const needed = 5 - rawMatches.length;
+      const additionalMatches = await userModel.aggregate([
+        { $match: fallbackQuery },
+        { $sample: { size: needed } }
+      ]);
+
+      rawMatches = [...rawMatches, ...additionalMatches];
+    }
 
     const matches = rawMatches.map((user) => {
       const dob = new Date(user.dateOfBirth);
