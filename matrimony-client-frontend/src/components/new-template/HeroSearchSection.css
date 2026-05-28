@@ -190,7 +190,7 @@
 /* Right Side Form */
 .hero-form-block {
     flex: 0 0 380px;
-    margin-right: 25px;
+    margin-right: 45px;
     animation: fadeInRight 1s ease;
 }
 
