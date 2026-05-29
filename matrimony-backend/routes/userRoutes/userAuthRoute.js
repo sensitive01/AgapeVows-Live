@@ -195,4 +195,7 @@ userAuthRoutes.post("/api/users/:userId/block", userAuthController.blockUser);
 userAuthRoutes.post("/api/users/:userId/unblock", userAuthController.unblockUser);
 userAuthRoutes.post("/deactivate-profile/:userId", userAuthController.deactivateProfile);
 
+// Notifications Route
+userAuthRoutes.post("/mark-notifications-read/:userId", userAuthController.markNotificationsRead);
+
 module.exports = userAuthRoutes;

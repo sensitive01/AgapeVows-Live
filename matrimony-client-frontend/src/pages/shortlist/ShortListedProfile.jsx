@@ -4,7 +4,7 @@ import UserSideBar from "../../components/UserSideBar";
 import LayoutComponent from "../../components/layouts/LayoutComponent";
 import Footer from "../../components/Footer";
 import CopyRights from "../../components/CopyRights";
-import { getShortListedProfileData } from "../../api/axiosService/userAuthService";
+import { getShortListedProfileData, markNotificationsRead } from "../../api/axiosService/userAuthService";
 import { useNavigate } from "react-router-dom";
 import MembershipBadge from "../../components/common/MembershipBadge";
 
@@ -52,6 +52,7 @@ const ShortListedProfile = () => {
   // Initial load
   useEffect(() => {
     fetchShortListedProfiles();
+    markNotificationsRead(userId, 'shortlists').catch(console.error);
   }, []);
 
   // Render profile list

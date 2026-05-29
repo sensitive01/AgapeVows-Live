@@ -359,7 +359,18 @@ const UserPlanSelection = () => {
         <div className="plans-main">
           <div className="container">
             <div className="row" style={{ position: "relative" }}>
-              {/* Carousel Navigation - Only show if more than 3 plans */}
+              {!userId ? (
+                <div style={{ textAlign: "center", padding: "80px 20px", background: "#fff", borderRadius: "12px", boxShadow: "0 4px 15px rgba(0,0,0,0.05)", width: "100%", maxWidth: "600px", margin: "0 auto" }}>
+                  <h2 style={{ fontSize: "2rem", color: "#333", marginBottom: "15px" }}>Login to View Premium Plans</h2>
+                  <p style={{ fontSize: "1.1rem", color: "#666", marginBottom: "30px" }}>Create an account or login to unlock our exclusive membership plans and find your perfect match.</p>
+                  <div style={{ display: "flex", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+                    <button onClick={() => navigate('/user/user-login')} style={{ padding: "12px 35px", fontSize: "1.1rem", borderRadius: "50px", border: "2px solid #a020f0", background: "transparent", color: "#a020f0", cursor: "pointer", fontWeight: "600" }}>Login</button>
+                    <button onClick={() => navigate('/user/user-sign-up')} style={{ padding: "12px 35px", fontSize: "1.1rem", borderRadius: "50px", background: "#a020f0", color: "#fff", border: "2px solid #a020f0", cursor: "pointer", fontWeight: "600" }}>Register Now</button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Carousel Navigation - Only show if more than 3 plans */}
               {plans.length > 3 && (
                 <>
                   {/* LEFT */}
@@ -526,6 +537,8 @@ const UserPlanSelection = () => {
                     />
                   ))}
                 </div>
+              )}
+                </>
               )}
             </div>
           </div>

@@ -309,6 +309,13 @@ const userSchema = new mongoose.Schema(
          enum: ["Pending", "Approved", "Rejected", "None"],
          default: "None"
       },
+
+      /* =========================
+         UNREAD COUNTS FOR NOTIFICATIONS
+      ========================== */
+      unreadInterestsCount: { type: Number, default: 0 },
+      unreadShortlistsCount: { type: Number, default: 0 },
+      unreadViewsCount: { type: Number, default: 0 },
    },
    { timestamps: true }
 );

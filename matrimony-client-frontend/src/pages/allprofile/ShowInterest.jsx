@@ -96,14 +96,11 @@ const ShowInterest = ({ selectedUser, userId, onSuccess }) => {
 
   return (
     <div className="modal fade" id="sendInter" ref={modalRef}>
-      <div className="modal-dialog modal-lg modal-dialog-centered">
+      <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: "400px" }}>
         <div className="modal-content">
           <div className="modal-header bg-light">
             <h5 className="modal-title" style={{ fontWeight: "600" }}>
-              Send interest to{" "}
-              <span style={{ color: "#e91e63" }}>
-                {selectedUser?.userName || "User"}
-              </span>
+              Send interest
             </h5>
             <button
               type="button"
@@ -115,51 +112,37 @@ const ShowInterest = ({ selectedUser, userId, onSuccess }) => {
             </button>
           </div>
 
-          <div className="modal-body p-4">
-            <div className="container-fluid">
-              <div className="row">
-                {/* Left Column - Image */}
-                <div className="col-md-5 mb-3 mb-md-0 d-flex align-items-start justify-content-center">
-                  <div
-                    style={{
-                      width: "100%",
-                      maxWidth: "300px",
-                      borderRadius: "10px",
-                      overflow: "hidden",
-                      boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-                    }}
-                  >
-                    <img
-                      src={
-                        selectedUser?.profileImage ||
-                        "images/default-profile.jpg"
-                      }
-                      alt={selectedUser?.userName}
-                      style={{
-                        width: "100%",
-                        height: "auto",
-                        minHeight: "200px",
-                        objectFit: "cover",
-                        display: "block",
-                      }}
-                      onError={(e) => {
-                        e.target.src = "images/default-profile.jpg";
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* Right Column - Form */}
-                <div className="col-md-7 d-flex align-items-center">
-                  <h5 className="text-dark" style={{ lineHeight: "1.5" }}>
-                    Are you sure you want to send an interest to{" "}
-                    <strong style={{ color: "#e91e63" }}>
-                      {selectedUser?.userName}
-                    </strong>?
-                  </h5>
-                </div>
-              </div>
+          <div className="modal-body p-4 text-center">
+            <div
+              style={{
+                width: "120px",
+                height: "120px",
+                borderRadius: "50%",
+                overflow: "hidden",
+                boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+                margin: "0 auto 20px auto",
+              }}
+            >
+              <img
+                src={
+                  selectedUser?.profileImage ||
+                  "images/default-profile.jpg"
+                }
+                alt={selectedUser?.userName}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                }}
+                onError={(e) => {
+                  e.target.src = "images/default-profile.jpg";
+                }}
+              />
             </div>
+            <h5 className="text-dark mb-0" style={{ lineHeight: "1.5", fontSize: "1.1rem" }}>
+              Are you sure you want to send an interest to this match?
+            </h5>
           </div>
 
           <div className="modal-footer bg-light">

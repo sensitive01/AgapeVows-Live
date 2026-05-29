@@ -516,10 +516,10 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
   const navItems = [
     { path: "/user/user-dashboard-page", icon: "fa fa-home", label: "Dashboard" },
     { path: "/user/user-profile-page", icon: "fa fa-user", label: "Profile" },
-    { path: "/user/user-interest-page", icon: "fa fa-heart", label: "Interests" },
+    { path: "/user/user-interest-page", icon: "fa fa-heart", label: "Interests", unreadCount: userInfo?.unreadInterestsCount || 0 },
 
-    { path: "/user/short-listed-profiles-page", icon: "fa fa-bookmark", label: "Shortlist" },
-    { path: "/user/who-viewed-you-page", icon: "fa fa-eye", label: "Viewed You" },
+    { path: "/user/short-listed-profiles-page", icon: "fa fa-bookmark", label: "Shortlist", unreadCount: userInfo?.unreadShortlistsCount || 0 },
+    { path: "/user/who-viewed-you-page", icon: "fa fa-eye", label: "Viewed You", unreadCount: userInfo?.unreadViewsCount || 0 },
     { path: "/user/blocked-profiles-page", icon: "fa fa-ban", label: "Blocked" },
     { path: "/user/ignored-profiles-page", icon: "fa fa-times-circle", label: "Ignored" },
     { path: "/user/user-plan-page", icon: "fa fa-credit-card", label: "Plan" },
@@ -734,6 +734,7 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
                     ...styles.link,
                     ...(active && styles.activeLink),
                     ...(item.danger && styles.danger),
+                    ...(item.unreadCount > 0 && { fontWeight: "bold", color: "#2d3748" }),
                     position: "relative",
                   }}
                   onMouseEnter={() => setHoveredIndex(i)}
@@ -742,6 +743,20 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
                   {active && <span style={styles.activeDot}></span>}
                   <i className={item.icon} style={styles.icon}></i>
                   {item.label}
+                  
+                  {item.unreadCount > 0 && (
+                    <span style={{
+                      background: "#e53e3e",
+                      color: "#fff",
+                      fontSize: "11px",
+                      fontWeight: "bold",
+                      padding: "2px 6px",
+                      borderRadius: "10px",
+                      marginLeft: "auto"
+                    }}>
+                      {item.unreadCount}
+                    </span>
+                  )}
 
                   <div
                     style={{

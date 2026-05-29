@@ -440,5 +440,12 @@ export const acknowledgeContactUpdate = async (userId) => {
   }
 };
 
-
-
+export const markNotificationsRead = async (userId, type) => {
+  try {
+    const response = await userInstance.post(`/mark-notifications-read/${userId}`, { type });
+    return response;
+  } catch (error) {
+    console.error("Error marking notifications read:", error);
+    throw error;
+  }
+};

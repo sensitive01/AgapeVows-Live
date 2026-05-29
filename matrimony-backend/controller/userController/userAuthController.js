@@ -757,6 +757,7 @@ const getProfileMoreInformation = async (req, res) => {
 
             if (!profileData.profileViews) profileData.profileViews = [];
             profileData.profileViews.push(viewerId);
+            await userModel.findByIdAndUpdate(profileId, { $inc: { unreadViewsCount: 1 } });
           } else {
             console.log("ℹ️ Profile already viewed by this user. Skipping increment.");
           }
@@ -766,6 +767,7 @@ const getProfileMoreInformation = async (req, res) => {
           if (!profileData.profileViews.includes(viewerId)) {
             profileData.profileViews.push(viewerId);
             await profileData.save();
+            await userModel.findByIdAndUpdate(profileId, { $inc: { unreadViewsCount: 1 } });
           }
         }
       } else {
@@ -774,6 +776,7 @@ const getProfileMoreInformation = async (req, res) => {
         if (!profileData.profileViews.includes(viewerId)) {
           profileData.profileViews.push(viewerId);
           await profileData.save();
+          await userModel.findByIdAndUpdate(profileId, { $inc: { unreadViewsCount: 1 } });
         }
       }
     }
@@ -810,6 +813,8 @@ const getProfileMoreInformation = async (req, res) => {
     });
   }
 };
+
+
 
 const showUserInterests = async (req, res) => {
   try {
@@ -918,6 +923,8 @@ const showUserInterests = async (req, res) => {
       user.paymentDetails[activePlanIndex].lastInterestSentDate = new Date();
       user.markModified("paymentDetails");
       await user.save();
+      
+      await userModel.findByIdAndUpdate(targetUser, { $inc: { unreadInterestsCount: 1 } });
 
       return res.status(200).json({
         success: true,
@@ -946,10 +953,11 @@ const showUserInterests = async (req, res) => {
 
     // Increment counters
     user.paymentDetails[activePlanIndex].interestSentCount = totalCount + 1;
-    user.paymentDetails[activePlanIndex].dailyInterestSentCount = dailyCount + 1;
     user.paymentDetails[activePlanIndex].lastInterestSentDate = new Date();
     user.markModified("paymentDetails");
     await user.save();
+
+    await userModel.findByIdAndUpdate(targetUser, { $inc: { unreadInterestsCount: 1 } });
 
     return res.status(200).json({
       success: true,
@@ -1741,6 +1749,8 @@ const shortListTheProfile = async (req, res) => {
       if (!alreadyShortlisted) {
         shortListedData.profiles.push(profileId);
         await shortListedData.save();
+        
+        await userModel.findByIdAndUpdate(profileId, { $inc: { unreadShortlistsCount: 1 } });
       }
 
       return res.status(200).json({
@@ -1755,6 +1765,8 @@ const shortListTheProfile = async (req, res) => {
         userId,
         profiles: [profileId],
       });
+
+      await userModel.findByIdAndUpdate(profileId, { $inc: { unreadShortlistsCount: 1 } });
 
       return res.status(201).json({
         success: true,
@@ -2672,6 +2684,27 @@ const deactivateProfile = async (req, res) => {
   }
 };
 
+const markNotificationsRead = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { type } = req.body; 
+
+    let update = {};
+    if (type === 'interests') update.unreadInterestsCount = 0;
+    else if (type === 'shortlists') update.unreadShortlistsCount = 0;
+    else if (type === 'views') update.unreadViewsCount = 0;
+    else {
+      return res.status(400).json({ success: false, message: "Invalid type" });
+    }
+
+    const updatedUser = await userModel.findByIdAndUpdate(userId, update, { new: true });
+    res.status(200).json({ success: true, message: "Notifications marked as read", data: updatedUser });
+  } catch (err) {
+    console.error("Error marking notifications read:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 module.exports = {
   getWhoViewedYou,
   getShortListedProfileData,
@@ -2707,5 +2740,6 @@ module.exports = {
   getBlockedProfiles,
   uploadIdProof,
   deactivateProfile,
-  requestContactUpdate
+  requestContactUpdate,
+  markNotificationsRead
 };

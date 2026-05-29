@@ -4,7 +4,7 @@ import UserSideBar from "../../components/UserSideBar";
 import LayoutComponent from "../../components/layouts/LayoutComponent";
 import Footer from "../../components/Footer";
 import CopyRights from "../../components/CopyRights";
-import { getWhoViewedYouData } from "../../api/axiosService/userAuthService";
+import { getWhoViewedYouData, markNotificationsRead } from "../../api/axiosService/userAuthService";
 import { useNavigate } from "react-router-dom";
 import MembershipBadge from "../../components/common/MembershipBadge";
 import dummyProfileImage from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
@@ -42,6 +42,7 @@ const WhoViewedYou = () => {
   // Initial load
   useEffect(() => {
     fetchWhoViewedYou();
+    markNotificationsRead(userId, 'views').catch(console.error);
   }, []);
 
   // Render profile list

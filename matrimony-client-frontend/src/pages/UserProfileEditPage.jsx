@@ -2722,13 +2722,15 @@ const UserProfileEditPage = () => {
 
                   {/* Contact Information Section */}
                   <FormSection title="Contact Information" zIndex={17}>
-                    <div style={{ marginBottom: "20px", color: "#6b7280", fontSize: "0.95rem", lineHeight: "1.6" }}>
-                      <p style={{ fontWeight: "600", color: "#374151", marginBottom: "8px" }}>
-                        Prefer communication through a family member or representative?
+                    <div style={{ marginBottom: "30px", marginTop: "10px" }}>
+                      <p style={{ fontWeight: "700", color: "#6a1b9a", fontSize: "1.2rem", marginBottom: "16px" }}>
+                        Prefer communication through a family member or a trusted representative?
                       </p>
-                      <p>
-                        Please provide the phone number through which the interested users can contact you. If you prefer not to share your personal number directly, you may provide alternate contact details of a family member or a trusted representative who can communicate on your behalf. These details will only be shared with users interested in connecting with you.
-                      </p>
+                      <ul style={{ paddingLeft: "20px", margin: "0", fontSize: "1.05rem", lineHeight: "1.7", display: "flex", flexDirection: "column", gap: "10px", fontWeight: "500" }}>
+                        <li style={{ color: "#6a1b9a" }}>To help protect your privacy and avoid unwanted spam or fraudulent calls, AgapeVows recommends providing an alternate contact number for communication with interested matches. This number should be different from the primary phone number used to create your profile (if the profile was created by the Bride or Groom).</li>
+                        <li style={{ color: "#6a1b9a" }}>You may share the contact details of a parent, family member, guardian, or trusted representative who can communicate on your behalf. Only users who express interest in connecting with you will be able to view these details.</li>
+                        <li style={{ color: "#6a1b9a" }}>If you prefer to communicate directly with interested matches, you may enter your own phone number in the Alternate Mobile Number field.</li>
+                      </ul>
                     </div>
                     <div
                       style={{

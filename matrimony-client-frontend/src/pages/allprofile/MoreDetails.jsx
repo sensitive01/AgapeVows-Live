@@ -435,7 +435,11 @@ const MoreDetails = () => {
               {showContact && (
                 <div style={{ width: "100%", marginTop: "10px", display: "flex", flexDirection: "column", gap: "10px" }}>
                   <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
-                    👤 Name: {userInfo?.contactPersonName || "Not specified"}
+                    👤 User Name: {userInfo?.userName || "Not specified"}
+                  </div>
+                  
+                  <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                    👤 Contact Person: {userInfo?.contactPersonName || "Not specified"}
                   </div>
                   
                   <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>

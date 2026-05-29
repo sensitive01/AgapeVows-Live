@@ -8,6 +8,7 @@ import CopyRights from "../components/CopyRights";
 import {
   getInterestedProfile,
   handleChangeInterestStatus,
+  markNotificationsRead
 } from "../api/axiosService/userAuthService";
 import { showAlert } from "../utils/alertService";
 import MembershipBadge from "../components/common/MembershipBadge";
@@ -48,6 +49,7 @@ const UserInterest = () => {
   // Initial load
   useEffect(() => {
     fetchProfileData("pending");
+    markNotificationsRead(userId, 'interests').catch(console.error);
   }, []);
 
   const handleAccept = async (profileId, status) => {
