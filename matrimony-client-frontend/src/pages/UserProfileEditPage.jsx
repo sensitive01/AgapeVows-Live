@@ -450,14 +450,18 @@ const FormInput = ({
   searchable = false,
   readOnly = false,
   helpText,
+  isMulti = false,
+  layout = "horizontal",
 }) => (
-  <div>
+  <div style={{ display: "flex", flexDirection: layout === "vertical" ? "column" : "row", alignItems: layout === "vertical" ? "flex-start" : "center", gap: layout === "vertical" ? "4px" : "8px", marginBottom: "12px", width: "100%" }}>
     <label
       style={{
         fontSize: "14px",
         fontWeight: "600",
         color: "#374151",
-        marginBottom: "8px",
+        minWidth: layout === "vertical" ? "auto" : "130px",
+        maxWidth: layout === "vertical" ? "none" : "130px",
+        marginBottom: "0",
         display: "block",
       }}
     >
@@ -466,6 +470,7 @@ const FormInput = ({
         <span style={{ color: "#ef4444", marginLeft: "4px" }}>*</span>
       )}
     </label>
+    <div style={{ flex: 1, width: "100%" }}>
     {type === "select" && searchable ? (
       <SearchableSelect
         name={name}
@@ -474,6 +479,7 @@ const FormInput = ({
         options={options}
         placeholder={`Select ${label}`}
         disabled={readOnly}
+        isMulti={isMulti}
       />
     ) : type === "select" ? (
       <select
@@ -568,6 +574,7 @@ const FormInput = ({
         {helpText}
       </p>
     )}
+    </div>
   </div>
 );
 
@@ -584,12 +591,12 @@ const InlineFormInput = ({
   readOnly = false,
   autoComplete,
 }) => (
-  <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", alignItems: "center", gap: "24px", gridColumn: "1 / -1", marginBottom: "8px" }}>
-    <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151", margin: 0 }}>
+  <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+    <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151", margin: 0, minWidth: "130px", maxWidth: "130px", display: "block" }}>
       {label}
       {required && <span style={{ color: "#ef4444", marginLeft: "4px" }}>*</span>}
     </label>
-    <div>
+    <div style={{ flex: 1, width: "100%" }}>
       {type === "select" && searchable ? (
         <SearchableSelect
           name={name}
@@ -652,9 +659,23 @@ const InlineFormInput = ({
 
 const CheckboxGroup = ({ label, name, options, selectedValues, onChange }) => {
   const handleCheckboxChange = (option) => {
-    const updatedValues = selectedValues.includes(option)
-      ? selectedValues.filter((item) => item !== option)
-      : [...selectedValues, option];
+    const exclusiveOptions = ["Any", "Doesn't Matter", "Don't wish to specify", "None"];
+    let updatedValues;
+
+    if (exclusiveOptions.includes(option)) {
+      if (selectedValues.includes(option)) {
+        updatedValues = [];
+      } else {
+        updatedValues = [option];
+      }
+    } else {
+      const filteredValues = selectedValues.filter(v => !exclusiveOptions.includes(v));
+      if (filteredValues.includes(option)) {
+        updatedValues = filteredValues.filter(v => v !== option);
+      } else {
+        updatedValues = [...filteredValues, option];
+      }
+    }
 
     onChange({
       target: {
@@ -665,13 +686,15 @@ const CheckboxGroup = ({ label, name, options, selectedValues, onChange }) => {
   };
 
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "row", alignItems: "flex-start", gap: "8px", marginBottom: "12px", gridColumn: "1 / -1" }}>
       <label
         style={{
           fontSize: "14px",
           fontWeight: "600",
           color: "#374151",
-          marginBottom: "12px",
+          minWidth: "130px",
+          maxWidth: "130px",
+          marginTop: "8px",
           display: "block",
         }}
       >
@@ -679,9 +702,13 @@ const CheckboxGroup = ({ label, name, options, selectedValues, onChange }) => {
       </label>
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-          gap: "12px",
+          flex: 1,
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "16px",
+          maxHeight: "240px",
+          overflowY: "auto",
+          paddingRight: "8px",
         }}
       >
         {options.map((option) => (
@@ -854,20 +881,21 @@ const UserProfileEditPage = () => {
     partnerAgeTo: "",
     partnerHeight: "",
     partnerHeightTo: "",
-    partnerMaritalStatus: "",
-    partnerMotherTongue: "",
-    partnerCaste: "",
-    partnerPhysicalStatus: "",
-    partnerEatingHabits: "",
-    partnerDrinkingHabits: "",
-    partnerSmokingHabits: "",
-    partnerDenomination: "",
-    partnerSpirituality: "",
+    partnerMaritalStatus: [],
+    partnerMotherTongue: [],
+    partnerCaste: [],
+    partnerPhysicalStatus: [],
+    partnerEatingHabits: [],
+    partnerDrinkingHabits: [],
+    partnerSmokingHabits: [],
+    partnerDenomination: [],
+    partnerSpirituality: [],
 
-    partnerEducation: "",
-    partnerEmploymentType: "",
-    partnerOccupation: "",
-    partnerAnnualIncome: "",
+    partnerEducation: [],
+    partnerEmploymentType: [],
+    partnerOccupation: [],
+    partnerAnnualIncomeFrom: "",
+    partnerAnnualIncomeTo: "",
 
     partnerCountry: [],
     partnerState: [],
@@ -1188,19 +1216,20 @@ const UserProfileEditPage = () => {
             partnerAgeTo: userData.partnerAgeTo || "",
             partnerHeight: userData.partnerHeight || "",
             partnerHeightTo: userData.partnerHeightTo || "",
-            partnerMaritalStatus: userData.partnerMaritalStatus || "",
-            partnerMotherTongue: userData.partnerMotherTongue || "",
-            partnerCaste: userData.partnerCaste || "",
-            partnerPhysicalStatus: userData.partnerPhysicalStatus || "",
-            partnerEatingHabits: userData.partnerEatingHabits || "",
-            partnerDrinkingHabits: userData.partnerDrinkingHabits || "",
-            partnerSmokingHabits: userData.partnerSmokingHabits || "",
-            partnerDenomination: userData.partnerDenomination || "",
-            partnerSpirituality: userData.partnerSpirituality || "",
-            partnerEducation: userData.partnerEducation || "",
-            partnerEmploymentType: userData.partnerEmploymentType || "",
-            partnerOccupation: userData.partnerOccupation || "",
-            partnerAnnualIncome: userData.partnerAnnualIncome || "",
+            partnerMaritalStatus: Array.isArray(userData.partnerMaritalStatus) ? userData.partnerMaritalStatus : userData.partnerMaritalStatus ? [userData.partnerMaritalStatus] : [],
+            partnerMotherTongue: Array.isArray(userData.partnerMotherTongue) ? userData.partnerMotherTongue : userData.partnerMotherTongue ? [userData.partnerMotherTongue] : [],
+            partnerCaste: Array.isArray(userData.partnerCaste) ? userData.partnerCaste : userData.partnerCaste ? [userData.partnerCaste] : [],
+            partnerPhysicalStatus: Array.isArray(userData.partnerPhysicalStatus) ? userData.partnerPhysicalStatus : userData.partnerPhysicalStatus ? [userData.partnerPhysicalStatus] : [],
+            partnerEatingHabits: Array.isArray(userData.partnerEatingHabits) ? userData.partnerEatingHabits : userData.partnerEatingHabits ? [userData.partnerEatingHabits] : [],
+            partnerDrinkingHabits: Array.isArray(userData.partnerDrinkingHabits) ? userData.partnerDrinkingHabits : userData.partnerDrinkingHabits ? [userData.partnerDrinkingHabits] : [],
+            partnerSmokingHabits: Array.isArray(userData.partnerSmokingHabits) ? userData.partnerSmokingHabits : userData.partnerSmokingHabits ? [userData.partnerSmokingHabits] : [],
+            partnerDenomination: Array.isArray(userData.partnerDenomination) ? userData.partnerDenomination : userData.partnerDenomination ? [userData.partnerDenomination] : [],
+            partnerSpirituality: Array.isArray(userData.partnerSpirituality) ? userData.partnerSpirituality : userData.partnerSpirituality ? [userData.partnerSpirituality] : [],
+            partnerEducation: Array.isArray(userData.partnerEducation) ? userData.partnerEducation : userData.partnerEducation ? [userData.partnerEducation] : [],
+            partnerEmploymentType: Array.isArray(userData.partnerEmploymentType) ? userData.partnerEmploymentType : userData.partnerEmploymentType ? [userData.partnerEmploymentType] : [],
+            partnerOccupation: Array.isArray(userData.partnerOccupation) ? userData.partnerOccupation : userData.partnerOccupation ? [userData.partnerOccupation] : [],
+            partnerAnnualIncomeFrom: userData.partnerAnnualIncomeFrom || "",
+            partnerAnnualIncomeTo: userData.partnerAnnualIncomeTo || "",
             partnerCountry: Array.isArray(userData.partnerCountry) ? userData.partnerCountry : userData.partnerCountry ? [userData.partnerCountry] : [],
             partnerState: Array.isArray(userData.partnerState) ? userData.partnerState : userData.partnerState ? [userData.partnerState] : [],
             partnerDistrict: Array.isArray(userData.partnerDistrict) ? userData.partnerDistrict : userData.partnerDistrict ? [userData.partnerDistrict] : [],
@@ -1656,7 +1685,7 @@ const UserProfileEditPage = () => {
               {/* Main Content - Right Column */}
               <div
                 className="col-md-9 col-lg-10"
-                style={{ paddingLeft: "20px", paddingRight: "80px" }}
+                style={{ paddingLeft: "20px", paddingRight: "20px" }}
               >
                 <form onSubmit={handleSubmit}>
                   {/* Top Buttons Section */}
@@ -1870,11 +1899,15 @@ const UserProfileEditPage = () => {
 
                   {/* Basic Details Section */}
                   <FormSection title="Basic Details" zIndex={20}>
+                    <p style={{ color: "purple", fontWeight: "bold", marginBottom: "20px" }}>
+                      Please ensure your Name and Date of Birth matches with your ID Proof (Aadhaar or Passport) for verification
+                    </p>
                     <div
                       style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "24px",
+                        columnGap: "120px",
+                        rowGap: "24px",
                       }}
                     >
                       <div style={{ gridColumn: "1 / -1" }}>
@@ -2037,115 +2070,7 @@ const UserProfileEditPage = () => {
                         onChange={handleInputChange}
                         options={Array.from({ length: 101 }, (_, i) => String(i + 40))}
                       />
-                      <FormInput
-                        label="Marital Status"
-                        name="maritalStatus"
-                        type="select"
-                        value={formData.maritalStatus}
-                        onChange={handleInputChange}
-                        options={[
-                          "Never Married",
-                          "Separated",
-                          "Divorced",
-                          "Widow / Widower",
-                          "Awaiting Divorce",
-                          "Annulled",
-                        ]}
-                      />
-                      {formData.maritalStatus &&
-                        formData.maritalStatus !== "Never Married" && (
-                          <>
-                            <FormInput
-                              label="Married Month & Year"
-                              name="marriedMonthYear"
-                              value={formData.marriedMonthYear}
-                              onChange={handleInputChange}
-                            />
-                            <FormInput
-                              label="Living Together Period"
-                              name="livingTogetherPeriod"
-                              value={formData.livingTogetherPeriod}
-                              onChange={handleInputChange}
-                            />
-                          </>
-                        )}
 
-                      {(formData.maritalStatus === "Divorced" ||
-                        formData.maritalStatus === "Awaiting Divorce") && (
-                          <>
-                            <FormInput
-                              label="Divorced Month & Year"
-                              name="divorcedMonthYear"
-                              value={formData.divorcedMonthYear}
-                              onChange={handleInputChange}
-                            />
-                            <div style={{ gridColumn: "1 / -1" }}>
-                              <FormInput
-                                label="Reason for Divorce"
-                                name="reasonForDivorce"
-                                type="textarea"
-                                value={formData.reasonForDivorce}
-                                onChange={handleInputChange}
-                              />
-                            </div>
-                          </>
-                        )}
-
-                      {formData.maritalStatus &&
-                        formData.maritalStatus !== "Never Married" && (
-                          <>
-                            <FormInput
-                              label="Child Status"
-                              name="childStatus"
-                              type="select"
-                              value={formData.childStatus}
-                              onChange={handleInputChange}
-                              options={[
-                                "No Children",
-                                "Have Children - Living Together",
-                                "Have Children - Not Living Together",
-                              ]}
-                            />
-                            <FormInput
-                              label="Number of Children"
-                              name="numberOfChildren"
-                              value={formData.numberOfChildren}
-                              onChange={handleInputChange}
-                            />
-                          </>
-                        )}
-                      <FormInput
-                        label="Eating Habits"
-                        name="eatingHabits"
-                        type="select"
-                        value={formData.eatingHabits}
-                        onChange={handleInputChange}
-                        options={["Vegetarian", "Non-Vegetarian", "Eggetarian"]}
-                      />
-                      <FormInput
-                        label="Drinking Habits"
-                        name="drinkingHabits"
-                        type="select"
-                        value={formData.drinkingHabits}
-                        onChange={handleInputChange}
-                        options={[
-                          "Never Drinks",
-                          "Drinks Socially",
-                          "Drinks Regularly",
-                        ]}
-                      />
-                      <FormInput
-                        label="Smoking Habits"
-                        name="smokingHabits"
-                        type="select"
-                        value={formData.smokingHabits}
-                        onChange={handleInputChange}
-                        options={[
-                          "Never Smokes",
-                          "Smokes Occasionally",
-                          "Smokes Regularly",
-                        ]}
-                      />
                       <FormInput
                         label="Mother Tongue"
                         name="motherTongue"
@@ -2357,6 +2282,123 @@ const UserProfileEditPage = () => {
                           "Other",
                         ]}
                       />
+                      <div style={{ gridColumn: "1 / -1" }}>
+                        <FormInput
+                          label="Marital Status"
+                          name="maritalStatus"
+                          type="radio"
+                          value={formData.maritalStatus}
+                          onChange={handleInputChange}
+                          options={[
+                            "Never Married",
+                            "Separated",
+                            "Divorced",
+                            "Widow / Widower",
+                            "Awaiting Divorce",
+                            "Annulled",
+                          ]}
+                        />
+                      </div>
+                      {formData.maritalStatus &&
+                        formData.maritalStatus !== "Never Married" && (
+                          <>
+                            <FormInput
+                              label="Married Month & Year"
+                              name="marriedMonthYear"
+                              value={formData.marriedMonthYear}
+                              onChange={handleInputChange}
+                            />
+                            <FormInput
+                              label="Living Together Period"
+                              name="livingTogetherPeriod"
+                              value={formData.livingTogetherPeriod}
+                              onChange={handleInputChange}
+                            />
+                          </>
+                        )}
+
+                      {(formData.maritalStatus === "Divorced" ||
+                        formData.maritalStatus === "Awaiting Divorce") && (
+                          <>
+                            <FormInput
+                              label="Divorced Month & Year"
+                              name="divorcedMonthYear"
+                              value={formData.divorcedMonthYear}
+                              onChange={handleInputChange}
+                            />
+                            <div style={{ gridColumn: "1 / -1" }}>
+                              <FormInput
+                                label="Reason for Divorce"
+                                name="reasonForDivorce"
+                                type="textarea"
+                                value={formData.reasonForDivorce}
+                                onChange={handleInputChange}
+                              />
+                            </div>
+                          </>
+                        )}
+
+                      {formData.maritalStatus &&
+                        formData.maritalStatus !== "Never Married" && (
+                          <>
+                            <FormInput
+                              label="Child Status"
+                              name="childStatus"
+                              type="select"
+                              value={formData.childStatus}
+                              onChange={handleInputChange}
+                              options={[
+                                "No Children",
+                                "Have Children - Living Together",
+                                "Have Children - Not Living Together",
+                              ]}
+                            />
+                            <FormInput
+                              label="Number of Children"
+                              name="numberOfChildren"
+                              value={formData.numberOfChildren}
+                              onChange={handleInputChange}
+                            />
+                          </>
+                        )}
+                      <div style={{ gridColumn: "1 / -1" }}>
+                        <FormInput
+                          label="Eating Habits"
+                          name="eatingHabits"
+                          type="radio"
+                          value={formData.eatingHabits}
+                          onChange={handleInputChange}
+                          options={["Vegetarian", "Non-Vegetarian", "Eggetarian"]}
+                        />
+                      </div>
+                      <div style={{ gridColumn: "1 / -1" }}>
+                        <FormInput
+                          label="Drinking Habits"
+                          name="drinkingHabits"
+                          type="radio"
+                          value={formData.drinkingHabits}
+                          onChange={handleInputChange}
+                          options={[
+                            "Never Drinks",
+                            "Drinks Socially",
+                            "Drinks Regularly",
+                          ]}
+                        />
+                      </div>
+                      <div style={{ gridColumn: "1 / -1" }}>
+                        <FormInput
+                          label="Smoking Habits"
+                          name="smokingHabits"
+                          type="radio"
+                          value={formData.smokingHabits}
+                          onChange={handleInputChange}
+                          options={[
+                            "Never Smokes",
+                            "Smokes Occasionally",
+                            "Smokes Regularly",
+                          ]}
+                        />
+                      </div>
                     </div>
                   </FormSection>
 
@@ -2366,7 +2408,8 @@ const UserProfileEditPage = () => {
                       style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "24px",
+                        columnGap: "120px",
+                        rowGap: "24px",
                       }}
                     >
                       <FormInput
@@ -2513,79 +2556,95 @@ const UserProfileEditPage = () => {
                         value={formData.mothersNative}
                         onChange={handleInputChange}
                       />
-                      <FormInput
-                        label="Family Value"
-                        name="familyValue"
-                        type="radio"
-                        value={formData.familyValue}
-                        onChange={handleInputChange}
-                        options={[
-                          "Orthodox",
-                          "Traditional",
-                          "Moderate",
-                          "Liberal",
-                        ]}
-                      />
-                      <FormInput
-                        label="Family Type"
-                        name="familyType"
-                        type="radio"
-                        value={formData.familyType}
-                        onChange={handleInputChange}
-                        options={["Joint Family", "Nuclear Family"]}
-                      />
-                      <FormInput
-                        label="Family Status"
-                        name="familyStatus"
-                        type="radio"
-                        value={formData.familyStatus}
-                        onChange={handleInputChange}
-                        options={[
-                          "Middle Class",
-                          "Upper Middle Class",
-                          "High Class",
-                        ]}
-                      />
-                      <FormInput
-                        label="Residence Type"
-                        name="residenceType"
-                        type="radio"
-                        value={formData.residenceType}
-                        onChange={handleInputChange}
-                        options={["Own House", "Rented House", "Company Lease"]}
-                      />
-                      <FormInput
-                        label="Number of Brothers"
-                        name="numberOfBrothers"
-                        type="select"
-                        value={formData.numberOfBrothers}
-                        onChange={handleInputChange}
-                        options={["0", "1", "2", "3", "4", "5+"]}
-                      />
-                      <FormInput
-                        label="Married Brothers"
-                        name="marriedBrothers"
-                        type="select"
-                        value={formData.marriedBrothers}
-                        onChange={handleInputChange}
-                        options={["0", "1", "2", "3", "4", "5+"]}
-                      />
-                      <FormInput
-                        label="Number of Sisters"
-                        name="numberOfSisters"
-                        type="select"
-                        value={formData.numberOfSisters}
-                        onChange={handleInputChange}
-                        options={["0", "1", "2", "3", "4", "5+"]}
-                      />
-                      <FormInput
-                        label="Married Sisters"
-                        name="marriedSisters"
-                        type="select"
-                        value={formData.marriedSisters}
-                        onChange={handleInputChange}
-                        options={["0", "1", "2", "3", "4", "5+"]}
-                      />
+                      <div style={{ gridColumn: "1 / -1", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px" }}>
+                        <FormInput
+                          label="No. of Brothers"
+                          name="numberOfBrothers"
+                          type="select"
+                          value={formData.numberOfBrothers}
+                          onChange={handleInputChange}
+                          options={["0", "1", "2", "3", "4", "5+"]}
+                          layout="vertical"
+                        />
+                        <FormInput
+                          label="Brothers Married"
+                          name="marriedBrothers"
+                          type="select"
+                          value={formData.marriedBrothers}
+                          onChange={handleInputChange}
+                          options={["0", "1", "2", "3", "4", "5+"]}
+                          layout="vertical"
+                        />
+                        <FormInput
+                          label="No. of Sisters"
+                          name="numberOfSisters"
+                          type="select"
+                          value={formData.numberOfSisters}
+                          onChange={handleInputChange}
+                          options={["0", "1", "2", "3", "4", "5+"]}
+                          layout="vertical"
+                        />
+                        <FormInput
+                          label="Sisters Married"
+                          name="marriedSisters"
+                          type="select"
+                          value={formData.marriedSisters}
+                          onChange={handleInputChange}
+                          options={["0", "1", "2", "3", "4", "5+"]}
+                          layout="vertical"
+                        />
+                      </div>
+                      <div style={{ gridColumn: "1 / -1" }}>
+                        <FormInput
+                          label="Family Value"
+                          name="familyValue"
+                          type="radio"
+                          value={formData.familyValue}
+                          onChange={handleInputChange}
+                          options={[
+                            "Orthodox",
+                            "Traditional",
+                            "Moderate",
+                            "Liberal",
+                          ]}
+                        />
+                      </div>
+                      <div style={{ gridColumn: "1 / -1" }}>
+                        <FormInput
+                          label="Family Type"
+                          name="familyType"
+                          type="radio"
+                          value={formData.familyType}
+                          onChange={handleInputChange}
+                          options={["Joint Family", "Nuclear Family", "others"]}
+                        /> 
+                      </div>
+                      <div style={{ gridColumn: "1 / -1" }}>
+                        <FormInput
+                          label="Family Status"
+                          name="familyStatus"
+                          type="radio"
+                          value={formData.familyStatus}
+                          onChange={handleInputChange}
+                          options={[
+                            "Lower Middle Class",
+                            "Middle Class",
+                            "Upper Middle Class",
+                            "Rich",
+                            "Affluent"
+                          ]}
+                        />
+                      </div>
+                      <div style={{ gridColumn: "1 / -1" }}>
+                        <FormInput
+                          label="Residence Type"
+                          name="residenceType"
+                          type="radio"
+                          value={formData.residenceType}
+                          onChange={handleInputChange}
+                          options={["Own House", "Rented House", "Company Lease"]}
+                        />
+                      </div>
                     </div>
                   </FormSection>
 
@@ -2595,7 +2654,8 @@ const UserProfileEditPage = () => {
                       style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "24px",
+                        columnGap: "120px",
+                        rowGap: "24px",
                       }}
                     >
                       <FormInput
@@ -2695,19 +2755,21 @@ const UserProfileEditPage = () => {
                         value={formData.pastorsName}
                         onChange={handleInputChange}
                       />
-                      <FormInput
-                        label="Spirituality"
-                        name="spirituality"
-                        type="select"
-                        value={formData.spirituality}
-                        onChange={handleInputChange}
-                        options={[
-                          "Very Religious",
-                          "Religious",
-                          "Moderately Religious",
-                          "Not Religious",
-                        ]}
-                      />
+                      <div style={{ gridColumn: "1 / -1" }}>
+                        <FormInput
+                          label="Spirituality"
+                          name="spirituality"
+                          type="radio"
+                          value={formData.spirituality}
+                          onChange={handleInputChange}
+                          options={[
+                            "Very Religious",
+                            "Religious",
+                            "Moderately Religious",
+                            "Not Religious",
+                          ]}
+                        />
+                      </div>
                       <div style={{ gridColumn: "1 / -1" }}>
                         <FormInput
                           label="Religious Detail"
@@ -2736,7 +2798,8 @@ const UserProfileEditPage = () => {
                       style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "24px",
+                        columnGap: "120px",
+                        rowGap: "24px",
                       }}
                     >
 
@@ -2806,7 +2869,7 @@ const UserProfileEditPage = () => {
                       <InlineFormInput label="Citizen Of" name="citizenOf" type="select" searchable={true} options={countryOptions} value={formData.citizenOf} onChange={handleCountryChange} />
 
                       {/* Permanent Address Block */}
-                      <div style={{ gridColumn: "1 / -1", marginTop: "24px", marginBottom: "0px", borderBottom: "1px solid #e5e7eb", paddingBottom: "4px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div style={{ gridColumn: "1 / -1", marginTop: "24px", marginBottom: "0px", borderBottom: "1px solid #e5e7eb", paddingBottom: "4px", display: "flex", justifyContent: "flex-start", gap: "24px", alignItems: "center" }}>
                         <h4 style={{ fontSize: "16px", fontWeight: "700", color: "#1f2937", margin: 0 }}>
                           Permanent Address
                         </h4>
@@ -2831,11 +2894,12 @@ const UserProfileEditPage = () => {
                       style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "24px",
+                        columnGap: "120px",
+                        rowGap: "24px",
                       }}
                     >
                       <FormInput
-                        label="Education"
+                        label="Highest Education"
                         name="education"
                         type="select"
                         searchable={true}
@@ -3156,7 +3220,8 @@ const UserProfileEditPage = () => {
                         style={{
                           display: "grid",
                           gridTemplateColumns: "repeat(2, 1fr)",
-                          gap: "24px",
+                          columnGap: "120px",
+                          rowGap: "24px",
                         }}
                       >
                         <FormInput
@@ -3269,33 +3334,18 @@ const UserProfileEditPage = () => {
                     <div
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "24px",
+                        gridTemplateColumns: "repeat(3, 1fr)",
+                        columnGap: "20px",
                         marginTop: "20px",
+                        marginBottom: "20px",
                       }}
                     >
-                      <FormInput
-                        label="Partner Marital Status"
-                        name="partnerMaritalStatus"
-                        type="select"
-                        searchable={true}
-                        value={formData.partnerMaritalStatus}
-                        onChange={handleInputChange}
-                        options={[
-                          "Never Married",
-                          "Divorced",
-                          "Separated",
-                          "Widow / Widower",
-                          "Awaiting Divorce",
-                          "Annulled",
-                          "Any",
-                        ]}
-                      />
                       <FormInput
                         label="Partner Mother Tongue"
                         name="partnerMotherTongue"
                         type="select"
                         searchable={true}
+                        isMulti={true}
                         value={formData.partnerMotherTongue}
                         onChange={handleInputChange}
                         options={[
@@ -3366,6 +3416,7 @@ const UserProfileEditPage = () => {
                         name="partnerCaste"
                         type="select"
                         searchable={true}
+                        isMulti={true}
                         value={formData.partnerCaste}
                         onChange={handleInputChange}
                         options={[
@@ -3505,57 +3556,11 @@ const UserProfileEditPage = () => {
                         ]}
                       />
                       <FormInput
-                        label="Partner Physical Status"
-                        name="partnerPhysicalStatus"
-                        type="select"
-                        value={formData.partnerPhysicalStatus}
-                        onChange={handleInputChange}
-                        options={["Normal", "Physically Challenged", "Any"]}
-                      />
-                      <FormInput
-                        label="Partner Eating Habits"
-                        name="partnerEatingHabits"
-                        type="select"
-                        value={formData.partnerEatingHabits}
-                        onChange={handleInputChange}
-                        options={[
-                          "Vegetarian",
-                          "Non-Vegetarian",
-                          "Eggetarian",
-                          "Any",
-                        ]}
-                      />
-                      <FormInput
-                        label="Partner Drinking Habits"
-                        name="partnerDrinkingHabits"
-                        type="select"
-                        value={formData.partnerDrinkingHabits}
-                        onChange={handleInputChange}
-                        options={[
-                          "Never Drinks",
-                          "Drinks Socially",
-                          "Drinks Regularly",
-                          "Any",
-                        ]}
-                      />
-                      <FormInput
-                        label="Partner Smoking Habits"
-                        name="partnerSmokingHabits"
-                        type="select"
-                        value={formData.partnerSmokingHabits}
-                        onChange={handleInputChange}
-                        options={[
-                          "Never Smokes",
-                          "Smokes Occasionally",
-                          "Smokes Regularly",
-                          "Any",
-                        ]}
-                      />
-                      <FormInput
                         label="Partner Denomination"
                         name="partnerDenomination"
                         type="select"
                         searchable={true}
+                        isMulti={true}
                         value={formData.partnerDenomination}
                         onChange={handleInputChange}
                         options={[
@@ -3617,11 +3622,83 @@ const UserProfileEditPage = () => {
                           "Any",
                         ]}
                       />
-                      <FormInput
+                    </div>
+
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(2, 1fr)",
+                        columnGap: "120px",
+                        rowGap: "24px",
+                        marginTop: "20px",
+                      }}
+                    >
+                      <CheckboxGroup
+                        label="Partner Marital Status"
+                        name="partnerMaritalStatus"
+                        selectedValues={formData.partnerMaritalStatus}
+                        onChange={handleInputChange}
+                        options={[
+                          "Never Married",
+                          "Divorced",
+                          "Separated",
+                          "Widow / Widower",
+                          "Awaiting Divorce",
+                          "Annulled",
+                          "Any",
+                        ]}
+                      />
+
+                      <CheckboxGroup
+                        label="Partner Physical Status"
+                        name="partnerPhysicalStatus"
+                        selectedValues={formData.partnerPhysicalStatus}
+                        onChange={handleInputChange}
+                        options={["Normal", "Physically Challenged", "Any"]}
+                      />
+                      <CheckboxGroup
+                        label="Partner Eating Habits"
+                        name="partnerEatingHabits"
+                        selectedValues={formData.partnerEatingHabits}
+                        onChange={handleInputChange}
+                        options={[
+                          "Vegetarian",
+                          "Vegan",
+                          "Non-Vegetarian",
+                          "Occasionally Non-Vegetarian",
+                          "Eggetarian",
+                          "Any",
+                        ]}
+                      />
+                      <CheckboxGroup
+                        label="Partner Drinking Habits"
+                        name="partnerDrinkingHabits"
+                        selectedValues={formData.partnerDrinkingHabits}
+                        onChange={handleInputChange}
+                        options={[
+                          "Never Drinks",
+                          "Drinks Socially",
+                          "Drinks Regularly",
+                          "Any",
+                        ]}
+                      />
+                      <CheckboxGroup
+                        label="Partner Smoking Habits"
+                        name="partnerSmokingHabits"
+                        selectedValues={formData.partnerSmokingHabits}
+                        onChange={handleInputChange}
+                        options={[
+                          "Never Smokes",
+                          "Smokes Occasionally",
+                          "Smokes Regularly",
+                          "Any",
+                        ]}
+                      />
+
+                      <CheckboxGroup
                         label="Partner Spirituality"
                         name="partnerSpirituality"
-                        type="select"
-                        value={formData.partnerSpirituality}
+                        selectedValues={formData.partnerSpirituality}
                         onChange={handleInputChange}
                         options={[
                           "Very Religious",
@@ -3640,7 +3717,8 @@ const UserProfileEditPage = () => {
                       style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(2, 1fr)",
-                        gap: "20px",
+                        columnGap: "120px",
+                        rowGap: "24px",
                       }}
                     >
                       <FormInput
@@ -3648,6 +3726,7 @@ const UserProfileEditPage = () => {
                         name="partnerEducation"
                         type="select"
                         searchable={true}
+                        isMulti={true}
                         value={formData.partnerEducation}
                         onChange={handleInputChange}
                         options={[
@@ -3697,6 +3776,7 @@ const UserProfileEditPage = () => {
                         name="partnerEmploymentType"
                         type="select"
                         searchable={true}
+                        isMulti={true}
                         value={formData.partnerEmploymentType}
                         onChange={handleInputChange}
                         options={[
@@ -3713,6 +3793,7 @@ const UserProfileEditPage = () => {
                         name="partnerOccupation"
                         type="select"
                         searchable={true}
+                        isMulti={true}
                         value={formData.partnerOccupation}
                         onChange={handleInputChange}
                         options={[
@@ -3820,31 +3901,51 @@ const UserProfileEditPage = () => {
                           "Any",
                         ]}
                       />
-                      <FormInput
-                        label="Partner Annual Income"
-                        name="partnerAnnualIncome"
-                        type="select"
-                        searchable={true}
-                        value={formData.partnerAnnualIncome}
-                        onChange={handleInputChange}
-                        options={[
-                          "No Income",
-                          "Under 1 Lakh",
-                          "1 - 2 Lakhs",
-                          "2 - 3 Lakhs",
-                          "3 - 4 Lakhs",
-                          "4 - 5 Lakhs",
-                          "5 - 7 Lakhs",
-                          "7 - 10 Lakhs",
-                          "10 - 15 Lakhs",
-                          "15 - 20 Lakhs",
-                          "20 - 30 Lakhs",
-                          "30 - 50 Lakhs",
-                          "50 Lakhs - 1 Crore",
-                          "Above 1 Crore",
-                          "Any",
-                        ]}
-                      />
+                      <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "8px", marginBottom: "12px", width: "100%" }}>
+                        <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151", minWidth: "130px", maxWidth: "130px", display: "block" }}>
+                          Partner Annual Income
+                        </label>
+                        <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap" }}>
+                          <select name="partnerAnnualIncomeFrom" value={formData.partnerAnnualIncomeFrom} onChange={handleInputChange} style={{ ...selectStyle, padding: "6px 8px", fontSize: "13px", width: "100%", minWidth: "0" }}>
+                            <option value="">From</option>
+                            {[
+                              "No Income",
+                              "1 Lakh",
+                              "2 Lakhs",
+                              "3 Lakhs",
+                              "4 Lakhs",
+                              "5 Lakhs",
+                              "7 Lakhs",
+                              "10 Lakhs",
+                              "15 Lakhs",
+                              "20 Lakhs",
+                              "30 Lakhs",
+                              "50 Lakhs",
+                              "1 Crore",
+                            ].map(h => <option key={h} value={h}>{h}</option>)}
+                          </select>
+                          <span style={{ fontSize: "14px", color: "#6b7280", whiteSpace: "nowrap" }}>To</span>
+                          <select name="partnerAnnualIncomeTo" value={formData.partnerAnnualIncomeTo} onChange={handleInputChange} style={{ ...selectStyle, padding: "6px 8px", fontSize: "13px", width: "100%", minWidth: "0" }}>
+                            <option value="">To</option>
+                            {[
+                              "1 Lakh",
+                              "2 Lakhs",
+                              "3 Lakhs",
+                              "4 Lakhs",
+                              "5 Lakhs",
+                              "7 Lakhs",
+                              "10 Lakhs",
+                              "15 Lakhs",
+                              "20 Lakhs",
+                              "30 Lakhs",
+                              "50 Lakhs",
+                              "1 Crore",
+                              "Above 1 Crore",
+                              "Any",
+                            ].map(h => <option key={h} value={h}>{h}</option>)}
+                          </select>
+                        </div>
+                      </div>
                     </div>
                   </FormSection>
 

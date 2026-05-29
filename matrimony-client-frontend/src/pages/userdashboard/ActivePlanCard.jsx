@@ -85,7 +85,7 @@ const ActivePlanCard = ({ externalPlanData }) => {
     );
   }
 
-  const basePlan = plansList.find(p => p.name === planData.subscriptionType) || {};
+  const basePlan = plansList.find(p => p.name?.toLowerCase() === planData.subscriptionType?.toLowerCase()) || {};
 
   const subscriptionType = planData.subscriptionType;
   const subscriptionValidTo = planData.subscriptionValidTo;
@@ -313,7 +313,7 @@ const ActivePlanCard = ({ externalPlanData }) => {
             Remaining: {remainingInterest > 0 || isUnlimitedInterest ? remainingInterest : 0}
           </small>
 
-          {(isUnlimitedDailyInterest || parsedDailyInterest > 0) && (
+          {(isUnlimitedDailyInterest || parsedDailyInterest > 0 || sendInterestRequest === "Yes") && (
             <>
               <strong>Interest Requests (Daily)</strong>
               <div className="d-flex justify-content-between small text-muted">
@@ -348,7 +348,7 @@ const ActivePlanCard = ({ externalPlanData }) => {
             Remaining: {remainingContact > 0 || isUnlimitedContact ? remainingContact : 0}
           </small>
 
-          {(isUnlimitedDailyContact || parsedDailyContact > 0) && (
+          {(isUnlimitedDailyContact || parsedDailyContact > 0 || viewContactDetails === "Yes") && (
             <>
               <strong>Contact Views (Daily)</strong>
               <div className="d-flex justify-content-between small text-muted">
@@ -367,7 +367,6 @@ const ActivePlanCard = ({ externalPlanData }) => {
           )}
         </div>
 
-        {/* Benefits List */}
         <ul className="list-unstyled mt-3 mb-0">
 
           <li className="mb-2">
@@ -388,6 +387,17 @@ const ActivePlanCard = ({ externalPlanData }) => {
               : "✖ Cannot send interest"}
           </li>
 
+          {sendInterestRequest === "Yes" && (
+            <>
+              <li className="mb-2">
+                ✔ Send interest (Total): {isUnlimitedInterest ? "Unlimited" : parsedMaxInterest}
+              </li>
+              <li className="mb-2">
+                ✔ Send interest (Daily): {isUnlimitedDailyInterest ? "Unlimited" : parsedDailyInterest}
+              </li>
+            </>
+          )}
+          
         </ul>
 
         <div className="mt-4 pt-3 border-top small text-muted">

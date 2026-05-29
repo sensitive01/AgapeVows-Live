@@ -238,7 +238,8 @@ const completeProfileData = async (req, res) => {
       partnerEducation: req.body.partnerEducation,
       partnerEmploymentType: req.body.partnerEmploymentType,
       partnerOccupation: req.body.partnerOccupation,
-      partnerAnnualIncome: req.body.partnerAnnualIncome,
+      partnerAnnualIncomeFrom: req.body.partnerAnnualIncomeFrom,
+      partnerAnnualIncomeTo: req.body.partnerAnnualIncomeTo,
       partnerCountry: req.body.partnerCountry,
       partnerState: req.body.partnerState,
       partnerDistrict: req.body.partnerDistrict,
@@ -560,6 +561,8 @@ const getProfileMoreInformation = async (req, res) => {
     }
 
     // ================= VIEW COUNT LOGIC ================= //
+    let currentPlanStartDate = null;
+    
     if (viewerId && viewerId !== profileId) {
       if (!profileData.profileViews) {
         profileData.profileViews = [];
@@ -587,6 +590,7 @@ const getProfileMoreInformation = async (req, res) => {
           );
 
           const actualPlan = activePlans[0];
+          currentPlanStartDate = new Date(actualPlan.subscriptionValidFrom);
           const viewerPlanName = actualPlan.subscriptionType || "";
 
           console.log("👉 Viewer Plan:", viewerPlanName);
@@ -791,7 +795,13 @@ const getProfileMoreInformation = async (req, res) => {
       });
 
       if (interest) {
-        interestStatus = interest.status;
+        if (currentPlanStartDate && new Date(interest.updatedAt) < currentPlanStartDate) {
+          // Interest was sent before the current plan started.
+          // We ignore it so the user can send a new interest under their new plan.
+          interestStatus = null;
+        } else {
+          interestStatus = interest.status;
+        }
       }
     }
 
@@ -852,7 +862,7 @@ const showUserInterests = async (req, res) => {
     let dailyLimitSendInterest = activePlan.dailyLimitSendInterest;
 
     // Fallback to plan model if limits are undefined, null, or 0 (schema defaults)
-    if (!sendInterestRequest || !maxSendInterest || maxSendInterest === 0 || maxSendInterest === "0" || maxSendInterest === undefined) {
+    if (!sendInterestRequest || !maxSendInterest || maxSendInterest === 0 || maxSendInterest === "0" || maxSendInterest === undefined || !dailyLimitSendInterest || dailyLimitSendInterest === 0 || dailyLimitSendInterest === "0") {
       const planModel = require("../../model/admin/planModel");
       const planDef = await planModel.findOne({ name: activePlan.subscriptionType });
       if (planDef) {
@@ -953,6 +963,7 @@ const showUserInterests = async (req, res) => {
 
     // Increment counters
     user.paymentDetails[activePlanIndex].interestSentCount = totalCount + 1;
+    user.paymentDetails[activePlanIndex].dailyInterestSentCount = dailyCount + 1;
     user.paymentDetails[activePlanIndex].lastInterestSentDate = new Date();
     user.markModified("paymentDetails");
     await user.save();
@@ -1011,7 +1022,7 @@ const viewContactDetails = async (req, res) => {
     let dailyLimitViewContact = activePlan.dailyLimitViewContact;
 
     // Fallback to plan model if limits are undefined, null, or 0 (schema defaults)
-    if (!viewContact || viewContact === undefined || !maxViewContact || maxViewContact === 0 || maxViewContact === "0") {
+    if (!viewContact || viewContact === undefined || !maxViewContact || maxViewContact === 0 || maxViewContact === "0" || !dailyLimitViewContact || dailyLimitViewContact === 0 || dailyLimitViewContact === "0") {
       const planModel = require("../../model/admin/planModel");
       const planDef = await planModel.findOne({ name: activePlan.subscriptionType });
       if (planDef) {

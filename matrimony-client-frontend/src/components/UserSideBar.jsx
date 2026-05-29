@@ -474,11 +474,186 @@
 
 
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { getUserProfile } from "../api/axiosService/userAuthService";
 import profImage from "../assets/images/blue-circle-with-white-user_78370-4707.avif";
 import { Link } from "react-router-dom";
 import MembershipBadge from "./common/MembershipBadge";
+
+const calculateProfileCompletion = (user) => {
+  if (!user) return 0;
+
+  // Define all profile fields grouped by section
+  const profileFields = {
+    basic: [
+      "profileCreatedFor",
+      "userName",
+      "dateOfBirth",
+      "bodyType",
+      "physicalStatus",
+      "complexion",
+      "height",
+      "weight",
+      "maritalStatus",
+      "eatingHabits",
+      "drinkingHabits",
+      "smokingHabits",
+      "motherTongue",
+      "caste",
+    ],
+    married: [
+      "marriedMonthYear",
+      "livingTogetherPeriod",
+      "childStatus",
+      "numberOfChildren",
+    ],
+    divorced: ["divorcedMonthYear", "reasonForDivorce"],
+    family: [
+      "fathersName",
+      "mothersName",
+      "fathersOccupation",
+      "fathersProfession",
+      "mothersOccupation",
+      "mothersProfession",
+      "fathersNative",
+      "mothersNative",
+      "familyValue",
+      "familyType",
+      "familyStatus",
+      "residenceType",
+      "numberOfBrothers",
+      "numberOfSisters",
+    ],
+    religious: [
+      "religion",
+      "denomination",
+      "church",
+      "churchActivity",
+      "pastorsName",
+      "spirituality",
+      "religiousDetail",
+    ],
+    professional: [
+      "education",
+      "additionalEducation",
+      "college",
+      "educationDetail",
+      "employmentType",
+      "occupation",
+      "position",
+      "companyName",
+      "annualIncome",
+    ],
+    contact: [
+      "contactPhone",
+      "alternateMobile",
+      "landlineNumber",
+      "contactEmail",
+      "currentAddress",
+      "permanentAddress",
+      "city",
+      "state",
+      "pincode",
+      "citizenOf",
+      "contactPersonName",
+      "relationship",
+    ],
+    lifestyle: [
+      "hobbies",
+      "interests",
+      "music",
+      "favouriteReads",
+      "favouriteCuisines",
+      "sportsActivities",
+      "dressStyles",
+    ],
+    partners: [
+      "partnerAgeFrom",
+      "partnerAgeTo",
+      "partnerHeight",
+      "partnerMaritalStatus",
+      "partnerMotherTongue",
+      "partnerCaste",
+      "partnerPhysicalStatus",
+      "partnerEatingHabits",
+      "partnerDrinkingHabits",
+      "partnerSmokingHabits",
+      "partnerDenomination",
+      "partnerSpirituality",
+      "partnerEducation",
+      "partnerEmploymentType",
+      "partnerOccupation",
+      "partnerAnnualIncome",
+      "partnerCountry",
+      "partnerState",
+      "partnerDistrict",
+    ],
+    profile: ["profileImage", "aboutMe"],
+  };
+
+  // Helper function to check if a field is filled
+  const isFieldFilled = (fieldValue) => {
+    return (
+      fieldValue !== null &&
+      fieldValue !== undefined &&
+      fieldValue !== "" &&
+      (!Array.isArray(fieldValue) || fieldValue.length > 0)
+    );
+  };
+
+  let totalFields = 0;
+  let filledFields = 0;
+
+  // Process core sections (always applicable)
+  const coreSections = [
+    "basic",
+    "family",
+    "religious",
+    "professional",
+    "contact",
+    "lifestyle",
+    "partners",
+    "profile",
+  ];
+
+  coreSections.forEach((section) => {
+    profileFields[section].forEach((field) => {
+      totalFields++;
+      if (isFieldFilled(user[field])) {
+        filledFields++;
+      }
+    });
+  });
+
+  // Handle conditional sections based on marital status
+  const maritalStatus = user.maritalStatus;
+
+  if (
+    maritalStatus === "Married" ||
+    maritalStatus === "Widowed" ||
+    maritalStatus === "Awaiting Divorce"
+  ) {
+    profileFields.married.forEach((field) => {
+      totalFields++;
+      if (isFieldFilled(user[field])) {
+        filledFields++;
+      }
+    });
+  }
+
+  if (maritalStatus === "Divorced") {
+    profileFields.divorced.forEach((field) => {
+      totalFields++;
+      if (isFieldFilled(user[field])) {
+        filledFields++;
+      }
+    });
+  }
+
+  // Calculate percentage
+  if (totalFields === 0) return 0;
+  return Math.round((filledFields / totalFields) * 100);
+};
 
 const UserSideBar = ({ sidebarTop = "40px" }) => {
   const userId = localStorage.getItem("userId");
@@ -489,6 +664,8 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [imgHover, setImgHover] = useState(false);
+
+  const completionPercentage = useMemo(() => calculateProfileCompletion(userInfo), [userInfo]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -590,39 +767,42 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
     },
 
     menuItem: {
-      marginBottom: "4px",
+      marginBottom: "2px",
     },
 
     link: {
       display: "flex",
       alignItems: "center",
-      padding: "12px 16px",
+      padding: "8px 16px",
       borderRadius: "10px",
-      textDecoration: "none",
       color: "#4a5568",
-      transition: "0.25s",
-      position: "relative",
+      textDecoration: "none",
+      fontSize: "14px",
+      fontWeight: "500",
+      transition: "all 0.2s",
     },
 
     activeLink: {
-      background: "#f0f4ff",
-      color: "#667eea",
+      background: "#ebf4ff",
+      color: "#3182ce",
       fontWeight: "600",
     },
 
     activeDot: {
-      width: "6px",
-      height: "6px",
-      borderRadius: "50%",
-      background: "#667eea",
       position: "absolute",
-      left: "10px",
+      left: "6px",
+      top: "50%",
+      transform: "translateY(-50%)",
+      width: "4px",
+      height: "4px",
+      borderRadius: "50%",
+      background: "#3182ce",
     },
 
     icon: {
-      width: "22px",
-      fontSize: "16px",
+      width: "20px",
       marginRight: "14px",
+      fontSize: "16px",
       textAlign: "center",
     },
 
@@ -635,15 +815,13 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
       left: "100%",
       top: "50%",
       transform: "translateY(-50%)",
-      marginLeft: "12px",
       background: "#2d3748",
       color: "#fff",
-      padding: "8px 12px",
+      padding: "6px 12px",
       borderRadius: "6px",
-      fontSize: "13px",
-      fontWeight: "500",
+      fontSize: "12px",
       whiteSpace: "nowrap",
-      zIndex: 1000,
+      marginLeft: "15px",
       pointerEvents: "none",
       opacity: 0,
       visibility: "hidden",
@@ -714,8 +892,12 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
             )}
           </div>
 
-          <div style={{ marginTop: '5px', display: 'flex', justifyContent: 'center' }}>
+          <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+            {userInfo?.agwid && <span style={{ fontWeight: '600', fontSize: '15px', color: '#2d3748' }}>{userInfo.agwid}</span>}
             <MembershipBadge user={userInfo} />
+            <span style={{ fontSize: '13px', color: '#718096', fontWeight: '500', background: '#f7fafc', padding: '4px 10px', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+              Profile: {completionPercentage}% Completed
+            </span>
           </div>
 
           {/* <div style={styles.userName}>{userInfo?.name || "User"}</div> */}
@@ -743,7 +925,7 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
                   {active && <span style={styles.activeDot}></span>}
                   <i className={item.icon} style={styles.icon}></i>
                   {item.label}
-                  
+
                   {item.unreadCount > 0 && (
                     <span style={{
                       background: "#e53e3e",

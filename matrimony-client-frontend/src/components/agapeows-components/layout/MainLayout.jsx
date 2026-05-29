@@ -18,7 +18,6 @@ import { getUserProfile } from "../../../api/axiosService/userAuthService";
 import PreLoader from "../../PreLoader";
 import GlobalSearchModal from "../../GlobalSearchModal";
 import SidebarLoginComponent from "../../new-template/SidebarLoginComponent";
-import FloatingContactSidebar from "./FloatingContactSidebar";
 
 export const SERVICE_CATEGORIES = [
   { title: "Personalized Matrimony", path: "/personalized-matrimony" },
@@ -30,7 +29,7 @@ export const SERVICE_CATEGORIES = [
 ];
 
 export const HELP_OPTIONS = [
-  { title: "Help & Support", path: "/help-support" },
+  { title: "Contact Us", path: "/contact-page" },
   { title: "Report an Issue", path: "/report-issue" },
   { title: "FAQ's", path: "/faq"}
 ];
@@ -798,10 +797,6 @@ const MainLayout = () => {
           )}
         </div>
       </header>
-
-      {/* Floating Contact Sidebar */}
-      <FloatingContactSidebar />
-      {/* END Floating Contact Sidebar */}
 
       {/* LOGIN POPUP */}
       <SidebarLoginComponent closePopup={closePopup} />

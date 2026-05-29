@@ -673,25 +673,7 @@ const MoreDetails = () => {
                   { label: "Annual Income", value: userInfo?.annualIncome },
                 ],
               },
-              // {
-              //   title: "Contact Information",
-              //   icon: faAddressCard,
-              //   data: showContact
-              //     ? [
-              //         { label: "Name", value: userInfo?.userName },
-              //         { label: "Mobile Number", value: userInfo?.userMobile },
-              //       { label: "Alternate Mobile", value: userInfo?.alternateMobile },
-              //       { label: "Landline", value: userInfo?.landlineNumber },
-              //       { label: "Email", value: userInfo?.userEmail },
-              //       { label: "Current Address", value: userInfo?.currentAddress },
-              //       { label: "Permanent Address", value: userInfo?.permanentAddress },
-              //       { label: "City", value: userInfo?.city },
-              //       { label: "State", value: userInfo?.state },
-              //       { label: "Pincode", value: userInfo?.pincode },
-              //       { label: "Citizen Of", value: userInfo?.citizenOf },
-              //     ]
-              //     : [],
-              // },
+
               {
                 title: "Lifestyle & Hobbies",
                 icon: faMusic,
@@ -723,7 +705,7 @@ const MoreDetails = () => {
                   { label: "Education", value: userInfo?.partnerEducation },
                   { label: "Employment Type", value: userInfo?.partnerEmploymentType },
                   { label: "Occupation", value: userInfo?.partnerOccupation },
-                  { label: "Annual Income", value: userInfo?.partnerAnnualIncome },
+                  { label: "Annual Income", value: userInfo?.partnerAnnualIncomeFrom && userInfo?.partnerAnnualIncomeTo ? `${userInfo.partnerAnnualIncomeFrom} to ${userInfo.partnerAnnualIncomeTo}` : userInfo?.partnerAnnualIncomeFrom || userInfo?.partnerAnnualIncomeTo },
                   { label: "Country", value: userInfo?.partnerCountry },
                   { label: "State", value: userInfo?.partnerState },
                   { label: "District", value: userInfo?.partnerDistrict },
@@ -760,7 +742,10 @@ const MoreDetails = () => {
         <ShowInterest
           selectedUser={showInterestModalUser}
           userId={currentUserId}
-          onSuccess={() => setInterestStatus("pending")}
+          onSuccess={() => {
+            setInterestStatus("pending");
+            window.dispatchEvent(new Event("planUpdated"));
+          }}
         />
       )}
 

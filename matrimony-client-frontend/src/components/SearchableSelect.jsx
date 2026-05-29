@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Check } from "lucide-react";
 
-const SearchableSelect = ({ options, value, onChange, placeholder, name, disabled = false }) => {
+const SearchableSelect = ({ options, value, onChange, placeholder, name, disabled = false, isMulti = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const dropdownRef = useRef(null);
@@ -14,16 +14,30 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
 
   // Get display value
   const getDisplayValue = () => {
-    if (!value || !options) return "";
-    const selected = options.find((opt) => {
-      const optValue = typeof opt === "string" ? opt : opt?.value;
-      return String(optValue) === String(value);
-    });
-    return selected
-      ? typeof selected === "string"
-        ? selected
-        : (selected?.label || "")
-      : "";
+    if (isMulti) {
+      if (!Array.isArray(value) || value.length === 0) return "";
+      const selectedLabels = value.map(val => {
+        const selectedOpt = options?.find((opt) => {
+          const optValue = typeof opt === "string" ? opt : opt?.value;
+          return String(optValue) === String(val);
+        });
+        return selectedOpt ? (typeof selectedOpt === "string" ? selectedOpt : selectedOpt.label) : val;
+      });
+      return selectedLabels.length > 2 
+        ? `${selectedLabels.length} selected` 
+        : selectedLabels.join(", ");
+    } else {
+      if (!value || !options) return "";
+      const selected = options.find((opt) => {
+        const optValue = typeof opt === "string" ? opt : opt?.value;
+        return String(optValue) === String(value);
+      });
+      return selected
+        ? typeof selected === "string"
+          ? selected
+          : (selected?.label || "")
+        : "";
+    }
   };
 
   // Handle click outside to close dropdown
@@ -43,9 +57,34 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
     e.stopPropagation();
     if (disabled) return;
     const optValue = typeof option === "string" ? option : option.value;
-    onChange({ target: { name, value: optValue } });
-    setIsOpen(false);
-    setSearchTerm("");
+    
+    if (isMulti) {
+      const exclusiveOptions = ["Doesn't Matter", "Any", "Don't wish to specify", "Caste No Bar", "None"];
+      const currentValues = Array.isArray(value) ? value : [];
+      let newValues;
+
+      if (exclusiveOptions.includes(optValue)) {
+        if (currentValues.includes(optValue)) {
+          newValues = [];
+        } else {
+          newValues = [optValue];
+        }
+      } else {
+        const filteredValues = currentValues.filter(v => !exclusiveOptions.includes(v));
+        if (filteredValues.includes(optValue)) {
+          newValues = filteredValues.filter(v => String(v) !== String(optValue));
+        } else {
+          newValues = [...filteredValues, optValue];
+        }
+      }
+
+      onChange({ target: { name, value: newValues } });
+      // Do not close dropdown on multi-select
+    } else {
+      onChange({ target: { name, value: optValue } });
+      setIsOpen(false);
+      setSearchTerm("");
+    }
   };
 
   return (
@@ -58,10 +97,10 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
         }}
         style={{
           width: "100%",
-          padding: "10px 14px",
+          padding: "6px 12px",
           border: "2px solid #e5e7eb",
           borderRadius: "6px",
-          fontSize: "14px",
+          fontSize: "13px",
           color: disabled ? "#9ca3af" : "#374151",
           background: disabled ? "#f3f4f6" : "#fff",
           cursor: disabled ? "not-allowed" : "pointer",
@@ -69,14 +108,16 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
           justifyContent: "space-between",
           alignItems: "center",
           transition: "border-color 0.2s ease",
+          minHeight: "36px",
         }}
       >
-        <span style={{ color: value ? (disabled ? "#9ca3af" : "#374151") : "#9ca3af" }}>
+        <span style={{ color: (isMulti ? (value?.length > 0) : value) ? (disabled ? "#9ca3af" : "#374151") : "#9ca3af", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginRight: "8px" }}>
           {getDisplayValue() || placeholder || "Select..."}
         </span>
         <ChevronDown
           size={16}
           style={{
+            flexShrink: 0,
             transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
             transition: "transform 0.2s ease",
             opacity: disabled ? 0.5 : 1
@@ -119,7 +160,8 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
                 borderRadius: "4px",
                 fontSize: "14px",
                 outline: "none",
-                background: "#f9fafb"
+                background: "#f9fafb",
+                boxSizing: "border-box"
               }}
             />
           </div>
@@ -137,7 +179,9 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
                   typeof option === "string" ? option : option.value;
                 const optLabel =
                   typeof option === "string" ? option : option.label;
-                const isSelected = String(optValue) === String(value);
+                const isSelected = isMulti 
+                  ? Array.isArray(value) && value.includes(optValue)
+                  : String(optValue) === String(value);
 
                 return (
                   <div
@@ -150,7 +194,10 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
                       fontSize: "14px",
                       color: "#374151",
                       transition: "background 0.15s ease",
-                      borderBottom: "1px solid #f9fafb"
+                      borderBottom: "1px solid #f9fafb",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between"
                     }}
                     onMouseEnter={(e) => {
                       if (!isSelected)
@@ -161,7 +208,8 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
                         e.currentTarget.style.background = "#fff";
                     }}
                   >
-                    {optLabel}
+                    <span>{optLabel}</span>
+                    {isSelected && isMulti && <Check size={16} color="#4f46e5" />}
                   </div>
                 );
               })

@@ -201,10 +201,11 @@ const userSchema = new mongoose.Schema(
       partnerDenomination: { type: String },
       partnerSpirituality: { type: String },
 
-      partnerEducation: { type: String },
-      partnerEmploymentType: { type: String },
-      partnerOccupation: { type: String },
-      partnerAnnualIncome: { type: String },
+      partnerEducation: { type: [String] },
+      partnerEmploymentType: { type: [String] },
+      partnerOccupation: { type: [String] },
+      partnerAnnualIncomeFrom: { type: String },
+      partnerAnnualIncomeTo: { type: String },
 
       partnerCountry: { type: [String] },
       partnerState: { type: [String] },

@@ -1483,7 +1483,9 @@ const UserProfilePage = () => {
                     />
                     <InfoRow
                       label="Annual Income"
-                      value={userInfo?.partnerAnnualIncome}
+                      value={userInfo?.partnerAnnualIncomeFrom && userInfo?.partnerAnnualIncomeTo
+                        ? `${userInfo.partnerAnnualIncomeFrom} to ${userInfo.partnerAnnualIncomeTo}`
+                        : userInfo?.partnerAnnualIncomeFrom || userInfo?.partnerAnnualIncomeTo}
                     />
                     <InfoRow label="Country" value={userInfo?.partnerCountry} />
                     <InfoRow label="State" value={userInfo?.partnerState} />
