@@ -15,11 +15,10 @@ import profImage from "../../assets/images/blue-circle-with-white-user_78370-470
 
 // Helper Components
 const InfoRow = ({ label, value }) => {
-  if (!value) return null;
   return (
     <div className="info-row">
       <span className="info-label">{label}:</span>
-      <span className="info-value">{value}</span>
+      <span className="info-value">{value || "Not Specified"}</span>
     </div>
   );
 };
@@ -434,10 +433,12 @@ const MoreDetails = () => {
               {/* Contact Details in LEFT COLUMN */}
               {showContact && (
                 <div style={{ width: "100%", marginTop: "10px", display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                  <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem", marginBottom: "5px" }}>
                     👤 User Name: {userInfo?.userName || "Not specified"}
                   </div>
                   
+                  <div style={{ height: "2px", background: "#cbd5e1", margin: "2px 0", borderRadius: "2px", width: "100%" }}></div>
+
                   <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
                     👤 Contact Person: {userInfo?.contactPersonName || "Not specified"}
                   </div>
@@ -728,26 +729,28 @@ const MoreDetails = () => {
                   { label: "District", value: userInfo?.partnerDistrict },
                 ],
               },
-            ].map((section, idx) => (
-              <React.Fragment key={idx}>
+            ].map((section, idx) => {
+              const half = Math.ceil(section.data.length / 2);
+              return (
+                <React.Fragment key={idx}>
+                  <ProfileSection title={section.title} icon={section.icon}>
+                    <div className="profile-section-grid">
+                      <div>
+                        {section.data.slice(0, half).map((item, i) => (
+                          <InfoRow key={i} {...item} />
+                        ))}
+                      </div>
 
-                <ProfileSection title={section.title} icon={section.icon}>
-                  <div className="profile-section-grid">
-                    <div>
-                      {section.data.slice(0, 7).map((item, i) => (
-                        <InfoRow key={i} {...item} />
-                      ))}
+                      <div>
+                        {section.data.slice(half).map((item, i) => (
+                          <InfoRow key={i} {...item} />
+                        ))}
+                      </div>
                     </div>
-
-                    <div>
-                      {section.data.slice(7, 14).map((item, i) => (
-                        <InfoRow key={i} {...item} />
-                      ))}
-                    </div>
-                  </div>
-                </ProfileSection>
-              </React.Fragment>
-            ))}
+                  </ProfileSection>
+                </React.Fragment>
+              );
+            })}
           </div>
         </div>
       </div>

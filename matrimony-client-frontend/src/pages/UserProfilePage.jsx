@@ -13,13 +13,16 @@ import MaskedIdGuide from "../assets/images/Masked_ID_Guide.pdf";
 
 // Helper Components
 const InfoRow = ({ label, value }) => {
-  if (value === null || value === undefined || value === "") return null;
+  let normalizedValue = value;
+  
+  if (Array.isArray(value)) {
+    normalizedValue = value.length > 0 ? value.join(", ") : "";
+  }
 
-  // Normalize arrays to string
-  let displayValue = value;
-  if (Array.isArray(value)) displayValue = value.join(", ");
+  const displayValue = (normalizedValue === null || normalizedValue === undefined || normalizedValue === "") 
+    ? "Not Specified" 
+    : normalizedValue;
 
-  // Detect our serialized address format "part1|||part2|||part3..." and render nicely
   const isSerializedAddress =
     typeof displayValue === "string" && displayValue.includes("|||");
 
