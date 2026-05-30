@@ -393,7 +393,7 @@ const BasicInfomation = ({
 };
 
 
-const FormSection = ({ title, children, zIndex = 1 }) => (
+const FormSection = ({ title, subtitle, children, zIndex = 1 }) => (
   <div
     className="form-section"
     style={{
@@ -424,12 +424,17 @@ const FormSection = ({ title, children, zIndex = 1 }) => (
         fontSize: "28px",
         fontWeight: "700",
         color: "#1f2937",
-        marginBottom: "32px",
+        marginBottom: subtitle ? "8px" : "32px",
         marginTop: "0",
       }}
     >
       {title}
     </h2>
+    {subtitle && (
+      <div style={{ marginBottom: "24px" }}>
+        {subtitle}
+      </div>
+    )}
     <div
       style={{ height: "1px", background: "#e5e7eb", margin: "0 0 32px 0" }}
     ></div>
@@ -453,7 +458,7 @@ const FormInput = ({
   isMulti = false,
   layout = "horizontal",
 }) => (
-  <div style={{ display: "flex", flexDirection: layout === "vertical" ? "column" : "row", alignItems: layout === "vertical" ? "flex-start" : "center", gap: layout === "vertical" ? "4px" : "8px", marginBottom: "12px", width: "100%" }}>
+  <div style={{ display: "flex", flexDirection: layout === "vertical" ? "column" : "row", alignItems: (layout === "vertical" || type === "textarea") ? "flex-start" : "center", gap: layout === "vertical" ? "4px" : "8px", marginBottom: "12px", width: "100%" }}>
     <label
       style={{
         fontSize: "14px",
@@ -462,6 +467,7 @@ const FormInput = ({
         minWidth: layout === "vertical" ? "auto" : "130px",
         maxWidth: layout === "vertical" ? "none" : "130px",
         marginBottom: "0",
+        marginTop: (type === "textarea" && layout !== "vertical") ? "10px" : "0",
         display: "block",
       }}
     >
@@ -1898,10 +1904,15 @@ const UserProfileEditPage = () => {
 
 
                   {/* Basic Details Section */}
-                  <FormSection title="Basic Details" zIndex={20}>
-                    <p style={{ color: "purple", fontWeight: "bold", marginBottom: "20px" }}>
-                      Please ensure your Name and Date of Birth matches with your ID Proof (Aadhaar or Passport) for verification
-                    </p>
+                  <FormSection 
+                    title="Basic Details" 
+                    zIndex={20}
+                    subtitle={
+                      <p style={{ color: "purple", fontWeight: "bold", margin: 0 }}>
+                        Please ensure your Name and Date of Birth matches with your ID Proof (Aadhaar or Passport) for verification
+                      </p>
+                    }
+                  >
                     <div
                       style={{
                         display: "grid",
@@ -3351,6 +3362,7 @@ const UserProfileEditPage = () => {
                         value={formData.partnerMotherTongue}
                         onChange={handleInputChange}
                         options={[
+                          "Any",
                           "Aka",
                           "Arabic",
                           "Arunachali",
@@ -3410,7 +3422,7 @@ const UserProfileEditPage = () => {
                           "Tulu",
                           "Urdu",
                           "Other",
-                          "Any",
+                          
                         ]}
                       />
                       <FormInput
@@ -3566,6 +3578,7 @@ const UserProfileEditPage = () => {
                         value={formData.partnerDenomination}
                         onChange={handleInputChange}
                         options={[
+                          "Any",
                           "ACI - Anglican Church Of India",
                           "Adventist",
                           "AG - Assembly of God",
@@ -3621,7 +3634,6 @@ const UserProfileEditPage = () => {
                           "Syrian Catholic",
                           "TPM - The Pentecostal Mission",
                           "Other",
-                          "Any",
                         ]}
                       />
                     </div>
@@ -3641,13 +3653,13 @@ const UserProfileEditPage = () => {
                         selectedValues={formData.partnerMaritalStatus}
                         onChange={handleInputChange}
                         options={[
+                          "Any",
                           "Never Married",
                           "Divorced",
                           "Separated",
                           "Widow / Widower",
                           "Awaiting Divorce",
                           "Annulled",
-                          "Any",
                         ]}
                       />
 
@@ -3664,12 +3676,12 @@ const UserProfileEditPage = () => {
                         selectedValues={formData.partnerEatingHabits}
                         onChange={handleInputChange}
                         options={[
+                          "Any",
                           "Vegetarian",
                           "Vegan",
                           "Non-Vegetarian",
                           "Occasionally Non-Vegetarian",
                           "Eggetarian",
-                          "Any",
                         ]}
                       />
                       <CheckboxGroup
@@ -3678,10 +3690,10 @@ const UserProfileEditPage = () => {
                         selectedValues={formData.partnerDrinkingHabits}
                         onChange={handleInputChange}
                         options={[
+                          "Any",
                           "Never Drinks",
                           "Drinks Socially",
                           "Drinks Regularly",
-                          "Any",
                         ]}
                       />
                       <CheckboxGroup
@@ -3690,10 +3702,10 @@ const UserProfileEditPage = () => {
                         selectedValues={formData.partnerSmokingHabits}
                         onChange={handleInputChange}
                         options={[
+                          "Any",
                           "Never Smokes",
                           "Smokes Occasionally",
                           "Smokes Regularly",
-                          "Any",
                         ]}
                       />
 
@@ -3703,11 +3715,11 @@ const UserProfileEditPage = () => {
                         selectedValues={formData.partnerSpirituality}
                         onChange={handleInputChange}
                         options={[
+                          "Any",
                           "Very Religious",
                           "Religious",
                           "Moderately Religious",
                           "Not Religious",
-                          "Any",
                         ]}
                       />
                     </div>
@@ -3732,6 +3744,7 @@ const UserProfileEditPage = () => {
                         value={formData.partnerEducation}
                         onChange={handleInputChange}
                         options={[
+                          "Any",
                           "B.Arch",
                           "B.Com",
                           "B.Ed",
@@ -3770,7 +3783,6 @@ const UserProfileEditPage = () => {
                           "Higher Secondary / Plus Two",
                           "SSLC / 10th",
                           "Other",
-                          "Any",
                         ]}
                       />
                       <FormInput
@@ -3782,12 +3794,12 @@ const UserProfileEditPage = () => {
                         value={formData.partnerEmploymentType}
                         onChange={handleInputChange}
                         options={[
+                          "Any",
                           "Private Sector",
                           "Government",
                           "Self Employed",
                           "Business",
                           "Not Working",
-                          "Any",
                         ]}
                       />
                       <FormInput
@@ -3799,6 +3811,7 @@ const UserProfileEditPage = () => {
                         value={formData.partnerOccupation}
                         onChange={handleInputChange}
                         options={[
+                          "Any",
                           "Accountant",
                           "Actor",
                           "Administrative Professional",
@@ -3900,7 +3913,6 @@ const UserProfileEditPage = () => {
                           "Writer",
                           "Zoologist",
                           "Not Working",
-                          "Any",
                         ]}
                       />
                       <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "8px", marginBottom: "12px", width: "100%" }}>
@@ -3982,7 +3994,7 @@ const UserProfileEditPage = () => {
                                   const c = allCountries.find(curr => curr.name === cName);
                                   return c ? State.getStatesOfCountry(c.isoCode).map(s => s.name) : [];
                                 })))
-                              : State.getStatesOfCountry("IN").map(s => s.name) // Default to India states if no country selected
+                              : State.getStatesOfCountry("IN").map(s => s.name)
                           }
                           placeholder="Search State..."
                         />
@@ -3997,7 +4009,6 @@ const UserProfileEditPage = () => {
                           options={
                             formData.partnerState.length > 0
                               ? Array.from(new Set(formData.partnerState.flatMap(sName => {
-                                  // Find which countries have this state
                                   const countriesToSearch = formData.partnerCountry.length > 0 
                                     ? allCountries.filter(c => formData.partnerCountry.includes(c.name))
                                     : allCountries.filter(c => c.isoCode === "IN");
@@ -4020,7 +4031,6 @@ const UserProfileEditPage = () => {
                     </div>
                   </FormSection>
 
-                  {/* Submit Button */}
                   <div
                     style={{
                       background: "#fff",
@@ -4087,7 +4097,6 @@ const UserProfileEditPage = () => {
       </div>
 
       <Footer />
-      {/* <CopyRights /> */}
     </div>
   );
 };

@@ -69,6 +69,9 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
         } else {
           newValues = [optValue];
         }
+        // Auto close when an exclusive option is selected
+        setIsOpen(false);
+        setSearchTerm("");
       } else {
         const filteredValues = currentValues.filter(v => !exclusiveOptions.includes(v));
         if (filteredValues.includes(optValue)) {
@@ -79,7 +82,7 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
       }
 
       onChange({ target: { name, value: newValues } });
-      // Do not close dropdown on multi-select
+      // Do not close dropdown on multi-select generally, only for exclusive options above
     } else {
       onChange({ target: { name, value: optValue } });
       setIsOpen(false);

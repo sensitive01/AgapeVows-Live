@@ -1299,12 +1299,12 @@ const getNewProfileMatches = async (req, res) => {
 
       rawMatches = await userModel.aggregate([
         { $match: matchQuery },
-        { $sample: { size: 5 } }
+        { $limit: 30 } // Fetch up to 30 matches instead of just 5
       ]);
     }
 
-    // If less than 5 matches found, fill the rest with random profiles
-    if (rawMatches.length < 5) {
+    // If less than 10 matches found, fill the rest with random profiles to ensure the carousel scrolls nicely
+    if (rawMatches.length < 10) {
       const existingMatchIds = rawMatches.map(m => m._id);
       const allExcludedIds = [...blockedIds, ...existingMatchIds];
 
@@ -1313,7 +1313,7 @@ const getNewProfileMatches = async (req, res) => {
         _id: { $ne: new mongoose.Types.ObjectId(userId), $nin: allExcludedIds }
       };
 
-      const needed = 5 - rawMatches.length;
+      const needed = 10 - rawMatches.length;
       const additionalMatches = await userModel.aggregate([
         { $match: fallbackQuery },
         { $sample: { size: needed } }
@@ -1795,37 +1795,55 @@ const getShortListedProfileData = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const shortListData = await shortListedSchema.findOne({ userId });
-
-    if (!shortListData || shortListData.profiles.length === 0) {
-      return res.status(200).json({
-        success: true,
-        message: "No shortlisted profiles found.",
-        data: [],
-      });
-    }
-
     const user = await userModel.findById(userId, { blockedUsers: 1 });
     const blockedIds = user?.blockedUsers?.map(b => b.user.toString()) || [];
 
-    const profiles = await userModel.find(
-      { _id: { $in: shortListData.profiles, $nin: blockedIds } },
-      {
-        userName: 1,
-        profileImage: 1,
-        age: 1,
-        city: 1,
-        height: 1,
-        degree: 1,
-        paymentDetails: 1,
-        isAnySubscriptionTaken: 1,
-      }
-    );
+    // Profiles shortlisted by you
+    const shortListData = await shortListedSchema.findOne({ userId });
+    let shortlistedByYou = [];
+    if (shortListData && shortListData.profiles.length > 0) {
+      shortlistedByYou = await userModel.find(
+        { _id: { $in: shortListData.profiles, $nin: blockedIds } },
+        {
+          userName: 1,
+          profileImage: 1,
+          age: 1,
+          city: 1,
+          height: 1,
+          degree: 1,
+          paymentDetails: 1,
+          isAnySubscriptionTaken: 1,
+        }
+      );
+    }
+
+    // Profiles who shortlisted you
+    const whoShortlistedYouDocs = await shortListedSchema.find({ profiles: userId });
+    const whoShortlistedYouIds = whoShortlistedYouDocs.map(doc => doc.userId);
+    let whoShortlistedYou = [];
+    if (whoShortlistedYouIds.length > 0) {
+      whoShortlistedYou = await userModel.find(
+        { _id: { $in: whoShortlistedYouIds, $nin: blockedIds } },
+        {
+          userName: 1,
+          profileImage: 1,
+          age: 1,
+          city: 1,
+          height: 1,
+          degree: 1,
+          paymentDetails: 1,
+          isAnySubscriptionTaken: 1,
+        }
+      );
+    }
 
     return res.status(200).json({
       success: true,
       message: "Shortlisted profiles fetched successfully",
-      data: profiles,
+      data: {
+        shortlistedByYou,
+        whoShortlistedYou
+      },
     });
   } catch (err) {
     console.log("Error in getShortListedProfileData", err);
@@ -1833,6 +1851,32 @@ const getShortListedProfileData = async (req, res) => {
   }
 };
 
+const removeShortlistProfile = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { profileId } = req.body;
+
+    let shortListedData = await shortListedSchema.findOne({ userId });
+
+    if (shortListedData) {
+      shortListedData.profiles = shortListedData.profiles.filter(
+        (id) => id.toString() !== profileId
+      );
+      await shortListedData.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Profile removed from shortlist",
+        data: shortListedData,
+      });
+    }
+
+    return res.status(404).json({ success: false, message: "Shortlist not found" });
+  } catch (err) {
+    console.log("Error in removeShortlistProfile", err);
+    res.status(500).json({ success: false, message: "Internal server error." });
+  }
+};
 
 const getAllEvents = async (req, res) => {
   try {
@@ -2720,6 +2764,7 @@ module.exports = {
   getWhoViewedYou,
   getShortListedProfileData,
   shortListTheProfile,
+  removeShortlistProfile,
   getMyActivePlanDetails,
   savePlanDetails,
   getPlanDetails,

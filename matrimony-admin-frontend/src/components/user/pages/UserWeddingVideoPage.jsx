@@ -96,7 +96,7 @@ const UserWeddingVideoPage = () => {
         </span>
         <div className="inn">
           <img
-            src="images/logo-b.png"
+            src="images/Logo.jpeg"
             alt=""
             loading="lazy"
             className="logo-brand-only"
@@ -293,7 +293,7 @@ const UserWeddingVideoPage = () => {
                 </span>
                 <a href="index.html" className="logo-brand">
                   <img
-                    src="images/logo-b.png"
+                    src="images/Logo.jpeg"
                     alt=""
                     loading="lazy"
                     className="ic-logo"

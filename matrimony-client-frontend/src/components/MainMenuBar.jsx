@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 // ✅ Importing image assets
-import logoImg from "../assets/images/agapevows - logo.webp";
+import logoImg from "../assets/images/Logo.jpeg";
 import profImg1 from "../assets/images/profiles/1.jpg";
 import searchImg from "../assets/images/icon/search.svg";
 import userImg from "../assets/images/icon/users.svg";

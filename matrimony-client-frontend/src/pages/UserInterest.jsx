@@ -140,131 +140,143 @@ const UserInterest = () => {
           {profileData
             .filter((profile) => profile && profile.senderDetails)
             .map((profile) => (
-              <li key={profile._id}>
-             <div
-  className="db-int-pro-1"
-  style={{
-    position: "relative",
-    width: "80px",
-    height: "90px" // 👈 extra height for badge
-  }}
->
-  {/* ✅ Badge on TOP (outside image) */}
-  <div
-    style={{
-      position: "absolute",
-      top: "0px",
-      left: "50%",
-      transform: "translateX(-50%) scale(0.7)",
-      zIndex: 10
-    }}
-  >
-    <MembershipBadge user={profile.senderDetails} isMini={true} />
-  </div>
+              <li 
+                key={profile._id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "20px",
+                  marginBottom: "15px",
+                  background: "#fff",
+                  borderRadius: "12px",
+                  boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+                  border: "1px solid #eaeaea",
+                  gap: "20px",
+                  flexWrap: "wrap"
+                }}
+              >
+                {/* 1. Profile Section (Image, Badge, Name) */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", minWidth: "150px" }}>
+                  <div style={{ position: "relative", width: "80px", height: "80px", marginTop: "15px" }}>
+                    <div style={{ position: "absolute", top: "-25px", left: "50%", transform: "translateX(-50%)", zIndex: 10, display: "flex", flexDirection: "column", gap: "2px", alignItems: "center" }}>
+                      <MembershipBadge user={profile.senderDetails} isMini={true} />
+                      {profile.senderDetails.idVerificationStatus === "Verified" && (
+                        <div className="badge bg-success shadow-sm" style={{ fontSize: "0.65rem", padding: "3px 6px", borderRadius: "10px", display: "flex", alignItems: "center", gap: "3px" }}>
+                          <i className="fa fa-check-circle"></i> VERIFIED
+                        </div>
+                      )}
+                    </div>
+                    <img
+                      src={profile.senderDetails.profileImage || "images/profiles/default.jpg"}
+                      alt={profile.senderDetails.userName}
+                      style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "50%", border: "2px solid #f3f4f6" }}
+                    />
+                  </div>
+                  <div style={{ textAlign: "center" }}>
+                    <h5 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "600", color: "#333" }}>
+                      {profile.senderDetails.userName}
+                    </h5>
+                    <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "4px" }}>
+                      {new Date(profile.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                </div>
 
-  {/* ✅ Image pushed DOWN */}
-  <img
-    src={
-      profile.senderDetails.profileImage ||
-      "images/profiles/default.jpg"
-    }
-    alt={profile.senderDetails.userName}
-    style={{
-      width: "80px",
-      height: "80px",
-      objectFit: "cover",
-      borderRadius: "8px",
-      marginTop: "20px" // 👈 space for badge
-    }}
-  />
-</div>
-              <div className="db-int-pro-2">
-                <h5>
-                  {profile.senderDetails.userName}
-                </h5>
-                <ol className="poi">
-                  <li>
-                    City: <strong>{profile.senderDetails.city}</strong>
-                  </li>
-                  <li>
-                    Age: <strong>{profile.senderDetails.age}</strong>
-                  </li>
-                  <li>
-                    Height: <strong>{profile.senderDetails.height} cm</strong>
-                  </li>
-                  <li>
-                    Job: <strong>{profile.senderDetails.jobType}</strong>
-                  </li>
-                </ol>
-                <ol className="poi poi-date">
-                  <li>
-                    Request On: {new Date(profile.createdAt).toLocaleString()}
-                  </li>
-                  {profile.status === "accepted" && (
-                    <li>
-                      Accepted On:{" "}
-                      {new Date(profile.updatedAt).toLocaleString()}
-                    </li>
+                {/* 2. Data Section (Age, Height, City, Job) */}
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px", minWidth: "200px", color: "#555", fontSize: "0.95rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span style={{ fontWeight: "600", color: "#444", minWidth: "60px" }}>Age:</span>
+                    <span>{profile.senderDetails.age} yrs</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span style={{ fontWeight: "600", color: "#444", minWidth: "60px" }}>Height:</span>
+                    <span>{profile.senderDetails.height} cm</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span style={{ fontWeight: "600", color: "#444", minWidth: "60px" }}>City:</span>
+                    <span>{profile.senderDetails.city}</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span style={{ fontWeight: "600", color: "#444", minWidth: "60px" }}>Job:</span>
+                    <span>{profile.senderDetails.jobType || "Not specified"}</span>
+                  </div>
+                  
+                  {profile.message && (
+                    <div style={{ fontSize: "0.85rem", color: "#666", fontStyle: "italic", padding: "6px 12px", background: "#fef8f8", borderRadius: "8px", borderLeft: "3px solid #ff5e62", marginTop: "4px", display: "inline-block" }}>
+                      "{profile.message}"
+                    </div>
                   )}
-                  {profile.status === "rejected" && (
-                    <li>
-                      Rejected On:{" "}
-                      {new Date(profile.updatedAt).toLocaleString()}
-                    </li>
+                </div>
+
+                {/* 3. Buttons Section */}
+                <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/profile-more-details/${profile.senderDetails._id}`)}
+                    style={{
+                      backgroundColor: "#f3f4f6", color: "#4b5563", border: "none", padding: "8px 16px", borderRadius: "8px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "500", transition: "0.2s"
+                    }}
+                    onMouseOver={(e) => (e.target.style.backgroundColor = "#e5e7eb")}
+                    onMouseOut={(e) => (e.target.style.backgroundColor = "#f3f4f6")}
+                  >
+                    View Profile
+                  </button>
+
+                  {activeTab === "pending" && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleAccept(profile.senderId, "accepted")}
+                        style={{
+                          backgroundColor: "#10b981", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "8px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "500", transition: "0.2s"
+                        }}
+                        onMouseOver={(e) => (e.target.style.backgroundColor = "#059669")}
+                        onMouseOut={(e) => (e.target.style.backgroundColor = "#10b981")}
+                      >
+                        Accept
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleReject(profile.senderId, "rejected")}
+                        style={{
+                          backgroundColor: "#ef4444", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "8px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "500", transition: "0.2s"
+                        }}
+                        onMouseOver={(e) => (e.target.style.backgroundColor = "#dc2626")}
+                        onMouseOut={(e) => (e.target.style.backgroundColor = "#ef4444")}
+                      >
+                        Reject
+                      </button>
+                    </>
                   )}
-                </ol>
-                {profile.message && (
-                  <p className="profile-message">
-                    <strong>Message:</strong> {profile.message}
-                  </p>
-                )}
-                <button
-                  type="button"
-                  onClick={() => navigate(`/profile-more-details/${profile.senderDetails._id}`)}
-                  className="cta-5"
-                >
-                  View Full Profile
-                </button>
-              </div>
-              <div className="db-int-pro-3">
-                {activeTab === "pending" && (
-                  <>
+                  {activeTab === "accepted" && (
                     <button
                       type="button"
-                      className="btn btn-success btn-sm"
-                      onClick={() => handleAccept(profile.senderId, "accepted")}
-                    >
-                      Accept
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-outline-danger btn-sm"
                       onClick={() => handleReject(profile.senderId, "rejected")}
+                      style={{
+                        backgroundColor: "#ef4444", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "8px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "500", transition: "0.2s"
+                      }}
+                      onMouseOver={(e) => (e.target.style.backgroundColor = "#dc2626")}
+                      onMouseOut={(e) => (e.target.style.backgroundColor = "#ef4444")}
                     >
                       Reject
                     </button>
-                  </>
-                )}
-                {activeTab === "accepted" && (
-                  <button
-                    type="button"
-                    className="btn btn-outline-danger btn-sm"
-                    onClick={() => handleReject(profile.senderId, "rejected")}
-                  >
-                    Reject
-                  </button>
-                )}
-                {activeTab === "rejected" && (
-                  <button
-                    type="button"
-                    className="btn btn-success btn-sm"
-                    onClick={() => handleAccept(profile.senderId, "accepted")}
-                  >
-                    Accept
-                  </button>
-                )}
-              </div>
-            </li>
+                  )}
+                  {activeTab === "rejected" && (
+                    <button
+                      type="button"
+                      onClick={() => handleAccept(profile.senderId, "accepted")}
+                      style={{
+                        backgroundColor: "#10b981", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "8px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "500", transition: "0.2s"
+                      }}
+                      onMouseOver={(e) => (e.target.style.backgroundColor = "#059669")}
+                      onMouseOut={(e) => (e.target.style.backgroundColor = "#10b981")}
+                    >
+                      Accept
+                    </button>
+                  )}
+                </div>
+              </li>
           ))}
         </ul>
       </div>

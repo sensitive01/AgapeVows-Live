@@ -80,7 +80,7 @@ const AboutPage = () => {
               </div>
               <h4 className="text-xl font-bold text-gray-900 mb-3">Integrity through Verification</h4>
               <p className="text-xl text-gray-600 leading-snug">
-                We manually review every profile and implement mandatory ID verification. When you see an "ID Verified" badge, you know you’re talking to someone real.
+                We manually review every profile and implement mandatory ID verification. When you see an "Verified" badge, you know you’re talking to someone real.
               </p>
             </div>
             

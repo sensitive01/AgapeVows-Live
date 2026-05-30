@@ -12,7 +12,7 @@ import {
   X,
   User,
 } from "lucide-react";
-import logo from "../../../assets/images/agapevows - logo.webp";
+import logo from "../../../assets/images/Logo.jpeg";
 import { getUserProfile } from "../../../api/axiosService/userAuthService";
 /* import profileImg from "../../../assets/images/profiles/1.jpg"; */ // Removed as we use generic icon now
 import PreLoader from "../../PreLoader";

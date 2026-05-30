@@ -6,9 +6,9 @@ import CopyRights from "../../components/CopyRights";
 import ShowInterest from "./ShowInterest";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getTheProfieMoreDetails, getUserProfile, viewContactDetails, sendChatMessage, submitReport, isUserMadeTheInterest } from "../../api/axiosService/userAuthService";
+import { getTheProfieMoreDetails, getUserProfile, viewContactDetails, sendChatMessage, submitReport, isUserMadeTheInterest, saveTheProfileAsShortlisted, getShortListedProfileData, removeShortlistedProfile } from "../../api/axiosService/userAuthService";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { showAlert } from "../../utils/alertService";
+import { showAlert, confirmAction } from "../../utils/alertService";
 
 import { faChurch, faHeart, faBriefcase, faInfoCircle, faUsers, faAddressCard, faMusic, faVideo } from '@fortawesome/free-solid-svg-icons';
 import profImage from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
@@ -59,14 +59,36 @@ const MoreDetails = () => {
   const [loadingUser, setLoadingUser] = useState(true);
   const [showContact, setShowContact] = useState(false);
   const [showUpgradePopup, setShowUpgradePopup] = useState(false);
+  const [upgradePopupType, setUpgradePopupType] = useState('premium');
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason] = useState("");
   const [reportComments, setReportComments] = useState("");
   const [isReporting, setIsReporting] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [interestStatus, setInterestStatus] = useState(null);
+  const [isShortlisted, setIsShortlisted] = useState(false);
+  const [isShortlisting, setIsShortlisting] = useState(false);
 
   useEffect(() => {
+    setIsShortlisted(false);
+    const fetchShortlistStatus = async () => {
+      if (currentUserId && profileId) {
+        try {
+          const response = await getShortListedProfileData(currentUserId);
+          if (response.data && response.data.success) {
+            const listed = response.data.data.some(p => p.profileId === profileId || p._id === profileId);
+            setIsShortlisted(listed);
+          }
+        } catch (error) {
+          console.error("Error fetching shortlist status", error);
+        }
+      }
+    };
+    fetchShortlistStatus();
+  }, [currentUserId, profileId]);
+
+  useEffect(() => {
+    setInterestStatus(null);
     const fetchInterestStatus = async () => {
       if (currentUserId && profileId) {
         try {
@@ -235,6 +257,7 @@ const MoreDetails = () => {
 
     if (!isPaidUser) {
       console.log("❌ User is not paid, showing upgrade popup");
+      setUpgradePopupType('premium');
       setShowUpgradePopup(true);
       return;
     }
@@ -246,20 +269,66 @@ const MoreDetails = () => {
 
       if (response?.data?.success) {
         setShowContact(true);
-        toast.success(response.data.message || "Contact details unlocked.", {
-          position: "top-center",
-          autoClose: 2500,
-        });
+        // Removed the success toast notification here as requested
         window.dispatchEvent(new Event("planUpdated"));
       }
     } catch (err) {
       console.log("❌ viewContactDetails error:", err.response?.data);
-      const errMsg = err.response?.data?.message || "Unable to view contact details right now.";
-      toast.error(errMsg, { position: "top-center", autoClose: 3000 });
+      // Instead of small text error toast, show the upgrade popup when limit is reached
+      setUpgradePopupType('limit');
+      setShowUpgradePopup(true);
     }
   };
 
 
+
+  const handleShortlistClick = async () => {
+    if (isShortlisting) return;
+
+    if (isShortlisted) {
+      const isConfirmed = await confirmAction({
+        title: 'Remove from Shortlist?',
+        text: 'Are you sure you want to remove this profile from your shortlist?',
+        confirmButtonText: 'Yes, Remove',
+      });
+      if (!isConfirmed) return;
+
+      setIsShortlisting(true);
+      try {
+        const res = await removeShortlistedProfile(profileId, currentUserId);
+        if (res.status === 200 || res.data?.success) {
+          setIsShortlisted(false);
+          toast.success("Profile removed from shortlist!");
+        }
+      } catch (err) {
+        console.error("Error removing shortlisted profile:", err);
+        toast.error("Failed to remove profile from shortlist.");
+      } finally {
+        setIsShortlisting(false);
+      }
+    } else {
+      const isConfirmed = await confirmAction({
+        title: 'Shortlist Profile?',
+        text: 'Are you sure you want to add this profile to your shortlist?',
+        confirmButtonText: 'Yes, Shortlist',
+      });
+      if (!isConfirmed) return;
+
+      setIsShortlisting(true);
+      try {
+        const res = await saveTheProfileAsShortlisted(profileId, currentUserId);
+        if (res.status === 200 || res.data?.success) {
+          setIsShortlisted(true);
+          toast.success("Profile Shortlisted!");
+        }
+      } catch (err) {
+        console.error("Error shortlisting profile:", err);
+        toast.error("Failed to shortlist profile.");
+      } finally {
+        setIsShortlisting(false);
+      }
+    }
+  };
 
   return (
     <div className="profile-page">
@@ -281,7 +350,7 @@ const MoreDetails = () => {
                   onClick={() => setZoomImage(allImages[currentImageIndex] || profImage)}
                   style={{ width: "100%", height: "100%", cursor: "pointer", objectFit: "contain" }}
                 />
-                
+
                 {/* Watermark Overlay on the Right Side */}
                 <div
                   style={{
@@ -402,71 +471,124 @@ const MoreDetails = () => {
               </div>
 
 
-              <button
-                className="interest-btn"
-                style={{ backgroundColor: interestStatus ? "#10b981" : "" }}
-                onClick={(e) => {
-                  if (!isPaidUser) {
-                    setShowUpgradePopup(true);
-                    return;
-                  }
-                  handleShowInterestClick();
-                }}
-                {...(isPaidUser && {
-                  "data-bs-toggle": "modal",
-                  "data-bs-target": "#sendInter",
-                })}
-              >
-                {interestStatus ? "Already Interest Sent" : "Send Interest"}
-              </button>
-
-              {/* View Contact Information Button moved immediately below profile picture */}
-              {!showContact && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px", width: "100%" }}>
                 <button
-                  onClick={handleContactClick}
-                  className="view-contact-btn"
-                  style={{ width: "100%", marginBottom: "10px" }}
+                  className="interest-btn"
+                  style={{ 
+                    width: "100%", 
+                    height: "45px", 
+                    marginBottom: "0", 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "center", 
+                    borderRadius: "8px",
+                    fontWeight: "600",
+                    fontSize: "0.95rem",
+                    padding: "0",
+                    backgroundColor: interestStatus ? "#10b981" : "" 
+                  }}
+                  onClick={(e) => {
+                    if (!isPaidUser) {
+                      setUpgradePopupType('premium');
+                      setShowUpgradePopup(true);
+                      return;
+                    }
+                    handleShowInterestClick();
+                  }}
+                  {...(isPaidUser && {
+                    "data-bs-toggle": "modal",
+                    "data-bs-target": "#sendInter",
+                  })}
                 >
-                  View Contact Information
+                  {interestStatus ? "Already Interest Sent" : "Send Interest"}
                 </button>
-              )}
-              {/* Contact Details in LEFT COLUMN */}
-              {showContact && (
-                <div style={{ width: "100%", marginTop: "10px", display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem", marginBottom: "5px" }}>
-                    👤 User Name: {userInfo?.userName || "Not specified"}
-                  </div>
-                  
-                  <div style={{ height: "2px", background: "#cbd5e1", margin: "2px 0", borderRadius: "2px", width: "100%" }}></div>
 
-                  <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
-                    👤 Contact Person: {userInfo?.contactPersonName || "Not specified"}
-                  </div>
-                  
-                  <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
-                    🤝 Relationship: {userInfo?.relationship || "Not specified"}
-                  </div>
+                <button
+                  onClick={handleShortlistClick}
+                  className="shortlist-btn"
+                  style={{
+                    width: "100%",
+                    height: "45px",
+                    marginBottom: "0",
+                    background: isShortlisted ? "#10b981" : "#8b5cf6",
+                    color: "#ffffff",
+                    border: "none",
+                    padding: "0",
+                    borderRadius: "8px",
+                    fontSize: "0.95rem",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px"
+                  }}
+                  disabled={isShortlisting}
+                >
+                  {isShortlisting ? "Please wait..." : (isShortlisted ? "Profile Shortlisted" : "Shortlist")}
+                </button>
 
-                  <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
-                    📞 Phone Number: {userInfo?.contactPhone || "Not specified"}
-                  </div>
+                {/* View Contact Information Button moved immediately below profile picture */}
+                {!showContact && (
+                  <button
+                    onClick={handleContactClick}
+                    className="view-contact-btn"
+                    style={{ 
+                      width: "100%", 
+                      height: "45px", 
+                      marginBottom: "0", 
+                      display: "flex", 
+                      alignItems: "center", 
+                      justifyContent: "center", 
+                      borderRadius: "8px",
+                      fontWeight: "600",
+                      fontSize: "0.95rem",
+                      padding: "0"
+                    }}
+                  >
+                    View Contact Information
+                  </button>
+                )}
+                {/* Contact Details in LEFT COLUMN */}
+                {showContact && (
+                  <div style={{ width: "100%", marginTop: "4px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem", marginBottom: "5px" }}>
+                      👤 User Name: {userInfo?.userName || "Not specified"}
+                    </div>
 
-                  <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
-                    📧 Email: {userInfo?.contactEmail || "Not specified"}
+                    <div style={{ height: "2px", background: "#cbd5e1", margin: "2px 0", borderRadius: "2px", width: "100%" }}></div>
+
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                      👤 Contact Person: {userInfo?.contactPersonName || "Not specified"}
+                    </div>
+
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                      🤝 Relationship: {userInfo?.relationship || "Not specified"}
+                    </div>
+
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                      📞 Phone Number: {userInfo?.contactPhone || "Not specified"}
+                    </div>
+
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                      📧 Email: {userInfo?.contactEmail || "Not specified"}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
 
               <button
                 onClick={() => setShowReportModal(true)}
                 className="report-user-btn"
                 style={{
                   width: "100%",
-                  marginTop: "20px",
+                  height: "45px",
+                  marginTop: "4px",
                   background: "#fee2e2",
                   color: "#dc2626",
                   border: "1px solid #fecaca",
-                  padding: "10px 0",
+                  padding: "0",
                   borderRadius: "8px",
                   fontSize: "0.95rem",
                   fontWeight: "600",
@@ -771,7 +893,7 @@ const MoreDetails = () => {
                 }
               }}
             />
-            
+
             {allImages.length > 1 && (
               <>
                 <button
@@ -820,7 +942,7 @@ const MoreDetails = () => {
                 </button>
               </>
             )}
-            
+
             <div className="zoom-controls" onClick={(e) => e.stopPropagation()}>
               <button onClick={() => setZoomLevel((z) => Math.max(0.5, z - 0.2))}>-</button>
               <button onClick={() => setZoomLevel(1)}>Reset</button>
@@ -834,9 +956,13 @@ const MoreDetails = () => {
       {showUpgradePopup && (
         <div className="upgrade-popup">
           <div className="upgrade-content">
-            <div className="upgrade-icon">🔒</div>
-            <h3>Premium Feature</h3>
-            <p>Upgrade your plan to unlock premium features and connect directly with your matches.</p>
+            <div className="upgrade-icon">{upgradePopupType === 'limit' ? '⚠️' : '🔒'}</div>
+            <h3>{upgradePopupType === 'limit' ? 'Limit Reached' : 'Premium Feature'}</h3>
+            <p>
+              {upgradePopupType === 'limit'
+                ? 'You have reached your limit. Please upgrade your plan to continue.'
+                : 'Upgrade your plan to unlock premium features and connect directly with your matches.'}
+            </p>
             <div className="upgrade-buttons">
               <button onClick={() => navigate("/user/user-plan-selection")} className="upgrade-btn">Upgrade Now</button>
               <button onClick={() => setShowUpgradePopup(false)} className="cancel-btn">Cancel</button>

@@ -16,7 +16,7 @@ import loader2 from '../../assets/new-template/images/loder/2.png';
 import loader3 from '../../assets/new-template/images/loder/3.png';
 
 // Import logo
-import logoBImg from '../../assets/new-template/images/logo-b.png';
+import logoBImg from '../../assets/images/Logo.jpeg';
 
 // Import profile images
 import profile1 from '../../assets/new-template/images/profiles/1.jpg';

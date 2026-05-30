@@ -1,4 +1,4 @@
-import logoBImg from '../../assets/new-template/images/logo-b.png';
+import logoBImg from '../../assets/images/Logo.jpeg';
 import profile1 from '../../assets/new-template/images/profiles/1.jpg';
 import iconSearch from '../../assets/new-template/images/icon/search.svg';
 import iconUsers from '../../assets/new-template/images/icon/users.svg';

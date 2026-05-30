@@ -33,6 +33,7 @@ const AdminPricingPlans = () => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [activeTab, setActiveTab] = useState("Active");
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -346,6 +347,42 @@ const AdminPricingPlans = () => {
                     Plan
                   </button>
                 </div>
+                
+                <div style={{ borderBottom: "1px solid #dee2e6", marginBottom: "15px", marginTop: "10px" }}>
+                  <button
+                    onClick={() => setActiveTab("Active")}
+                    style={{
+                      padding: "10px 24px",
+                      background: "transparent",
+                      border: "none",
+                      borderBottom: activeTab === "Active" ? "3px solid #667eea" : "3px solid transparent",
+                      color: activeTab === "Active" ? "#667eea" : "#6c757d",
+                      fontWeight: activeTab === "Active" ? "600" : "500",
+                      cursor: "pointer",
+                      fontSize: "15px",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    Active Plans
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("Inactive")}
+                    style={{
+                      padding: "10px 24px",
+                      background: "transparent",
+                      border: "none",
+                      borderBottom: activeTab === "Inactive" ? "3px solid #667eea" : "3px solid transparent",
+                      color: activeTab === "Inactive" ? "#667eea" : "#6c757d",
+                      fontWeight: activeTab === "Inactive" ? "600" : "500",
+                      cursor: "pointer",
+                      fontSize: "15px",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    Inactive Plans
+                  </button>
+                </div>
+
                 <div className="table-responsive" style={{ height: '60vh', overflowY: 'auto' }}>
                   <table className="table table-hover">
                     <thead>
@@ -360,7 +397,7 @@ const AdminPricingPlans = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {plans.map((plan, index) => (
+                      {plans.filter(plan => plan.status === activeTab).map((plan, index) => (
                         <tr key={plan._id}>
                           <td className="border-0">{index + 1}</td>
                           <td className="border-0">
@@ -469,7 +506,7 @@ const AdminPricingPlans = () => {
                           </td>
                         </tr>
                       ))}
-                      {plans.length === 0 && (
+                      {plans.filter(plan => plan.status === activeTab).length === 0 && (
                         <tr>
                           <td colSpan="7" className="text-center py-5 border-0">
                             <div>

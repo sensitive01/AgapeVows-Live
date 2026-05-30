@@ -157,6 +157,14 @@ export const saveTheProfileAsShortlisted = async (profileId, userId) => {
   return response;
 };
 
+export const removeShortlistedProfile = async (profileId, userId) => {
+  const response = await userInstance.post(
+    `/remove-shortlisted-profile/${userId}`,
+    { profileId }
+  );
+  return response;
+};
+
 export const getShortListedProfileData = async (userId) => {
   const response = await userInstance.get(
     `/get-short-listed-profile-data/${userId}`

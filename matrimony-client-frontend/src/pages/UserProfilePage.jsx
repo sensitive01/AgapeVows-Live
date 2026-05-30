@@ -859,13 +859,6 @@ const UserProfilePage = () => {
                           gap: '4px',
                           zIndex: 10
                         }}>
-                          <MembershipBadge user={userInfo} isMini={true} />
-                          {userInfo?.idVerificationStatus === 'Verified' && (
-                            <div className="membership-badge badge-verified badge-mini shadow-sm">
-                              <i className="fa fa-check-circle badge-icon"></i>
-                              <span className="badge-text">Verified</span>
-                            </div>
-                          )}
                           {userInfo?.isPhoneVerified && (
                             <div className="badge bg-info text-white shadow-sm" style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '4px', border: '1px solid white' }}>
                               <i className="fa fa-phone"></i>
@@ -909,13 +902,12 @@ const UserProfilePage = () => {
                                 display: "flex",
                                 alignItems: "flex-start",
                                 gap: "8px",
-                                flexWrap: "wrap", // ✅ important
+                                flexWrap: "wrap",
                               }}
                             >
-                              <i className="fa fa-id-card" style={{ color: "#7c3aed" }}></i>
+                              <strong style={{ color: "#333", minWidth: "70px" }}>User ID:</strong>
                               <span style={{ fontWeight: "500" }}>
-                                <strong style={{ color: "#333" }}>User ID:</strong>{" "}
-                                {userInfo?.agwid || "Not provided"}
+                                {userInfo?.agwid || "Not Specified"}
                               </span>
                             </p>
 
@@ -931,9 +923,9 @@ const UserProfilePage = () => {
                                 flexWrap: "wrap",
                               }}
                             >
-                              <i className="fa fa-phone" style={{ color: "#7c3aed" }}></i>
+                              <strong style={{ color: "#333", minWidth: "70px" }}>Mobile:</strong>
                               <span style={{ fontWeight: "500", wordBreak: "break-word" }}>
-                                {userInfo?.userMobile || "Not provided"}
+                                {userInfo?.userMobile || "Not Specified"}
                               </span>
                             </p>
 
@@ -949,11 +941,12 @@ const UserProfilePage = () => {
                                 flexWrap: "wrap",
                               }}
                             >
-                              <i className="fa fa-envelope" style={{ color: "#7c3aed" }}></i>
+                              <strong style={{ color: "#333", minWidth: "70px" }}>Email:</strong>
                               <span style={{ fontWeight: "500", wordBreak: "break-word" }}>
-                                {userInfo?.userEmail || "Not provided"}
+                                {userInfo?.userEmail || "Not Specified"}
                               </span>
                             </p>
+
 
                             {/* BADGES */}
                             <div
@@ -1108,16 +1101,22 @@ const UserProfilePage = () => {
                     <InfoRow
                       label="Age"
                       value={
+                        userInfo?.age
+                          ? `${userInfo.age} years`
+                          : userInfo?.dateOfBirth
+                          ? `${calculateAge(userInfo.dateOfBirth)} years`
+                          : null
+                      }
+                    />
+                    <InfoRow
+                      label="Date of Birth"
+                      value={
                         userInfo?.dateOfBirth
-                          ? `${calculateAge(
-                            userInfo.dateOfBirth,
-                          )} years / ${new Date(
-                            userInfo.dateOfBirth,
-                          ).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}`
+                          ? new Date(userInfo.dateOfBirth).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })
                           : null
                       }
                     />
@@ -1241,12 +1240,19 @@ const UserProfilePage = () => {
                       value={userInfo?.numberOfBrothers}
                     />
                     <InfoRow
+                      label="Married Brothers"
+                      value={userInfo?.marriedBrothers}
+                    />
+                    <InfoRow
                       label="No. of Sisters"
                       value={userInfo?.numberOfSisters}
                     />
+                    <InfoRow
+                      label="Married Sisters"
+                      value={userInfo?.marriedSisters}
+                    />
                   </ProfileSection>
 
-                  {/* Religious Information Section */}
                   <ProfileSection
                     title="Religious Information"
                     icon="fa-praying-hands"

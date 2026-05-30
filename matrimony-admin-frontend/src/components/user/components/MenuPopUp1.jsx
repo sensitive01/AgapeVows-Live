@@ -1,4 +1,4 @@
-import logoImg from "../../admin/images/logo.png";
+import logoImg from "../../admin/images/Logo.jpeg";
 import profImg1 from "../../../assets/images/profiles/1.jpg";
 
 

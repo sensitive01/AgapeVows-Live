@@ -84,10 +84,12 @@ const ShowInterest = ({ selectedUser, userId, onSuccess }) => {
     } catch (error) {
       console.error("Error sending interest:", error);
       const errMsg = error.response?.data?.message || error.message || "Please try again.";
+      const isLimitError = error.response?.status === 403 || errMsg.toLowerCase().includes("limit");
+      
       showAlert({
-        title: "Error",
-        text: `Failed to send interest: ${errMsg}`,
-        icon: "error",
+        title: isLimitError ? "Limit Reached" : "Error",
+        text: isLimitError ? errMsg : `Failed to send interest: ${errMsg}`,
+        icon: isLimitError ? "warning" : "error",
       });
     } finally {
       setIsLoading(false);

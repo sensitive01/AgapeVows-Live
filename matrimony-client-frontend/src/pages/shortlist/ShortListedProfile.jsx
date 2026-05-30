@@ -4,9 +4,11 @@ import UserSideBar from "../../components/UserSideBar";
 import LayoutComponent from "../../components/layouts/LayoutComponent";
 import Footer from "../../components/Footer";
 import CopyRights from "../../components/CopyRights";
-import { getShortListedProfileData, markNotificationsRead } from "../../api/axiosService/userAuthService";
+import { getShortListedProfileData, markNotificationsRead, removeShortlistedProfile } from "../../api/axiosService/userAuthService";
 import { useNavigate } from "react-router-dom";
 import MembershipBadge from "../../components/common/MembershipBadge";
+import { confirmAction } from "../../utils/alertService";
+import { toast } from "react-toastify";
 
 const ShortListedProfile = () => {
   const userId = localStorage.getItem("userId");
@@ -22,6 +24,27 @@ const ShortListedProfile = () => {
   // Handle view profile navigation
   const handleViewProfile = (profileId) => {
     navigate(`/profile-more-details/${profileId}`);
+  };
+
+  const handleRemoveProfile = async (profileId) => {
+    const isConfirmed = await confirmAction({
+      title: 'Remove Profile?',
+      text: 'Are you sure you want to remove this profile from your shortlist?',
+      confirmButtonText: 'Yes, Remove',
+    });
+    
+    if (!isConfirmed) return;
+
+    try {
+      const response = await removeShortlistedProfile(profileId, userId);
+      if (response.status === 200 || response.data?.success) {
+        toast.success("Profile removed successfully!");
+        setProfileDataByYou(prev => prev.filter(p => p._id !== profileId));
+      }
+    } catch (err) {
+      console.error("Error removing profile:", err);
+      toast.error("Failed to remove profile.");
+    }
   };
 
   // Fetch shortlisted profiles
@@ -56,7 +79,7 @@ const ShortListedProfile = () => {
   }, []);
 
   // Render profile list
-  const renderProfileList = (profileData) => {
+  const renderProfileList = (profileData, isByYou) => {
     if (loading) {
       return (
         <div className="text-center py-5">
@@ -170,25 +193,48 @@ const ShortListedProfile = () => {
                     Education: <strong>{profile.degree}</strong>
                   </li>
                 </ol>
-                <button
-                  onClick={() => handleViewProfile(profile._id)}
-                  className="cta-5"
-                  style={{
-                    backgroundColor: "#ff5e62",
-                    color: "#fff",
-                    border: "none",
-                    padding: "5px 10px",
-                    borderRadius: "6px",
-                    cursor: "pointer",
-                    fontSize: "0.85rem",
-                    fontWeight: "500",
-                    transition: "0.3s ease"
-                  }}
-                  onMouseOver={(e) => (e.target.style.backgroundColor = "#e14b50")}
-                  onMouseOut={(e) => (e.target.style.backgroundColor = "#ff5e62")}
-                >
-                  View Full Profile
-                </button>
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "10px" }}>
+                  <button
+                    onClick={() => handleViewProfile(profile._id)}
+                    className="cta-5"
+                    style={{
+                      backgroundColor: "#ff5e62",
+                      color: "#fff",
+                      border: "none",
+                      padding: "5px 10px",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                      fontSize: "0.85rem",
+                      fontWeight: "500",
+                      transition: "0.3s ease"
+                    }}
+                    onMouseOver={(e) => (e.target.style.backgroundColor = "#e14b50")}
+                    onMouseOut={(e) => (e.target.style.backgroundColor = "#ff5e62")}
+                  >
+                    View Full Profile
+                  </button>
+                  {isByYou && (
+                    <button
+                      onClick={() => handleRemoveProfile(profile._id)}
+                      className="cta-5"
+                      style={{
+                        backgroundColor: "#6b7280",
+                        color: "#fff",
+                        border: "none",
+                        padding: "5px 10px",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        fontSize: "0.85rem",
+                        fontWeight: "500",
+                        transition: "0.3s ease"
+                      }}
+                      onMouseOver={(e) => (e.target.style.backgroundColor = "#4b5563")}
+                      onMouseOut={(e) => (e.target.style.backgroundColor = "#6b7280")}
+                    >
+                      <i className="fa fa-times" style={{ marginRight: "4px" }}></i> Remove
+                    </button>
+                  )}
+                </div>
               </div>
             </li>
           ))}
@@ -248,7 +294,7 @@ const ShortListedProfile = () => {
                                 role="tab"
                               >
                                 <i className="fa fa-heart me-2"></i>
-                                Shortlisted By You
+                                Shortlisted By You {profileDataByYou.length > 0 && `(${profileDataByYou.length})`}
                               </button>
                             </li>
                             <li className="nav-item" role="presentation" style={{ flex: "0 0 auto" }}>
@@ -261,7 +307,7 @@ const ShortListedProfile = () => {
                                 role="tab"
                               >
                                 <i className="fa fa-users me-2"></i>
-                                Who Shortlisted You
+                                Who Shortlisted You {profileDataWhoShortlisted.length > 0 && `(${profileDataWhoShortlisted.length})`}
                               </button>
                             </li>
                           </ul>
@@ -274,7 +320,7 @@ const ShortListedProfile = () => {
                               className={`tab-pane fade ${activeTab === "byYou" ? "show active" : ""
                                 }`}
                             >
-                              {renderProfileList(profileDataByYou)}
+                              {renderProfileList(profileDataByYou, true)}
                             </div>
 
                             {/* Who Shortlisted You Tab */}
@@ -284,7 +330,7 @@ const ShortListedProfile = () => {
                                 : ""
                                 }`}
                             >
-                              {renderProfileList(profileDataWhoShortlisted)}
+                              {renderProfileList(profileDataWhoShortlisted, false)}
                             </div>
                           </div>
                         </div>

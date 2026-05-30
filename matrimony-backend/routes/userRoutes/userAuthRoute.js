@@ -152,11 +152,10 @@ userAuthRoutes.post(
 // DELETE Additional Images
 userAuthRoutes.post("/delete-additional-images/:userId", userAuthController.deleteAdditionalImages);
 
-// UPDATED BELOW
-
 // PLAN
 userAuthRoutes.post("/save-plan-details/:userId", userAuthController.savePlanDetails);
 userAuthRoutes.post("/short-list-the-profile/:userId", userAuthController.shortListTheProfile);
+userAuthRoutes.post("/remove-shortlisted-profile/:userId", userAuthController.removeShortlistProfile);
 
 // UPDATE Interest
 userAuthRoutes.put("/change-interest-status/:userId", userAuthController.changeInterestStatus);

@@ -1,7 +1,7 @@
 import React from "react";
 
 // ✅ Importing image assets
-import logoImg from "../../../assets/images/logo-b.png";
+import logoImg from "../../../assets/images/Logo.jpeg";
 import profImg1 from "../../../assets/images/profiles/1.jpg";
 import searchImg from "../../../assets/images/icon/search.svg";
 import userImg from "../../../assets/images/icon/users.svg";

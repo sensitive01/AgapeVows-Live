@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import headerLogo from "../../../../public/assets/images/agapevows - logo.webp";
+import headerLogo from "../../../../public/assets/images/Logo.jpeg";
 
 
 const Header = () => {

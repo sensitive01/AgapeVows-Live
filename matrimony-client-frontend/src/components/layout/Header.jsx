@@ -14,7 +14,7 @@
 //   FaChevronDown,
 //   FaChevronUp,
 // } from "react-icons/fa";
-// import logo from "../../assets/images/agapevows - logo.webp";
+// import logo from "../../assets/images/Logo.jpeg";
 // import { useLoginCleanup } from "../../hooks/useLoginCleanup";
 // import { FaSquarePen } from "react-icons/fa6";
 // import { IoDocumentText } from "react-icons/io5";

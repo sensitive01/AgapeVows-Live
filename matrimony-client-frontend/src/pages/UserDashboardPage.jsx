@@ -94,19 +94,23 @@ const UserDashboardPage = () => {
 
         setTimeout(() => {
           if (sliderRef.current) {
+            // Determine how many slides we have in the DOM. 
+            // We'll duplicate the array in the render function to ensure there are always > 5 items if we have at least 1 match.
             window.$(sliderRef.current).slick({
-              infinite: false,
-              slidesToShow: Math.min(5, profileMatches.length),
-              arrows: false,
+              infinite: true,
+              slidesToShow: 5,
+              arrows: true,
+              prevArrow: '<button type="button" class="slick-prev" style="position: absolute; top: 50%; left: -50px; transform: translateY(-50%); z-index: 10; background: transparent; color: #2d3748; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;"><i class="fa fa-angle-left" style="font-size: 32px;"></i></button>',
+              nextArrow: '<button type="button" class="slick-next" style="position: absolute; top: 50%; right: -20px; transform: translateY(-50%); z-index: 10; background: transparent; color: #2d3748; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;"><i class="fa fa-angle-right" style="font-size: 32px;"></i></button>',
               slidesToScroll: 1,
               autoplay: true,
-              autoplaySpeed: 3000,
+              autoplaySpeed: 4000,
               dots: false,
               responsive: [
                 {
                   breakpoint: 992,
                   settings: {
-                    slidesToShow: Math.min(3, profileMatches.length),
+                    slidesToShow: 3,
                     slidesToScroll: 1,
                     centerMode: false,
                   },
@@ -361,12 +365,6 @@ const UserDashboardPage = () => {
 
   useEffect(() => {
     fetchProfileMatches();
-
-    const interval = setInterval(() => {
-      fetchProfileMatches();
-    }, 30000);
-
-    return () => clearInterval(interval);
   }, [userId]);
 
   // Re-initialize slider when profile matches change
@@ -458,9 +456,29 @@ const UserDashboardPage = () => {
                     )}
 
                     {profileMatches.length > 0 ? (
-                      <ul className="slider" ref={sliderRef} key={profileMatches.map((p, i) => p._id || i).join('-')}>
-                        {profileMatches.map((profile, index) => (
-                          <li key={profile._id || index}>
+                      (() => {
+                        // If we have 5 or fewer profiles, duplicate them so infinite scroll works properly
+                        const displayProfiles = profileMatches.length <= 5 
+                          ? [...profileMatches, ...profileMatches, ...profileMatches]
+                          : profileMatches;
+                        
+                        return (
+                          <div style={{ position: "relative", padding: "0 20px" }}>
+                            <style>
+                              {`
+                                .slider .slick-list {
+                                  overflow: hidden !important;
+                                  margin: 0 !important;
+                                  padding: 0 !important;
+                                }
+                                .slider .slick-prev, .slider .slick-next {
+                                  z-index: 10 !important;
+                                }
+                              `}
+                            </style>
+                            <ul className="slider" ref={sliderRef} key={profileMatches.map((p, i) => p._id || i).join('-')} style={{ margin: 0, padding: 0 }}>
+                              {displayProfiles.map((profile, index) => (
+                                <li key={(profile._id || 'match') + "-" + index}>
                             <div
                               className="db-new-pro"
                               style={{ position: "relative", paddingTop: "10px", cursor: "pointer" }}
@@ -553,14 +571,6 @@ const UserDashboardPage = () => {
                                   {profile.age} Years old
                                 </span>
                               </div>
-                              {index % 3 === 0 && (
-                                <div
-                                  className="pro-ave"
-                                  title="User currently available"
-                                >
-                                  <span className="pro-ave-yes"></span>
-                                </div>
-                              )}
                               <div
                                 className="fclick"
                               >
@@ -569,7 +579,10 @@ const UserDashboardPage = () => {
                             </div>
                           </li>
                         ))}
-                      </ul>
+                            </ul>
+                          </div>
+                        );
+                      })()
                     ) : (
                       !loading && (
                         <div className="alert alert-info" role="alert">
