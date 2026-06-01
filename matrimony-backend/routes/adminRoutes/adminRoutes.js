@@ -123,6 +123,7 @@ adminRoutes.get("/get-all-plan-data", planController.getAllPlanData);
 adminRoutes.post("/add-new-plan-data", planController.addNewPlanData);
 adminRoutes.put("/edit-plan-data/:planId", planController.editPlanData);
 adminRoutes.put("/edit-plan-status/:planId", planController.editPlanStatus);
+adminRoutes.put("/upgrade-plan/:id", adminController.upgradeUserPlan);
 
 /* =========================
    ISSUE MANAGEMENT

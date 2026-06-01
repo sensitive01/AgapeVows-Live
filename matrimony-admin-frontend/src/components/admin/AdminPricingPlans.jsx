@@ -490,16 +490,6 @@ const AdminPricingPlans = () => {
                                       {plan.status === "Active" ? "Disable" : "Enable"}
                                     </a>
                                   </li>
-                                  <li>
-                                    <a
-                                      className="dropdown-item"
-                                      href="../plans.html"
-                                      target="_blank"
-                                      onClick={() => setOpenDropdown(null)}
-                                    >
-                                      <i className="fa fa-external-link me-2"></i>View pricing page
-                                    </a>
-                                  </li>
                                 </ul>
                               )}
                             </div>

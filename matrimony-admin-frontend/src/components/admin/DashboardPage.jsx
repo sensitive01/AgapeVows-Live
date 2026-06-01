@@ -6,7 +6,8 @@ import NewLayout from "./layout/NewLayout";
 import {
   getNewRequestedUsers, getAllUserData,
   getPaidUserData,
-  getAllPlanData
+  getAllPlanData,
+  getAllEnquiries
 } from "../../api/service/adminServices";
 
 Chart.register(...registerables);
@@ -26,6 +27,8 @@ const DashboardPage = () => {
   const [paidUsers, setPaidUsers] = useState([]);
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [yearlyEarningsUSD, setYearlyEarningsUSD] = useState(0);
+  const [enquiries, setEnquiries] = useState([]);
+  const [newUsersThisMonth, setNewUsersThisMonth] = useState(0);
 
   const renewalUsers = paidUsers.filter(user =>
     user.paymentDetails?.some(payment => {
@@ -74,6 +77,14 @@ const DashboardPage = () => {
           new Date(b.createdAt) - new Date(a.createdAt)
         );
         setAllUsers(sortedUsers);
+
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        const thisMonthUsers = sortedUsers.filter(user => {
+          const userDate = new Date(user.createdAt);
+          return userDate.getMonth() === currentMonth && userDate.getFullYear() === currentYear;
+        });
+        setNewUsersThisMonth(thisMonthUsers.length);
       }
 
       const paidRes = await getPaidUserData();
@@ -88,6 +99,20 @@ const DashboardPage = () => {
     };
 
     fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    const fetchEnquiries = async () => {
+      try {
+        const response = await getAllEnquiries();
+        if (response?.data?.success) {
+          setEnquiries(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching enquiries:", error);
+      }
+    };
+    fetchEnquiries();
   }, []);
 
 
@@ -133,157 +158,6 @@ const DashboardPage = () => {
 
     fetchNewUserCount();
   }, []);
-
-
-
-  //   useEffect(() => {
-  //     Chart.defaults.font.size = 14;
-  //     Chart.defaults.color = "#666";
-
-  //     const initCharts = () => {
-  //       if (chartsRef.current.earningChart) {
-  //         chartsRef.current.earningChart.destroy();
-  //       }
-  //       if (chartsRef.current.usersChart) {
-  //         chartsRef.current.usersChart.destroy();
-  //       }
-  //       if (chartsRef.current.monthlyEarningsChart) {
-  //         chartsRef.current.monthlyEarningsChart.destroy();
-  //       }
-
-  //       // Earnings Pie Chart
-  //     const earningCanvas = document.getElementById("Chart_earni");
-
-  // if (earningCanvas && paidUsers.length > 0) {
-
-  //   if (chartsRef.current.earningChart) {
-  //     chartsRef.current.earningChart.destroy();
-  //   }
-
-  //   const earningsByPlan = {};
-
-  //   paidUsers.forEach(user => {
-  //     user.paymentDetails?.forEach(payment => {
-  //       if (payment.subscriptionStatus === "Active") {
-  //         const type = payment.subscriptionType;
-  //         const amount = Number(payment.subscriptionAmount || 0);
-  //         earningsByPlan[type] = (earningsByPlan[type] || 0) + amount;
-  //       }
-  //     });
-  //   });
-
-  //   const labels = Object.keys(earningsByPlan);
-  //   const data = Object.values(earningsByPlan);
-
-  //   chartsRef.current.earningChart = new Chart(earningCanvas, {
-  //     type: "pie",
-  //     data: {
-  //       labels,
-  //       datasets: [{
-  //         data,
-  //         backgroundColor: [
-  //           "#8463FF",
-  //           "#6384FF",
-  //           "#198754",
-  //           "#ff07a8",
-  //           "#dcbd35"
-  //         ].slice(0, labels.length),
-  //       }],
-  //     },
-  //   });
-  // }
-
-
-
-
-  //       // Monthly Earnings Bar Chart
-  //       const earningsReceiptCanvas = document.getElementById("Chart_earni_rece");
-  //       if (earningsReceiptCanvas) {
-  //         chartsRef.current.monthlyEarningsChart = new Chart(
-  //           earningsReceiptCanvas,
-  //           {
-  //             type: "bar",
-  //             data: {
-  //               labels: [
-  //                 "Jan",
-  //                 "Feb",
-  //                 "Mar",
-  //                 "Apr",
-  //                 "May",
-  //                 "Jun",
-  //                 "Jul",
-  //                 "Aug",
-  //                 "Sep",
-  //                 "Oct",
-  //                 "Nov",
-  //                 "Dec",
-  //               ],
-  //               datasets: [
-  //                 {
-  //                   label: "Monthly Earnings",
-  //                   data: [
-  //                     4000, 5000, 4550, 6005, 8550, 9008, 3220, 4880, 6550, 2500,
-  //                     4000, 5000,
-  //                   ],
-  //                   backgroundColor: "rgba(255,99,132,0.2)",
-  //                   borderColor: "rgba(255,99,132,1)",
-  //                   borderWidth: 2,
-  //                   hoverBackgroundColor: "rgba(255,99,132,0.4)",
-  //                   hoverBorderColor: "rgba(255,99,132,1)",
-  //                 },
-  //               ],
-  //             },
-  //             options: {
-  //               scales: {
-  //                 y: {
-  //                   beginAtZero: true,
-  //                 },
-  //               },
-  //             },
-  //           }
-  //         );
-  //       }
-  //     };
-
-  //     initCharts();
-
-
-  //     // Update copyright year
-  //     const copyrightYear = document.getElementById("cry");
-  //     if (copyrightYear) {
-  //       copyrightYear.textContent = new Date().getFullYear();
-  //     }
-
-  //     // Initialize menu script if available
-  //     if (window.reinitializeMenu) {
-  //       window.reinitializeMenu();
-  //     }
-
-  //     // Initialize Bootstrap tooltips if available
-  //     if (typeof bootstrap !== "undefined") {
-  //       const tooltipTriggerList = [].slice.call(
-  //         document.querySelectorAll('[data-bs-toggle="tooltip"]')
-  //       );
-  //       tooltipTriggerList.map(function (tooltipTriggerEl) {
-  //         return new bootstrap.Tooltip(tooltipTriggerEl);
-  //       });
-  //     }
-
-  //     // Cleanup function
-  //     return () => {
-  //       // Destroy all charts when component unmounts
-  //       if (chartsRef.current.earningChart) {
-  //         chartsRef.current.earningChart.destroy();
-  //       }
-  //       if (chartsRef.current.usersChart) {
-  //         chartsRef.current.usersChart.destroy();
-  //       }
-  //       if (chartsRef.current.monthlyEarningsChart) {
-  //         chartsRef.current.monthlyEarningsChart.destroy();
-  //       }
-  //     };
-  //   }, []);
-
 
   useEffect(() => {
     if (!paidUsers.length) return;
@@ -553,11 +427,11 @@ const DashboardPage = () => {
               <a href="admin-new-user-requests.php" className="fclick"></a>
             </div>
             <div className="box-com box-qui live-box">
-              <h4>Live visitos</h4>
-              <h2>Currently Active Users</h2>
-              <span className="bnum">3600</span>
+              <h4>New Users This Month</h4>
+              <h2>Recent Registrations</h2>
+              <span className="bnum">{newUsersThisMonth}</span>
               <p>
-                Currently <span>3600</span> visitos survey in your website{" "}
+                Currently <span>{newUsersThisMonth}</span> users registered this month.
               </p>
               <div className="live">
                 <span className="move"></span>
@@ -592,31 +466,15 @@ const DashboardPage = () => {
             </div>
             <div className="box-com box-qui box-drk box-lead-thum">
               <h2>Leads & Enquiry</h2>
-              <span className="bnum">28</span>
+              <span className="bnum">{enquiries.length}</span>
               <div className="lead-cir-thum-hori">
-                <span data-bs-toggle="tooltip" title="Anna">
-                  A
-                </span>
-                <span data-bs-toggle="tooltip" title="John">
-                  j
-                </span>
-                <span data-bs-toggle="tooltip" title="Bailey">
-                  b
-                </span>
-                <span data-bs-toggle="tooltip" title="Erick">
-                  e
-                </span>
-                <span data-bs-toggle="tooltip" title="Boby">
-                  b
-                </span>
-                <span data-bs-toggle="tooltip" title="Uma">
-                  u
-                </span>
-                <span data-bs-toggle="tooltip" title="Maria">
-                  m
-                </span>
+                {enquiries.slice(0, 8).map((enq, idx) => (
+                  <span key={idx} data-bs-toggle="tooltip" title={enq.name}>
+                    {enq.name ? enq.name.charAt(0).toUpperCase() : "U"}
+                  </span>
+                ))}
               </div>
-              <a href="admin-enquiry.html" className="fclick"></a>
+              <a href="/admin/enquiries" className="fclick"></a>
             </div>
           </div>
           <div className="col-md-6">
@@ -629,29 +487,7 @@ const DashboardPage = () => {
               </span>
               <canvas id="Chart_earni_rece"></canvas>
             </div>
-            <div className="box-com box-qui box-drk box-them-info">
-              <h4>Template update status</h4>
-              <ul>
-                <li>
-                  Current version you installed: <strong>3.6</strong>
-                </li>
-                <li>
-                  Latest version: <strong>4.2</strong>
-                </li>
-                <li>
-                  Template Activation: <strong>Yes</strong>
-                </li>
-              </ul>
-              <a href="#" className="btn-com btn-red">
-                Update
-              </a>
-              <a href="#" className="btn-com btn-gre">
-                Licance key
-              </a>
-              <a href="#" className="btn-com btn-line btn-whi">
-                More details
-              </a>
-            </div>
+
           </div>
         </div>
         <div className="row">

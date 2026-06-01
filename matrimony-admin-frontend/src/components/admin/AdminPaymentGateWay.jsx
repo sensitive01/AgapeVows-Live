@@ -78,15 +78,6 @@ const AdminPaymentGateWay = () => {
                               Edit
                             </a>
                           </li>
-                          <li>
-                            <a
-                              className="dropdown-item"
-                              href="../plans.html"
-                              target="_blank"
-                            >
-                              View pricing page
-                            </a>
-                          </li>
                         </ul>
                       </div>
                     </td>
@@ -125,15 +116,6 @@ const AdminPaymentGateWay = () => {
                               Edit
                             </a>
                           </li>
-                          <li>
-                            <a
-                              className="dropdown-item"
-                              href="../plans.html"
-                              target="_blank"
-                            >
-                              View pricing page
-                            </a>
-                          </li>
                         </ul>
                       </div>
                     </td>
@@ -170,15 +152,6 @@ const AdminPaymentGateWay = () => {
                               data-bs-target="#pricing"
                             >
                               Edit
-                            </a>
-                          </li>
-                          <li>
-                            <a
-                              className="dropdown-item"
-                              href="../plans.html"
-                              target="_blank"
-                            >
-                              View pricing page
                             </a>
                           </li>
                         </ul>

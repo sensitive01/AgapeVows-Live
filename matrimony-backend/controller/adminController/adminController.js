@@ -1185,6 +1185,101 @@ const deactivateUser = async (req, res) => {
   }
 };
 
+/* =========================
+   UPGRADE USER PLAN (Manual)
+========================== */
+const upgradeUserPlan = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { plan } = req.body;
+
+    if (!plan) {
+      return res.status(400).json({ success: false, message: "Plan details are required." });
+    }
+
+    const validFrom = new Date();
+    
+    // calculate Valid To
+    const date = new Date(validFrom);
+    const dur = parseInt(plan.duration) || 0;
+    const type = (plan.durationType || "months").toLowerCase();
+    if (type.includes("day")) {
+      date.setDate(date.getDate() + dur);
+    } else if (type.includes("month")) {
+      date.setMonth(date.getMonth() + dur);
+    } else if (type.includes("year")) {
+      date.setFullYear(date.getFullYear() + dur);
+    } else {
+      date.setMonth(date.getMonth() + dur);
+    }
+    const validTo = date;
+
+    const orderId = "admin_" + Date.now();
+
+    const updateData = {
+      $push: {
+        paymentDetails: {
+          subscriptionValidFrom: validFrom,
+          subscriptionValidTo: validTo,
+          subscriptionType: plan.name,
+          subscriptionAmount: plan.price || 0,
+          subscriptionStatus: "Active",
+          subscriptionTransactionDate: validFrom,
+          subscriptionTransactionId: plan.paymentId || "admin_manual",
+          subscriptionOrderId: orderId,
+          isEmployeeAssisted: true,
+          maxProfiles: plan.maxProfiles,
+          profilesViewedCount: 0,
+          dailyLimit: plan.dailyLimit,
+          dailyViewedCount: 0,
+          lastViewDate: new Date(),
+          canViewProfiles: plan.canViewProfiles,
+          viewContactDetails: plan.viewContactDetails,
+          sendInterestRequest: plan.sendInterestRequest,
+          maxSendInterest: plan.maxSendInterest,
+          dailyLimitSendInterest: plan.dailyLimitSendInterest,
+          interestSentCount: 0,
+          dailyInterestSentCount: 0,
+          lastInterestSentDate: new Date(),
+          maxViewContact: plan.maxViewContact,
+          dailyLimitViewContact: plan.dailyLimitViewContact,
+          contactViewCount: 0,
+          dailyContactViewCount: 0,
+          lastContactViewDate: new Date(),
+        },
+      },
+      $set: {
+        isAnySubscriptionTaken: true,
+      },
+    };
+
+    const updatedUser = await userModel.findByIdAndUpdate(id, updateData, { new: true });
+
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Clear old view counts
+    await userModel.updateMany(
+      { profileViews: id },
+      { $pull: { profileViews: id } }
+    );
+    await userModel.updateMany(
+      { contactViews: id },
+      { $pull: { contactViews: id } }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Plan upgraded successfully",
+      data: updatedUser,
+    });
+  } catch (err) {
+    console.error("Error upgrading user plan:", err);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 module.exports = {
   getPaidUsersData,
   approveNewUser,
@@ -1213,4 +1308,5 @@ module.exports = {
   approveContactUpdate,
   rejectContactUpdate,
   getVerifiedIdProofUsers,
+  upgradeUserPlan,
 };
