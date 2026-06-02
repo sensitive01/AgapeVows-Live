@@ -12,7 +12,7 @@ const AdminDeletedUsers = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
+  const [itemsPerPage] = useState(10);
   const [openDropdown, setOpenDropdown] = useState(null);
   const navigate = useNavigate();
 
@@ -298,6 +298,8 @@ const AdminDeletedUsers = () => {
                       <th className="text-center">AV ID</th>
                       <th className="d-none d-md-table-cell text-center">PHONE</th>
                       <th className="d-none d-lg-table-cell text-center">CITY</th>
+                      <th className="text-center">CREATED AT</th>
+                      <th className="text-center">DELETED AT</th>
                       <th className="text-center">MORE</th>
                     </tr>
                   </thead>
@@ -343,6 +345,12 @@ const AdminDeletedUsers = () => {
                             </td>
                             <td className="d-none d-lg-table-cell text-center align-middle">
                               {user.city || "N/A"}
+                            </td>
+                            <td className="text-center align-middle">
+                              {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}
+                            </td>
+                            <td className="text-center align-middle">
+                              {user.deletedAt ? new Date(user.deletedAt).toLocaleDateString() : "N/A"}
                             </td>
                             <td className="text-center align-middle">
                               <div className="d-flex gap-2 justify-content-center">

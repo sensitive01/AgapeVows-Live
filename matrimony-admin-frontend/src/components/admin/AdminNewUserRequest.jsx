@@ -12,7 +12,7 @@ export default function AdminNewUserRequest() {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
+  const [itemsPerPage] = useState(10);
   const [loading, setLoading] = useState(true);
   const [genderFilter, setGenderFilter] = useState("All");
   const [paymentFilter, setPaymentFilter] = useState("All");
@@ -609,7 +609,7 @@ export default function AdminNewUserRequest() {
                       <th style={tableStyles.th}>S.No</th>
                       <th style={tableStyles.th}>Profile Details</th>
                       <th style={tableStyles.th}>Gender</th>
-                      <th style={tableStyles.th}>Request Date & Time</th>
+                      <th style={tableStyles.th}>Created At</th>
                       <th style={tableStyles.th}>Payment</th>
                       <th style={tableStyles.th}>Plan Type</th>
                       <th style={tableStyles.th}>Amount</th>

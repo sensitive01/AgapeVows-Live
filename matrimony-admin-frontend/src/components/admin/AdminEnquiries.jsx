@@ -14,6 +14,7 @@ const AdminEnquiries = () => {
   const [selectedEnquiry, setSelectedEnquiry] = useState(null);
   const [viewEnquiry, setViewEnquiry] = useState(null);
   const [status, setStatus] = useState("New");
+  const [replyMessage, setReplyMessage] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -87,6 +88,7 @@ const AdminEnquiries = () => {
   const handleOpenModal = (enquiry) => {
     setSelectedEnquiry(enquiry);
     setStatus(enquiry.status || "New");
+    setReplyMessage(enquiry.replyMessage || "");
   };
 
   // ================= VIEW MESSAGE =================
@@ -102,7 +104,7 @@ const AdminEnquiries = () => {
     setError("");
 
     try {
-      await updateEnquiry(selectedEnquiry._id, { status });
+      await updateEnquiry(selectedEnquiry._id, { status, replyMessage });
 
       await fetchEnquiries();
 
@@ -367,6 +369,9 @@ const AdminEnquiries = () => {
                       <th style={{ padding: "15px", fontWeight: "600", color: "#2c3e50", textAlign: "center" }}>Contact</th>
                       <th style={{ padding: "15px", fontWeight: "600", color: "#2c3e50", textAlign: "center" }}>Email</th>
                       <th style={{ padding: "15px", fontWeight: "600", color: "#2c3e50", textAlign: "center" }}>Message</th>
+                      {filterStatus === "Contacted" && (
+                        <th style={{ padding: "15px", fontWeight: "600", color: "#2c3e50", textAlign: "center" }}>Reply Content</th>
+                      )}
                       <th style={{ padding: "15px", fontWeight: "600", color: "#2c3e50", textAlign: "center" }}>Status</th>
                       <th style={{ padding: "15px", fontWeight: "600", color: "#2c3e50", textAlign: "center" }}>Date</th>
                       <th style={{ padding: "15px", fontWeight: "600", color: "#2c3e50", textAlign: "center" }}>Actions</th>
@@ -410,10 +415,18 @@ const AdminEnquiries = () => {
                         </td>
 
                         <td style={{ padding: "15px", fontSize: "14px", textAlign: "center" }}>
-                          <div style={{ maxWidth: "200px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", margin: "0 auto" }}>
+                          <div style={{ maxWidth: "200px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", margin: "0 auto" }} title={item.message}>
                             {item.message}
                           </div>
                         </td>
+
+                        {filterStatus === "Contacted" && (
+                          <td style={{ padding: "15px", fontSize: "14px", textAlign: "center" }}>
+                            <div style={{ maxWidth: "200px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", margin: "0 auto", color: "#084298" }} title={item.replyMessage}>
+                              {item.replyMessage || "-"}
+                            </div>
+                          </td>
+                        )}
 
                         <td style={{ padding: "15px", textAlign: "center" }}>
                           <span
@@ -672,6 +685,24 @@ const AdminEnquiries = () => {
                     <option>Closed</option>
                   </select>
 
+                  {status === "Contacted" && (
+                    <div className="mb-4">
+                      <label className="fw-bold mb-2 d-block">Reply Content</label>
+                      <textarea
+                        className="form-control"
+                        rows="3"
+                        placeholder="Enter the reply message sent to the user..."
+                        value={replyMessage}
+                        onChange={(e) => setReplyMessage(e.target.value)}
+                        style={{
+                          borderRadius: "8px",
+                          border: "1.5px solid #e0e0e0",
+                          padding: "10px 12px",
+                        }}
+                      ></textarea>
+                    </div>
+                  )}
+
                   <button
                     type="submit"
                     className="btn w-100 rounded-pill fw-bold"
@@ -810,9 +841,9 @@ const AdminEnquiries = () => {
                             : viewEnquiry.status === "Contacted"
                             ? "#084298"
                             : "#856404",
-                        padding: "8px 16px",
+                        padding: "6px 12px",
                         borderRadius: "20px",
-                        fontSize: "14px",
+                        fontSize: "12px",
                         fontWeight: "600",
                         display: "inline-block",
                       }}
@@ -824,29 +855,41 @@ const AdminEnquiries = () => {
                         : "🆕 New"}
                     </span>
                   </div>
-                </div>
 
-                <hr style={{ margin: "30px 0" }} />
-
-                {/* FULL MESSAGE */}
-                <div className="mb-4">
-                  <label className="text-muted small fw-bold d-block mb-3">💬 Full Message</label>
-                  <div
-                    style={{
-                      backgroundColor: "#f8f9fa",
-                      padding: "20px",
-                      borderRadius: "8px",
-                      border: "1px solid #e0e0e0",
-                      fontSize: "15px",
-                      lineHeight: "1.8",
-                      color: "#333",
-                      whiteSpace: "pre-wrap",
-                      wordWrap: "break-word",
-                      minHeight: "150px",
-                    }}
-                  >
-                    {viewEnquiry.message}
+                  <div className="col-12 mb-3">
+                    <label className="text-muted small fw-bold d-block mb-2">💬 User Message</label>
+                    <div
+                      style={{
+                        backgroundColor: "#f8f9fa",
+                        padding: "15px",
+                        borderRadius: "8px",
+                        border: "1px solid #e9ecef",
+                        fontSize: "15px",
+                        lineHeight: "1.6",
+                      }}
+                    >
+                      {viewEnquiry.message}
+                    </div>
                   </div>
+
+                  {viewEnquiry.replyMessage && (
+                    <div className="col-12 mb-3 mt-2">
+                      <label className="text-muted small fw-bold d-block mb-2 text-primary">↩️ Your Reply Content</label>
+                      <div
+                        style={{
+                          backgroundColor: "#f0f7ff",
+                          padding: "15px",
+                          borderRadius: "8px",
+                          border: "1px solid #cfe2ff",
+                          fontSize: "15px",
+                          lineHeight: "1.6",
+                          color: "#084298",
+                        }}
+                      >
+                        {viewEnquiry.replyMessage}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* CLOSE BUTTON */}

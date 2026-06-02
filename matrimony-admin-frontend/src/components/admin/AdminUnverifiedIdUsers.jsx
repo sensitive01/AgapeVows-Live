@@ -11,7 +11,7 @@ export default function AdminUnverifiedIdUsers() {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
+  const [itemsPerPage] = useState(10);
   const [processingUsers, setProcessingUsers] = useState(new Set());
   const [showModal, setShowModal] = useState(false);
   const [selectedProof, setSelectedProof] = useState(null);
@@ -295,6 +295,7 @@ export default function AdminUnverifiedIdUsers() {
                       </th>
                       <th className="text-center">ID Number</th>
                       <th className="text-center">Document</th>
+                      <th className="text-center">Created At</th>
                       <th className="text-center">Actions</th>
                       <th className="text-center">Profile</th>
                     </tr>
@@ -340,6 +341,9 @@ export default function AdminUnverifiedIdUsers() {
                         ) : (
                           <span className="text-muted small italic">Not Uploaded</span>
                         )}
+                      </td>
+                      <td className="text-center">
+                        {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}
                       </td>
                       <td className="text-center">
                         <div className="d-flex justify-content-center gap-2">

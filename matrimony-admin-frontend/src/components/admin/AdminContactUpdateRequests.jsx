@@ -12,7 +12,7 @@ const AdminContactUpdateRequests = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
+  const [itemsPerPage] = useState(10);
 
   // ================= FETCH =================
   const fetchRequests = async () => {

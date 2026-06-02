@@ -405,6 +405,7 @@ const getAllUsersData = async (req, res) => {
           city: 1,
           profileImage: 1,
           agwid: 1,
+          createdAt: 1,
         }
       )
       .sort({ createdAt: -1 });
@@ -438,6 +439,7 @@ const getPaidUsersData = async (req, res) => {
           gender: 1,
           city: 1,
           profileImage: 1,
+          createdAt: 1,
           isAnySubscriptionTaken: 1,
           "paymentDetails.subscriptionValidFrom": 1,
           "paymentDetails.subscriptionValidTo": 1,
@@ -709,6 +711,7 @@ const getDeletedUsers = async (req, res) => {
           gender: 1,
           city: 1,
           profileImage: 1,
+          createdAt: 1,
           deletedAt: 1,
           agwid: 1,
         }
@@ -740,6 +743,7 @@ const getDeactivatedUsers = async (req, res) => {
           gender: 1,
           city: 1,
           profileImage: 1,
+          createdAt: 1,
           deactivatedAt: 1,
           deactivationReason: 1,
           deactivationDescription: 1,

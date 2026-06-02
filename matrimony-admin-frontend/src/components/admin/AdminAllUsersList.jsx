@@ -17,7 +17,7 @@ const AdminAllUsersList = () => {
   const [filterPlan, setFilterPlan] = useState("all");
   const [filterPayment, setFilterPayment] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
+  const [itemsPerPage] = useState(10);
   const [openDropdown, setOpenDropdown] = useState(null);
   const navigate = useNavigate();
   // Close dropdown when clicking outside
@@ -456,6 +456,7 @@ const AdminAllUsersList = () => {
                       >
                         CITY {getSortIcon("city")}
                       </th>
+                      <th className="text-center border-0">CREATED AT</th>
                       <th className="text-center border-0">VIEW PROFILE</th>
                       <th className="text-center border-0">MORE</th>
                     </tr>
@@ -528,6 +529,9 @@ const AdminAllUsersList = () => {
                             </td>
                             <td className="align-middle d-none d-lg-table-cell border-0">
                               {user.city}
+                            </td>
+                            <td className="align-middle text-center border-0">
+                              {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}
                             </td>
                             {/* <td style={tableStyles.td}>
                               {formatDate(user.planStart)}

@@ -271,7 +271,7 @@ const AdminIssues = () => {
   const [success, setSuccess] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
+  const [itemsPerPage] = useState(10);
 
   // ================= FETCH =================
   const fetchIssues = async () => {

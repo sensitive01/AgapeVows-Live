@@ -10,7 +10,7 @@ export default function AdminVerifiedIdUsers() {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
+  const [itemsPerPage] = useState(10);
   const [loading, setLoading] = useState(true);
   const [processingUsers, setProcessingUsers] = useState(new Set());
   const [showModal, setShowModal] = useState(false);
@@ -331,6 +331,7 @@ export default function AdminVerifiedIdUsers() {
                       >
                         Approved Date & Time {getSortIcon("idVerifiedAt")}
                       </th>
+                      <th className="text-center">Created At</th>
                       <th className="text-center">Actions</th>
                       <th className="text-center">Profile</th>
                     </tr>
@@ -354,14 +355,7 @@ export default function AdminVerifiedIdUsers() {
                         </div>
                       </td>
                       <td className="text-center">{user.agwid}</td>
-                      {/* <td>
-                        <span className={`badge ${
-                          user.idVerificationStatus === 'Uploaded' ? 'bg-info' : 
-                          user.idVerificationStatus === 'Rejected' ? 'bg-danger' : 'bg-warning'
-                        }`}>
-                          {user.idVerificationStatus || 'Pending'}
-                        </span>
-                      </td> */}
+
                       <td className="text-center">{user.idProofType || "N/A"}</td>
                       <td className="text-center">{user.idProofNumber || "N/A"}</td>
                       <td className="text-center">
@@ -376,9 +370,13 @@ export default function AdminVerifiedIdUsers() {
                           <span className="text-muted small italic">Not Uploaded</span>
                         )}
                       </td>
+
                       <td className="fw-semibold text-secondary text-center">
                         <div>{formatDate(user.idVerifiedAt || user.updatedAt)}</div>
                         <div className="text-muted small fw-normal mt-1">{formatTime(user.idVerifiedAt || user.updatedAt)}</div>
+                      </td>
+                      <td className="text-center">
+                        {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}
                       </td>
                       <td className="text-center">
                         <button 

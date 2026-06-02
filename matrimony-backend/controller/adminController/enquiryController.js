@@ -54,7 +54,45 @@ const deleteEnquiry = async (req, res) => {
   }
 };
 
+/* =========================
+   UPDATE ENQUIRY
+========================== */
+const updateEnquiry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, replyMessage } = req.body;
+
+    const enquiry = await Enquiry.findByIdAndUpdate(
+      id,
+      { status, replyMessage },
+      { new: true, runValidators: true }
+    );
+
+    if (!enquiry) {
+      return res.status(404).json({
+        success: false,
+        message: "Enquiry not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Enquiry updated successfully",
+      data: enquiry,
+    });
+
+  } catch (err) {
+    console.error("UPDATE ENQUIRY ERROR:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to update enquiry",
+    });
+  }
+};
+
 module.exports = {
   getAllEnquiries,
-  deleteEnquiry
+  deleteEnquiry,
+  updateEnquiry
 };

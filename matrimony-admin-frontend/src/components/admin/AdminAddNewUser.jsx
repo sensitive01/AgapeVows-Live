@@ -83,6 +83,7 @@ const AdminAddNewUser = () => {
     fathersOccupation: "",
     fathersProfession: "",
     mothersOccupation: "",
+    mothersProfession: "",
     fathersNative: "",
     mothersNative: "",
     familyValue: "",
@@ -90,7 +91,9 @@ const AdminAddNewUser = () => {
     familyStatus: "",
     residenceType: "",
     numberOfBrothers: "",
+    marriedBrothers: "",
     numberOfSisters: "",
+    marriedSisters: "",
 
     // --- Religious Info ---
     religion: "",
@@ -105,7 +108,20 @@ const AdminAddNewUser = () => {
     alternateMobile: "",
     landlineNumber: "",
     currentAddress: "",
+    currentDoorNo: "",
+    currentLocality: "",
+    currentCountry: "",
+    currentState: "",
+    currentDistrict: "",
+    currentPincode: "",
     permanentAddress: "",
+    sameAsCurrentAddress: false,
+    permanentDoorNo: "",
+    permanentLocality: "",
+    permanentCountry: "",
+    permanentState: "",
+    permanentDistrict: "",
+    permanentPincode: "",
     contactPersonName: "",
     relationship: "",
     citizenOf: "",
@@ -138,6 +154,7 @@ const AdminAddNewUser = () => {
     partnerAgeFrom: "",
     partnerAgeTo: "",
     partnerHeight: "",
+    partnerHeightTo: "",
     partnerMaritalStatus: "",
     partnerMotherTongue: "",
     partnerCaste: "",
@@ -150,7 +167,8 @@ const AdminAddNewUser = () => {
     partnerEducation: "",
     partnerEmploymentType: "",
     partnerOccupation: "",
-    partnerAnnualIncome: "",
+    partnerAnnualIncomeFrom: "",
+    partnerAnnualIncomeTo: "",
     partnerCountry: "",
     partnerState: "",
     partnerDistrict: "",
@@ -251,6 +269,7 @@ const AdminAddNewUser = () => {
       fathersOccupation: "Retired",
       fathersProfession: "Teacher",
       mothersOccupation: "Homemaker",
+      mothersProfession: "None",
       fathersNative: "Kochi",
       mothersNative: "Kottayam",
       familyValue: "Traditional",
@@ -258,7 +277,9 @@ const AdminAddNewUser = () => {
       familyStatus: "Middle Class",
       residenceType: "Owned",
       numberOfBrothers: "1",
+      marriedBrothers: "0",
       numberOfSisters: "0",
+      marriedSisters: "0",
 
       // --- Religious Info ---
       religion: "Christian",
@@ -273,7 +294,20 @@ const AdminAddNewUser = () => {
       alternateMobile: "9000000000",
       landlineNumber: "04842345678",
       currentAddress: "123 Main St, Kochi, Kerala",
+      currentDoorNo: "123",
+      currentLocality: "Main St",
+      currentCountry: "India",
+      currentState: "Kerala",
+      currentDistrict: "Ernakulam",
+      currentPincode: "682001",
       permanentAddress: "456 Side St, Kochi, Kerala",
+      sameAsCurrentAddress: false,
+      permanentDoorNo: "456",
+      permanentLocality: "Side St",
+      permanentCountry: "India",
+      permanentState: "Kerala",
+      permanentDistrict: "Ernakulam",
+      permanentPincode: "682001",
       contactPersonName: "James Doe",
       relationship: "Father",
       citizenOf: "India",
@@ -292,6 +326,9 @@ const AdminAddNewUser = () => {
       companyName: "Tech Corp",
       annualIncome: "1200000",
 
+      // --- Social Media ---
+      whatsapp: "9876543210",
+
       // --- Lifestyle ---
       exercise: "Regularly",
       hobbies: "Reading, Travelling",
@@ -306,6 +343,7 @@ const AdminAddNewUser = () => {
       partnerAgeFrom: "22",
       partnerAgeTo: "27",
       partnerHeight: "5ft 2in",
+      partnerHeightTo: "5ft 6in",
       partnerMaritalStatus: "Never Married",
       partnerMotherTongue: "Malayalam",
       partnerCaste: "RC",
@@ -318,7 +356,8 @@ const AdminAddNewUser = () => {
       partnerEducation: "Degree",
       partnerEmploymentType: "Any",
       partnerOccupation: "Any",
-      partnerAnnualIncome: "Any",
+      partnerAnnualIncomeFrom: "5 Lakhs",
+      partnerAnnualIncomeTo: "10 Lakhs",
       partnerCountry: "India",
       partnerState: "Kerala",
       partnerDistrict: "Ernakulam",
@@ -436,14 +475,16 @@ const AdminAddNewUser = () => {
             <div className="bg-light px-4 pt-4">
               <ul className="nav nav-tabs border-0" id="profileTabs" role="tablist">
                 {[
-                  { id: "basic", label: "Auth & Basic", icon: "fa-user-plus" },
+                  { id: "basic", label: "Basic Details", icon: "fa-user-plus" },
                   { id: "gallery", label: "Gallery", icon: "fa-image" },
-                  { id: "family", label: "Family", icon: "fa-users" },
-                  { id: "religious", label: "Religious", icon: "fa-church" },
-                  { id: "professional", label: "Education & Work", icon: "fa-briefcase" },
-                  { id: "contact", label: "Contact", icon: "fa-phone" },
-                  { id: "lifestyle", label: "Lifestyle", icon: "fa-heart" },
-                  { id: "partner", label: "Partner Preferences", icon: "fa-handshake-o" }
+                  { id: "family", label: "Family Details", icon: "fa-users" },
+                  { id: "religious", label: "Religious Information", icon: "fa-church" },
+                  { id: "professional", label: "Professional Information", icon: "fa-briefcase" },
+                  { id: "contact", label: "Contact Information", icon: "fa-phone" },
+                  { id: "lifestyle", label: "Life style", icon: "fa-heart" },
+                  { id: "partner", label: "Partner preference", icon: "fa-handshake-o" },
+                  { id: "partner_professional", label: "Partner Preferences - Professional", icon: "fa-briefcase" },
+                  { id: "partner_location", label: "Partner Preferences - location", icon: "fa-map-marker" }
                 ].map((tab) => (
                   <li className="nav-item" key={tab.id}>
                     <button
@@ -459,7 +500,7 @@ const AdminAddNewUser = () => {
 
             <div className="tab-content" id="profileTabsContent">
               {/* AUTH & BASIC INFO */}
-              <FormSection title="Authentication & Basic Details" id="basic" activeTab={activeTab}>
+              <FormSection title="Basic Details" id="basic" activeTab={activeTab}>
                 <InputField label="Full Name" name="userName" required formData={formData} handleChange={handleChange} />
                 <InputField label="Email Address" name="userEmail" type="email" required formData={formData} handleChange={handleChange} />
                 <InputField label="Mobile Number" name="userMobile" required formData={formData} handleChange={handleChange} />
@@ -494,16 +535,19 @@ const AdminAddNewUser = () => {
               </div>
 
               {/* FAMILY */}
-              <FormSection title="Family Background" id="family" activeTab={activeTab}>
+              <FormSection title="Family Details" id="family" activeTab={activeTab}>
                 <InputField label="Father's Name" name="fathersName" formData={formData} handleChange={handleChange} />
                 <InputField label="Father's Occupation" name="fathersOccupation" formData={formData} handleChange={handleChange} />
                 <InputField label="Mother's Name" name="mothersName" formData={formData} handleChange={handleChange} />
                 <InputField label="Mother's Occupation" name="mothersOccupation" formData={formData} handleChange={handleChange} />
+                <InputField label="Mother's Profession" name="mothersProfession" formData={formData} handleChange={handleChange} />
                 <InputField label="Family Value" name="familyValue" options={["Traditional", "Moderate", "Liberal"]} formData={formData} handleChange={handleChange} />
                 <InputField label="Family Type" name="familyType" options={["Joint", "Nuclear"]} formData={formData} handleChange={handleChange} />
                 <InputField label="Family Status" name="familyStatus" options={["Middle Class", "Upper Middle Class", "Rich", "Affluent"]} formData={formData} handleChange={handleChange} />
                 <InputField label="No. of Brothers" name="numberOfBrothers" type="number" formData={formData} handleChange={handleChange} />
+                <InputField label="Married Brothers" name="marriedBrothers" type="number" formData={formData} handleChange={handleChange} />
                 <InputField label="No. of Sisters" name="numberOfSisters" type="number" formData={formData} handleChange={handleChange} />
+                <InputField label="Married Sisters" name="marriedSisters" type="number" formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* RELIGIOUS */}
@@ -516,7 +560,7 @@ const AdminAddNewUser = () => {
               </FormSection>
 
               {/* PROFESSIONAL */}
-              <FormSection title="Education & Career" id="professional" activeTab={activeTab}>
+              <FormSection title="Professional Information" id="professional" activeTab={activeTab}>
                 <InputField label="Education" name="education" formData={formData} handleChange={handleChange} />
                 <InputField label="College / University" name="college" formData={formData} handleChange={handleChange} />
                 <InputField label="Employment Type" name="employmentType" options={["Government", "Private", "Business", "Self Employed", "Not Working"]} formData={formData} handleChange={handleChange} />
@@ -526,8 +570,24 @@ const AdminAddNewUser = () => {
               </FormSection>
 
               {/* CONTACT */}
-              <FormSection title="Contact Details" id="contact" activeTab={activeTab}>
+              <FormSection title="Contact Information" id="contact" activeTab={activeTab}>
                 <InputField label="Current Address" name="currentAddress" type="textarea" col="12" formData={formData} handleChange={handleChange} />
+                <InputField label="Current Door No" name="currentDoorNo" formData={formData} handleChange={handleChange} />
+                <InputField label="Current Locality" name="currentLocality" formData={formData} handleChange={handleChange} />
+                <InputField label="Current Country" name="currentCountry" formData={formData} handleChange={handleChange} />
+                <InputField label="Current State" name="currentState" formData={formData} handleChange={handleChange} />
+                <InputField label="Current District" name="currentDistrict" formData={formData} handleChange={handleChange} />
+                <InputField label="Current Pincode" name="currentPincode" formData={formData} handleChange={handleChange} />
+                
+                <InputField label="Permanent Address" name="permanentAddress" type="textarea" col="12" formData={formData} handleChange={handleChange} />
+                <InputField label="Same as Current Address" name="sameAsCurrentAddress" options={["true", "false"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Permanent Door No" name="permanentDoorNo" formData={formData} handleChange={handleChange} />
+                <InputField label="Permanent Locality" name="permanentLocality" formData={formData} handleChange={handleChange} />
+                <InputField label="Permanent Country" name="permanentCountry" formData={formData} handleChange={handleChange} />
+                <InputField label="Permanent State" name="permanentState" formData={formData} handleChange={handleChange} />
+                <InputField label="Permanent District" name="permanentDistrict" formData={formData} handleChange={handleChange} />
+                <InputField label="Permanent Pincode" name="permanentPincode" formData={formData} handleChange={handleChange} />
+
                 <InputField label="City" name="city" formData={formData} handleChange={handleChange} />
                 <InputField label="State" name="state" formData={formData} handleChange={handleChange} />
                 <InputField label="Pincode" name="pincode" formData={formData} handleChange={handleChange} />
@@ -538,20 +598,43 @@ const AdminAddNewUser = () => {
               </FormSection>
 
               {/* LIFESTYLE */}
-              <FormSection title="Lifestyle & Interests" id="lifestyle" activeTab={activeTab}>
+              <FormSection title="Life style" id="lifestyle" activeTab={activeTab}>
                 <InputField label="Hobbies" name="hobbies" formData={formData} handleChange={handleChange} />
                 <InputField label="Smoking Habits" name="smokingHabits" options={["No", "Yes", "Occasionally"]} formData={formData} handleChange={handleChange} />
                 <InputField label="Drinking Habits" name="drinkingHabits" options={["No", "Yes", "Occasionally"]} formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* PARTNER PREFERENCES */}
-              <FormSection title="Ideal Partner Preferences" id="partner" activeTab={activeTab}>
+              <FormSection title="Partner preference" id="partner" activeTab={activeTab}>
                 <InputField label="Age From" name="partnerAgeFrom" type="number" formData={formData} handleChange={handleChange} />
                 <InputField label="Age To" name="partnerAgeTo" type="number" formData={formData} handleChange={handleChange} />
-                <InputField label="Desired Height" name="partnerHeight" formData={formData} handleChange={handleChange} />
+                <InputField label="Desired Height From" name="partnerHeight" formData={formData} handleChange={handleChange} />
+                <InputField label="Desired Height To" name="partnerHeightTo" formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred Marital Status" name="partnerMaritalStatus" formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Mother Tongue" name="partnerMotherTongue" formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred Caste" name="partnerCaste" formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred City/State" name="partnerState" formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Physical Status" name="partnerPhysicalStatus" formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Eating Habits" name="partnerEatingHabits" formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Drinking Habits" name="partnerDrinkingHabits" formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Smoking Habits" name="partnerSmokingHabits" formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Denomination" name="partnerDenomination" formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Spirituality" name="partnerSpirituality" formData={formData} handleChange={handleChange} />
+              </FormSection>
+
+              {/* PARTNER PREFERENCES - PROFESSIONAL */}
+              <FormSection title="Partner Preferences - Professional" id="partner_professional" activeTab={activeTab}>
+                <InputField label="Preferred Education" name="partnerEducation" formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Employment Type" name="partnerEmploymentType" formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Occupation" name="partnerOccupation" formData={formData} handleChange={handleChange} />
+                <InputField label="Annual Income From" name="partnerAnnualIncomeFrom" formData={formData} handleChange={handleChange} />
+                <InputField label="Annual Income To" name="partnerAnnualIncomeTo" formData={formData} handleChange={handleChange} />
+              </FormSection>
+
+              {/* PARTNER PREFERENCES - LOCATION */}
+              <FormSection title="Partner Preferences - location" id="partner_location" activeTab={activeTab}>
+                <InputField label="Preferred Country" name="partnerCountry" formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred State" name="partnerState" formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred District" name="partnerDistrict" formData={formData} handleChange={handleChange} />
               </FormSection>
             </div>
 

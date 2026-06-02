@@ -14,6 +14,15 @@ const enquirySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  status: {
+    type: String,
+    enum: ["New", "Contacted", "Closed"],
+    default: "New",
+  },
+  replyMessage: {
+    type: String,
+    default: "",
+  },
 }, { timestamps: true });
 
 module.exports = mongoose.model("Enquiry", enquirySchema);

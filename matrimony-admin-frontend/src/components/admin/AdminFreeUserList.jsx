@@ -3,6 +3,7 @@ import NewLayout from "./layout/NewLayout";
 import { getPaidUserData, removeUserSubscription } from "../../api/service/adminServices";
 import { useNavigate } from "react-router-dom";
 import { confirmAction, showAlert } from "../../utils/alertService";
+import * as XLSX from "xlsx";
 
 const AdminFreeUserList = () => {
   const [users, setUsers] = useState([]);
@@ -14,7 +15,7 @@ const AdminFreeUserList = () => {
   const [filterPlan, setFilterPlan] = useState("all");
   const [filterPayment, setFilterPayment] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
+  const [itemsPerPage] = useState(10);
   const [openDropdown, setOpenDropdown] = useState(null);
   const navigate = useNavigate();
 
@@ -129,6 +130,36 @@ const AdminFreeUserList = () => {
     }
   };
 
+  const handleExport = () => {
+    if (!filteredUsers || filteredUsers.length === 0) {
+      showAlert({
+        title: "No Data",
+        text: "No data available to export.",
+        icon: "info",
+      });
+      return;
+    }
+
+    const exportData = filteredUsers.map((user) => {
+      const {
+        _id,
+        __v,
+        userPassword,
+        profileViews,
+        paymentDetails,
+        blockedUsers,
+        ignoredUsers,
+        ...rest
+      } = user;
+      return rest;
+    });
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Paid Users");
+    XLSX.writeFile(wb, `Paid_Users_${new Date().toISOString().split('T')[0]}.xlsx`);
+  };
+
   const Pagination = () => (
     <nav className="d-flex justify-content-center mt-5">
       <ul className="pagination pagination-sm shadow-sm rounded-pill overflow-hidden">
@@ -159,6 +190,12 @@ const AdminFreeUserList = () => {
                 <p className="text-muted small mb-0">Managing <span className="text-primary fw-bold">{filteredUsers.length}</span> active premium profiles</p>
               </div>
               <div className="d-flex gap-2">
+                <button
+                  className="btn btn-success btn-sm rounded-pill px-3 shadow-sm"
+                  onClick={handleExport}
+                >
+                  <i className="fa fa-file-excel-o me-1"></i> Export List
+                </button>
                 <button className="btn btn-primary rounded-pill px-4 shadow-sm btn-sm" onClick={() => navigate("/admin/add-new-user")}>
                   <i className="fa fa-plus me-2"></i>New Member
                 </button>
@@ -183,8 +220,8 @@ const AdminFreeUserList = () => {
                 <select className="form-select rounded-pill border-light shadow-none bg-light ps-3" value={filterPlan} onChange={(e) => setFilterPlan(e.target.value)}>
                     <option value="all">Plan: All</option>
                     <option value="Gold">Gold</option>
-                    <option value="Premium">Premium</option>
-                    <option value="Silver">Silver</option>
+                    <option value="Premium">Premium</option> 
+                    <option value="Platinum">Platinum</option>
                 </select>
               </div>
               <div className="col-lg-2 col-md-4">
@@ -219,6 +256,7 @@ const AdminFreeUserList = () => {
                       <th className="py-3 text-muted small fw-bold">PLAN DETAILS</th>
                       <th className="py-3 text-muted small fw-bold text-center">PAYMENT</th>
                       <th className="py-3 text-muted small fw-bold text-center">STATUS</th>
+                      <th className="py-3 text-muted small fw-bold text-center">CREATED AT</th>
                       <th className="pe-4 py-3 text-muted small fw-bold text-center">ACTIONS</th>
                     </tr>
                   </thead>
@@ -261,6 +299,9 @@ const AdminFreeUserList = () => {
                           </td>
                           <td className="text-center">
                               <span className={`badge ${user.subscriptionStatus === "Active" ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger"} border px-3 py-1 rounded-pill`} style={{fontSize: "11px"}}>{user.subscriptionStatus}</span>
+                          </td>
+                          <td className="text-center align-middle">
+                            {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}
                           </td>
                           <td className="text-center pe-4">
                             <div className="dropdown">

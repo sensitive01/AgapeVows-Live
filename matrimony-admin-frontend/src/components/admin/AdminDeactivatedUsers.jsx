@@ -258,6 +258,7 @@ const AdminDeactivatedUsers = () => {
                       <th className="text-center">S.NO</th>
                       <th>PROFILE</th>
                       <th className="text-center">AV ID</th>
+                      <th className="text-center">CREATED AT</th>
                       <th className="text-center">REASON</th>
                       <th className="text-center">DEACTIVATED ON</th>
                       <th className="text-center">ACTION</th>
@@ -299,6 +300,9 @@ const AdminDeactivatedUsers = () => {
                             </td>
                             <td className="text-center align-middle">
                               <span className="fw-bold text-primary">{user.agwid || "N/A"}</span>
+                            </td>
+                            <td className="text-center align-middle">
+                              {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}
                             </td>
                             <td className="text-center align-middle">
                               <div style={{ maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={user.deactivationReason}>

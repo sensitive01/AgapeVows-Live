@@ -165,6 +165,12 @@ adminRoutes.delete(
   enquiryController.deleteEnquiry
 );
 
+// UPDATE enquiry
+adminRoutes.put(
+  "/update-enquiry/:id",
+  enquiryController.updateEnquiry
+);
+
 /* =========================
    REPORT MANAGEMENT
 ========================== */
