@@ -7,7 +7,7 @@ const MultiSearchSelect = ({ options, value, onChange, placeholder, name }) => {
   const dropdownRef = useRef(null);
 
   // Ensure value is an array
-  const selectedValues = Array.isArray(value) ? value : value ? [value] : [];
+  const selectedValues = (Array.isArray(value) ? value : value ? [value] : []).filter(val => val !== "" && val != null);
 
   // Filter options based on search term and exclude already selected
   const filteredOptions = (options || []).filter((option) => {
@@ -38,7 +38,6 @@ const MultiSearchSelect = ({ options, value, onChange, placeholder, name }) => {
     const newValue = [...selectedValues, optValue];
     onChange({ target: { name, value: newValue } });
     setSearchTerm("");
-    setIsOpen(false);
   };
 
   const removeValue = (valToRemove) => {
@@ -47,7 +46,7 @@ const MultiSearchSelect = ({ options, value, onChange, placeholder, name }) => {
   };
 
   return (
-    <div ref={dropdownRef} style={{ position: "relative", width: "100%" }}>
+    <div ref={dropdownRef} style={{ position: "relative", width: "100%", boxSizing: "border-box", minWidth: 0 }}>
       {/* Selected Value Display / Input area */}
       <div
         onClick={() => setIsOpen(true)}
@@ -65,7 +64,10 @@ const MultiSearchSelect = ({ options, value, onChange, placeholder, name }) => {
           gap: "6px",
           alignItems: "center",
           minHeight: "42px",
+          maxHeight: "85px",
+          overflowY: "auto",
           transition: "border-color 0.2s ease",
+          boxSizing: "border-box",
         }}
       >
         {selectedValues.map((val) => (

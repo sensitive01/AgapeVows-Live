@@ -142,7 +142,7 @@ export default function MainMenu() {
                   <i />
                 </span> */}
                 <a href="/" className="logo-brand">
-                  <img src={logoBImg} alt="" loading="lazy" className="ic-logo" />
+                  <img src={logoBImg} alt="" loading="lazy" className="ic-logo" style={{ marginTop: '-10px' }} />
                 </a>
               </div>
               {/* EXPLORE MENU */}

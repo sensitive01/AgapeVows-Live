@@ -20,7 +20,7 @@ const NewHomePageComponent = () => {
         <MainLayout />
       </div>
 
-      <div className="pt-16">
+      <div className="pt-12">
         <HeroSearchSection />
         <HighlightedProfilesSection />
 

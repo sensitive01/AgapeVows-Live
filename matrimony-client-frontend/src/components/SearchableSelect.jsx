@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check, X } from "lucide-react";
 
 const SearchableSelect = ({ options, value, onChange, placeholder, name, disabled = false, isMulti = false }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,16 +16,19 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
   const getDisplayValue = () => {
     if (isMulti) {
       if (!Array.isArray(value) || value.length === 0) return "";
-      const selectedLabels = value.map(val => {
+      const validValues = value.filter(v => v !== "" && v != null);
+      if (validValues.length === 0) return "";
+      
+      const selectedLabels = validValues.map(val => {
         const selectedOpt = options?.find((opt) => {
           const optValue = typeof opt === "string" ? opt : opt?.value;
           return String(optValue) === String(val);
         });
         return selectedOpt ? (typeof selectedOpt === "string" ? selectedOpt : selectedOpt.label) : val;
       });
-      return selectedLabels.length > 2 
+      return selectedLabels.length > 0 
         ? `${selectedLabels.length} selected` 
-        : selectedLabels.join(", ");
+        : "";
     } else {
       if (!value || !options) return "";
       const selected = options.find((opt) => {
@@ -69,9 +72,6 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
         } else {
           newValues = [optValue];
         }
-        // Auto close when an exclusive option is selected
-        setIsOpen(false);
-        setSearchTerm("");
       } else {
         const filteredValues = currentValues.filter(v => !exclusiveOptions.includes(v));
         if (filteredValues.includes(optValue)) {
@@ -109,21 +109,65 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
           cursor: disabled ? "not-allowed" : "pointer",
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: (isMulti && value?.length > 0) ? "flex-start" : "center",
           transition: "border-color 0.2s ease",
           minHeight: "36px",
+          maxHeight: "85px",
+          overflowY: "auto",
+          boxSizing: "border-box",
         }}
       >
-        <span style={{ color: (isMulti ? (value?.length > 0) : value) ? (disabled ? "#9ca3af" : "#374151") : "#9ca3af", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginRight: "8px" }}>
-          {getDisplayValue() || placeholder || "Select..."}
-        </span>
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexWrap: "wrap", gap: "4px", marginRight: "8px", alignItems: "center" }}>
+          {isMulti && Array.isArray(value) && value.filter(v => v !== "" && v != null).length > 0 ? (
+            value.filter(v => v !== "" && v != null).map((val) => {
+              const selectedOpt = options?.find((opt) => {
+                const optValue = typeof opt === "string" ? opt : opt?.value;
+                return String(optValue) === String(val);
+              });
+              const label = selectedOpt ? (typeof selectedOpt === "string" ? selectedOpt : selectedOpt.label) : val;
+
+              return (
+                <span
+                  key={val}
+                  style={{
+                    background: "#eff6ff",
+                    color: "#2563eb",
+                    padding: "2px 6px",
+                    borderRadius: "4px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    fontSize: "12px",
+                    fontWeight: "500",
+                    border: "1px solid #dbeafe",
+                  }}
+                >
+                  {label}
+                  <X
+                    size={12}
+                    style={{ cursor: "pointer", marginLeft: "2px" }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelect(e, selectedOpt || val);
+                    }}
+                  />
+                </span>
+              );
+            })
+          ) : (
+            <span style={{ color: (!value || (Array.isArray(value) && value.filter(v => v !== "" && v != null).length === 0)) ? "#9ca3af" : (disabled ? "#9ca3af" : "#374151"), whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              {getDisplayValue() || placeholder || "Select..."}
+            </span>
+          )}
+        </div>
         <ChevronDown
           size={16}
           style={{
             flexShrink: 0,
             transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
             transition: "transform 0.2s ease",
-            opacity: disabled ? 0.5 : 1
+            opacity: disabled ? 0.5 : 1,
+            marginTop: (isMulti && value?.length > 0) ? "4px" : "0",
           }}
         />
       </div>

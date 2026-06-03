@@ -398,12 +398,6 @@ const HighlightedProfilesSection = () => {
                       </div>
                       <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
 
-                      {/* Gender Badge */}
-                      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm z-10 border border-gray-100">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-600">
-                          {profile.gender === "Male" ? "Groom" : "Bride"}
-                        </span>
-                      </div>
                     </div>
 
                     <div className="p-2.5 flex-grow bg-white">

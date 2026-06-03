@@ -72,6 +72,7 @@ const MainMenuBar = () => {
                   alt="Logo"
                   loading="lazy"
                   className="ic-logo"
+                  style={{ marginTop: '-10px' }}
                 />
               </Link>
             </div>

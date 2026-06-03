@@ -336,6 +336,7 @@ const MainLayout = () => {
                   src={logo}
                   alt="agapevows_logo"
                   className="h-8 w-auto sm:h-10 md:h-12 lg:h-14 object-contain"
+                  style={{ marginTop: '-10px' }}
                 />
               </div>
             </a>
@@ -389,7 +390,7 @@ const MainLayout = () => {
                     : "text-gray-800 group-hover:text-purple-600"
                     }`}
                 />
-                <span className="text-sm font-medium">SEARCH</span>
+                <span className="font-medium">SEARCH</span>
               </a>
 
               <div

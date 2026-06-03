@@ -87,7 +87,12 @@ const saveSignUpData = async (req, res) => {
 
     const existingUser = await userModel.findOne({ userEmail: email });
     if (existingUser) {
-      return res.status(409).json({ message: "User already exists" });
+      return res.status(409).json({ message: "User already exists with this email" });
+    }
+
+    const existingPhone = await userModel.findOne({ userMobile: phone });
+    if (existingPhone) {
+      return res.status(409).json({ message: "Phone number already registered" });
     }
 
     // Check if email is verified
@@ -123,7 +128,7 @@ const saveSignUpData = async (req, res) => {
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
     console.error("Error in saving the signup data", err);
-    res.status(500).send("Error in saving the signup data");
+    res.status(500).json({ message: err.message || "Error in saving the signup data" });
   }
 };
 
@@ -161,7 +166,7 @@ const verifyLogin = async (req, res) => {
     });
   } catch (err) {
     console.error("Error in verifying login", err);
-    res.status(500).send("Internal Server Error");
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

@@ -767,6 +767,9 @@ const UserProfileEditPage = () => {
     : rawUserId;
   const navigate = useNavigate();
 
+  const [isGenderReadOnly, setIsGenderReadOnly] = useState(false);
+  const [isDobReadOnly, setIsDobReadOnly] = useState(false);
+
   const selectStyle = {
     flex: 1,
     minWidth: "140px",
@@ -1250,6 +1253,13 @@ const UserProfileEditPage = () => {
           }
           if (loadedData.mothersOccupation && !parentOccupationOptions.includes(loadedData.mothersOccupation)) {
             setIsMotherOther(true);
+          }
+
+          if (userData.gender) {
+            setIsGenderReadOnly(true);
+          }
+          if (userData.dateOfBirth) {
+            setIsDobReadOnly(true);
           }
 
           // ===========================
@@ -1916,7 +1926,7 @@ const UserProfileEditPage = () => {
                     <div
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
+                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
                         columnGap: "120px",
                         rowGap: "24px",
                       }}
@@ -1938,9 +1948,9 @@ const UserProfileEditPage = () => {
                         type="select"
                         value={formData.gender}
                         onChange={handleInputChange}
-                        options={["Male", "Female", "Other"]}
-                        readOnly={true}
-                        helpText="To change gender, please contact Customer Support."
+                        options={["Male", "Female"]}
+                        readOnly={isGenderReadOnly}
+                        helpText={isGenderReadOnly ? "To change gender, please contact Customer Support." : ""}
                       />
                       <FormInput
                         label="Profile Created By"
@@ -1971,8 +1981,8 @@ const UserProfileEditPage = () => {
                         type="date"
                         value={formData.dateOfBirth}
                         onChange={handleInputChange}
-                        readOnly={true}
-                        helpText="To change DOB, please contact Customer Support."
+                        readOnly={isDobReadOnly}
+                        helpText={isDobReadOnly ? "To change DOB, please contact Customer Support." : ""}
                       />
                       <FormInput
                         label="Age"
@@ -2418,7 +2428,7 @@ const UserProfileEditPage = () => {
                     <div
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
+                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
                         columnGap: "120px",
                         rowGap: "24px",
                       }}
@@ -2567,7 +2577,7 @@ const UserProfileEditPage = () => {
                         value={formData.mothersNative}
                         onChange={handleInputChange}
                       />
-                      <div style={{ gridColumn: "1 / -1", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px" }}>
+                      <div style={{ gridColumn: "1 / -1", display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: "16px" }}>
                         <FormInput
                           label="No. of Brothers"
                           name="numberOfBrothers"
@@ -2664,7 +2674,7 @@ const UserProfileEditPage = () => {
                     <div
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
+                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
                         columnGap: "120px",
                         rowGap: "24px",
                       }}
@@ -2808,7 +2818,7 @@ const UserProfileEditPage = () => {
                     <div
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
+                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
                         columnGap: "120px",
                         rowGap: "24px",
                       }}
@@ -2904,7 +2914,7 @@ const UserProfileEditPage = () => {
                     <div
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
+                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
                         columnGap: "120px",
                         rowGap: "24px",
                       }}
@@ -3232,7 +3242,7 @@ const UserProfileEditPage = () => {
                       <div
                         style={{
                           display: "grid",
-                          gridTemplateColumns: "repeat(2, 1fr)",
+                          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
                           columnGap: "120px",
                           rowGap: "24px",
                         }}
@@ -3347,7 +3357,7 @@ const UserProfileEditPage = () => {
                     <div
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(3, 1fr)",
+                        gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
                         columnGap: "20px",
                         marginTop: "20px",
                         marginBottom: "20px",
@@ -3641,7 +3651,7 @@ const UserProfileEditPage = () => {
                     <div
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
+                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
                         columnGap: "120px",
                         rowGap: "24px",
                         marginTop: "20px",
@@ -3730,7 +3740,7 @@ const UserProfileEditPage = () => {
                     <div
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(2, 1fr)",
+                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
                         columnGap: "120px",
                         rowGap: "24px",
                       }}
@@ -3967,7 +3977,7 @@ const UserProfileEditPage = () => {
                     <div
                       style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(1, 1fr)",
+                        gridTemplateColumns: "minmax(0, 1fr)",
                         gap: "20px",
                       }}
                     >
