@@ -21,19 +21,7 @@ const submitReport = async (req, res) => {
 
     await newReport.save();
 
-    // Send email notification to Admin
-    const sendEmail = require("../../utils/nodeMailerMessages");
-    try {
-      await sendEmail(
-        process.env.EMAIL_USER,
-        "New User Report Received - Agape Vows",
-        "formSubmission",
-        ["User Report", { "Reporter ID": reporterId, "Reported User ID": reportedUserId, Reason: reason, Comments: comments }]
-      );
-    } catch (emailErr) {
-      console.error("Failed to send report email:", emailErr);
-    }
-
+    // Email notification removed as per user request
     // ✅ AUTOMATICALLY BLOCK THE REPORTED USER
     await userModel.findByIdAndUpdate(reporterId, {
       $addToSet: {

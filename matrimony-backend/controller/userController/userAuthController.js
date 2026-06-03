@@ -2346,26 +2346,7 @@ const reportIssue = async (req, res) => {
 
     await newIssue.save();
 
-    // Send email notification to Admin
-    const sendEmail = require("../../utils/nodeMailerMessages");
-    try {
-      await sendEmail(
-        process.env.EMAIL_USER,
-        "New Technical Issue Reported - Agape Vows",
-        "formSubmission",
-        ["Technical Issue", {
-          "User ID": userId,
-          "Name": userName,
-          "Email": userEmail,
-          "Mobile": userMobile,
-          "AGW ID": agwid,
-          "Details": details
-        }]
-      );
-    } catch (emailErr) {
-      console.error("Failed to send issue report email:", emailErr);
-    }
-
+    // Email notification removed as per user request
     res.status(200).json({
       success: true,
       message: "Issue submitted successfully",
@@ -2626,25 +2607,7 @@ const requestContactUpdate = async (req, res) => {
 
     await user.save();
 
-    // Send email notification to Admin
-    const sendEmail = require("../../utils/nodeMailerMessages");
-    try {
-      await sendEmail(
-        process.env.EMAIL_USER,
-        "Contact Update Request - Agape Vows",
-        "formSubmission",
-        ["Contact Update Request", {
-          "User ID": userId,
-          "Name": user.userName,
-          "AGW ID": user.agwid,
-          "Requested Mobile": requestedMobile || "N/A",
-          "Requested Email": requestedEmail || "N/A"
-        }]
-      );
-    } catch (emailErr) {
-      console.error("Failed to send contact update email:", emailErr);
-    }
-
+    // Email notification removed as per user request
     res.status(200).json({
       success: true,
       message: "Contact update request sent to admin successfully.",
@@ -2707,25 +2670,7 @@ const deactivateProfile = async (req, res) => {
 
     await userData.save();
 
-    // Send email notification to Admin
-    const sendEmail = require("../../utils/nodeMailerMessages");
-    try {
-      await sendEmail(
-        process.env.EMAIL_USER,
-        "Profile Deactivation Alert - Agape Vows",
-        "formSubmission",
-        ["Profile Deactivation", {
-          "User ID": userId,
-          "Name": userData.userName,
-          "AGW ID": userData.agwid,
-          "Reason": deactivationReason,
-          "Description": deactivationDescription || "No description provided"
-        }]
-      );
-    } catch (emailErr) {
-      console.error("Failed to send deactivation email:", emailErr);
-    }
-
+    // Email notification removed as per user request
     res.status(200).json({
       success: true,
       message: "Profile deactivated successfully",

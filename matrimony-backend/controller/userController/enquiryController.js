@@ -26,19 +26,7 @@ const createEnquiry = async (req, res) => {
 
     await newEnquiry.save();
 
-    // Send email notification to Admin
-    const sendEmail = require("../../utils/nodeMailerMessages");
-    try {
-      await sendEmail(
-        process.env.EMAIL_USER,
-        "New Enquiry Received - Agape Vows",
-        "formSubmission",
-        ["Enquiry", { Name: name, Phone: phone, Email: email, Message: message }]
-      );
-    } catch (emailErr) {
-      console.error("Failed to send enquiry email:", emailErr);
-    }
-
+    // Email notification removed as per user request
     res.status(201).json({
       success: true,
       message: "Enquiry submitted successfully",
