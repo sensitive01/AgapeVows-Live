@@ -688,15 +688,6 @@ const getProfileMoreInformation = async (req, res) => {
             val === "unlimited" ||
             parseInt(val) >= 999999;
 
-          // ✅ GOLD/PLATINUM AUTOMATIC UNLIMITED
-          if (
-            viewerPlanName.toLowerCase() === "platinum" ||
-            viewerPlanName.toLowerCase() === "gold" ||
-            viewerPlanName.toLowerCase() === "golden"
-          ) {
-            maxP = "Unlimited";
-            dailyL = "Unlimited";
-          }
 
           const parsedMax = parseInt(maxP);
           const parsedDaily = parseInt(dailyL);
@@ -1711,9 +1702,9 @@ const getMyActivePlanDetails = async (req, res) => {
       userMobile: userData.userMobile,
       agwid: userData.agwid,
 
-      maxProfiles: (latestPlan.subscriptionType.toLowerCase() === "platinum" || latestPlan.subscriptionType.toLowerCase() === "gold" || latestPlan.subscriptionType.toLowerCase() === "golden") ? "Unlimited" : (latestPlan.maxProfiles || 0),
+      maxProfiles: latestPlan.maxProfiles || 0,
       profilesViewedCount: latestPlan.profilesViewedCount || 0,
-      dailyLimit: (latestPlan.subscriptionType.toLowerCase() === "platinum" || latestPlan.subscriptionType.toLowerCase() === "gold" || latestPlan.subscriptionType.toLowerCase() === "golden") ? "Unlimited" : (latestPlan.dailyLimit || 0),
+      dailyLimit: latestPlan.dailyLimit || 0,
       dailyViewedCount: latestPlan.dailyViewedCount || 0,
 
       canViewProfiles: latestPlan.canViewProfiles?.toString()?.trim() || "All Profiles",

@@ -115,18 +115,12 @@ const ActivePlanCard = ({ externalPlanData }) => {
   const isUnlimitedProfiles =
     rawMaxProfiles === "Unlimited" ||
     rawMaxProfiles === "unlimited" ||
-    parseInt(rawMaxProfiles) >= 999999 ||
-    planType === "platinum" ||
-    planType === "gold" ||
-    planType === "golden";
+    parseInt(rawMaxProfiles) >= 999999;
 
   const isUnlimitedDaily =
     rawDailyLimit === "Unlimited" ||
     rawDailyLimit === "unlimited" ||
-    parseInt(rawDailyLimit) >= 999999 ||
-    planType === "platinum" ||
-    planType === "gold" ||
-    planType === "golden";
+    parseInt(rawDailyLimit) >= 999999;
 
   const parsedMax = parseInt(rawMaxProfiles) || 0;
   const parsedDaily = parseInt(rawDailyLimit) || 0;
@@ -150,18 +144,12 @@ const ActivePlanCard = ({ externalPlanData }) => {
   const isUnlimitedInterest =
     rawMaxSendInterest === "Unlimited" ||
     rawMaxSendInterest === "unlimited" ||
-    parseInt(rawMaxSendInterest) >= 999999 ||
-    planType === "platinum" ||
-    planType === "gold" ||
-    planType === "golden";
+    parseInt(rawMaxSendInterest) >= 999999;
 
   const isUnlimitedDailyInterest =
     rawDailyLimitSendInterest === "Unlimited" ||
     rawDailyLimitSendInterest === "unlimited" ||
-    parseInt(rawDailyLimitSendInterest) >= 999999 ||
-    planType === "platinum" ||
-    planType === "gold" ||
-    planType === "golden";
+    parseInt(rawDailyLimitSendInterest) >= 999999;
 
   const parsedMaxInterest = parseInt(rawMaxSendInterest) || 0;
   const parsedDailyInterest = parseInt(rawDailyLimitSendInterest) || 0;
@@ -176,18 +164,12 @@ const ActivePlanCard = ({ externalPlanData }) => {
   const isUnlimitedContact =
     rawMaxViewContact === "Unlimited" ||
     rawMaxViewContact === "unlimited" ||
-    parseInt(rawMaxViewContact) >= 999999 ||
-    planType === "platinum" ||
-    planType === "gold" ||
-    planType === "golden";
+    parseInt(rawMaxViewContact) >= 999999;
 
   const isUnlimitedDailyContact =
     rawDailyLimitViewContact === "Unlimited" ||
     rawDailyLimitViewContact === "unlimited" ||
-    parseInt(rawDailyLimitViewContact) >= 999999 ||
-    planType === "platinum" ||
-    planType === "gold" ||
-    planType === "golden";
+    parseInt(rawDailyLimitViewContact) >= 999999;
 
   const parsedMaxContact = parseInt(rawMaxViewContact) || 0;
   const parsedDailyContact = parseInt(rawDailyLimitViewContact) || 0;
