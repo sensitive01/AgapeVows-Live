@@ -263,7 +263,7 @@ const MainLayout = () => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 text-white">
                 <Phone className="w-4 h-4 !text-white" />
-                <span className="!text-white font-medium">+91 5312 5312</span>
+                <span className="!text-white font-medium">+91 96637 96699</span>
               </div>
               <div className="flex items-center space-x-2 text-white">
                 <Mail className="w-4 h-4 !text-white" />
@@ -360,8 +360,8 @@ const MainLayout = () => {
                   }
                 }}
                 className={`hover-purple-shadow transition-all duration-200 font-medium py-2 ${location.pathname === "/about-us"
-                  ? "text-purple-600 font-bold border-b-2 border-purple-600"
-                  : "text-gray-800 hover:text-purple-600"
+                  ? "text-[#2b124c] font-bold border-b-2 border-[#2b124c]"
+                  : "text-gray-800 hover:text-[#2b124c]"
                   }`}
               >
                 ABOUT US
@@ -379,18 +379,12 @@ const MainLayout = () => {
                     if (newTab) newTab.focus();
                   }
                 }}
-                className={`hover-purple-shadow group flex items-center space-x-1.5 font-medium transition-all duration-200 py-2 ${location.pathname === "/user/find-matches"
-                  ? "text-purple-600 font-bold border-b-2 border-purple-600"
-                  : "text-gray-800 hover:text-purple-600"
+                className={`hover-purple-shadow flex items-center transition-all duration-200 font-medium py-2 ${location.pathname === "/user/find-matches"
+                  ? "text-[#2b124c] font-bold border-b-2 border-[#2b124c]"
+                  : "text-gray-800 hover:text-[#2b124c]"
                   }`}
               >
-                <Search
-                  className={`w-4 h-4 transition-colors duration-200 ${location.pathname === "/user/find-matches"
-                    ? "text-purple-600"
-                    : "text-gray-800 group-hover:text-purple-600"
-                    }`}
-                />
-                <span className="font-medium">SEARCH</span>
+                <Search className="w-4 h-4 mr-1 mb-0.5" /> SEARCH
               </a>
 
               <div
@@ -407,8 +401,8 @@ const MainLayout = () => {
                     location.pathname.includes("/bridal-makeup") ||
                     location.pathname.includes("/insurance-services") ||
                     location.pathname === "/user/user-service-page"
-                    ? "text-purple-600 font-bold border-b-2 border-purple-600"
-                    : "text-gray-800 hover:text-purple-600"
+                    ? "text-[#2b124c] font-bold border-b-2 border-[#2b124c]"
+                    : "text-gray-800 hover:text-[#2b124c]"
                     }`}
                 >
                   SERVICES <ChevronDown className="w-4 h-4 ml-1" />
@@ -432,7 +426,7 @@ const MainLayout = () => {
                   }
                 }}
                 className={`nav-highlight-events transition-all duration-200 py-2 ${location.pathname === "/user/events-page"
-                  ? "border-b-2 border-purple-600"
+                  ? "border-b-2 border-[#2b124c]"
                   : ""
                   }`}
               >
@@ -452,8 +446,8 @@ const MainLayout = () => {
                   }
                 }}
                 className={`hover-purple-shadow transition-all duration-200 font-medium py-2 ${location.pathname === "/user/user-plan-selection"
-                  ? "text-purple-600 font-bold border-b-2 border-purple-600"
-                  : "text-gray-800 hover:text-purple-600"
+                  ? "text-[#2b124c] font-bold border-b-2 border-[#2b124c]"
+                  : "text-gray-800 hover:text-[#2b124c]"
                   }`}
               >
                 PLANS
@@ -467,8 +461,8 @@ const MainLayout = () => {
                 <button
                   className={`hover-purple-shadow transition-all duration-200 font-medium flex items-center py-2 ${location.pathname === "/help-support" ||
                     location.pathname === "/report-issue"
-                    ? "text-purple-600 font-bold border-b-2 border-purple-600"
-                    : "text-gray-800 hover:text-purple-600"
+                    ? "text-[#2b124c] font-bold border-b-2 border-[#2b124c]"
+                    : "text-gray-800 hover:text-[#2b124c]"
                     }`}
                 >
                   HELP & SUPPORT <ChevronDown className="w-4 h-4 ml-1" />

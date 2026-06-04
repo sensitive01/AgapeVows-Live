@@ -38,13 +38,13 @@ export default function TopMenu() {
                 <li>
                   <a href="tel:+9704462944">
                     <i className="fa fa-phone" aria-hidden="true" />
-                    &nbsp;+01 5312 5312
+                    &nbsp;+91 96637 96699
                   </a>
                 </li>
                 <li>
-                  <a href="mailto:info@example.com">
+                  <a href="mailto:support@agapevows.com">
                     <i className="fa fa-envelope-o" aria-hidden="true" />
-                    &nbsp; help@company.com
+                    &nbsp; support@agapevows.com
                   </a>
                 </li>
                 <li>

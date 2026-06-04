@@ -303,6 +303,14 @@ const AdminIssues = () => {
   // ================= UPDATE =================
   const handleUpdate = async (e) => {
     e.preventDefault();
+    if (!reply.trim()) {
+      showAlert({
+        title: "Error",
+        text: "Admin reply is mandatory.",
+        icon: "error",
+      });
+      return;
+    }
     setLoading(true);
 
     try {
@@ -536,7 +544,7 @@ const AdminIssues = () => {
                       <td>
                         {issue.attachment ? (
                           <a
-                            href={`http://localhost:4000/${issue.attachment}`}
+                            href={issue.attachment.startsWith('http') ? issue.attachment : `http://localhost:3001/${issue.attachment}`}
                             target="_blank"
                             rel="noreferrer"
                             className="btn btn-success btn-sm"
@@ -639,21 +647,31 @@ const AdminIssues = () => {
                   <option>Resolved</option>
                 </select>
 
-                <label className="fw-semibold">Admin Reply</label>
+                <label className="fw-semibold">Admin Reply <span className="text-danger">*</span></label>
                 <textarea
                   rows="4"
                   className="form-control mb-4"
                   value={reply}
                   onChange={(e) => setReply(e.target.value)}
+                  required
                 />
 
-                <button
-                  type="submit"
-                  className="btn btn-primary w-100 rounded-pill py-2"
-                  disabled={loading}
-                >
-                  {loading ? "Updating..." : "Update Issue"}
-                </button>
+                <div className="d-flex gap-2 mt-2">
+                  <button
+                    type="button"
+                    className="btn btn-light w-50 rounded-pill py-2 border"
+                    data-bs-dismiss="modal"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary w-50 rounded-pill py-2"
+                    disabled={loading}
+                  >
+                    {loading ? "Updating..." : "Update Issue"}
+                  </button>
+                </div>
               </form>
             </div>
           </div>

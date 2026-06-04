@@ -100,6 +100,14 @@ const AdminEnquiries = () => {
   // ================= UPDATE =================
   const handleUpdate = async (e) => {
     e.preventDefault();
+    if (!replyMessage.trim()) {
+      showAlert({
+        title: "Error",
+        text: "Reply content is mandatory.",
+        icon: "error",
+      });
+      return;
+    }
     setLoading(true);
     setError("");
 
@@ -685,9 +693,8 @@ const AdminEnquiries = () => {
                     <option>Closed</option>
                   </select>
 
-                  {status === "Contacted" && (
                     <div className="mb-4">
-                      <label className="fw-bold mb-2 d-block">Reply Content</label>
+                      <label className="fw-bold mb-2 d-block">Reply Content <span className="text-danger">*</span></label>
                       <textarea
                         className="form-control"
                         rows="3"
@@ -699,9 +706,9 @@ const AdminEnquiries = () => {
                           border: "1.5px solid #e0e0e0",
                           padding: "10px 12px",
                         }}
+                        required
                       ></textarea>
                     </div>
-                  )}
 
                   <button
                     type="submit"

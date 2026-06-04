@@ -81,8 +81,8 @@ const FloatingContactSidebar = () => {
       {/* Enquiry Form Popup */}
       <div
         className={`absolute right-[55px] md:right-[60px] top-1/2 -translate-y-1/2 w-[260px] md:w-[350px] bg-white rounded-2xl shadow-2xl p-4 md:p-6 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] transform ${showForm
-            ? "opacity-100 translate-x-0 scale-100 rotate-0"
-            : "opacity-0 translate-x-10 scale-90 -rotate-2 pointer-events-none"
+          ? "opacity-100 translate-x-0 scale-100 rotate-0"
+          : "opacity-0 translate-x-10 scale-90 -rotate-2 pointer-events-none"
           }`}
       >
         <div className="flex justify-between items-center mb-6">
@@ -168,8 +168,8 @@ const FloatingContactSidebar = () => {
         {/* Sliding Buttons Container */}
         <div
           className={`transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex flex-col items-end ${isOpen
-              ? "translate-x-0 opacity-100"
-              : "translate-x-[60px] opacity-0 pointer-events-none h-0"
+            ? "translate-x-0 opacity-100"
+            : "translate-x-[60px] opacity-0 pointer-events-none h-0"
             }`}
         >
           {/* Enquire Now Panel */}
@@ -192,7 +192,7 @@ const FloatingContactSidebar = () => {
 
           {/* WhatsApp Section */}
           <a
-            href="https://wa.me/9153125312"
+            href="https://wa.me/919663796699"
             target="_blank"
             rel="noopener noreferrer"
             onMouseEnter={() => setHoveredBtn('whatsapp')}
@@ -215,22 +215,20 @@ const FloatingContactSidebar = () => {
 
           {/* Phone Section */}
           <a
-            href="tel:+9153125312"
+            href="tel:+919663796699"
             onMouseEnter={() => setHoveredBtn('phone')}
             onMouseLeave={() => setHoveredBtn(null)}
-            className={`bg-purple-600 text-white flex items-center justify-end p-3 transition-all duration-300 h-[60px] rounded-bl-xl overflow-hidden ${
-              hoveredBtn === 'phone' ? 'w-[180px]' : 'w-[50px]'
-            } hover:bg-purple-700`}
-            >
+            className={`bg-purple-600 text-white flex items-center justify-end p-3 transition-all duration-300 h-[60px] rounded-bl-xl overflow-hidden ${hoveredBtn === 'phone' ? 'w-[180px]' : 'w-[50px]'
+              } hover:bg-purple-700`}
+          >
             <span
-                className={`transition-opacity duration-300 whitespace-nowrap font-bold text-lg pr-3 ${
-                hoveredBtn === 'phone' ? 'opacity-100' : 'opacity-0'
+              className={`transition-opacity duration-300 whitespace-nowrap font-bold text-lg pr-3 ${hoveredBtn === 'phone' ? 'opacity-100' : 'opacity-0'
                 }`}
             >
-                Call Us Now
+              Call Us Now
             </span>
             <Phone size={24} className="shrink-0" />
-        </a>
+          </a>
         </div>
       </div>
     </div>

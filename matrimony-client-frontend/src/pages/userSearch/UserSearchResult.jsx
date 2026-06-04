@@ -8,6 +8,7 @@ import {
   fetchSearchedProfileData,
   saveTheProfileAsShortlisted,
   getMyActivePlanData,
+  newProfileMatch,
 } from "../../api/axiosService/userAuthService";
 import { showAlert } from "../../utils/alertService";
 
@@ -121,18 +122,29 @@ const UserSearchResult = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const { formData, ...restState } = state || {};
+        if (state?.isMatchSearch) {
+          const response = await newProfileMatch(userId);
+          if (response?.status === 200) {
+            setUsers(response.data.matches || response.data || []);
+          } else if (Array.isArray(response)) {
+            setUsers(response);
+          } else {
+            setUsers([]);
+          }
+        } else {
+          const { formData, ...restState } = state || {};
 
-        const requestData = {
-          ...restState,
-          ...(formData || {}),
-          userId, // Add userId
-        };
+          const requestData = {
+            ...restState,
+            ...(formData || {}),
+            userId, // Add userId
+          };
 
-        const response = await fetchSearchedProfileData(requestData);
+          const response = await fetchSearchedProfileData(requestData);
 
-        if (response?.status === 200) {
-          setUsers(response?.data?.data || []);
+          if (response?.status === 200) {
+            setUsers(response?.data?.data || []);
+          }
         }
       } catch (error) {
         console.error("Error fetching profiles:", error);

@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
+import { getAllIssues, getAllEnquiries, getAllReports } from "../../../api/service/adminServices";
 
 const Sidebar = () => {
   const location = useLocation();
   const [expandedMenus, setExpandedMenus] = useState({});
+  const [newCounts, setNewCounts] = useState({ issues: 0, enquiries: 0, reports: 0 });
 
   useEffect(() => {
     // Automatically expand the "Users" menu if any sub-route related to users is active
@@ -13,7 +15,6 @@ const Sidebar = () => {
       "/admin/paid-user-list",
       "/admin/add-new-user",
       "/admin/deleted-users",
-      "/admin/issues",
       "/admin/billing-info/",
       "/admin/new-user/",
       "/admin/id-verification-requests",
@@ -25,6 +26,43 @@ const Sidebar = () => {
     if (usersRoutes.some(route => location.pathname.startsWith(route))) {
       setExpandedMenus(prev => ({ ...prev, users: true }));
     }
+
+    // Handle view timestamps and fetch counts
+    const fetchCountsAndMarkRead = async () => {
+      try {
+        if (location.pathname === "/admin/issues") {
+          localStorage.setItem("lastViewedIssues", new Date().toISOString());
+        } else if (location.pathname === "/admin/enquiries") {
+          localStorage.setItem("lastViewedEnquiries", new Date().toISOString());
+        } else if (location.pathname === "/admin/reports") {
+          localStorage.setItem("lastViewedReports", new Date().toISOString());
+        }
+
+        const [issuesRes, enqRes, repRes] = await Promise.all([
+          getAllIssues().catch(() => ({ data: { data: [] } })),
+          getAllEnquiries().catch(() => ({ data: { data: [] } })),
+          getAllReports().catch(() => ({ data: { data: [] } }))
+        ]);
+
+        const issues = issuesRes?.data?.data || [];
+        const enquiries = enqRes?.data?.data || [];
+        const reports = repRes?.data?.data || [];
+
+        const lastViewedIssues = new Date(localStorage.getItem("lastViewedIssues") || 0);
+        const lastViewedEnquiries = new Date(localStorage.getItem("lastViewedEnquiries") || 0);
+        const lastViewedReports = new Date(localStorage.getItem("lastViewedReports") || 0);
+
+        setNewCounts({
+          issues: issues.filter(i => new Date(i.createdAt) > lastViewedIssues).length,
+          enquiries: enquiries.filter(e => new Date(e.createdAt) > lastViewedEnquiries).length,
+          reports: reports.filter(r => new Date(r.createdAt) > lastViewedReports).length,
+        });
+      } catch (err) {
+        console.error("Error fetching notification counts:", err);
+      }
+    };
+
+    fetchCountsAndMarkRead();
   }, [location.pathname]);
 
   const toggleSubmenu = (menuKey) => {
@@ -153,14 +191,7 @@ const Sidebar = () => {
                     Deactivated Users
                   </Link>
                 </li>
-                <li>
-                  <Link 
-                    to="/admin/issues" 
-                    style={isActive("/admin/issues") ? activeLinkStyle : normalLinkStyle}
-                  >
-                    Issues
-                  </Link>
-                </li>
+
                 <li>
                   <Link 
                     to="/admin/id-verification-requests" 
@@ -211,13 +242,38 @@ const Sidebar = () => {
 
 
 
-          {/* ENQUIRIES */}
+          {/* ISSUES */}
+          <li>
+            <Link 
+              to="/admin/issues" 
+              style={{
+                ...(isActive("/admin/issues") ? activeLinkStyle : normalLinkStyle),
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}
+            >
+              <span><span style={iconStyle}>⚠️</span> User Issues</span>
+              {newCounts.issues > 0 && (
+                <span className="badge bg-danger rounded-pill" style={{ marginRight: '15px' }}>{newCounts.issues}</span>
+              )}
+            </Link>
+          </li>
+
           <li>
             <Link 
               to="/admin/enquiries" 
-              style={isActive("/admin/enquiries") ? activeLinkStyle : normalLinkStyle}
+              style={{
+                ...(isActive("/admin/enquiries") ? activeLinkStyle : normalLinkStyle),
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}
             >
-              <span style={iconStyle}>✉️</span> Enquiries
+              <span><span style={iconStyle}>✉️</span> Enquiries</span>
+              {newCounts.enquiries > 0 && (
+                <span className="badge bg-danger rounded-pill" style={{ marginRight: '15px' }}>{newCounts.enquiries}</span>
+              )}
             </Link>
           </li>
 
@@ -227,9 +283,17 @@ const Sidebar = () => {
           <li>
             <Link 
               to="/admin/reports" 
-              style={isActive("/admin/reports") ? activeLinkStyle : normalLinkStyle}
+              style={{
+                ...(isActive("/admin/reports") ? activeLinkStyle : normalLinkStyle),
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}
             >
-              <span style={iconStyle}>🚩</span> User Reports
+              <span><span style={iconStyle}>🚩</span> User Reports</span>
+              {newCounts.reports > 0 && (
+                <span className="badge bg-danger rounded-pill" style={{ marginRight: '15px' }}>{newCounts.reports}</span>
+              )}
             </Link>
           </li>
         </ul>

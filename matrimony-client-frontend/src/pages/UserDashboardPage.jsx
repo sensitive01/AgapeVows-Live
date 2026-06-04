@@ -431,22 +431,31 @@ const UserDashboardPage = () => {
                 <div className="row">
                   <div className="col-md-12 db-sec-com db-new-pro-main">
                     <div className="d-flex justify-content-between align-items-center mb-3">
-                      <h2 className="db-tit">
+                      <h2 className="db-tit mb-0 d-flex align-items-center">
                         Profile Matches
                         {profileMatches.length > 0 && (
-                          <span className="badge bg-primary ms-2">
+                          <span className="badge bg-primary ms-2 me-3">
                             {profileMatches.length}
                           </span>
                         )}
-                      </h2>
-                      {loading && (
-                        <div
-                          className="spinner-border spinner-border-sm"
-                          role="status"
+                        {profileMatches.length === 0 && <span className="me-3"></span>}
+                        <span 
+                          style={{ fontSize: '14px', color: '#00bcd5', cursor: 'pointer', fontWeight: '600', textDecoration: 'underline' }}
+                          onClick={() => navigate('/show-searched-result', { state: { isMatchSearch: true } })}
                         >
-                          <span className="visually-hidden">Loading...</span>
-                        </div>
-                      )}
+                          View All
+                        </span>
+                      </h2>
+                      <div className="d-flex align-items-center">
+                        {loading && (
+                          <div
+                            className="spinner-border spinner-border-sm"
+                            role="status"
+                          >
+                            <span className="visually-hidden">Loading...</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {error && (

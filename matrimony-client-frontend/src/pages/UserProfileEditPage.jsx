@@ -21,14 +21,14 @@ import { indianDistricts } from "../utils/indianDistricts";
 
 const getDistrictsForState = (countryName, stateName, allCountries) => {
   if (!countryName || !stateName) return [];
-  
+
   if (countryName === "India") {
     const indianState = indianDistricts.states.find(s => s.state.toLowerCase() === stateName.toLowerCase());
     if (indianState && indianState.districts) {
       return indianState.districts;
     }
   }
-  
+
   const c = allCountries.find((country) => country.name === countryName);
   if (!c) return [];
   const states = State.getStatesOfCountry(c.isoCode);
@@ -89,7 +89,8 @@ const BasicInfomation = ({
     },
     contentRow: {
       display: "flex",
-      gap: "60px",
+      flexWrap: "wrap",
+      gap: "40px",
       alignItems: "flex-start",
     },
     leftColumn: {
@@ -458,17 +459,11 @@ const FormInput = ({
   isMulti = false,
   layout = "horizontal",
 }) => (
-  <div style={{ display: "flex", flexDirection: layout === "vertical" ? "column" : "row", alignItems: (layout === "vertical" || type === "textarea") ? "flex-start" : "center", gap: layout === "vertical" ? "4px" : "8px", marginBottom: "12px", width: "100%" }}>
+  <div className={`flex ${layout === "vertical" ? "flex-col" : "flex-col md:flex-row"} ${layout === "vertical" || type === "textarea" ? "items-start" : "items-start md:items-center"} gap-1 md:gap-2 mb-3 w-full`}>
     <label
+      className={`text-sm font-semibold text-gray-700 m-0 block ${layout === "vertical" ? "w-full" : "w-full md:min-w-[130px] md:max-w-[130px]"}`}
       style={{
-        fontSize: "14px",
-        fontWeight: "600",
-        color: "#374151",
-        minWidth: layout === "vertical" ? "auto" : "130px",
-        maxWidth: layout === "vertical" ? "none" : "130px",
-        marginBottom: "0",
         marginTop: (type === "textarea" && layout !== "vertical") ? "10px" : "0",
-        display: "block",
       }}
     >
       {label}
@@ -477,109 +472,109 @@ const FormInput = ({
       )}
     </label>
     <div style={{ flex: 1, width: "100%" }}>
-    {type === "select" && searchable ? (
-      <SearchableSelect
-        name={name}
-        value={value}
-        onChange={onChange}
-        options={options}
-        placeholder={`Select ${label}`}
-        disabled={readOnly}
-        isMulti={isMulti}
-      />
-    ) : type === "select" ? (
-      <select
-        name={name}
-        value={value || ""}
-        onChange={onChange}
-        required={required}
-        disabled={readOnly}
-        style={{
-          width: "100%",
-          padding: "10px 14px",
-          border: "2px solid #e5e7eb",
-          borderRadius: "6px",
-          fontSize: "14px",
-          color: readOnly ? "#9ca3af" : "#374151",
-          background: readOnly ? "#f3f4f6" : "#fff",
-          cursor: readOnly ? "not-allowed" : "pointer",
-          transition: "border-color 0.2s ease",
-          maxHeight: "200px",
-          overflowY: "auto",
-        }}
-      >
-        <option value="">Select {label}</option>
-        {options.map((option) => (
-          <option key={option} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-    ) : type === "radio" ? (
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", marginTop: "4px" }}>
-        {options.map((option) => (
-          <label key={option} style={{ display: "flex", alignItems: "center", gap: "6px", cursor: readOnly ? "not-allowed" : "pointer", fontSize: "14px", color: "#374151", fontWeight: "normal" }}>
-            <input
-              type="radio"
-              name={name}
-              value={option}
-              checked={value === option}
-              onChange={onChange}
-              disabled={readOnly}
-              style={{ cursor: readOnly ? "not-allowed" : "pointer", width: "16px", height: "16px", accentColor: "#7c3aed" }}
-            />
-            {option}
-          </label>
-        ))}
-      </div>
-    ) : type === "textarea" ? (
-      <textarea
-        name={name}
-        value={value || ""}
-        onChange={onChange}
-        required={required}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        rows={4}
-        style={{
-          width: "100%",
-          padding: "10px 14px",
-          border: "2px solid #e5e7eb",
-          borderRadius: "6px",
-          fontSize: "14px",
-          color: readOnly ? "#9ca3af" : "#374151",
-          background: readOnly ? "#f3f4f6" : "#fff",
-          resize: "vertical",
-          transition: "border-color 0.2s ease",
-        }}
-      />
-    ) : (
-      <input
-        type={type}
-        name={name}
-        value={value || ""}
-        onChange={onChange}
-        required={required}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        style={{
-          width: "100%",
-          padding: "10px 14px",
-          border: "2px solid #e5e7eb",
-          borderRadius: "6px",
-          fontSize: "14px",
-          color: readOnly ? "#9ca3af" : "#374151",
-          background: readOnly ? "#f3f4f6" : "#fff",
-          cursor: readOnly ? "not-allowed" : "text",
-          transition: "border-color 0.2s ease",
-        }}
-      />
-    )}
-    {helpText && (
-      <p style={{ fontSize: "12px", color: "#6b7280", marginTop: "4px" }}>
-        {helpText}
-      </p>
-    )}
+      {type === "select" && searchable ? (
+        <SearchableSelect
+          name={name}
+          value={value}
+          onChange={onChange}
+          options={options}
+          placeholder={`Select ${label}`}
+          disabled={readOnly}
+          isMulti={isMulti}
+        />
+      ) : type === "select" ? (
+        <select
+          name={name}
+          value={value || ""}
+          onChange={onChange}
+          required={required}
+          disabled={readOnly}
+          style={{
+            width: "100%",
+            padding: "10px 14px",
+            border: "2px solid #e5e7eb",
+            borderRadius: "6px",
+            fontSize: "14px",
+            color: readOnly ? "#9ca3af" : "#374151",
+            background: readOnly ? "#f3f4f6" : "#fff",
+            cursor: readOnly ? "not-allowed" : "pointer",
+            transition: "border-color 0.2s ease",
+            maxHeight: "200px",
+            overflowY: "auto",
+          }}
+        >
+          <option value="">Select {label}</option>
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      ) : type === "radio" ? (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", marginTop: "4px" }}>
+          {options.map((option) => (
+            <label key={option} style={{ display: "flex", alignItems: "center", gap: "6px", cursor: readOnly ? "not-allowed" : "pointer", fontSize: "14px", color: "#374151", fontWeight: "normal" }}>
+              <input
+                type="radio"
+                name={name}
+                value={option}
+                checked={value === option}
+                onChange={onChange}
+                disabled={readOnly}
+                style={{ cursor: readOnly ? "not-allowed" : "pointer", width: "16px", height: "16px", accentColor: "#7c3aed" }}
+              />
+              {option}
+            </label>
+          ))}
+        </div>
+      ) : type === "textarea" ? (
+        <textarea
+          name={name}
+          value={value || ""}
+          onChange={onChange}
+          required={required}
+          placeholder={placeholder}
+          readOnly={readOnly}
+          rows={4}
+          style={{
+            width: "100%",
+            padding: "10px 14px",
+            border: "2px solid #e5e7eb",
+            borderRadius: "6px",
+            fontSize: "14px",
+            color: readOnly ? "#9ca3af" : "#374151",
+            background: readOnly ? "#f3f4f6" : "#fff",
+            resize: "vertical",
+            transition: "border-color 0.2s ease",
+          }}
+        />
+      ) : (
+        <input
+          type={type}
+          name={name}
+          value={value || ""}
+          onChange={onChange}
+          required={required}
+          placeholder={placeholder}
+          readOnly={readOnly}
+          style={{
+            width: "100%",
+            padding: "10px 14px",
+            border: "2px solid #e5e7eb",
+            borderRadius: "6px",
+            fontSize: "14px",
+            color: readOnly ? "#9ca3af" : "#374151",
+            background: readOnly ? "#f3f4f6" : "#fff",
+            cursor: readOnly ? "not-allowed" : "text",
+            transition: "border-color 0.2s ease",
+          }}
+        />
+      )}
+      {helpText && (
+        <p style={{ fontSize: "12px", color: "#6b7280", marginTop: "4px" }}>
+          {helpText}
+        </p>
+      )}
     </div>
   </div>
 );
@@ -597,8 +592,8 @@ const InlineFormInput = ({
   readOnly = false,
   autoComplete,
 }) => (
-  <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-    <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151", margin: 0, minWidth: "130px", maxWidth: "130px", display: "block" }}>
+  <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-2 mb-3 w-full">
+    <label className="text-sm font-semibold text-gray-700 m-0 w-full md:min-w-[130px] md:max-w-[130px] block">
       {label}
       {required && <span style={{ color: "#ef4444", marginLeft: "4px" }}>*</span>}
     </label>
@@ -692,17 +687,9 @@ const CheckboxGroup = ({ label, name, options, selectedValues, onChange }) => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "row", alignItems: "flex-start", gap: "8px", marginBottom: "12px", gridColumn: "1 / -1" }}>
+    <div className="flex flex-col md:flex-row items-start gap-1 md:gap-2 mb-3 w-full col-span-full">
       <label
-        style={{
-          fontSize: "14px",
-          fontWeight: "600",
-          color: "#374151",
-          minWidth: "130px",
-          maxWidth: "130px",
-          marginTop: "8px",
-          display: "block",
-        }}
+        className="text-sm font-semibold text-gray-700 m-0 w-full md:min-w-[130px] md:max-w-[130px] block md:mt-2"
       >
         {label}
       </label>
@@ -852,7 +839,7 @@ const UserProfileEditPage = () => {
     permanentState: "",
     permanentDistrict: "",
     permanentPincode: "",
-    
+
     contactPersonName: "",
     relationship: "",
     citizenOf: "",
@@ -945,12 +932,12 @@ const UserProfileEditPage = () => {
   ];
 
   const hobbiesOptions = [
-    "Reading", "Sports", "Music", "Traveling", "Cooking", "Photography", 
+    "Reading", "Sports", "Music", "Traveling", "Cooking", "Photography",
     "Dancing", "Gaming", "Painting", "Writing", "Gardening", "Yoga",
   ];
 
   const parentOccupationOptions = [
-    "Retired", "Business", "Government Employee", "Private Employee", 
+    "Retired", "Business", "Government Employee", "Private Employee",
     "Professional", "Farmer", "Homemaker", "Others",
   ];
 
@@ -966,16 +953,16 @@ const UserProfileEditPage = () => {
 
   const currentStateOptions = formData.currentCountry
     ? (() => {
-        const c = allCountries.find((country) => country.name === formData.currentCountry);
-        return c ? State.getStatesOfCountry(c.isoCode).map((s) => s.name) : [];
-      })()
+      const c = allCountries.find((country) => country.name === formData.currentCountry);
+      return c ? State.getStatesOfCountry(c.isoCode).map((s) => s.name) : [];
+    })()
     : [];
 
   const permanentStateOptions = formData.permanentCountry
     ? (() => {
-        const c = allCountries.find((country) => country.name === formData.permanentCountry);
-        return c ? State.getStatesOfCountry(c.isoCode).map((s) => s.name) : [];
-      })()
+      const c = allCountries.find((country) => country.name === formData.permanentCountry);
+      return c ? State.getStatesOfCountry(c.isoCode).map((s) => s.name) : [];
+    })()
     : [];
 
   const currentDistrictOptions = getDistrictsForState(formData.currentCountry, formData.currentState, allCountries);
@@ -1114,12 +1101,12 @@ const UserProfileEditPage = () => {
             const parts = addrStr.split('|||');
             if (parts.length >= 6) {
               return {
-                 doorNo: parts[0] || "",
-                 locality: parts[1] || "",
-                 country: parts[2] || "",
-                 state: parts[3] || "",
-                 district: parts[4] || "",
-                 pincode: parts[5] || ""
+                doorNo: parts[0] || "",
+                locality: parts[1] || "",
+                country: parts[2] || "",
+                state: parts[3] || "",
+                district: parts[4] || "",
+                pincode: parts[5] || ""
               };
             }
             return { doorNo: addrStr }; // Legacy fallback
@@ -1492,10 +1479,10 @@ const UserProfileEditPage = () => {
 
       // Serialize Address fields
       const submitCurrentAddress = `${formData.currentDoorNo || ""}|||${formData.currentLocality || ""}|||${formData.currentCountry || ""}|||${formData.currentState || ""}|||${formData.currentDistrict || ""}|||${formData.currentPincode || ""}`;
-      const submitPermanentAddress = formData.sameAsCurrentAddress 
-        ? submitCurrentAddress 
+      const submitPermanentAddress = formData.sameAsCurrentAddress
+        ? submitCurrentAddress
         : `${formData.permanentDoorNo || ""}|||${formData.permanentLocality || ""}|||${formData.permanentCountry || ""}|||${formData.permanentState || ""}|||${formData.permanentDistrict || ""}|||${formData.permanentPincode || ""}`;
-        
+
       const modifiedFormData = { ...formData };
       modifiedFormData.currentAddress = submitCurrentAddress;
       modifiedFormData.permanentAddress = submitPermanentAddress;
@@ -1636,8 +1623,8 @@ const UserProfileEditPage = () => {
 
 
   return (
-    <div style={{ 
-      minHeight: "100vh", 
+    <div style={{
+      minHeight: "100vh",
       backgroundImage: "url('/images/bg-profile.png')",
       backgroundSize: "cover",
       backgroundPosition: "center",
@@ -1914,8 +1901,8 @@ const UserProfileEditPage = () => {
 
 
                   {/* Basic Details Section */}
-                  <FormSection 
-                    title="Basic Details" 
+                  <FormSection
+                    title="Basic Details"
                     zIndex={20}
                     subtitle={
                       <p style={{ color: "purple", fontWeight: "bold", margin: 0 }}>
@@ -1923,14 +1910,7 @@ const UserProfileEditPage = () => {
                       </p>
                     }
                   >
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                        columnGap: "120px",
-                        rowGap: "24px",
-                      }}
-                    >
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-x-[120px] md:gap-y-6'>
                       <div style={{ gridColumn: "1 / -1" }}>
                         <FormInput
                           label="About Me"
@@ -2425,14 +2405,7 @@ const UserProfileEditPage = () => {
 
                   {/* Family Details Section */}
                   <FormSection title="Family Details" zIndex={19}>
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                        columnGap: "120px",
-                        rowGap: "24px",
-                      }}
-                    >
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-x-[120px] md:gap-y-6'>
                       <FormInput
                         label="Father's Name"
                         name="fathersName"
@@ -2577,7 +2550,7 @@ const UserProfileEditPage = () => {
                         value={formData.mothersNative}
                         onChange={handleInputChange}
                       />
-                      <div style={{ gridColumn: "1 / -1", display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: "16px" }}>
+                      <div className='col-span-full grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-x-[120px] md:gap-y-6'>
                         <FormInput
                           label="No. of Brothers"
                           name="numberOfBrothers"
@@ -2638,7 +2611,7 @@ const UserProfileEditPage = () => {
                           value={formData.familyType}
                           onChange={handleInputChange}
                           options={["Joint Family", "Nuclear Family", "others"]}
-                        /> 
+                        />
                       </div>
                       <div style={{ gridColumn: "1 / -1" }}>
                         <FormInput
@@ -2671,14 +2644,7 @@ const UserProfileEditPage = () => {
 
                   {/* Religious Information Section */}
                   <FormSection title="Religious Information" zIndex={18}>
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                        columnGap: "120px",
-                        rowGap: "24px",
-                      }}
-                    >
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-x-[120px] md:gap-y-6'>
                       <FormInput
                         label="Denomination"
                         name="denomination"
@@ -2815,14 +2781,7 @@ const UserProfileEditPage = () => {
                         <li style={{ color: "#6a1b9a" }}>If you prefer to communicate directly with interested matches, you may enter your own phone number in the Alternate Mobile Number field.</li>
                       </ul>
                     </div>
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                        columnGap: "120px",
-                        rowGap: "24px",
-                      }}
-                    >
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-x-[120px] md:gap-y-6'>
 
                       <FormInput
                         label="Contact Person Name"
@@ -2911,14 +2870,7 @@ const UserProfileEditPage = () => {
 
                   {/* Professional Information Section */}
                   <FormSection title="Professional Information" zIndex={16}>
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                        columnGap: "120px",
-                        rowGap: "24px",
-                      }}
-                    >
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-x-[120px] md:gap-y-6'>
                       <FormInput
                         label="Highest Education"
                         name="education"
@@ -3182,34 +3134,34 @@ const UserProfileEditPage = () => {
                         onChange={handleInputChange}
                         options={[
                           "Any",
-                              "0 - 50 Thousand",
-                              "50 Thousand - 1 Lakh",
-                              "1 Lakh - 2 Lakhs",
-                              "2 Lakhs - 3 Lakhs",
-                              "3 Lakhs - 4 Lakhs",
-                              "4 Lakhs - 5 Lakhs",
-                              "5 Lakhs - 7 Lakhs",
-                              "7 Lakhs - 8 Lakhs",
-                              "8 Lakhs - 9 Lakhs",
-                              "9 Lakhs - 10 Lakhs",
-                              "10 Lakhs - 12 Lakhs",
-                              "12 Lakhs - 14 Lakhs",
-                              "14 Lakhs - 16 Lakhs",
-                              "16 Lakhs - 18 Lakhs",
-                              "18 Lakhs - 20 Lakhs",
-                              "20 Lakhs - 25 Lakhs",
-                              "25 Lakhs - 30 Lakhs",
-                              "30 Lakhs - 35 Lakhs",
-                              "35 Lakhs - 40 Lakhs",
-                              "40 Lakhs - 45 Lakhs",
-                              "45 Lakhs - 50 Lakhs",
-                              "50 Lakhs - 60 Lakhs",
-                              "60 Lakhs - 70 Lakhs",
-                              "70 Lakhs - 80 Lakhs",
-                              "80 Lakhs - 90 Lakhs",
-                              "90 Lakhs - 1 Crore",
-                              "1 Crore - 2 Crore",
-                              "Above 2 Crore",
+                          "0 - 50 Thousand",
+                          "50 Thousand - 1 Lakh",
+                          "1 Lakh - 2 Lakhs",
+                          "2 Lakhs - 3 Lakhs",
+                          "3 Lakhs - 4 Lakhs",
+                          "4 Lakhs - 5 Lakhs",
+                          "5 Lakhs - 7 Lakhs",
+                          "7 Lakhs - 8 Lakhs",
+                          "8 Lakhs - 9 Lakhs",
+                          "9 Lakhs - 10 Lakhs",
+                          "10 Lakhs - 12 Lakhs",
+                          "12 Lakhs - 14 Lakhs",
+                          "14 Lakhs - 16 Lakhs",
+                          "16 Lakhs - 18 Lakhs",
+                          "18 Lakhs - 20 Lakhs",
+                          "20 Lakhs - 25 Lakhs",
+                          "25 Lakhs - 30 Lakhs",
+                          "30 Lakhs - 35 Lakhs",
+                          "35 Lakhs - 40 Lakhs",
+                          "40 Lakhs - 45 Lakhs",
+                          "45 Lakhs - 50 Lakhs",
+                          "50 Lakhs - 60 Lakhs",
+                          "60 Lakhs - 70 Lakhs",
+                          "70 Lakhs - 80 Lakhs",
+                          "80 Lakhs - 90 Lakhs",
+                          "90 Lakhs - 1 Crore",
+                          "1 Crore - 2 Crore",
+                          "Above 2 Crore",
                         ]}
                       />
                     </div>
@@ -3239,14 +3191,7 @@ const UserProfileEditPage = () => {
                         />
                       </div>
 
-                      <div
-                        style={{
-                          display: "grid",
-                          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                          columnGap: "120px",
-                          rowGap: "24px",
-                        }}
-                      >
+                      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-x-[120px] md:gap-y-6'>
                         <FormInput
                           label="Interests"
                           name="interests"
@@ -3432,7 +3377,7 @@ const UserProfileEditPage = () => {
                           "Tulu",
                           "Urdu",
                           "Other",
-                          
+
                         ]}
                       />
                       <FormInput
@@ -3648,15 +3593,7 @@ const UserProfileEditPage = () => {
                       />
                     </div>
 
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                        columnGap: "120px",
-                        rowGap: "24px",
-                        marginTop: "20px",
-                      }}
-                    >
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-x-[120px] md:gap-y-6 mt-5'>
                       <CheckboxGroup
                         label="Partner Marital Status"
                         name="partnerMaritalStatus"
@@ -3737,14 +3674,7 @@ const UserProfileEditPage = () => {
 
                   {/* Partner Preferences - Professional */}
                   <FormSection title="Partner Preferences - Professional" zIndex={13}>
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                        columnGap: "120px",
-                        rowGap: "24px",
-                      }}
-                    >
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-x-[120px] md:gap-y-6'>
                       <FormInput
                         label="Partner Education"
                         name="partnerEducation"
@@ -3991,7 +3921,7 @@ const UserProfileEditPage = () => {
                           placeholder="Search Country..."
                         />
                       </div>
- 
+
                       <div>
                         <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151", marginBottom: "8px", display: "block" }}>Partner State</label>
                         <MultiSearchSelect
@@ -3999,17 +3929,17 @@ const UserProfileEditPage = () => {
                           value={formData.partnerState}
                           onChange={handlePartnerStateChange}
                           options={
-                            formData.partnerCountry.length > 0 
+                            formData.partnerCountry.length > 0
                               ? Array.from(new Set(formData.partnerCountry.flatMap(cName => {
-                                  const c = allCountries.find(curr => curr.name === cName);
-                                  return c ? State.getStatesOfCountry(c.isoCode).map(s => s.name) : [];
-                                })))
+                                const c = allCountries.find(curr => curr.name === cName);
+                                return c ? State.getStatesOfCountry(c.isoCode).map(s => s.name) : [];
+                              })))
                               : State.getStatesOfCountry("IN").map(s => s.name)
                           }
                           placeholder="Search State..."
                         />
                       </div>
- 
+
                       <div>
                         <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151", marginBottom: "8px", display: "block" }}>Partner District / City</label>
                         <MultiSearchSelect
@@ -4019,20 +3949,20 @@ const UserProfileEditPage = () => {
                           options={
                             formData.partnerState.length > 0
                               ? Array.from(new Set(formData.partnerState.flatMap(sName => {
-                                  const countriesToSearch = formData.partnerCountry.length > 0 
-                                    ? allCountries.filter(c => formData.partnerCountry.includes(c.name))
-                                    : allCountries.filter(c => c.isoCode === "IN");
-                                  
-                                  return countriesToSearch.flatMap(c => {
-                                    if (c.name === "India") {
-                                       const indianState = indianDistricts.states.find(s => s.state.toLowerCase() === sName.toLowerCase());
-                                       if (indianState && indianState.districts) return indianState.districts;
-                                    }
-                                    const states = State.getStatesOfCountry(c.isoCode);
-                                    const s = states.find(curr => curr.name === sName);
-                                    return s ? City.getCitiesOfState(c.isoCode, s.isoCode).map(city => city.name) : [];
-                                  });
-                                })))
+                                const countriesToSearch = formData.partnerCountry.length > 0
+                                  ? allCountries.filter(c => formData.partnerCountry.includes(c.name))
+                                  : allCountries.filter(c => c.isoCode === "IN");
+
+                                return countriesToSearch.flatMap(c => {
+                                  if (c.name === "India") {
+                                    const indianState = indianDistricts.states.find(s => s.state.toLowerCase() === sName.toLowerCase());
+                                    if (indianState && indianState.districts) return indianState.districts;
+                                  }
+                                  const states = State.getStatesOfCountry(c.isoCode);
+                                  const s = states.find(curr => curr.name === sName);
+                                  return s ? City.getCitiesOfState(c.isoCode, s.isoCode).map(city => city.name) : [];
+                                });
+                              })))
                               : []
                           }
                           placeholder="Search District / City..."

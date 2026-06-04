@@ -174,6 +174,7 @@ const TopHeader = () => {
 
   const mainNavLinks = [
     { label: "HOME", path: "/" },
+    { label: "SEARCH", path: "/user/find-matches", hasSearchIcon: true },
     { label: "PLANS", path: "/user/user-plan-selection" },
     { label: "SUCCESS STORIES", path: "/success-stories" },
     { label: "HELP & SUPPORTS", path: "/help-support" },
@@ -200,7 +201,7 @@ const TopHeader = () => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <Phone className="w-4 h-4" />
-                <span>+91 5312 5312</span>
+                <span>+91 96637 96699</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="w-4 h-4" />
@@ -237,14 +238,15 @@ const TopHeader = () => {
                 <button
                   key={index}
                   onClick={() => handleNavigate(link.path)}
-                  className="text-gray-800 hover:text-purple-600 font-medium transition-colors"
+                  className="text-gray-800 hover:text-purple-800 font-medium flex items-center transition-colors"
                 >
+                  {link.hasSearchIcon && <Search className="w-4 h-4 mr-1" />}
                   {link.label}
                 </button>
               ))}
 
               <div className="relative group">
-                <button className="text-gray-800 hover:text-purple-600 font-medium flex items-center">
+                <button className="text-gray-800 hover:text-purple-800 font-medium flex items-center">
                   EXPLORE <ChevronDown className="w-4 h-4 ml-1" />
                 </button>
                 <ExploreDropdown />
@@ -277,7 +279,7 @@ const TopHeader = () => {
                 <div className="flex items-center space-x-3">
                   <button
                     onClick={() => handleNavigate("/user/user-sign-up")}
-                    className="text-gray-800 hover:text-purple-600 font-medium transition-colors"
+                    className="text-gray-800 hover:text-purple-800 font-medium transition-colors"
                   >
                     REGISTER
                   </button>
@@ -315,15 +317,16 @@ const TopHeader = () => {
                       handleNavigate(link.path);
                       setIsMobileMenuOpen(false);
                     }}
-                    className="text-left text-gray-800 hover:text-purple-600 font-medium py-2"
+                    className="flex items-center text-left text-gray-800 hover:text-purple-800 font-medium py-2"
                   >
+                    {link.hasSearchIcon && <Search className="w-4 h-4 mr-2" />}
                     {link.label}
                   </button>
                 ))}
 
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-left text-gray-800 hover:text-purple-600 font-medium py-2"
+                  className="text-left text-gray-800 hover:text-purple-800 font-medium py-2"
                 >
                   EXPLORE
                 </button>
@@ -387,7 +390,7 @@ const TopHeader = () => {
                           handleNavigate("/user/user-sign-up");
                           setIsMobileMenuOpen(false);
                         }}
-                        className="w-full text-left text-gray-800 hover:text-purple-600 font-medium py-2"
+                        className="w-full text-left text-gray-800 hover:text-purple-800 font-medium py-2"
                       >
                         REGISTER
                       </button>
