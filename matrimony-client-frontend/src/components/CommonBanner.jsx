@@ -1,6 +1,6 @@
 import React from "react";
 
-const CommonBanner = ({ title, subtitle, badgeText = "#1 Wedding Website" }) => {
+const CommonBanner = ({ title, subtitle, badgeText = "" }) => {
   return (
     <section className="relative h-[400px] md:h-[500px] flex items-center justify-center overflow-hidden">
       {/* Parallax Background Image */}

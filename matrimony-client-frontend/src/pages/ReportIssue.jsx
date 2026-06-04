@@ -133,7 +133,6 @@ const ReportIssue = () => {
         />
       </div>
 
-      {/* Form Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-3xl p-10 border border-gray-100">
 
