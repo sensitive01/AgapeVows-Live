@@ -243,9 +243,9 @@ const MainLayout = () => {
                     {/* <Search className="w-4 h-4" /> */}
                   </div>
                 )}
-                <button onClick={() => handleNavigate("/blogs")}>
+                {/* <button onClick={() => handleNavigate("/blogs")}>
                   BLOGS
-                </button>
+                </button> */}
               </div>
               <button
                 onClick={() => handleNavigate("/faq")}

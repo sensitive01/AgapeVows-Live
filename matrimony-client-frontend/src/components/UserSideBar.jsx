@@ -895,7 +895,7 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
           <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
             {userInfo?.agwid && <span style={{ fontWeight: '600', fontSize: '15px', color: '#2d3748' }}>{userInfo.agwid}</span>}
             <MembershipBadge user={userInfo} />
-            <span style={{ fontSize: '13px', color: '#718096', fontWeight: '500', background: '#f7fafc', padding: '4px 10px', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+            <span style={{ fontSize: '13px', color: '#ffffff', fontWeight: '500', background: '#a020f0', padding: '4px 10px', borderRadius: '20px', border: '1px solid #a020f0' }}>
               Profile: {completionPercentage}% Completed
             </span>
           </div>
