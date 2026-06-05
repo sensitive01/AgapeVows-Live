@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UserSideBar from "../components/UserSideBar";
 import LayoutComponent from "../components/layouts/LayoutComponent";
-import { deactivateProfile, getUserInfo, requestContactUpdate, acknowledgeContactUpdate } from "../api/axiosService/userAuthService";
+import { deactivateProfile, getUserInfo, requestContactUpdate, acknowledgeContactUpdate, updatePrivacySettings } from "../api/axiosService/userAuthService";
 import { resetPasswordRequest } from "../api/axiosService/userSignUpService";
 import { toast } from "react-toastify";
 import { confirmAction } from "../utils/alertService";
@@ -122,6 +122,25 @@ const UserSettingsPage = () => {
       toast.error("Failed to update password");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVisibilityChange = async (e) => {
+    const newValue = e.target.value;
+    // Optimistic update
+    setUserData((prev) => ({ ...prev, profileVisibility: newValue }));
+    try {
+      const res = await updatePrivacySettings(userId, { profileVisibility: newValue });
+      if (res.status === 200) {
+        toast.success("Profile visibility updated!");
+      }
+    } catch (error) {
+      toast.error("Failed to update profile visibility.");
+      // Revert if failed
+      const res = await getUserInfo(userId);
+      if (res?.data?.success) {
+        setUserData(res.data.data);
+      }
     }
   };
 
@@ -393,8 +412,8 @@ const UserSettingsPage = () => {
                           <p className="text-muted small">Control who can view your profile details.</p>
                           <select
                             className="form-select"
-                            value={userData?.profileVisibility || "Private"}
-                            onChange={() => { }} // Placeholder for now
+                            value={userData?.profileVisibility || "Public"}
+                            onChange={handleVisibilityChange}
                           >
                             <option value="Public">All Users</option>
                             <option value="Private">Premium Users Only</option>

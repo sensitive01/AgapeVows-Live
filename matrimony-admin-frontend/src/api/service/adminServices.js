@@ -110,6 +110,30 @@ export const verifyAdmin = async (loginData) => {
   return await adminInstance.post(`/verify-admin`, { loginData });
 };
 
+/* =========================
+   SUBADMIN MANAGEMENT
+========================== */
+export const getAdminProfile = async (id) => {
+  return await adminInstance.get(`/get-admin-profile/${id}`);
+};
+
+export const createSubadmin = async (data) => {
+  return await adminInstance.post(`/create-subadmin`, data);
+};
+
+export const getAllSubadmins = async () => {
+  return await adminInstance.get(`/get-all-subadmins`);
+};
+
+export const updateSubadmin = async (id, data) => {
+  return await adminInstance.put(`/update-subadmin/${id}`, data);
+};
+
+export const deleteSubadmin = async (id) => {
+  return await adminInstance.delete(`/delete-subadmin/${id}`);
+};
+
+
 
 /* =========================
    USER MANAGEMENT

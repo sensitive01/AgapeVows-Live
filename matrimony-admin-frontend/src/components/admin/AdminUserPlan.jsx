@@ -45,7 +45,8 @@ const AdminUserPlan = () => {
   };
 
   const formatNumber = (num) => {
-    if (!num && num !== 0) return "";
+    if (num === null || num === undefined || num === "") return "";
+    if (num === "NaN" || Number.isNaN(num)) return "Unlimited"; // Fallback for old corrupted data
     const number = parseInt(num);
     if (isNaN(number)) return num; // If it's already "Unlimited" string
     if (number >= 100000000) return "Unlimited";

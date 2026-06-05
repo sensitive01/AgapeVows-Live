@@ -1,11 +1,32 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
-import { getAllIssues, getAllEnquiries, getAllReports } from "../../../api/service/adminServices";
+import { getAllIssues, getAllEnquiries, getAllReports, getAdminProfile } from "../../../api/service/adminServices";
 
 const Sidebar = () => {
   const location = useLocation();
   const [expandedMenus, setExpandedMenus] = useState({});
   const [newCounts, setNewCounts] = useState({ issues: 0, enquiries: 0, reports: 0 });
+  const [adminRole, setAdminRole] = useState("superadmin");
+  const [adminPermissions, setAdminPermissions] = useState([]);
+
+  useEffect(() => {
+    const adminId = localStorage.getItem("adminId");
+    if (adminId) {
+      getAdminProfile(adminId)
+        .then((res) => {
+          if (res.data?.success) {
+            setAdminRole(res.data.data.role || "superadmin");
+            setAdminPermissions(res.data.data.permissions || []);
+          }
+        })
+        .catch((err) => console.error("Error fetching admin profile:", err));
+    }
+  }, []);
+
+  const hasPermission = (key) => {
+    if (adminRole === "superadmin") return true;
+    return adminPermissions.includes(key);
+  };
 
   useEffect(() => {
     // Automatically expand the "Users" menu if any sub-route related to users is active
@@ -117,6 +138,7 @@ const Sidebar = () => {
           </li>
 
           {/* USERS GROUP */}
+          {hasPermission("users") && (
           <li>
             <a
               href="#"
@@ -143,6 +165,7 @@ const Sidebar = () => {
               }}
             >
               <ul className="list-unstyled" style={{ paddingLeft: "10px" }}>
+                {hasPermission("users.new_requests") && (
                 <li>
                   <Link 
                     to="/admin/new-user-requests" 
@@ -151,6 +174,8 @@ const Sidebar = () => {
                     New User Requests
                   </Link>
                 </li>
+                )}
+                {hasPermission("users.all") && (
                 <li>
                   <Link 
                     to="/admin/all-user-list" 
@@ -159,6 +184,8 @@ const Sidebar = () => {
                     All Users
                   </Link>
                 </li>
+                )}
+                {hasPermission("users.paid") && (
                 <li>
                   <Link 
                     to="/admin/paid-user-list" 
@@ -167,6 +194,8 @@ const Sidebar = () => {
                     Paid Users
                   </Link>
                 </li>
+                )}
+                {hasPermission("users.add_new") && (
                 <li>
                   <Link 
                     to="/admin/add-new-user" 
@@ -175,6 +204,8 @@ const Sidebar = () => {
                     Add new User
                   </Link>
                 </li>
+                )}
+                {hasPermission("users.deleted") && (
                 <li>
                   <Link 
                     to="/admin/deleted-users" 
@@ -183,6 +214,8 @@ const Sidebar = () => {
                     Deleted Users
                   </Link>
                 </li>
+                )}
+                {hasPermission("users.deactivated") && (
                 <li>
                   <Link 
                     to="/admin/deactivated-users" 
@@ -191,7 +224,9 @@ const Sidebar = () => {
                     Deactivated Users
                   </Link>
                 </li>
+                )}
 
+                {hasPermission("users.id_verification") && (
                 <li>
                   <Link 
                     to="/admin/id-verification-requests" 
@@ -200,6 +235,8 @@ const Sidebar = () => {
                     ID Verification
                   </Link>
                 </li>
+                )}
+                {hasPermission("users.verified_id") && (
                 <li>
                   <Link 
                     to="/admin/verified-id-users" 
@@ -208,6 +245,8 @@ const Sidebar = () => {
                     Verified Users
                   </Link>
                 </li>
+                )}
+                {hasPermission("users.contact_updates") && (
                 <li>
                   <Link 
                     to="/admin/contact-update-requests" 
@@ -216,11 +255,14 @@ const Sidebar = () => {
                     Contact Updates
                   </Link>
                 </li>
+                )}
               </ul>
             </div>
           </li>
+          )}
 
           {/* PRICING */}
+          {hasPermission("pricing") && (
           <li>
             <Link 
               to="/admin/pricing-plans-list" 
@@ -229,8 +271,10 @@ const Sidebar = () => {
               <span style={iconStyle}>💳</span> Pricing Plans
             </Link>
           </li>
+          )}
 
           {/* EVENTS */}
+          {hasPermission("events") && (
           <li>
             <Link 
               to="/admin/events" 
@@ -239,10 +283,12 @@ const Sidebar = () => {
               <span style={iconStyle}>📅</span> Events
             </Link>
           </li>
+          )}
 
 
 
           {/* ISSUES */}
+          {hasPermission("issues") && (
           <li>
             <Link 
               to="/admin/issues" 
@@ -259,7 +305,9 @@ const Sidebar = () => {
               )}
             </Link>
           </li>
+          )}
 
+          {hasPermission("enquiries") && (
           <li>
             <Link 
               to="/admin/enquiries" 
@@ -276,10 +324,12 @@ const Sidebar = () => {
               )}
             </Link>
           </li>
+          )}
 
 
 
           {/* REPORTS */}
+          {hasPermission("reports") && (
           <li>
             <Link 
               to="/admin/reports" 
@@ -296,6 +346,7 @@ const Sidebar = () => {
               )}
             </Link>
           </li>
+          )}
         </ul>
       </div>
 

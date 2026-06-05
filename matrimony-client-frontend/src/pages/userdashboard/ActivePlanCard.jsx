@@ -379,6 +379,17 @@ const ActivePlanCard = ({ externalPlanData }) => {
               </li>
             </>
           )}
+
+          {viewContactDetails === "Yes" && (
+            <>
+              <li className="mb-2">
+                ✔ Contact View (Total): {isUnlimitedContact ? "Unlimited" : parsedMaxContact}
+              </li>
+              <li className="mb-2">
+                ✔ Contact View (Daily): {isUnlimitedDailyContact ? "Unlimited" : parsedDailyContact}
+              </li>
+            </>
+          )}
           
         </ul>
 

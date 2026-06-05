@@ -42,7 +42,7 @@ const ContactPage = () => {
           <div className="absolute inset-0 bg-black/10"></div>
           <div className="relative z-10 max-w-7xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
-              Get in Touch
+              Contact Us
             </h1>
             <p className="text-lg md:text-xl text-purple-100 max-w-2xl mx-auto font-medium">
               We're here to help you find your perfect match. Reach out to our support team anytime.

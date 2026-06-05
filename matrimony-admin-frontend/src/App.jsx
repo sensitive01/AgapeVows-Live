@@ -32,6 +32,7 @@ import AdminUnverifiedIdUsers from "./components/admin/AdminUnverifiedIdUsers";
 import AdminVerifiedIdUsers from "./components/admin/AdminVerifiedIdUsers";
 import AdminDeactivatedUsers from "./components/admin/AdminDeactivatedUsers";
 import AdminContactUpdateRequests from "./components/admin/AdminContactUpdateRequests";
+import AdminSubadmins from "./components/admin/AdminSubadmins";
 
 function App() {
   useEffect(() => {
@@ -363,6 +364,14 @@ function App() {
           element={
             <AdminLayout>
               <AdminContactUpdateRequests />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/subadmins"
+          element={
+            <AdminLayout>
+              <AdminSubadmins />
             </AdminLayout>
           }
         />

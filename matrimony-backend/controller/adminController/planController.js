@@ -85,11 +85,21 @@ const editPlanData = async (req, res) => {
         .json({ success: false, message: "Invalid input data" });
     }
 
-    // Ensure numeric fields are numbers
+    const normalizeValue = (val) => {
+      return isNaN(val) ? val : Number(val);
+    };
+
+    // Ensure numeric fields are numbers, but preserve strings like "unlimited"
     const updatedData = {
       ...planData,
       price: Number(planData.price),
-      maxProfiles: Number(planData.maxProfiles),
+      duration: Number(planData.duration),
+      maxProfiles: normalizeValue(planData.maxProfiles),
+      dailyLimit: normalizeValue(planData.dailyLimit),
+      maxSendInterest: normalizeValue(planData.maxSendInterest),
+      dailyLimitSendInterest: normalizeValue(planData.dailyLimitSendInterest),
+      maxViewContact: normalizeValue(planData.maxViewContact),
+      dailyLimitViewContact: normalizeValue(planData.dailyLimitViewContact),
     };
 
     const updatedPlan = await planModel.findByIdAndUpdate(planId, updatedData, {

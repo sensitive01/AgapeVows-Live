@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
-import { getAllUserData, deleteUserById, exportUsersData, deactivateUserById } from "../../api/service/adminServices";
+import { getAllUserData, deleteUserById, exportUsersData, deactivateUserById, getAdminProfile } from "../../api/service/adminServices";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { confirmAction, showAlert } from "../../utils/alertService";
@@ -19,7 +19,28 @@ const AdminAllUsersList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [adminRole, setAdminRole] = useState("superadmin");
+  const [adminPermissions, setAdminPermissions] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const adminId = localStorage.getItem("adminId");
+    if (adminId) {
+      getAdminProfile(adminId)
+        .then((res) => {
+          if (res.data?.success) {
+            setAdminRole(res.data.data.role || "superadmin");
+            setAdminPermissions(res.data.data.permissions || []);
+          }
+        })
+        .catch((err) => console.error("Error fetching admin profile:", err));
+    }
+  }, []);
+
+  const hasPermission = (key) => {
+    if (adminRole === "superadmin") return true;
+    return adminPermissions.includes(key);
+  };
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = () => {
@@ -617,6 +638,7 @@ const AdminAllUsersList = () => {
                                       minWidth: "160px",
                                     }}
                                   >
+                                    {hasPermission("users.all.edit") && (
                                     <li>
                                       <a
                                         className="dropdown-item text-primary"
@@ -630,8 +652,9 @@ const AdminAllUsersList = () => {
                                         <i className="fa fa-edit me-2"></i>Edit
                                       </a>
                                     </li>
+                                    )}
 
-
+                                    {hasPermission("users.all.delete") && (
                                     <li>
                                       <a
                                         className="dropdown-item text-danger"
@@ -646,7 +669,9 @@ const AdminAllUsersList = () => {
                                         Delete
                                       </a>
                                     </li>
+                                    )}
 
+                                    {hasPermission("users.all.deactivate") && (
                                     <li>
                                       <a
                                         className="dropdown-item text-warning"
@@ -661,6 +686,7 @@ const AdminAllUsersList = () => {
                                         Deactivate
                                       </a>
                                     </li>
+                                    )}
 
                                     <li>
                                       <a

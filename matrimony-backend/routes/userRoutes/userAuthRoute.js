@@ -126,7 +126,7 @@ userAuthRoutes.get("/users/:userId/who-viewed-you-page", userAuthController.getW
 
 userAuthRoutes.get("/get-events", userAuthController.getAllEvents);
 userAuthRoutes.get(
-    "/get-blogs",
+  "/get-blogs",
   userAuthController.getAllBlogs
 );
 
@@ -196,5 +196,8 @@ userAuthRoutes.post("/deactivate-profile/:userId", userAuthController.deactivate
 
 // Notifications Route
 userAuthRoutes.post("/mark-notifications-read/:userId", userAuthController.markNotificationsRead);
+
+// Privacy Settings Route
+userAuthRoutes.put("/update-privacy-settings/:userId", userAuthController.updatePrivacySettings);
 
 module.exports = userAuthRoutes;

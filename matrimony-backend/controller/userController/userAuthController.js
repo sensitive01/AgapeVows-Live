@@ -562,7 +562,7 @@ const getProfileMoreInformation = async (req, res) => {
 
     // ================= VIEW COUNT LOGIC ================= //
     let currentPlanStartDate = null;
-    
+
     if (viewerId && viewerId !== profileId) {
       if (!profileData.profileViews) {
         profileData.profileViews = [];
@@ -924,7 +924,7 @@ const showUserInterests = async (req, res) => {
       user.paymentDetails[activePlanIndex].lastInterestSentDate = new Date();
       user.markModified("paymentDetails");
       await user.save();
-      
+
       await userModel.findByIdAndUpdate(targetUser, { $inc: { unreadInterestsCount: 1 } });
 
       return res.status(200).json({
@@ -1224,7 +1224,7 @@ const getNewProfileMatches = async (req, res) => {
     } = currentUser;
 
     const oppositeGender = gender === "Male" ? "Female" : "Male";
-    
+
     // Ensure blockedIds are ObjectIds
     const blockedIds = currentUser.blockedUsers?.map(b => b.user) || [];
 
@@ -1751,7 +1751,7 @@ const shortListTheProfile = async (req, res) => {
       if (!alreadyShortlisted) {
         shortListedData.profiles.push(profileId);
         await shortListedData.save();
-        
+
         await userModel.findByIdAndUpdate(profileId, { $inc: { unreadShortlistsCount: 1 } });
       }
 
@@ -2678,7 +2678,7 @@ const deactivateProfile = async (req, res) => {
 const markNotificationsRead = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { type } = req.body; 
+    const { type } = req.body;
 
     let update = {};
     if (type === 'interests') update.unreadInterestsCount = 0;
@@ -2692,6 +2692,32 @@ const markNotificationsRead = async (req, res) => {
     res.status(200).json({ success: true, message: "Notifications marked as read", data: updatedUser });
   } catch (err) {
     console.error("Error marking notifications read:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+const updatePrivacySettings = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { profileVisibility } = req.body;
+    
+    if (!profileVisibility) {
+      return res.status(400).json({ success: false, message: "profileVisibility is required" });
+    }
+
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      { profileVisibility },
+      { new: true }
+    );
+    
+    res.status(200).json({
+      success: true,
+      message: "Privacy settings updated successfully",
+      data: updatedUser
+    });
+  } catch (err) {
+    console.error("Error updating privacy settings:", err);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
@@ -2733,5 +2759,6 @@ module.exports = {
   uploadIdProof,
   deactivateProfile,
   requestContactUpdate,
-  markNotificationsRead
+  markNotificationsRead,
+  updatePrivacySettings
 };

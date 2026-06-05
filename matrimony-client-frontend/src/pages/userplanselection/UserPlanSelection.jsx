@@ -51,9 +51,13 @@ const UserPlanSelection = () => {
     fetchData();
   }, []);
 
-  // Format large numbers for display
   const formatNumber = (num) => {
+    if (num === null || num === undefined || num === "") return "";
+    if (num === "NaN" || Number.isNaN(num)) return "Unlimited";
+    
     const number = parseInt(num);
+    if (isNaN(number)) return num; // If it's already "unlimited" or similar string
+    
     if (number >= 1000000000000 || number >= 1000000000) {
       return "Unlimited";
     } else if (number >= 1000000) {
@@ -170,8 +174,12 @@ const UserPlanSelection = () => {
       try {
         const backendResponse = await sendPaymentDataToBackend(paymentData, userId);
         if (backendResponse) {
-          showAlert({ text: "Free Plan Activated Successfully!", icon: "success" });
-          window.location.href = "/user/user-dashboard-page";
+          navigate("/user/user-dashboard-page", { 
+            state: { 
+              purchaseSuccess: true, 
+              planDetails: paymentData.planDetails 
+            } 
+          });
         }
       } catch (error) {
         console.error("Error activating free plan:", error);
@@ -234,9 +242,12 @@ const UserPlanSelection = () => {
           );
 
           if (backendResponse) {
-            showAlert({ text: "Payment Successful! Your plan has been activated.", icon: "success" });
-            // Optionally redirect to dashboard or plans page
-            window.location.href = "/user/user-dashboard-page";
+            navigate("/user/user-dashboard-page", { 
+              state: { 
+                purchaseSuccess: true, 
+                planDetails: paymentData.planDetails 
+              } 
+            });
           } else {
             showAlert({
               text: "Payment received but there was an issue activating your plan. Please contact support.",
@@ -277,16 +288,19 @@ const UserPlanSelection = () => {
   };
 
   const renderFeatureIcon = (hasFeature) => {
+    // If it's explicitly "No", 0, false, or "NaN", show the X mark
     if (
-      hasFeature === "Yes" ||
-      hasFeature === "All Profiles" ||
-      hasFeature === "Only Basic" ||
-      hasFeature === "Only Premium" ||
-      hasFeature === "Only Platinum"
+      hasFeature === "No" ||
+      hasFeature === "0" ||
+      hasFeature === 0 ||
+      hasFeature === false ||
+      hasFeature === "NaN" ||
+      !hasFeature
     ) {
-      return <i className="fa fa-check" aria-hidden="true" />;
+      return <i className="fa fa-close close" aria-hidden="true" />;
     }
-    return <i className="fa fa-close close" aria-hidden="true" />;
+    // Otherwise show the check mark
+    return <i className="fa fa-check" aria-hidden="true" />;
   };
 
   const getFeatureText = (plan, featureType) => {
@@ -297,7 +311,7 @@ const UserPlanSelection = () => {
           }`;
       case "dailyLimit":
         const formattedDaily = formatNumber(plan.dailyLimit);
-        return `${formattedDaily} per day limit`;
+        return `Per day limit: ${formattedDaily}`;
       case "viewProfiles":
         return `${plan.canViewProfiles} user profile can view`;
       case "contactDetails":
@@ -343,10 +357,6 @@ const UserPlanSelection = () => {
               <h1>
                 Get Started <br /> Pick your Plan Now
               </h1>
-              <p>
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry.{" "}
-              </p>
               <span className="nocre">No credit card required</span>
 
             </div>
@@ -471,7 +481,13 @@ const UserPlanSelection = () => {
 
                         <ol>
                           <li>
-                            {renderFeatureIcon(plan.maxProfiles > 0 ? "Yes" : "No")}
+                            {renderFeatureIcon(
+                              plan.maxProfiles > 0 || 
+                              String(plan.maxProfiles).toLowerCase() === "unlimited" || 
+                              String(plan.maxProfiles) === "NaN" 
+                                ? "Yes" 
+                                : "No"
+                            )}
                             {getFeatureText(plan, "profiles")}
                           </li>
 

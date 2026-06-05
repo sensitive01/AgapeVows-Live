@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import Swal from "sweetalert2";
 import Footer from "../components/Footer";
 import CopyRights from "../components/CopyRights";
 import UserSideBar from "../components/UserSideBar";
@@ -32,6 +33,65 @@ const UserDashboardPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [activePlan, setActivePlan] = useState(null);
   const [planLoading, setPlanLoading] = useState(true);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.purchaseSuccess && location.state?.planDetails) {
+      const plan = location.state.planDetails;
+      
+      const formatNum = (val) => {
+        if (val === "NaN" || Number.isNaN(val) || String(val).toLowerCase() === "unlimited" || val === 0) return "Unlimited";
+        return val;
+      };
+      
+      Swal.fire({
+        title: '🎉 Congratulations!',
+        html: `
+          <div style="text-align: left; background: #f8f9fa; padding: 15px; border-radius: 8px; font-size: 14px;">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px;">
+              <div><strong>Plan:</strong> <span style="color: #4a2580; font-weight: 600;">${plan.name}</span></div>
+              <div><strong>Price:</strong> ₹${plan.price}</div>
+              <div><strong>Duration:</strong> ${plan.duration} ${plan.durationType}</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              
+              <div>
+                <h6 style="color: #4a2580; font-weight: bold; margin-bottom: 5px; font-size: 14px;">Profile Views</h6>
+                <ul style="list-style-type: none; padding: 0; margin: 0; font-size: 13px; line-height: 1.6;">
+                  <li>✔ Total Limit: <strong>${formatNum(plan.maxProfiles)}</strong></li>
+                  <li>✔ Daily Limit: <strong>${formatNum(plan.dailyLimit)}</strong></li>
+                  <li>✔ Can View: <strong>${plan.canViewProfiles}</strong></li>
+                </ul>
+              </div>
+
+              <div>
+                <h6 style="color: #4a2580; font-weight: bold; margin-bottom: 5px; font-size: 14px;">Contact & Interests</h6>
+                <ul style="list-style-type: none; padding: 0; margin: 0; font-size: 13px; line-height: 1.6;">
+                  <li>✔ View Contacts: <strong>${plan.viewContactDetails}</strong></li>
+                  ${plan.viewContactDetails !== 'No' && plan.viewContactDetails !== '0' && plan.viewContactDetails !== false ? `
+                    <li style="color: #555; padding-left: 15px;">Total: ${formatNum(plan.maxViewContact)} | Daily: ${formatNum(plan.dailyLimitViewContact)}</li>
+                  ` : ''}
+                  <li style="margin-top: 4px;">✔ Send Interests: <strong>${plan.sendInterestRequest}</strong></li>
+                  ${plan.sendInterestRequest !== 'No' && plan.sendInterestRequest !== '0' && plan.sendInterestRequest !== false ? `
+                    <li style="color: #555; padding-left: 15px;">Total: ${formatNum(plan.maxSendInterest)} | Daily: ${formatNum(plan.dailyLimitSendInterest)}</li>
+                  ` : ''}
+                </ul>
+              </div>
+
+            </div>
+          </div>
+        `,
+        icon: 'success',
+        confirmButtonColor: '#4a2580',
+        confirmButtonText: 'Start Exploring',
+        width: '550px'
+      });
+
+      // Clear the state so it doesn't pop up again on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const fetchData = async () => {

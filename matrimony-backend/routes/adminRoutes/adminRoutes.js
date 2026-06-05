@@ -63,6 +63,15 @@ adminRoutes.get("/", adminController.registerAdmin);
 adminRoutes.post("/verify-admin", adminController.verifyAdmin);
 
 /* =========================
+   SUBADMIN MANAGEMENT
+========================== */
+adminRoutes.get("/get-admin-profile/:id", adminController.getAdminProfile);
+adminRoutes.post("/create-subadmin", adminController.createSubadmin);
+adminRoutes.get("/get-all-subadmins", adminController.getAllSubadmins);
+adminRoutes.put("/update-subadmin/:id", adminController.updateSubadmin);
+adminRoutes.delete("/delete-subadmin/:id", adminController.deleteSubadmin);
+
+/* =========================
    USER MANAGEMENT
 ========================== */
 adminRoutes.get("/get-all-users", adminController.getAllUsersData);

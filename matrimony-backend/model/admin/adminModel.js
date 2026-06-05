@@ -14,6 +14,15 @@ const adminSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      enum: ['superadmin', 'subadmin'],
+      default: 'superadmin'
+    },
+    permissions: {
+      type: [String],
+      default: []
+    }
   },
   {
     timestamps: true,

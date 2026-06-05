@@ -61,7 +61,7 @@ const ExploreDropdown = ({ isVisible }) => {
               if (newTab) newTab.focus();
             }
           }}
-          className="w-full text-left block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors font-medium border-b border-gray-50 last:border-0"
+          className="w-full text-left block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-[#4a2580] transition-colors font-medium border-b border-gray-50 last:border-0"
         >
           {category.title}
         </a>
@@ -107,7 +107,7 @@ const ProfileDropdown = ({ isVisible, onLogout }) => {
               if (newTab) newTab.focus();
             }
           }}
-          className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+          className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-[#4a2580] transition-colors"
         >
           {link.label}
         </a>
@@ -139,7 +139,7 @@ const HelpDropdown = ({ isVisible }) => {
         <button
           key={index}
           onClick={() => handleNavigate(item.path)}
-          className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors font-medium border-b border-gray-50 last:border-0"
+          className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-[#4a2580] transition-colors font-medium border-b border-gray-50 last:border-0"
         >
           {item.title}
         </button>
@@ -229,7 +229,7 @@ const MainLayout = () => {
   return (
     <>
       {/* Top Bar - Fixed Responsive */}
-      <div className="bg-[#2b124c] text-white text-xs py-2 px-4 border-b border-white/10">
+      <div className="bg-[#4a2580] text-white text-xs py-2 px-4 border-b border-white/10">
         <div className="max-w-7xl mx-auto">
           {/* Desktop & Tablet */}
           <div className="hidden md:flex justify-between items-center">
@@ -246,7 +246,7 @@ const MainLayout = () => {
                 {/* <button onClick={() => handleNavigate("/blogs")}>
                   BLOGS
                 </button> */}
-              </div>
+              </div> 
               <button
                 onClick={() => handleNavigate("/faq")}
                 className="cursor-pointer hover:text-purple-200"
@@ -267,7 +267,7 @@ const MainLayout = () => {
               </div>
               <div className="flex items-center space-x-2 text-white">
                 <Mail className="w-4 h-4 !text-white" />
-                <span className="!text-white font-medium uppercase">HELP@AGAPEVOWS.COM</span>
+                <span className="!text-white font-medium uppercase">SUPPORT@AGAPEVOWS.COM</span> 
               </div>
               <div className="flex space-x-3 text-white">
                 <Facebook className="w-4 h-4 cursor-pointer hover:text-purple-200 !text-white" />
@@ -360,8 +360,8 @@ const MainLayout = () => {
                   }
                 }}
                 className={`hover-purple-shadow transition-all duration-200 font-medium py-2 ${location.pathname === "/about-us"
-                  ? "text-[#2b124c] font-bold border-b-2 border-[#2b124c]"
-                  : "text-gray-800 hover:text-[#2b124c]"
+                  ? "text-[#4a2580] font-bold border-b-2 border-[#4a2580]"
+                  : "text-gray-800 hover:text-[#4a2580]"
                   }`}
               >
                 ABOUT US
@@ -380,8 +380,8 @@ const MainLayout = () => {
                   }
                 }}
                 className={`hover-purple-shadow flex items-center transition-all duration-200 font-medium py-2 ${location.pathname === "/user/find-matches"
-                  ? "text-[#2b124c] font-bold border-b-2 border-[#2b124c]"
-                  : "text-gray-800 hover:text-[#2b124c]"
+                  ? "text-[#4a2580] font-bold border-b-2 border-[#4a2580]"
+                  : "text-gray-800 hover:text-[#4a2580]"
                   }`}
               >
                 <Search className="w-4 h-4 mr-1 mb-0.5" /> SEARCH
@@ -401,8 +401,8 @@ const MainLayout = () => {
                     location.pathname.includes("/bridal-makeup") ||
                     location.pathname.includes("/insurance-services") ||
                     location.pathname === "/user/user-service-page"
-                    ? "text-[#2b124c] font-bold border-b-2 border-[#2b124c]"
-                    : "text-gray-800 hover:text-[#2b124c]"
+                    ? "text-[#4a2580] font-bold border-b-2 border-[#4a2580]"
+                    : "text-gray-800 hover:text-[#4a2580]"
                     }`}
                 >
                   SERVICES <ChevronDown className="w-4 h-4 ml-1" />
@@ -426,7 +426,7 @@ const MainLayout = () => {
                   }
                 }}
                 className={`nav-highlight-events transition-all duration-200 py-2 ${location.pathname === "/user/events-page"
-                  ? "border-b-2 border-[#2b124c]"
+                  ? "border-b-2 border-[#4a2580]"
                   : ""
                   }`}
               >
@@ -446,8 +446,8 @@ const MainLayout = () => {
                   }
                 }}
                 className={`hover-purple-shadow transition-all duration-200 font-medium py-2 ${location.pathname === "/user/user-plan-selection"
-                  ? "text-[#2b124c] font-bold border-b-2 border-[#2b124c]"
-                  : "text-gray-800 hover:text-[#2b124c]"
+                  ? "text-[#4a2580] font-bold border-b-2 border-[#4a2580]"
+                  : "text-gray-800 hover:text-[#4a2580]"
                   }`}
               >
                 PLANS
@@ -461,8 +461,8 @@ const MainLayout = () => {
                 <button
                   className={`hover-purple-shadow transition-all duration-200 font-medium flex items-center py-2 ${location.pathname === "/help-support" ||
                     location.pathname === "/report-issue"
-                    ? "text-[#2b124c] font-bold border-b-2 border-[#2b124c]"
-                    : "text-gray-800 hover:text-[#2b124c]"
+                    ? "text-[#4a2580] font-bold border-b-2 border-[#4a2580]"
+                    : "text-gray-800 hover:text-[#4a2580]"
                     }`}
                 >
                   HELP & SUPPORT <ChevronDown className="w-4 h-4 ml-1" />
@@ -516,7 +516,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-sign-up");
                       }
                     }}
-                    className="text-gray-800 hover:text-purple-600 font-medium"
+                    className="text-gray-800 hover:text-[#4a2580] font-medium"
                   >
                     REGISTER
                   </a>
@@ -560,7 +560,7 @@ const MainLayout = () => {
                   }}
                   className={`text-left font-medium p-3 rounded-md transition-colors ${location.pathname === "/about-us"
                     ? "text-purple-600 bg-purple-50"
-                    : "text-gray-800 hover:text-purple-600 hover:bg-gray-50"
+                    : "text-gray-800 hover:text-[#4a2580] hover:bg-gray-50"
                     }`}
                 >
                   ABOUT US
@@ -574,7 +574,7 @@ const MainLayout = () => {
                     }}
                     className={`text-left font-medium p-3 rounded-md transition-colors ${location.pathname === "/user/find-matches"
                       ? "text-purple-600 bg-purple-50"
-                      : "text-gray-800 hover:text-purple-600 hover:bg-gray-50"
+                      : "text-gray-800 hover:text-[#4a2580] hover:bg-gray-50"
                       }`}
                   >
                     SEARCH
@@ -585,7 +585,7 @@ const MainLayout = () => {
                 <div className="w-full">
                   <button
                     onClick={() => setIsMobileServicesOpen(!isMobileServicesOpen)}
-                    className="w-full flex justify-between items-center font-medium p-3 rounded-md text-gray-800 hover:text-purple-600 hover:bg-gray-50 transition-colors"
+                    className="w-full flex justify-between items-center font-medium p-3 rounded-md text-gray-800 hover:text-[#4a2580] hover:bg-gray-50 transition-colors"
                   >
                     <span>SERVICES</span>
                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isMobileServicesOpen ? "rotate-180" : ""}`} />
@@ -605,7 +605,7 @@ const MainLayout = () => {
                               setIsMobileMenuOpen(false);
                             }
                           }}
-                          className="w-full text-left block px-4 py-2.5 text-sm text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-colors"
+                          className="w-full text-left block px-4 py-2.5 text-sm text-gray-700 hover:text-[#4a2580] hover:bg-purple-50 rounded-md transition-colors"
                         >
                           {category.title}
                         </a>
@@ -642,7 +642,7 @@ const MainLayout = () => {
                   }}
                   className={`text-left block font-medium p-3 rounded-md transition-colors ${location.pathname === "/user/user-plan-selection"
                     ? "text-purple-600 bg-purple-50"
-                    : "text-gray-800 hover:text-purple-600 hover:bg-gray-50"
+                    : "text-gray-800 hover:text-[#4a2580] hover:bg-gray-50"
                     }`}
                 >
                   PLANS
@@ -652,7 +652,7 @@ const MainLayout = () => {
                 <div className="w-full">
                   <button
                     onClick={() => setIsMobileHelpOpen(!isMobileHelpOpen)}
-                    className="w-full flex justify-between items-center font-medium p-3 rounded-md text-gray-800 hover:text-purple-600 hover:bg-gray-50 transition-colors"
+                    className="w-full flex justify-between items-center font-medium p-3 rounded-md text-gray-800 hover:text-[#4a2580] hover:bg-gray-50 transition-colors"
                   >
                     <span>HELP & SUPPORT</span>
                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isMobileHelpOpen ? "rotate-180" : ""}`} />
@@ -671,7 +671,7 @@ const MainLayout = () => {
                               setIsMobileMenuOpen(false);
                             }
                           }}
-                          className="w-full text-left block px-4 py-2.5 text-sm text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-colors"
+                          className="w-full text-left block px-4 py-2.5 text-sm text-gray-700 hover:text-[#4a2580] hover:bg-purple-50 rounded-md transition-colors"
                         >
                           {item.title}
                         </a>
@@ -710,7 +710,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-dashboard-page");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full text-left text-gray-700 hover:text-purple-600 hover:bg-purple-50 px-3 py-2.5 rounded-md transition-colors font-medium text-sm"
+                      className="w-full text-left text-gray-700 hover:text-[#4a2580] hover:bg-purple-50 px-3 py-2.5 rounded-md transition-colors font-medium text-sm"
                     >
                       My Dashboard
                     </button>
@@ -719,7 +719,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-profile-page");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full text-left text-gray-700 hover:text-purple-600 hover:bg-purple-50 px-3 py-2.5 rounded-md transition-colors font-medium text-sm"
+                      className="w-full text-left text-gray-700 hover:text-[#4a2580] hover:bg-purple-50 px-3 py-2.5 rounded-md transition-colors font-medium text-sm"
                     >
                       My Profile
                     </button>
@@ -729,7 +729,7 @@ const MainLayout = () => {
                         handleNavigate("/user/show-all-profiles/all-profile");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full text-left text-gray-700 hover:text-purple-600 hover:bg-purple-50 px-3 py-2.5 rounded-md transition-colors font-medium text-sm"
+                      className="w-full text-left text-gray-700 hover:text-[#4a2580] hover:bg-purple-50 px-3 py-2.5 rounded-md transition-colors font-medium text-sm"
                     >
                       My Chats
                     </button>
@@ -738,7 +738,7 @@ const MainLayout = () => {
                         handleNavigate(`/reset-password/${userId}`);
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full text-left text-gray-700 hover:text-purple-600 hover:bg-purple-50 px-3 py-2.5 rounded-md transition-colors font-medium text-sm"
+                      className="w-full text-left text-gray-700 hover:text-[#4a2580] hover:bg-purple-50 px-3 py-2.5 rounded-md transition-colors font-medium text-sm"
                     >
                       Change Password
                     </button>
@@ -747,7 +747,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-settings-page");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full text-left text-gray-700 hover:text-purple-600 hover:bg-purple-50 px-3 py-2.5 rounded-md transition-colors font-medium text-sm"
+                      className="w-full text-left text-gray-700 hover:text-[#4a2580] hover:bg-purple-50 px-3 py-2.5 rounded-md transition-colors font-medium text-sm"
                     >
                       User Settings
                     </button>

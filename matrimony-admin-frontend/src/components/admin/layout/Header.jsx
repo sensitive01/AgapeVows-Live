@@ -1,15 +1,30 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import headerLogo from "../../../../public/assets/images/Logo.jpeg";
-
+import { getAdminProfile } from "../../../api/service/adminServices";
 
 const Header = () => {
   const navigate = useNavigate();
+  const [adminRole, setAdminRole] = useState("superadmin");
 
-const handleLogout = () => {
-  localStorage.removeItem("adminId");
-  navigate("/", { replace: true });
-};
+  useEffect(() => {
+    const adminId = localStorage.getItem("adminId");
+    if (adminId) {
+      getAdminProfile(adminId)
+        .then((res) => {
+          if (res.data?.success) {
+            setAdminRole(res.data.data.role || "superadmin");
+          }
+        })
+        .catch((err) => console.error("Failed to fetch admin profile", err));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminId");
+    navigate("/", { replace: true });
+  };
+
   return (
     <section className="head">
       <div className="container">
@@ -234,6 +249,27 @@ const handleLogout = () => {
                     </span>
                     <div className="smenu-open">
                       <ul>
+                        {adminRole === "superadmin" && (
+                          <li>
+                            <a
+                              href="/admin/subadmins"
+                              onClick={(e) => {
+                                if (!e.ctrlKey) {
+                                  e.preventDefault();
+                                  navigate("/admin/subadmins");
+                                } else {
+                                  e.preventDefault();
+                                  const newTab = window.open("/admin/subadmins", "_blank");
+                                  if (newTab) newTab.focus();
+                                }
+                              }}
+                              className="waves-effect"
+                            >
+                              <i className="fa fa-users" aria-hidden="true"></i>{" "}
+                              Subadmins{" "}
+                            </a>
+                          </li>
+                        )}
                         <li>
                          <a
   href="#"

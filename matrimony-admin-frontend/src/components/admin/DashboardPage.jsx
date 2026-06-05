@@ -7,7 +7,8 @@ import {
   getNewRequestedUsers, getAllUserData,
   getPaidUserData,
   getAllPlanData,
-  getAllEnquiries
+  getAllEnquiries,
+  getAdminProfile
 } from "../../api/service/adminServices";
 
 Chart.register(...registerables);
@@ -29,6 +30,28 @@ const DashboardPage = () => {
   const [yearlyEarningsUSD, setYearlyEarningsUSD] = useState(0);
   const [enquiries, setEnquiries] = useState([]);
   const [newUsersThisMonth, setNewUsersThisMonth] = useState(0);
+  const [adminRole, setAdminRole] = useState("superadmin");
+
+  const [recentMembersPage, setRecentMembersPage] = useState(1);
+  const [renewalReminderPage, setRenewalReminderPage] = useState(1);
+  const dashboardTableRecordsPerPage = 5;
+
+  const handleRecentMembersNextPage = () => setRecentMembersPage(p => p + 1);
+  const handleRecentMembersPrevPage = () => setRecentMembersPage(p => Math.max(1, p - 1));
+
+  const handleRenewalReminderNextPage = () => setRenewalReminderPage(p => p + 1);
+  const handleRenewalReminderPrevPage = () => setRenewalReminderPage(p => Math.max(1, p - 1));
+
+  useEffect(() => {
+    const adminId = localStorage.getItem("adminId");
+    if (adminId) {
+      getAdminProfile(adminId).then(res => {
+        if (res.data?.success) {
+          setAdminRole(res.data.data.role || "superadmin");
+        }
+      }).catch(err => console.error("Error fetching admin profile:", err));
+    }
+  }, []);
 
   const renewalUsers = paidUsers.filter(user =>
     user.paymentDetails?.some(payment => {
@@ -372,6 +395,14 @@ const DashboardPage = () => {
           },
         ],
       },
+      options: {
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+          }
+        }
+      }
     });
 
     return () => {
@@ -410,7 +441,7 @@ const DashboardPage = () => {
           </div>
         </div>
         <div className="row">
-          <div className="col-md-3">
+          <div className={adminRole === "superadmin" ? "col-md-3" : "col-md-6"}>
             <div className="box-com box-qui box-drk grn-box">
               <h4>New Users</h4>
               <h2>User requests</h2>
@@ -423,7 +454,11 @@ const DashboardPage = () => {
                 <span>All</span> Members
               </h3>
               <span className="bnum">{allUsers.length}</span>
-              <canvas id="Chart_users"></canvas>
+              {plans.length > 0 && paidUsers.length > 0 && (
+                <div style={{ maxHeight: "200px", position: "relative", width: "100%", display: "flex", justifyContent: "center", marginTop: "15px" }}>
+                  <canvas id="Chart_users" style={{ maxHeight: "200px" }}></canvas>
+                </div>
+              )}
               <a href="admin-new-user-requests.php" className="fclick"></a>
             </div>
             <div className="box-com box-qui live-box">
@@ -438,7 +473,7 @@ const DashboardPage = () => {
               </div>
             </div>
           </div>
-          <div className="col-md-3">
+          <div className={adminRole === "superadmin" ? "col-md-3" : "col-md-6"}>
             <div className="box-com box-qui box-lig box-new-user">
               <h2>Subscribed Users</h2>
               <span className="bnum">{activeSubscribedUsers.length}</span>
@@ -455,15 +490,17 @@ const DashboardPage = () => {
                 ))}
               </div>
             </div>
-            <div className="box-com box-qui box-lig ali-cen">
-              <h3>
-                <span>Total</span> Earnings
-              </h3>
-              <span className="bnum">
-                <sub>₹</sub>{totalEarnings.toLocaleString()}
-              </span>
-              <canvas id="Chart_earni"></canvas>
-            </div>
+            {adminRole === "superadmin" && (
+              <div className="box-com box-qui box-lig ali-cen">
+                <h3>
+                  <span>Total</span> Earnings
+                </h3>
+                <span className="bnum">
+                  <sub>₹</sub>{totalEarnings.toLocaleString()}
+                </span>
+                <canvas id="Chart_earni"></canvas>
+              </div>
+            )}
             <div className="box-com box-qui box-drk box-lead-thum">
               <h2>Leads & Enquiry</h2>
               <span className="bnum">{enquiries.length}</span>
@@ -477,21 +514,22 @@ const DashboardPage = () => {
               <a href="/admin/enquiries" className="fclick"></a>
             </div>
           </div>
-          <div className="col-md-6">
-            <div className="box-com box-qui box-lig ali-cen">
-              <h3>
-                <span>Yearly</span> Earnings
-              </h3>
-              <span className="bnum">
-                <sub>$</sub>{yearlyEarningsUSD.toFixed(2)}
-              </span>
-              <canvas id="Chart_earni_rece"></canvas>
+          {adminRole === "superadmin" && (
+            <div className="col-md-6">
+              <div className="box-com box-qui box-lig ali-cen">
+                <h3>
+                  <span>Yearly</span> Earnings
+                </h3>
+                <span className="bnum">
+                  <sub>$</sub>{yearlyEarningsUSD.toFixed(2)}
+                </span>
+                <canvas id="Chart_earni_rece"></canvas>
+              </div>
             </div>
-
-          </div>
+          )}
         </div>
-        <div className="row">
-          <div className="col-md-6">
+        <div className="row mt-4">
+          <div className="col-md-12 mb-4">
             <div className="box-com box-qui box-lig box-tab">
               <div className="tit">
                 <h3>Recent members</h3>
@@ -797,13 +835,26 @@ const DashboardPage = () => {
                 </tbody> */}
 
                 <tbody>
-                  {newRequestedUsers.slice(0, 6).map((user, index) => {
-                    const activePlan = user.paymentDetails?.find(p => p.subscriptionStatus === "Active");
-                    const planFromList = plans.find(p => p.name === activePlan?.subscriptionType);
+                  {(() => {
+                    const rmLastIndex = recentMembersPage * dashboardTableRecordsPerPage;
+                    const rmFirstIndex = rmLastIndex - dashboardTableRecordsPerPage;
+                    const currentRecentMembers = newRequestedUsers.slice(rmFirstIndex, rmLastIndex);
                     
-                    return (
-                      <tr key={user._id}>
-                        <td>{index + 1}</td>
+                    if (currentRecentMembers.length === 0) {
+                      return (
+                        <tr>
+                          <td colSpan="5" className="text-center">No recent members</td>
+                        </tr>
+                      );
+                    }
+
+                    return currentRecentMembers.map((user, index) => {
+                      const activePlan = user.paymentDetails?.find(p => p.subscriptionStatus === "Active");
+                      const planFromList = plans.find(p => p.name === activePlan?.subscriptionType);
+                      
+                      return (
+                        <tr key={user._id}>
+                          <td>{rmFirstIndex + index + 1}</td>
 
                         <td>
                           <div className="prof-table-thum">
@@ -833,16 +884,26 @@ const DashboardPage = () => {
                             {planFromList ? planFromList.name : (user.isAnySubscriptionTaken ? "Premium" : "Free")}
                           </span>
                         </td>
-                      </tr>
-                    );
-                  })}
+                        </tr>
+                      );
+                    });
+                  })()}
                 </tbody>
-
-
               </table>
+              {newRequestedUsers.length > dashboardTableRecordsPerPage && (
+                <div className="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                  <span className="text-muted small">
+                    Showing {(recentMembersPage - 1) * dashboardTableRecordsPerPage + 1} to {Math.min(recentMembersPage * dashboardTableRecordsPerPage, newRequestedUsers.length)} of {newRequestedUsers.length} entries
+                  </span>
+                  <div>
+                    <button className="btn btn-sm btn-outline-secondary me-2" onClick={handleRecentMembersPrevPage} disabled={recentMembersPage === 1}>Previous</button>
+                    <button className="btn btn-sm btn-outline-secondary" onClick={handleRecentMembersNextPage} disabled={recentMembersPage === Math.ceil(newRequestedUsers.length / dashboardTableRecordsPerPage)}>Next</button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-          <div className="col-md-6">
+          <div className="col-md-12 mb-4">
             <div className="box-com box-qui box-lig box-tab">
               <div className="tit">
                 <h3>Renewal Reminder</h3>
@@ -875,8 +936,20 @@ const DashboardPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {renewalUsers.length > 0 ? (
-                    renewalUsers.slice(0, 6).map((user, index) => {
+                  {(() => {
+                    const rrLastIndex = renewalReminderPage * dashboardTableRecordsPerPage;
+                    const rrFirstIndex = rrLastIndex - dashboardTableRecordsPerPage;
+                    const currentRenewalUsers = renewalUsers.slice(rrFirstIndex, rrLastIndex);
+
+                    if (currentRenewalUsers.length === 0) {
+                      return (
+                        <tr>
+                          <td colSpan="5" className="text-center">No renewal reminders</td>
+                        </tr>
+                      );
+                    }
+
+                    return currentRenewalUsers.map((user, index) => {
                       const expiringPayment = user.paymentDetails?.find(payment => {
                         const expiry = new Date(payment.subscriptionValidTo);
                         const today = new Date();
@@ -886,7 +959,7 @@ const DashboardPage = () => {
 
                       return (
                         <tr key={user._id}>
-                          <td>{index + 1}</td>
+                          <td>{rrFirstIndex + index + 1}</td>
                           <td>
                             <div className="prof-table-thum">
                               <div className="pro">
@@ -915,14 +988,21 @@ const DashboardPage = () => {
                           </td>
                         </tr>
                       );
-                    })
-                  ) : (
-                    <tr>
-                      <td colSpan="5" className="text-center">No renewal reminders</td>
-                    </tr>
-                  )}
+                    });
+                  })()}
                 </tbody>
               </table>
+              {renewalUsers.length > dashboardTableRecordsPerPage && (
+                <div className="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                  <span className="text-muted small">
+                    Showing {(renewalReminderPage - 1) * dashboardTableRecordsPerPage + 1} to {Math.min(renewalReminderPage * dashboardTableRecordsPerPage, renewalUsers.length)} of {renewalUsers.length} entries
+                  </span>
+                  <div>
+                    <button className="btn btn-sm btn-outline-secondary me-2" onClick={handleRenewalReminderPrevPage} disabled={renewalReminderPage === 1}>Previous</button>
+                    <button className="btn btn-sm btn-outline-secondary" onClick={handleRenewalReminderNextPage} disabled={renewalReminderPage === Math.ceil(renewalUsers.length / dashboardTableRecordsPerPage)}>Next</button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

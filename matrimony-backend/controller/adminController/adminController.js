@@ -1,299 +1,3 @@
-// const bcrypt = require("bcrypt");
-// const {
-//   ADMIN_EMAIL_ID,
-//   ADMIN_PASSWORD,
-// } = require("../../config/variables/variables");
-// const adminModel = require("../../model/admin/adminModel");
-// const userModel = require("../../model/user/userModel");
-
-// const registerAdmin = async (req, res) => {
-//   try {
-//     const adminEmail = ADMIN_EMAIL_ID;
-//     const adminPassword = ADMIN_PASSWORD;
-
-//     const existingAdmin = await adminModel.findOne({ adminEmail });
-
-//     if (existingAdmin) {
-//       return res.status(200).json({
-//         success: true,
-//         message: "Admin already registered",
-//       });
-//     }
-
-//     const hashedPassword = await bcrypt.hash(adminPassword, 10);
-
-//     const newAdmin = new adminModel({
-//       adminEmail,
-//       adminPassword: hashedPassword,
-//     });
-
-//     await newAdmin.save();
-
-//     res.status(201).json({
-//       success: true,
-//       message: "Admin registered successfully",
-//     });
-//   } catch (err) {
-//     console.error("Error in registerAdmin:", err);
-//     res.status(500).json({
-//       success: false,
-//       message: "Internal server error",
-//     });
-//   }
-// };
-
-// const verifyAdmin = async (req, res) => {
-//   try {
-//     const { loginData } = req.body;
-//     const { email, password } = loginData;
-
-//     const admin = await adminModel.findOne({ adminEmail: email });
-
-//     if (!admin) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Admin not found",
-//       });
-//     }
-
-//     const isMatch = await bcrypt.compare(password, admin.adminPassword);
-
-//     if (!isMatch) {
-//       return res.status(401).json({
-//         success: false,
-//         message: "Invalid credentials",
-//       });
-//     }
-
-//     res.status(200).json({
-//       success: true,
-//       message: "Admin login successful",
-//       adminId: admin._id,
-//     });
-//   } catch (err) {
-//     console.error("Error in verifyAdmin:", err);
-//     res.status(500).json({
-//       success: false,
-//       message: "Internal server error",
-//     });
-//   }
-// };
-
-// const getAllUsersData = async (req, res) => {
-//   try {
-//     const userData = await userModel
-//       .find(
-//         { isApproved: true },
-//         {
-//           userEmail: 1,
-//           userMobile: 1,
-//           userName: 1,
-//           gender: 1,
-//           city: 1,
-//           profileImage: 1,
-//         }
-//       )
-//       .sort({ createdAt: -1 });
-
-//     res.status(200).json({
-//       success: true,
-//       message: "All users fetched successfully",
-//       data: userData,
-//     });
-//   } catch (err) {
-//     console.error("Error in getAllUsersData", err);
-//     res.status(500).json({
-//       success: false,
-//       message: "Internal server error",
-//     });
-//   }
-// };
-
-// const getPaidUsersData = async (req, res) => {
-//   try {
-//     const userData = await userModel
-//       .find(
-//         { isAnySubscriptionTaken: true },
-//         {
-//           userEmail: 1,
-//           userMobile: 1,
-//           userName: 1,
-//           gender: 1,
-//           city: 1,
-//           profileImage: 1,
-//           isAnySubscriptionTaken: 1,
-//           "paymentDetails.subscriptionValidFrom": 1,
-//           "paymentDetails.subscriptionValidTo": 1,
-//           "paymentDetails.subscriptionType": 1,
-//           "paymentDetails.subscriptionAmount": 1,
-//           "paymentDetails.subscriptionStatus": 1,
-//           "paymentDetails.subscriptionTransactionDate": 1,
-//         }
-//       )
-//       .sort({ createdAt: -1 });
-
-//     res.status(200).json({
-//       success: true,
-//       message: "Paid users fetched successfully",
-//       data: userData,
-//     });
-//   } catch (err) {
-//     console.error("Error in getPaidUsersData", err);
-//     res.status(500).json({
-//       success: false,
-//       message: "Internal server error",
-//     });
-//   }
-// };
-
-// const getAllNewRequestedUsersData = async (req, res) => {
-//   try {
-//     const userData = await userModel
-//       .find(
-//         { isApproved: false },
-//         {
-//           userEmail: 1,
-//           userMobile: 1,
-//           userName: 1,
-//           gender: 1,
-//           profileImage: 1,
-//           paymentDetails: 1,
-//           createdAt: 1,
-//         }
-//       )
-//       .sort({ createdAt: -1 });
-
-//     res.status(200).json({ success: true, data: userData });
-//   } catch (err) {
-//     console.error("Error fetching unapproved users:", err);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
-
-// const approveNewUser = async (req, res) => {
-//   try {
-//     const { userId } = req.params;
-//     const userData = await userModel.findByIdAndUpdate(
-//       userId,
-//       { isApproved: true },
-//       { new: true }
-//     );
-
-//     if (!userData) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "User not found",
-//       });
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "User approved successfully",
-//     });
-//   } catch (err) {
-//     console.error("Error approving user:", err);
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal server error",
-//     });
-//   }
-// };
-
-// const deleteUser = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-
-//     const deletedUser = await userModel.findByIdAndDelete(id);
-
-//     if (!deletedUser) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "User not found",
-//       });
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "User deleted successfully",
-//     });
-//   } catch (err) {
-//     console.error("Error deleting user:", err);
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal server error",
-//     });
-//   }
-// };
-// const getUserById = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-
-//     const user = await userModel.findById(id);
-
-//     if (!user) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "User not found",
-//       });
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       data: user,
-//     });
-//   } catch (err) {
-//     console.error("Error fetching user:", err);
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal server error",
-//     });
-//   }
-// };
-// const updateUser = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const updatedData = req.body;
-
-//     const updatedUser = await userModel.findByIdAndUpdate(
-//       id,
-//       updatedData,
-//       { new: true }
-//     );
-
-//     if (!updatedUser) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "User not found",
-//       });
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "User updated successfully",
-//       data: updatedUser,
-//     });
-//   } catch (err) {
-//     console.error("Error updating user:", err);
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal server error",
-//     });
-//   }
-// };
-
-// module.exports = {
-//   getPaidUsersData,
-//   approveNewUser,
-//   getAllNewRequestedUsersData,
-//   registerAdmin,
-//   verifyAdmin,
-//   getAllUsersData,
-//   deleteUser,
-//   getUserById,     // ✅ add
-//   updateUser,      // ✅ add
-// };
-
-
 
 const bcrypt = require("bcrypt");
 const {
@@ -351,7 +55,8 @@ const verifyAdmin = async (req, res) => {
     const { loginData } = req.body;
     const { email, password } = loginData;
 
-    const admin = await adminModel.findOne({ adminEmail: email });
+    const normalizedEmail = email.trim().toLowerCase();
+    const admin = await adminModel.findOne({ adminEmail: normalizedEmail });
 
     if (!admin) {
       return res.status(404).json({
@@ -373,6 +78,8 @@ const verifyAdmin = async (req, res) => {
       success: true,
       message: "Admin login successful",
       adminId: admin._id,
+      role: admin.role,
+      permissions: admin.permissions,
     });
   } catch (err) {
     console.error("Error in verifyAdmin:", err);
@@ -1284,6 +991,94 @@ const upgradeUserPlan = async (req, res) => {
   }
 };
 
+/* =========================
+   SUBADMIN MANAGEMENT
+========================== */
+const getAdminProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const admin = await adminModel.findById(id).select("-adminPassword");
+    if (!admin) {
+      return res.status(404).json({ success: false, message: "Admin not found" });
+    }
+    res.status(200).json({ success: true, data: admin });
+  } catch (err) {
+    console.error("Error fetching admin profile:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+const createSubadmin = async (req, res) => {
+  try {
+    const { email, password, permissions } = req.body;
+    
+    const existingAdmin = await adminModel.findOne({ adminEmail: email });
+    if (existingAdmin) {
+      return res.status(400).json({ success: false, message: "Admin email already exists" });
+    }
+    
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newSubadmin = new adminModel({
+      adminEmail: email,
+      adminPassword: hashedPassword,
+      role: 'subadmin',
+      permissions: permissions || []
+    });
+    
+    await newSubadmin.save();
+    res.status(201).json({ success: true, message: "Subadmin created successfully" });
+  } catch (err) {
+    console.error("Error creating subadmin:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+const getAllSubadmins = async (req, res) => {
+  try {
+    const subadmins = await adminModel.find({ role: 'subadmin' }).select("-adminPassword").sort({ createdAt: -1 });
+    res.status(200).json({ success: true, data: subadmins });
+  } catch (err) {
+    console.error("Error fetching subadmins:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+const updateSubadmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { email, password, permissions } = req.body;
+    
+    const updateData = { adminEmail: email, permissions: permissions || [] };
+    if (password) {
+      updateData.adminPassword = await bcrypt.hash(password, 10);
+    }
+    
+    const updatedSubadmin = await adminModel.findByIdAndUpdate(id, updateData, { new: true }).select("-adminPassword");
+    if (!updatedSubadmin) {
+      return res.status(404).json({ success: false, message: "Subadmin not found" });
+    }
+    
+    res.status(200).json({ success: true, message: "Subadmin updated successfully", data: updatedSubadmin });
+  } catch (err) {
+    console.error("Error updating subadmin:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+const deleteSubadmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedSubadmin = await adminModel.findOneAndDelete({ _id: id, role: 'subadmin' });
+    if (!deletedSubadmin) {
+      return res.status(404).json({ success: false, message: "Subadmin not found" });
+    }
+    res.status(200).json({ success: true, message: "Subadmin deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting subadmin:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 module.exports = {
   getPaidUsersData,
   approveNewUser,
@@ -1304,13 +1099,15 @@ module.exports = {
   registerUser,
   bulkRegisterUsers,
   getUnverifiedIdProofUsers,
-  
-  
-  
   exportAllUsersData,
   getContactUpdateRequests,
   approveContactUpdate,
   rejectContactUpdate,
   getVerifiedIdProofUsers,
   upgradeUserPlan,
+  getAdminProfile,
+  createSubadmin,
+  getAllSubadmins,
+  updateSubadmin,
+  deleteSubadmin,
 };

@@ -457,3 +457,13 @@ export const markNotificationsRead = async (userId, type) => {
     throw error;
   }
 };
+
+export const updatePrivacySettings = async (userId, data) => {
+  try {
+    const response = await userInstance.put(`/update-privacy-settings/${userId}`, data);
+    return response;
+  } catch (error) {
+    console.error("Error updating privacy settings:", error);
+    throw error;
+  }
+};
