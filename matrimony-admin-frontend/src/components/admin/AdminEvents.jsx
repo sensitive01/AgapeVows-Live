@@ -56,6 +56,12 @@ const AdminEvents = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
+  const formatForInput = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  };
+
   const handleAddNewEvent = () => {
     setModalMode("add");
     setCurrentEvent({
@@ -82,7 +88,7 @@ const AdminEvents = () => {
     setCurrentEvent({
       id: event._id,
       name: event.name,
-      date: event.date ? new Date(event.date).toISOString().slice(0, 16) : "",
+      date: formatForInput(event.date),
       location: event.location,
       churchName: event.churchName || "",
       state: event.state || "",
@@ -103,7 +109,7 @@ const AdminEvents = () => {
     setCurrentEvent({
       ...event,
       id: event._id,
-      date: event.date ? new Date(event.date).toISOString().slice(0, 16) : "",
+      date: formatForInput(event.date),
       image: event.image || null,
     });
   };
@@ -443,12 +449,18 @@ const AdminEvents = () => {
                           <td className="border-0">
                             <span
                               className={`badge text-white ${
-                                event.status === "Active"
-                                  ? "bg-success"
-                                  : "bg-danger"
+                                event.status === "Inactive"
+                                  ? "bg-danger"
+                                  : new Date(event.date) < new Date()
+                                    ? "bg-secondary"
+                                    : "bg-success"
                               }`}
                             >
-                              {event.status}
+                              {event.status === "Inactive"
+                                ? "Inactive"
+                                : new Date(event.date) < new Date()
+                                  ? "Expired"
+                                  : "Active"}
                             </span>
                           </td>
                           <td className="border-0 text-center">
@@ -657,9 +669,19 @@ const AdminEvents = () => {
 
                               <div className="mt-3 pt-3 border-top">
                                 <span
-                                  className={`badge ${currentEvent.status === "Active" ? "bg-success" : "bg-secondary"}`}
+                                  className={`badge text-white ${
+                                    currentEvent.status === "Inactive"
+                                      ? "bg-danger"
+                                      : new Date(currentEvent.date) < new Date()
+                                        ? "bg-secondary"
+                                        : "bg-success"
+                                  }`}
                                 >
-                                  {currentEvent.status}
+                                  {currentEvent.status === "Inactive"
+                                    ? "Inactive"
+                                    : new Date(currentEvent.date) < new Date()
+                                      ? "Expired"
+                                      : "Active"}
                                 </span>
                                 {currentEvent.isPinned && (
                                   <span className="badge bg-warning text-dark ms-2">
@@ -925,13 +947,6 @@ const AdminEvents = () => {
                   )}
                 </div>
                 <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Close
-                  </button>
                   {modalMode !== "view" && (
                     <button
                       type="submit"
