@@ -126,17 +126,23 @@ const ReportIssue = () => {
       </div>
 
       <div className="pt-20">
-
-        <CommonBanner 
-          title="Report an Issue" 
-          subtitle="Facing a problem? Let us know and we’ll fix it quickly and efficiently."
-        />
+        <div className="relative bg-[#5c2a9d] pb-32 pt-16 px-6 sm:px-12">
+          <div className="absolute inset-0 bg-black/10"></div>
+          <div className="relative z-10 max-w-7xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
+              Report an Issue
+            </h1>
+            <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto font-medium">
+              Facing a problem? Let us know and we’ll fix it quickly and efficiently.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-3xl p-10 border border-gray-100">
+      <section className="relative z-20 px-4 -mt-20 mb-20">
+        <div className="max-w-4xl mx-auto bg-white shadow-2xl rounded-3xl p-10 border border-gray-100">
 
-            <h2 className="text-2xl font-semibold mb-10 text-gray-800 text-center">
+            <h2 className="text-2xl font-semibold mb-10 text-[#5c2a9d] text-center">
               Submit Your Issue
             </h2>
 
@@ -217,7 +223,7 @@ const ReportIssue = () => {
                   rows="5"
                   required
                   placeholder="Explain your issue clearly..."
-                  className="w-full mt-2 px-4 py-3 rounded-xl border focus:ring-2 focus:ring-purple-500 outline-none"
+                  className="w-full mt-2 px-4 py-3 rounded-xl border focus:ring-2 focus:ring-[#5c2a9d] outline-none"
                 />
               </div>
 
@@ -249,7 +255,7 @@ const ReportIssue = () => {
               <div className="flex justify-end pt-6">
                 <button
                   type="submit"
-                  className="bg-purple-600 text-white px-10 py-3 rounded-xl font-medium hover:bg-purple-700 transition shadow-md"
+                  className="bg-[#5c2a9d] text-white px-10 py-3 rounded-xl font-medium hover:bg-[#4b2282] transition shadow-md"
                 >
                   Submit Issue 🚀
                 </button>

@@ -175,7 +175,7 @@ const UserInterest = () => {
                   </div>
                   <div style={{ textAlign: "center" }}>
                     <h5 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "600", color: "#333" }}>
-                      {profile.senderDetails.userName}
+                      {profile.senderDetails.agwid}
                     </h5>
                     <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "4px" }}>
                       {new Date(profile.createdAt).toLocaleDateString()}

@@ -16,7 +16,7 @@ const AboutPage = () => {
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900" style={{ fontFamily: '"Playfair Display", serif' }}>
             About AgapeVows
           </h1>
-          <div className="h-1 w-16 bg-purple-600 mt-4"></div>
+          <div className="h-1 w-16 bg-[#5c2a9d] mt-4"></div>
         </div>
       </div>
 
@@ -33,12 +33,12 @@ const AboutPage = () => {
             </div>
             <div className="w-full lg:w-1/2 px-6">
               <div className="lg:pl-10">
-                <h1 className="text-5xl lg:text-7xl font-bold text-purple-700 mb-4 uppercase tracking-wide break-words" style={{ fontFamily: '"Playfair Display", serif' }}>Built on Faith. Bound by Love.</h1>
+                <h1 className="text-5xl lg:text-7xl font-bold text-[#5c2a9d] mb-4 uppercase tracking-wide break-words" style={{ fontFamily: '"Playfair Display", serif' }}>Built on Faith. Bound by Love.</h1>
                 <h3 className="text-4xl font-bold text-gray-900 mb-6 leading-tight" style={{ fontFamily: '"Playfair Display", serif' }}>Our Sacred Covenant</h3>
                 <p className="text-2xl text-gray-600 leading-snug mb-4">
                   At <strong>AgapeVows</strong>, we believe that marriage is more than a legal contract, it is a sacred covenant. Our name is derived from the Greek word <em>Agape</em>, representing the highest, most selfless form of love: the love God has for us, and the love we are called to show one another.
                 </p>
-                <div className="p-5 bg-purple-50 rounded-lg border-l-4 border-purple-600">
+                <div className="p-5 bg-[#f8f5fd] rounded-lg border-l-4 border-[#5c2a9d]">
                   <p className="text-2xl text-gray-800 font-medium italic">
                     "Our mission is simple: To help Indian Christian singles find a life partner who shares their faith, respects their heritage, and walks the same spiritual path."
                   </p>
@@ -55,7 +55,7 @@ const AboutPage = () => {
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-10">
                <h2 className="text-4xl font-bold text-gray-900 mb-4" style={{ fontFamily: '"Playfair Display", serif' }}>Our Story</h2>
-               <div className="w-12 h-1 bg-purple-600 mx-auto"></div>
+               <div className="w-12 h-1 bg-[#5c2a9d] mx-auto"></div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <p className="text-2xl text-gray-600 leading-snug">
@@ -75,7 +75,7 @@ const AboutPage = () => {
           <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center" style={{ fontFamily: '"Playfair Display", serif' }}>Why Choose AgapeVows?</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-8 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center text-xl mb-6">
+              <div className="w-12 h-12 bg-[#f8f5fd] text-[#5c2a9d] rounded-lg flex items-center justify-center text-xl mb-6">
                 <i className="fa fa-shield"></i>
               </div>
               <h4 className="text-xl font-bold text-gray-900 mb-3">Integrity through Verification</h4>
@@ -85,7 +85,7 @@ const AboutPage = () => {
             </div>
             
             <div className="p-8 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center text-xl mb-6">
+              <div className="w-12 h-12 bg-[#f8f5fd] text-[#5c2a9d] rounded-lg flex items-center justify-center text-xl mb-6">
                 <i className="fa fa-users"></i>
               </div>
               <h4 className="text-xl font-bold text-gray-900 mb-3">Accessibility for All</h4>
@@ -95,7 +95,7 @@ const AboutPage = () => {
             </div>
 
             <div className="p-8 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 bg-pink-50 text-pink-600 rounded-lg flex items-center justify-center text-xl mb-6">
+              <div className="w-12 h-12 bg-[#f8f5fd] text-[#5c2a9d] rounded-lg flex items-center justify-center text-xl mb-6">
                 <i className="fa fa-lock"></i>
               </div>
               <h4 className="text-xl font-bold text-gray-900 mb-3">Privacy First</h4>
@@ -125,12 +125,12 @@ const AboutPage = () => {
                 </p>
               </div>
             </div>
-            <div className="bg-purple-600 rounded-2xl p-10 text-white text-center">
+            <div className="bg-[#5c2a9d] rounded-2xl p-10 text-white text-center">
                <h3 className="text-2xl font-bold mb-4">Ready to find your partner?</h3>
-               <p className="text-purple-100 mb-8">Join thousands of verified Christian singles today.</p>
+               <p className="text-white/90 mb-8">Join thousands of verified Christian singles today.</p>
                <a 
                 href="/user/user-sign-up" 
-                className="inline-block bg-white text-purple-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-50 transition-colors"
+                className="inline-block bg-white text-[#5c2a9d] px-8 py-3 rounded-lg font-bold hover:bg-gray-50 transition-colors"
                >
                  Create Your Free Profile
                </a>

@@ -178,7 +178,7 @@ const ShortListedProfile = () => {
                 </div>
               </div>
               <div className="db-int-pro-2">
-                <h5>{profile.userName}</h5>
+                <h5>{profile.agwid}</h5>
                 <ol className="poi">
                   <li>
                     City: <strong>{profile.city}</strong>

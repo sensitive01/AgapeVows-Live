@@ -62,7 +62,7 @@ const FaqPage = () => {
           />
           <div className="absolute inset-0 bg-black/50" />
           <div className="relative container mx-auto px-6 py-24 text-center">
-            <span className="inline-flex items-center rounded-full bg-white/90 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-purple-700 mb-6">
+            <span className="inline-flex items-center rounded-full bg-white/90 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-[#5c2a9d] mb-6">
               AgapeVows Help Center
             </span>
             <h1 className="text-4xl md:text-5xl font-bold text-white" style={{ fontFamily: 'var(--tit-font)' }}>
@@ -85,7 +85,7 @@ const FaqPage = () => {
                 className="bg-white border border-slate-200 rounded-[28px] p-8 shadow-[0_24px_48px_rgba(15,23,42,0.06)] transition-transform duration-300 hover:-translate-y-1"
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-700 rounded-2xl flex items-center justify-center font-semibold text-sm">
+                  <div className="flex-shrink-0 w-10 h-10 bg-[#f8f5fd] text-[#5c2a9d] rounded-2xl flex items-center justify-center font-semibold text-sm">
                     {index + 1}
                   </div>
                   <div>
@@ -104,14 +104,14 @@ const FaqPage = () => {
       {/* --- CONTACT CTA --- */}
       <section className="pb-24">
         <div className="container mx-auto px-6 text-center">
-          <div className="bg-purple-600 rounded-3xl p-12 text-white max-w-4xl mx-auto shadow-[0_30px_60px_rgba(99,102,241,0.18)]">
+          <div className="bg-[#5c2a9d] rounded-3xl p-12 text-white max-w-4xl mx-auto shadow-[0_30px_60px_rgba(99,102,241,0.18)]">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Still have questions?</h2>
-            <p className="text-purple-100 mb-8 text-lg leading-relaxed">
+            <p className="text-white/90 mb-8 text-lg leading-relaxed">
               Our support team is here to help you with your matchmaking journey and answer every question.
             </p>
             <a
               href="/help-support"
-              className="inline-block bg-white text-purple-600 px-8 py-3 rounded-full font-semibold hover:bg-slate-50 transition-colors"
+              className="inline-block bg-white text-[#5c2a9d] px-8 py-3 rounded-full font-semibold hover:bg-slate-50 transition-colors"
             >
               Contact Support
             </a>

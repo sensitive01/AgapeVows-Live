@@ -130,8 +130,8 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
                 <span
                   key={val}
                   style={{
-                    background: "#eff6ff",
-                    color: "#2563eb",
+                    background: "#f3e8ff",
+                    color: "#5c2a9d",
                     padding: "2px 6px",
                     borderRadius: "4px",
                     display: "flex",
@@ -139,7 +139,7 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
                     gap: "4px",
                     fontSize: "12px",
                     fontWeight: "500",
-                    border: "1px solid #dbeafe",
+                    border: "1px solid #e9d5ff",
                   }}
                 >
                   {label}
@@ -256,7 +256,7 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
                     }}
                   >
                     <span>{optLabel}</span>
-                    {isSelected && isMulti && <Check size={16} color="#4f46e5" />}
+                    {isSelected && isMulti && <Check size={16} color="#5c2a9d" />}
                   </div>
                 );
               })

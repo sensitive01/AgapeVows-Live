@@ -142,7 +142,6 @@ const AdminEvents = () => {
     }
 
     setLoading(true);
-
     try {
       const formData = new FormData();
       formData.append("name", currentEvent.name);
@@ -183,7 +182,6 @@ const AdminEvents = () => {
         }
       }
 
-      // Close modal
       const modal = document.getElementById("eventsModal");
       const bootstrapModal = window.bootstrap?.Modal?.getInstance(modal);
       if (bootstrapModal) {
@@ -247,7 +245,6 @@ const AdminEvents = () => {
     });
   };
 
-  // Filter events based on active tab and date/status logic
   const filteredEvents = events.filter((event) => {
     const isExpired = new Date(event.date) < new Date();
     if (activeTab === "Active") {

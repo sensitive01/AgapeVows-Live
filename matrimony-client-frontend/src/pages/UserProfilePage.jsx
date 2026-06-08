@@ -116,7 +116,7 @@ const ProfileSection = ({ title, icon, children }) => (
           position: "relative"
         }}
       >
-        <i className={`fa ${icon}`} style={{ color: "#7c3aed", fontSize: "1.1rem" }}></i>
+        <i className={`fa ${icon}`} style={{ color: "#5c2a9d", fontSize: "1.1rem" }}></i>
         {title}
         <span style={{
           position: "absolute",
@@ -124,7 +124,7 @@ const ProfileSection = ({ title, icon, children }) => (
           left: 0,
           width: "60px",
           height: "4px",
-          background: "linear-gradient(90deg, #7c3aed, #9333ea)",
+          background: "#5c2a9d",
           borderRadius: "2px"
         }}></span>
       </h4>
@@ -326,7 +326,7 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
         }}>
           <h3 style={{ fontWeight: "700", color: "#333", marginBottom: "20px", fontSize: "1.5rem" }}>Verify Your Profile</h3>
           <p style={{ color: "#555", fontSize: "1rem", lineHeight: "1.4", marginBottom: "25px", textAlign: "justify" }}>
-            To ensure user authenticity and platform safety, AgapeVows requires all users to upload a masked version of a valid government ID, in compliance with the Indian IT Act 2000. Your ID information is securely handled and will not be shared with any third party. This guide outlines how to correctly mask and upload your ID while safeguarding your sensitive details. Masking your ID helps protect it from misuse, even in the unlikely event of unauthorized access. Please <a href={MaskedIdGuide} target="_blank" rel="noopener noreferrer" style={{ color: "#7c3aed", fontWeight: "600", textDecoration: "underline" }}>click here</a> to download the ID masking guide.
+            To ensure user authenticity and platform safety, AgapeVows requires all users to upload a masked version of a valid government ID, in compliance with the Indian IT Act 2000. Your ID information is securely handled and will not be shared with any third party. This guide outlines how to correctly mask and upload your ID while safeguarding your sensitive details. Masking your ID helps protect it from misuse, even in the unlikely event of unauthorized access. Please <a href={MaskedIdGuide} target="_blank" rel="noopener noreferrer" style={{ color: "#5c2a9d", fontWeight: "600", textDecoration: "underline" }}>click here</a> to download the ID masking guide.
           </p>
           <h5 style={{ fontWeight: "700", color: "#333", marginBottom: "15px" }}>Important Notes</h5>
           <ul style={{ color: "#555", fontSize: "0.95rem", lineHeight: "1.7", listStyleType: "disc", paddingLeft: "20px", marginBottom: "30px" }}>
@@ -336,8 +336,8 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
             <li>4. Do <strong>NOT</strong> upload fake IDs. If found, your account may be suspended and banned from AgapeVows.</li>
           </ul>
           <div style={{ marginTop: "auto", textAlign: "left", width: "100%", fontSize: "0.85rem", color: "#888" }}>
-            <p className="mb-1"><i className="fa fa-envelope me-2" style={{ color: "#7c3aed" }}></i> idproof@agapevows.com</p>
-            <p className="mb-0"><i className="fa fa-phone me-2" style={{ color: "#7c3aed" }}></i> +91 9995777037</p>
+            <p className="mb-1"><i className="fa fa-envelope me-2" style={{ color: "#5c2a9d" }}></i> idproof@agapevows.com</p>
+            <p className="mb-0"><i className="fa fa-phone me-2" style={{ color: "#5c2a9d" }}></i> +91 9995777037</p>
           </div>
         </div>
 
@@ -348,7 +348,7 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
             <h5 style={{ fontWeight: "700", color: "#333", margin: 0 }}>ID Proof</h5>
-            <span style={{ fontSize: "0.85rem", color: "#888" }}>My Home / <span style={{ color: "#7c3aed" }}>Submit ID Proof</span></span>
+            <span style={{ fontSize: "0.85rem", color: "#888" }}>My Home / <span style={{ color: "#5c2a9d" }}>Submit ID Proof</span></span>
           </div>
 
           <p style={{ color: "#777", fontSize: "0.85rem", marginBottom: "25px", borderTop: "1px solid #eee", paddingTop: "15px" }}>
@@ -388,7 +388,7 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
             onDragOver={handleDrag}
             onDrop={handleDrop}
             style={{
-              border: `2px dashed ${dragActive ? "#7c3aed" : "#ddd"}`,
+              border: `2px dashed ${dragActive ? "#5c2a9d" : "#ddd"}`,
               borderRadius: "10px",
               padding: "40px",
               textAlign: "center",
@@ -410,7 +410,7 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
               <i className="fa fa-cloud-upload"></i>
             </div>
             {file ? (
-              <div style={{ color: "#7c3aed", fontWeight: "600" }}>{file.name}</div>
+              <div style={{ color: "#5c2a9d", fontWeight: "600" }}>{file.name}</div>
             ) : (
               <>
                 <p style={{ fontWeight: "600", color: "#555", margin: 0 }}>Drag & drop file here</p>
@@ -424,14 +424,14 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
               onClick={handleSubmit}
               disabled={isUploading}
               style={{
-                background: "#7c3aed",
+                background: "#5c2a9d",
                 color: "#fff",
                 border: "none",
                 padding: "12px 40px",
                 borderRadius: "6px",
                 fontWeight: "600",
                 fontSize: "1rem",
-                boxShadow: "0 4px 12px rgba(124, 58, 237, 0.3)",
+                boxShadow: "0 4px 12px rgba(92, 42, 157, 0.3)",
                 transition: "all 0.2s ease",
                 cursor: isUploading ? "not-allowed" : "pointer"
               }}
@@ -772,12 +772,15 @@ const UserProfilePage = () => {
                       </h2>
                       <Link
                         to={`/user/user-profile-edit-page/${userId}`}
-                        className="btn btn-primary edit-btn"
+                        className="btn edit-btn"
                         style={{
+                          background: "#5c2a9d",
+                          color: "#fff",
                           padding: "10px 24px",
                           fontSize: "24px",
                           borderRadius: "5px",
                           textDecoration: "none",
+                          border: "none",
                         }}
                       >
                         <i
@@ -814,7 +817,7 @@ const UserProfilePage = () => {
                           height: "130px",
                           minWidth: "130px",
                           minHeight: "130px",
-                          border: "5px solid #7c3aed",
+                          border: "5px solid #5c2a9d",
                           borderRadius: "50%",
                         }}
                       >
@@ -1063,7 +1066,7 @@ const UserProfilePage = () => {
                             fontSize: "1.3rem",
                             fontWeight: "600",
                             color: "#333",
-                            borderBottom: "2px solid #7c3aed",
+                            borderBottom: "2px solid #5c2a9d",
                             paddingBottom: "10px",
                             display: "flex",
                             alignItems: "center",
@@ -1072,7 +1075,7 @@ const UserProfilePage = () => {
                         >
                           <i
                             className="fa fa-user-circle"
-                            style={{ color: "#7c3aed" }}
+                            style={{ color: "#5c2a9d" }}
                           ></i>
                           About Me
                         </h4>
@@ -1255,7 +1258,7 @@ const UserProfilePage = () => {
 
                   <ProfileSection
                     title="Religious Information"
-                    icon="fa-praying-hands"
+                    icon="fa-book"
                   >
                     <InfoRow label="Religion" value={userInfo?.religion} />
                     <InfoRow
@@ -1355,7 +1358,7 @@ const UserProfilePage = () => {
                   </ProfileSection>
 
                   {/* Lifestyle & Hobbies Section */}
-                  <ProfileSection title="Lifestyle & Hobbies" icon="fa-guitar">
+                  <ProfileSection title="Lifestyle & Hobbies" icon="fa-music">
                     <InfoRow
                       label="Hobbies"
                       value={
@@ -1393,7 +1396,7 @@ const UserProfilePage = () => {
                     <div className="grid-span-full" style={{ marginBottom: "10px" }}>
                       <h5
                         style={{
-                          color: "#7c3aed",
+                          color: "#5c2a9d",
                           marginTop: "20px",
                           marginBottom: "15px",
                           fontWeight: "700",
@@ -1403,7 +1406,7 @@ const UserProfilePage = () => {
                           gap: "8px"
                         }}
                       >
-                        <span style={{ width: "4px", height: "18px", background: "#7c3aed", borderRadius: "2px" }}></span>
+                        <span style={{ width: "4px", height: "18px", background: "#5c2a9d", borderRadius: "2px" }}></span>
                         Basic & Religious
                       </h5>
                     </div>
@@ -1462,7 +1465,7 @@ const UserProfilePage = () => {
                     <div className="grid-span-full" style={{ marginTop: "30px", marginBottom: "10px" }}>
                       <h5
                         style={{
-                          color: "#7c3aed",
+                          color: "#5c2a9d",
                           marginBottom: "15px",
                           fontWeight: "700",
                           fontSize: "1.1rem",
@@ -1471,7 +1474,7 @@ const UserProfilePage = () => {
                           gap: "8px"
                         }}
                       >
-                        <span style={{ width: "4px", height: "18px", background: "#7c3aed", borderRadius: "2px" }}></span>
+                        <span style={{ width: "4px", height: "18px", background: "#5c2a9d", borderRadius: "2px" }}></span>
                         Professional & Location
                       </h5>
                     </div>

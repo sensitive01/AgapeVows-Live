@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import GlobalSearchModal from "../../components/GlobalSearchModal";
 
-// Communities data (same as your hero section)
 const communities = [
   "Adventist",
   "AG (Assemblies of God)",

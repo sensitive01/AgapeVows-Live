@@ -174,26 +174,36 @@ const UserSignUp = () => {
           <div className="container">
             <div className="row">
               <div className="inn">
-                <div
-                  className="lhs"
-                  style={{
-                    background: '#A020F0',
-                  }}
-                >
-                  <div className="tit">
-                    <h2>
-                      <span style={{ color: "#fff" }}>Now </span>
-                      <b style={{ color: "#FFD700" }}>
-                        Find Your Life Partner
-                      </b>{" "}
-                      <span style={{ color: "#fff" }}>Easy and fast.</span>
-                    </h2>
-                  </div>
-                  <div className="im">
-                    <img src="images/login-couple.png" alt="" />
-                  </div>
-                  <div className="log-bg">&nbsp;</div>
-                </div>
+                  {/* LHS removed per user request */}
+                  <style>
+                    {`
+                      .login .inn {
+                        display: flex;
+                        justify-content: center;
+                        width: 100%;
+                        max-width: 500px;
+                        margin: 0 auto;
+                      }
+                      .login .inn .rhs {
+                        width: 100%;
+                        max-width: 100%;
+                        margin: 0;
+                        padding: 40px;
+                        border-radius: 10px;
+                      }
+                      .login .inn .rhs input[type="checkbox"] {
+                        width: 16px !important;
+                        height: 16px !important;
+                        min-height: 16px !important;
+                        max-height: 16px !important;
+                        padding: 0 !important;
+                        margin-top: 4px;
+                        margin-right: 8px;
+                        display: inline-block;
+                        vertical-align: top;
+                      }
+                    `}
+                  </style>
 
                 <div className="rhs">
                   <div>

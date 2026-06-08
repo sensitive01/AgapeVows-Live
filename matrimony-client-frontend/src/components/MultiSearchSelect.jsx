@@ -74,8 +74,8 @@ const MultiSearchSelect = ({ options, value, onChange, placeholder, name }) => {
           <span
             key={val}
             style={{
-              background: "#eff6ff",
-              color: "#2563eb",
+              background: "#f3e8ff",
+              color: "#5c2a9d",
               padding: "2px 8px",
               borderRadius: "4px",
               display: "flex",
@@ -83,7 +83,7 @@ const MultiSearchSelect = ({ options, value, onChange, placeholder, name }) => {
               gap: "4px",
               fontSize: "13px",
               fontWeight: "500",
-              border: "1px solid #dbeafe",
+              border: "1px solid #e9d5ff",
             }}
           >
             {val}

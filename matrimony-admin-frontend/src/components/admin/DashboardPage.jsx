@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Chart, registerables } from "chart.js";
+import { Link } from "react-router-dom";
 
 import profImages from "/assets/images/profiles/1.jpg";
 import NewLayout from "./layout/NewLayout";
@@ -27,7 +28,7 @@ const DashboardPage = () => {
   const [allUsers, setAllUsers] = useState([]);
   const [paidUsers, setPaidUsers] = useState([]);
   const [totalEarnings, setTotalEarnings] = useState(0);
-  const [yearlyEarningsUSD, setYearlyEarningsUSD] = useState(0);
+  const [yearlyEarningsINR, setYearlyEarningsINR] = useState(0);
   const [enquiries, setEnquiries] = useState([]);
   const [newUsersThisMonth, setNewUsersThisMonth] = useState(0);
   const [adminRole, setAdminRole] = useState("superadmin");
@@ -274,15 +275,11 @@ const DashboardPage = () => {
         });
       });
 
-      // ✅ Convert INR → USD
-      const USD_RATE = 83; // INR → USD
-      const monthlyTotalsUSD = monthlyTotalsINR.map(amount => amount / USD_RATE);
-
       // ✅ Calculate total current year INR
       const totalYearINR = monthlyTotalsINR.reduce((sum, amount) => sum + amount, 0);
 
       // ✅ Store in state
-      setYearlyEarningsUSD(totalYearINR / USD_RATE);
+      setYearlyEarningsINR(totalYearINR);
 
       chartsRef.current.monthlyEarningsChart =
         new Chart(earningsReceiptCanvas, {
@@ -294,7 +291,7 @@ const DashboardPage = () => {
             ],
             datasets: [{
               label: `Yearly Earnings (${currentYear})`,
-              data: monthlyTotalsUSD,
+              data: monthlyTotalsINR,
               backgroundColor: "rgba(255,99,132,0.2)",
               borderColor: "rgba(255,99,132,1)",
               borderWidth: 2,
@@ -306,14 +303,13 @@ const DashboardPage = () => {
             scales: {
               y: {
                 beginAtZero: true,
-                max: 10000,
               },
             },
             plugins: {
               tooltip: {
                 callbacks: {
                   label: function (context) {
-                    return "$" + context.raw.toFixed(2);
+                    return "₹" + context.raw.toLocaleString();
                   }
                 }
               }
@@ -355,62 +351,7 @@ const DashboardPage = () => {
 
   // Users Pie Chart
 
-  useEffect(() => {
-    if (plans.length === 0 || paidUsers.length === 0) return;
 
-    const usersCanvas = document.getElementById("Chart_users");
-    if (!usersCanvas) return;
-
-    if (chartsRef.current.usersChart) {
-      chartsRef.current.usersChart.destroy();
-    }
-
-    const labels = plans.map(plan => plan.name);
-
-    const dataCounts = plans.map(plan =>
-      paidUsers.filter(user =>
-        user.paymentDetails?.some(
-          payment =>
-            payment.subscriptionType === plan.name &&
-            payment.subscriptionStatus === "Active"
-        )
-      ).length
-    );
-
-    chartsRef.current.usersChart = new Chart(usersCanvas, {
-      type: "pie",
-      data: {
-        labels,
-        datasets: [
-          {
-            data: dataCounts,
-            backgroundColor: [
-              "#198754",
-              "#ff07a8",
-              "#0d6efd",
-              "#dcbd35",
-              "#20c997",
-              "#6610f2"
-            ].slice(0, plans.length),
-          },
-        ],
-      },
-      options: {
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'bottom',
-          }
-        }
-      }
-    });
-
-    return () => {
-      if (chartsRef.current.usersChart) {
-        chartsRef.current.usersChart.destroy();
-      }
-    };
-  }, [plans, paidUsers]);
 
 
 
@@ -447,19 +388,29 @@ const DashboardPage = () => {
               <h2>User requests</h2>
               <span className="bnum">{newUserCount}</span>
               <p>This count for today how many users can register.</p>
-              <a href="admin-new-user-requests.html" className="fclick"></a>
+              <Link to="/admin/new-user-requests" className="fclick"></Link>
             </div>
             <div className="box-com box-qui box-lig ali-cen">
               <h3>
                 <span>All</span> Members
               </h3>
               <span className="bnum">{allUsers.length}</span>
-              {plans.length > 0 && paidUsers.length > 0 && (
-                <div style={{ maxHeight: "200px", position: "relative", width: "100%", display: "flex", justifyContent: "center", marginTop: "15px" }}>
-                  <canvas id="Chart_users" style={{ maxHeight: "200px" }}></canvas>
+              {allUsers.length > 0 && (
+                <div className="users-cir-thum-hori" style={{ marginTop: "15px", justifyContent: "center" }}>
+                  {allUsers.filter(user => user.profileImage).slice(0, 8).map((user, index) => (
+                    <span key={index}>
+                      <img
+                        src={user.profileImage}
+                        data-bs-toggle="tooltip"
+                        title={user.userName || "User"}
+                        alt=""
+                        style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", margin: "0 -5px", border: "2px solid #fff", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}
+                      />
+                    </span>
+                  ))}
                 </div>
               )}
-              <a href="admin-new-user-requests.php" className="fclick"></a>
+              <Link to="/admin/all-user-list" className="fclick"></Link>
             </div>
             <div className="box-com box-qui live-box">
               <h4>New Users This Month</h4>
@@ -478,13 +429,13 @@ const DashboardPage = () => {
               <h2>Subscribed Users</h2>
               <span className="bnum">{activeSubscribedUsers.length}</span>
               <div className="users-cir-thum-hori">
-                {activeSubscribedUsers.slice(0, 8).map((user, index) => (
+                {activeSubscribedUsers.filter(user => user.profileImage).slice(0, 8).map((user, index) => (
                   <span key={index}>
                     <img
-                      src={user.profileImage || profImages}
+                      src={user.profileImage}
                       data-bs-toggle="tooltip"
                       title={user.userName}
-                      alt={user.userName}
+                      alt=""
                     />
                   </span>
                 ))}
@@ -511,7 +462,7 @@ const DashboardPage = () => {
                   </span>
                 ))}
               </div>
-              <a href="/admin/enquiries" className="fclick"></a>
+              <Link to="/admin/enquiries" className="fclick"></Link>
             </div>
           </div>
           {adminRole === "superadmin" && (
@@ -521,7 +472,7 @@ const DashboardPage = () => {
                   <span>Yearly</span> Earnings
                 </h3>
                 <span className="bnum">
-                  <sub>$</sub>{yearlyEarningsUSD.toFixed(2)}
+                  <sub>₹</sub>{yearlyEarningsINR.toLocaleString()}
                 </span>
                 <canvas id="Chart_earni_rece"></canvas>
               </div>

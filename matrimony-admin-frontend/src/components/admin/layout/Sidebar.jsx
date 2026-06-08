@@ -6,7 +6,7 @@ const Sidebar = () => {
   const location = useLocation();
   const [expandedMenus, setExpandedMenus] = useState({});
   const [newCounts, setNewCounts] = useState({ issues: 0, enquiries: 0, reports: 0 });
-  const [adminRole, setAdminRole] = useState("superadmin");
+  const [adminRole, setAdminRole] = useState(null);
   const [adminPermissions, setAdminPermissions] = useState([]);
 
   useEffect(() => {
@@ -37,18 +37,15 @@ const Sidebar = () => {
       "/admin/add-new-user",
       "/admin/deleted-users",
       "/admin/billing-info/",
-      "/admin/new-user/",
       "/admin/id-verification-requests",
       "/admin/verified-id-users",
       "/admin/contact-update-requests",
-      "/admin/reports",
       "/admin/deactivated-users"
     ];
     if (usersRoutes.some(route => location.pathname.startsWith(route))) {
       setExpandedMenus(prev => ({ ...prev, users: true }));
     }
 
-    // Handle view timestamps and fetch counts
     const fetchCountsAndMarkRead = async () => {
       try {
         if (location.pathname === "/admin/issues") {
@@ -165,16 +162,6 @@ const Sidebar = () => {
               }}
             >
               <ul className="list-unstyled" style={{ paddingLeft: "10px" }}>
-                {hasPermission("users.new_requests") && (
-                <li>
-                  <Link 
-                    to="/admin/new-user-requests" 
-                    style={isActive("/admin/new-user-requests") ? activeLinkStyle : normalLinkStyle}
-                  >
-                    New User Requests
-                  </Link>
-                </li>
-                )}
                 {hasPermission("users.all") && (
                 <li>
                   <Link 

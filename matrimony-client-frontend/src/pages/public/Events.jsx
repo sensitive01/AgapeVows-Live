@@ -160,7 +160,7 @@ const Events = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5c2a9d]"></div>
       </div>
     );
   }
@@ -176,6 +176,7 @@ const Events = () => {
         <CommonBanner 
           title="Events & Gatherings" 
           subtitle="Discover and join celebrations, gatherings, and special occasions near you."
+          className="h-[250px] md:h-[300px] flex items-start justify-center pt-16"
         />
 
         {/* SECTION 2: SEARCH & CONTENT BLOCK */}
@@ -185,14 +186,14 @@ const Events = () => {
           <div className="mb-12 text-center">
             <div className="max-w-xl mx-auto relative group mb-8 transition-all duration-300">
               <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none z-10">
-                <FaSearch className="text-gray-400 group-focus-within:text-purple-600 transition-colors" />
+                <FaSearch className="text-gray-400 group-focus-within:text-[#5c2a9d] transition-colors" />
               </div>
               <input
                 type="text"
                 placeholder="Search by locations (e.g., Kerala, Bengaluru)..."
                 value={searchState}
                 onChange={handleSearchChange}
-                className="block w-full pl-12 pr-6 py-3.5 border border-gray-100 rounded-full bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/20 shadow-lg focus:shadow-xl transition-all duration-300 text-base font-medium"
+                className="block w-full pl-12 pr-6 py-3.5 border border-gray-100 rounded-full bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5c2a9d]/20 shadow-lg focus:shadow-xl transition-all duration-300 text-base font-medium"
               />
             </div>
 
@@ -202,7 +203,7 @@ const Events = () => {
                 <button
                   onClick={() => setActiveTab("Active")}
                   className={`px-6 py-2 rounded-md text-sm font-semibold transition-all duration-200 focus:outline-none ${activeTab === "Active"
-                    ? "bg-white text-purple-700 shadow-sm"
+                    ? "bg-white text-[#5c2a9d] shadow-sm"
                     : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
                     }`}
                 >
@@ -211,7 +212,7 @@ const Events = () => {
                 <button
                   onClick={() => setActiveTab("Inactive")}
                   className={`px-6 py-2 rounded-md text-sm font-semibold transition-all duration-200 focus:outline-none ${activeTab === "Inactive"
-                    ? "bg-white text-purple-700 shadow-sm"
+                    ? "bg-white text-[#5c2a9d] shadow-sm"
                     : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
                     }`}
                 >
@@ -274,7 +275,7 @@ const Events = () => {
                       {/* Desktop Date/Time Row */}
                       <div className="hidden md:flex flex-wrap gap-4 mb-4 text-sm font-medium text-gray-500">
                         <div
-                          className={`flex items-center px-3 py-1 rounded-md ${isActiveTab ? "text-purple-600 bg-purple-50" : "text-gray-600 bg-gray-100"}`}
+                          className={`flex items-center px-3 py-1 rounded-md ${isActiveTab ? "text-[#5c2a9d] bg-[#f8f5fd]" : "text-gray-600 bg-gray-100"}`}
                         >
                           <FaCalendarAlt className="mr-2" />
                           {date}
@@ -288,7 +289,7 @@ const Events = () => {
                       {/* Title & Description */}
                       <div className="mb-4">
                         <h2
-                          className={`hidden md:block text-2xl font-bold mb-2 transition-colors duration-200 ${isActiveTab ? "text-gray-900 group-hover:text-purple-600" : "text-gray-600"}`}
+                          className={`hidden md:block text-2xl font-bold mb-2 transition-colors duration-200 ${isActiveTab ? "text-gray-900 group-hover:text-[#5c2a9d]" : "text-gray-600"}`}
                         >
                           {event.name}
                         </h2>
@@ -331,14 +332,14 @@ const Events = () => {
                               href={event.mapLink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 border border-purple-200 text-purple-700 font-medium rounded-lg hover:bg-purple-50 transition-colors text-sm"
+                              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 border border-[#5c2a9d]/30 text-[#5c2a9d] font-medium rounded-lg hover:bg-[#f8f5fd] transition-colors text-sm"
                             >
                               <FaDirections /> Directions
                             </a>
                           )}
                           <button
                             onClick={() => handleViewDetails(event)}
-                            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2 font-medium rounded-lg shadow-md hover:shadow-lg transform active:scale-95 transition-all text-sm ${isActiveTab ? "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+                            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2 font-medium rounded-lg shadow-md hover:shadow-lg transform active:scale-95 transition-all text-sm ${isActiveTab ? "bg-[#5c2a9d] hover:bg-[#4b2282] text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
                           >
                             View Details{" "}
                             <FaExternalLinkAlt className="text-xs opacity-70" />
@@ -366,7 +367,7 @@ const Events = () => {
                 </p>
                 <button
                   onClick={() => setSearchState("")}
-                  className="text-purple-600 font-semibold hover:text-purple-800 hover:underline transition-colors"
+                  className="text-[#5c2a9d] font-semibold hover:text-[#4b2282] hover:underline transition-colors"
                 >
                   Clear Search & Show All
                 </button>
@@ -421,12 +422,12 @@ const Events = () => {
 
                       <div className="flex flex-wrap gap-4 mb-4 text-sm text-gray-500">
                         <span className="flex items-center">
-                          <FaCalendarAlt className="mr-1 text-purple-600" />{" "}
+                          <FaCalendarAlt className="mr-1 text-[#5c2a9d]" />{" "}
                           {formatEventDate(selectedEvent.date).date}{" "}
                           {formatEventDate(selectedEvent.date).time}
                         </span>
                         <span className="flex items-center">
-                          <FaMapMarkerAlt className="mr-1 text-purple-600" />{" "}
+                          <FaMapMarkerAlt className="mr-1 text-[#5c2a9d]" />{" "}
                           {selectedEvent.location}, {selectedEvent.state}
                         </span>
 
@@ -443,7 +444,7 @@ const Events = () => {
                         )}
                       </div>
 
-                      <div className="bg-purple-50 p-3 rounded-lg border border-purple-100 mb-4 text-sm text-gray-700">
+                      <div className="bg-[#f8f5fd] p-3 rounded-lg border border-[#5c2a9d]/20 mb-4 text-sm text-gray-700">
                         <strong>Church / Venue:</strong>{" "}
                         {selectedEvent.churchName}
                       </div>
@@ -495,14 +496,14 @@ const Events = () => {
                       href={selectedEvent.mapLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full inline-flex justify-center items-center rounded-md border border-purple-200 shadow-sm px-4 py-2 bg-white text-base font-medium text-purple-700 hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:w-auto sm:text-sm mb-3 sm:mb-0"
+                      className="w-full inline-flex justify-center items-center rounded-md border border-[#5c2a9d]/30 shadow-sm px-4 py-2 bg-white text-base font-medium text-[#5c2a9d] hover:bg-[#f8f5fd] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5c2a9d] sm:w-auto sm:text-sm mb-3 sm:mb-0"
                     >
                       <FaDirections className="mr-2" /> Get Directions
                     </a>
                   )}
                   <button
                     type="button"
-                    className="w-full inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:w-auto sm:text-sm"
+                    className="w-full inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#5c2a9d] text-base font-medium text-white hover:bg-[#4b2282] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5c2a9d] sm:w-auto sm:text-sm"
                     onClick={closeDetailsModal}
                   >
                     Close

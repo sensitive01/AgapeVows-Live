@@ -68,9 +68,9 @@ const getAllReports = async (req, res) => {
 const updateReportStatus = async (req, res) => {
   try {
     const { reportId } = req.params;
-    const { status } = req.body;
+    const { status, adminReply } = req.body;
 
-    if (!["Pending", "Resolved", "Ignored"].includes(status)) {
+    if (!["Pending", "Resolved", "In Progress"].includes(status)) {
       return res.status(400).json({
         success: false,
         message: "Invalid status",
@@ -79,7 +79,7 @@ const updateReportStatus = async (req, res) => {
 
     const updatedReport = await Report.findByIdAndUpdate(
       reportId,
-      { status },
+      { status, adminReply },
       { new: true }
     );
 

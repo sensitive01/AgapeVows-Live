@@ -272,6 +272,8 @@ const AdminIssues = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const [activeTab, setActiveTab] = useState("Pending");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // ================= FETCH =================
   const fetchIssues = async () => {
@@ -303,10 +305,10 @@ const AdminIssues = () => {
   // ================= UPDATE =================
   const handleUpdate = async (e) => {
     e.preventDefault();
-    if (!reply.trim()) {
+    if (status !== "Pending" && !reply.trim()) {
       showAlert({
         title: "Error",
-        text: "Admin reply is mandatory.",
+        text: "Admin reply is mandatory for In Progress or Resolved status.",
         icon: "error",
       });
       return;
@@ -370,10 +372,24 @@ const AdminIssues = () => {
     }
   };
 
+  const filteredIssues = issues.filter((issue) => {
+    const isResolvedTab = activeTab === "Resolved";
+    const matchesTab = isResolvedTab 
+      ? issue.status === "Resolved" 
+      : (issue.status === "Pending" || issue.status === "In Progress");
+    
+    const searchLower = searchQuery.toLowerCase();
+    const matchesSearch = 
+      (issue.userName && issue.userName.toLowerCase().includes(searchLower)) ||
+      (issue.details && issue.details.toLowerCase().includes(searchLower));
+
+    return matchesTab && matchesSearch;
+  });
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentIssues = issues.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(issues.length / itemsPerPage);
+  const currentIssues = filteredIssues.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredIssues.length / itemsPerPage);
 
   const Pagination = () => {
     const pageNumbers = [];
@@ -501,24 +517,82 @@ const AdminIssues = () => {
           <div className="alert alert-success shadow-sm">{success}</div>
         )}
 
+        {/* ========== SEARCH & FILTER ========== */}
+        <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: "12px" }}>
+          <div className="card-body p-4">
+            <div className="row g-3">
+              {/* Search */}
+              <div className="col-lg-6">
+                <div style={{ position: "relative" }}>
+                  <input
+                    type="text"
+                    className="form-control ps-4"
+                    placeholder="🔍 Search user or issue details..."
+                    value={searchQuery}
+                    onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                    style={{
+                      borderRadius: "10px",
+                      border: "1.5px solid #e0e0e0",
+                      padding: "10px 15px",
+                      fontSize: "14px",
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Filter */}
+              <div className="col-lg-6">
+                <div className="d-flex gap-2 flex-wrap justify-content-lg-end">
+                  {["Pending", "Resolved"].map((stat) => (
+                    <button
+                      key={stat}
+                      onClick={() => { setActiveTab(stat); setCurrentPage(1); }}
+                      className={`btn btn-sm rounded-pill fw-bold`}
+                      style={{
+                        backgroundColor:
+                          activeTab === stat
+                            ? stat === "Pending"
+                              ? "#f5576c"
+                              : "#43e97b"
+                            : "#f0f0f0",
+                        color: activeTab === stat ? "white" : "#666",
+                        border: "none",
+                        padding: "8px 16px",
+                        fontSize: "13px",
+                        cursor: "pointer",
+                        transition: "all 0.3s ease",
+                      }}
+                    >
+                      {stat === "Pending" ? "Pending & In Progress" : "Resolved"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* TABLE */}
         <div className="card border-0 shadow-sm rounded-4">
           <div className="card-body p-0">
-            <table className="table align-middle mb-0 text-center">
+            <div className="table-responsive" style={{ minHeight: "400px" }}>
+              <table className="table align-middle mb-0 text-center" style={{ minWidth: "1000px" }}>
               <thead>
                 <tr>
                   {[
                     "S.No",
                     "User",
+                    "Contact Info",
                     "Issue",
                     "Attachment",
-                    "Status",
                     "Admin Reply",
+                    "Status",
                     "Created",
                     "Actions",
                   ].map((head, index) => (
                     <th
                       key={index}
+                      className={["User", "Contact Info", "Admin Reply"].includes(head) ? "text-start" : ""}
                       style={{
                         backgroundColor: "#e0e0e0",
                         borderBottom: "2px solid #cfcfcf",
@@ -536,9 +610,25 @@ const AdminIssues = () => {
                     <tr key={issue._id}>
                       <td>{indexOfFirstItem + index + 1}</td>
 
-                      <td>{issue.userName || "User"}</td>
+                      <td>
+                        <div className="text-start">
+                          <div className="fw-bold">{issue.userName || "Unknown"}</div>
+                          <div className="text-muted small">{issue.agwid || "N/A"}</div>
+                        </div>
+                      </td>
 
-                      <td>{issue.details}</td>
+                      <td>
+                        <div className="text-start">
+                          <div className="small">{issue.userEmail || "N/A"}</div>
+                          <div className="text-muted small">{issue.userMobile || "N/A"}</div>
+                        </div>
+                      </td>
+
+                      <td>
+                        <div className="text-truncate" style={{ maxWidth: "200px" }} title={issue.details}>
+                          {issue.details}
+                        </div>
+                      </td>
 
                       {/* ✅ GREEN VIEW BUTTON */}
                       <td>
@@ -556,6 +646,12 @@ const AdminIssues = () => {
                         )}
                       </td>
 
+                      <td className="text-start">
+                        <div className="small" style={{ maxWidth: "200px" }}>
+                          {issue.adminReply || "-"}
+                        </div>
+                      </td>
+
                       <td>
                         <span
                           className={`badge px-3 py-2 ${
@@ -569,8 +665,6 @@ const AdminIssues = () => {
                           {issue.status}
                         </span>
                       </td>
-
-                      <td>{issue.adminReply || "-"}</td>
 
                       <td>
                         {new Date(issue.createdAt).toLocaleDateString()}
@@ -586,6 +680,18 @@ const AdminIssues = () => {
                           </button>
 
                           <ul className="dropdown-menu dropdown-menu-end shadow-sm">
+                            {/* VIEW PROFILE */}
+                            {issue.userId && (
+                              <li>
+                                <button
+                                  className="dropdown-item"
+                                  onClick={() => window.open(`/admin/new-user/${issue.userId}`, '_blank')}
+                                >
+                                  👤 View Profile
+                                </button>
+                              </li>
+                            )}
+
                             {/* UPDATE */}
                             <li>
                               <button
@@ -614,13 +720,14 @@ const AdminIssues = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="8" className="py-4 text-muted">
+                    <td colSpan="9" className="py-4 text-muted">
                       No issues found.
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
         
@@ -629,47 +736,82 @@ const AdminIssues = () => {
 
         {/* MODAL */}
         <div className="modal fade" id="issueModal">
-          <div className="modal-dialog modal-lg modal-dialog-centered">
-            <div className="modal-content p-4 rounded-4">
-              <h4 className="fw-bold mb-3 text-primary">
-                Update Issue
-              </h4>
+          <div className="modal-dialog modal-md modal-dialog-centered">
+            <div className="modal-content p-4 rounded-4 shadow-lg border-0">
+              <div className="modal-header border-0 p-0 mb-3">
+                <h4 className="fw-bold text-primary mb-0">Update Issue Status</h4>
+                <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+              </div>
 
-              <form onSubmit={handleUpdate}>
-                <label className="fw-semibold">Status</label>
-                <select
-                  className="form-control mb-3"
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                >
-                  <option>Pending</option>
-                  <option>In Progress</option>
-                  <option>Resolved</option>
-                </select>
+              {selectedIssue && (
+                <div className="mb-4 p-3 bg-light rounded-3 small">
+                  <div className="row mb-2">
+                    <div className="col-4 fw-bold">User:</div>
+                    <div className="col-8">{selectedIssue.userName || "Unknown"} ({selectedIssue.agwid || "N/A"})</div>
+                  </div>
+                  <div className="row mb-2">
+                    <div className="col-4 fw-bold">Contact:</div>
+                    <div className="col-8">{selectedIssue.userEmail || "N/A"} <br/> {selectedIssue.userMobile || "N/A"}</div>
+                  </div>
+                  <div className="row mb-2">
+                    <div className="col-4 fw-bold">Issue:</div>
+                    <div className="col-8">{selectedIssue.details}</div>
+                  </div>
+                  {selectedIssue.attachment && (
+                    <div className="row">
+                      <div className="col-4 fw-bold">Attachment:</div>
+                      <div className="col-8">
+                        <a href={selectedIssue.attachment.startsWith('http') ? selectedIssue.attachment : `http://localhost:3001/${selectedIssue.attachment}`} target="_blank" rel="noreferrer" className="text-primary text-decoration-underline">
+                          View Uploaded File
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
-                <label className="fw-semibold">Admin Reply <span className="text-danger">*</span></label>
-                <textarea
-                  rows="4"
-                  className="form-control mb-4"
-                  value={reply}
-                  onChange={(e) => setReply(e.target.value)}
-                  required
-                />
+              <form onSubmit={handleUpdate} className="text-start">
+                <div className="mb-4">
+                  <label className="fw-semibold mb-2">Status</label>
+                  <select
+                    className="form-select"
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                  >
+                    {selectedIssue?.status === "Pending" && <option>Pending</option>}
+                    <option>In Progress</option>
+                    <option>Resolved</option>
+                  </select>
+                </div>
 
-                <div className="d-flex gap-2 mt-2">
+                {status !== "Pending" && (
+                  <div className="mb-4">
+                    <label className="fw-semibold mb-2">Admin Reply <span className="text-danger">*</span></label>
+                    <textarea
+                      className="form-control"
+                      rows="3"
+                      placeholder="Enter reply..."
+                      value={reply}
+                      onChange={(e) => setReply(e.target.value)}
+                      required
+                    ></textarea>
+                  </div>
+                )}
+
+                <div className="d-flex gap-2">
                   <button
                     type="button"
-                    className="btn btn-light w-50 rounded-pill py-2 border"
+                    className="btn btn-light flex-grow-1 rounded-pill"
                     data-bs-dismiss="modal"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="btn btn-primary w-50 rounded-pill py-2"
+                    className="btn btn-primary flex-grow-1 rounded-pill"
                     disabled={loading}
                   >
-                    {loading ? "Updating..." : "Update Issue"}
+                    {loading ? "Updating..." : "Save Changes"}
                   </button>
                 </div>
               </form>

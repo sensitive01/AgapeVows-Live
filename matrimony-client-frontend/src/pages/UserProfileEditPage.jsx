@@ -132,20 +132,20 @@ const BasicInfomation = ({
       width: "44px",
       height: "44px",
       borderRadius: "50%",
-      background: "#667eea",
+      background: "#5c2a9d",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       cursor: "pointer",
-      boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)",
+      boxShadow: "0 4px 12px rgba(92, 42, 157, 0.4)",
       transition: "all 0.3s ease",
       border: "4px solid #fff",
       zIndex: 10,
     },
     editIconOverlayHover: {
-      background: "#5568d3",
+      background: "#4b2282",
       transform: "scale(1.05)",
-      boxShadow: "0 6px 16px rgba(102, 126, 234, 0.5)",
+      boxShadow: "0 6px 16px rgba(92, 42, 157, 0.5)",
     },
     editIcon: {
       color: "#fff",
@@ -206,8 +206,8 @@ const BasicInfomation = ({
     },
     chooseFilesButtonHover: {
       background: "#f9fafb",
-      borderColor: "#667eea",
-      color: "#667eea",
+      borderColor: "#5c2a9d",
+      color: "#5c2a9d",
     },
     selectedFileName: {
       display: "inline-block",
@@ -521,7 +521,7 @@ const FormInput = ({
                 checked={value === option}
                 onChange={onChange}
                 disabled={readOnly}
-                style={{ cursor: readOnly ? "not-allowed" : "pointer", width: "16px", height: "16px", accentColor: "#7c3aed" }}
+                style={{ cursor: readOnly ? "not-allowed" : "pointer", width: "16px", height: "16px", accentColor: "#5c2a9d" }}
               />
               {option}
             </label>
@@ -728,7 +728,7 @@ const CheckboxGroup = ({ label, name, options, selectedValues, onChange }) => {
                 width: "18px",
                 height: "18px",
                 cursor: "pointer",
-                accentColor: "#667eea",
+                accentColor: "#5c2a9d",
               }}
             />
             <span
@@ -913,6 +913,8 @@ const UserProfileEditPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showVisibilityOptions, setShowVisibilityOptions] = useState(false);
+  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [pendingNav, setPendingNav] = useState(null);
 
 
   const [idProofFile, setIdProofFile] = useState(null);
@@ -1568,6 +1570,7 @@ const UserProfileEditPage = () => {
   // Warn user about unsaved changes
   // ========================
   useEffect(() => {
+    // 1. Handle native browser refresh/close
     const handleBeforeUnload = (e) => {
       if (hasUnsavedChanges) {
         e.preventDefault();
@@ -1575,8 +1578,36 @@ const UserProfileEditPage = () => {
       }
     };
 
+    // 2. Handle React Router client-side navigation (intercepting link clicks)
+    const handleGlobalClick = (e) => {
+      if (!hasUnsavedChanges) return;
+      
+      const target = e.target.closest('a');
+      if (target && target.href && !target.hasAttribute("download") && target.target !== "_blank") {
+        try {
+          const url = new URL(target.href);
+          // Exclude in-page anchors
+          if (url.origin === window.location.origin && url.pathname === window.location.pathname) return;
+          
+          e.preventDefault();
+          e.stopPropagation();
+          
+          setShowUnsavedModal(true);
+          setPendingNav(target.href);
+        } catch (err) {
+          // invalid url, ignore
+        }
+      }
+    };
+
     window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    // Use capture phase to intercept before React Router Link handles the click
+    document.addEventListener("click", handleGlobalClick, { capture: true });
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("click", handleGlobalClick, { capture: true });
+    };
   }, [hasUnsavedChanges]);
 
 
@@ -1730,7 +1761,7 @@ const UserProfileEditPage = () => {
                       disabled={isSubmitting}
                       style={{
                         padding: "10px 24px",
-                        background: isSubmitting ? "#9ca3af" : "#667eea",
+                        background: isSubmitting ? "#9ca3af" : "#5c2a9d",
                         color: "#fff",
                         border: "none",
                         borderRadius: "6px",
@@ -1741,12 +1772,12 @@ const UserProfileEditPage = () => {
                       }}
                       onMouseEnter={(e) => {
                         if (!isSubmitting) {
-                          e.target.style.background = "#5568d3";
+                          e.target.style.background = "#4b2282";
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!isSubmitting) {
-                          e.target.style.background = "#667eea";
+                          e.target.style.background = "#5c2a9d";
                         }
                       }}
                     >
@@ -4006,7 +4037,7 @@ const UserProfileEditPage = () => {
                       disabled={isSubmitting}
                       style={{
                         padding: "12px 32px",
-                        background: isSubmitting ? "#9ca3af" : "#667eea",
+                        background: isSubmitting ? "#9ca3af" : "#5c2a9d",
                         color: "#fff",
                         border: "none",
                         borderRadius: "6px",
@@ -4017,12 +4048,12 @@ const UserProfileEditPage = () => {
                       }}
                       onMouseEnter={(e) => {
                         if (!isSubmitting) {
-                          e.target.style.background = "#5568d3";
+                          e.target.style.background = "#4b2282";
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!isSubmitting) {
-                          e.target.style.background = "#667eea";
+                          e.target.style.background = "#5c2a9d";
                         }
                       }}
                     >
@@ -4035,6 +4066,58 @@ const UserProfileEditPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Unsaved Changes Modal */}
+      {showUnsavedModal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 999999 }}>
+          <div style={{ background: "#fff", padding: "32px", borderRadius: "12px", width: "90%", maxWidth: "420px", boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)", textAlign: "center" }}>
+            <div style={{ width: "56px", height: "56px", borderRadius: "50%", background: "#fee2e2", color: "#ef4444", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px auto", fontSize: "24px" }}>
+              <i className="fa fa-exclamation-triangle"></i>
+            </div>
+            <h3 style={{ margin: "0 0 12px 0", fontSize: "22px", color: "#1f2937", fontWeight: "700" }}>Unsaved Changes</h3>
+            <p style={{ margin: "0 0 28px 0", color: "#4b5563", fontSize: "16px", lineHeight: "1.5" }}>
+              Changes that you made may not be saved. Are you sure you want to leave this page?
+            </p>
+            <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+              <button
+                type="button"
+                onClick={() => setShowUnsavedModal(false)}
+                style={{ padding: "12px 24px", background: "#f3f4f6", color: "#374151", border: "none", borderRadius: "8px", fontWeight: "600", fontSize: "15px", cursor: "pointer", flex: 1, transition: "background 0.2s" }}
+                onMouseEnter={(e) => e.target.style.background = "#e5e7eb"}
+                onMouseLeave={(e) => e.target.style.background = "#f3f4f6"}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowUnsavedModal(false);
+                  setHasUnsavedChanges(false);
+                  setTimeout(() => {
+                    if (pendingNav) {
+                      try {
+                        const url = new URL(pendingNav);
+                        if (url.origin === window.location.origin) {
+                          navigate(url.pathname + url.search + url.hash);
+                        } else {
+                          window.location.href = pendingNav;
+                        }
+                      } catch (err) {
+                        window.location.href = pendingNav;
+                      }
+                    }
+                  }, 50);
+                }}
+                style={{ padding: "12px 24px", background: "#5c2a9d", color: "#fff", border: "none", borderRadius: "8px", fontWeight: "600", fontSize: "15px", cursor: "pointer", flex: 1, transition: "background 0.2s" }}
+                onMouseEnter={(e) => e.target.style.background = "#4b2282"}
+                onMouseLeave={(e) => e.target.style.background = "#5c2a9d"}
+              >
+                Leave
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

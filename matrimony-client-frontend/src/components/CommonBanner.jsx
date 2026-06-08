@@ -1,8 +1,8 @@
 import React from "react";
 
-const CommonBanner = ({ title, subtitle, badgeText = "" }) => {
+const CommonBanner = ({ title, subtitle, badgeText = "", className = "" }) => {
   return (
-    <section className="relative h-[400px] md:h-[500px] flex items-center justify-center overflow-hidden">
+    <section className={`relative overflow-hidden ${className || "h-[400px] md:h-[500px] flex items-center justify-center"}`}>
       {/* Parallax Background Image */}
       <div 
         className="absolute inset-0 z-0"

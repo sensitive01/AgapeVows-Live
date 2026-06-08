@@ -731,7 +731,7 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
       height: "140px",
       borderRadius: "50%",
       objectFit: "cover",
-      border: "4px solid #667eea",
+      border: "4px solid #5c2a9d",
       cursor: "pointer",
     },
 
@@ -743,7 +743,7 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
       height: "34px",
       borderRadius: "50%",
       border: "none",
-      background: "#667eea",
+      background: "#5c2a9d",
       color: "#fff",
       opacity: imgHover ? 1 : 0,
       transition: "0.3s",

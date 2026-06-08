@@ -684,7 +684,7 @@ const MainLayout = () => {
               {/* Mobile Profile or Auth */}
               <div className="mt-6 pt-4 border-t border-gray-100">
                 {isUserActive ? (
-                  <div className="space-y-1 px-2">
+                  <div className="space-y-1 px-2 pb-6">
                     <div className="flex items-center space-x-3 mb-4 p-2 bg-purple-50/50 rounded-lg">
                       {userImage ? (
                         <img
@@ -765,7 +765,7 @@ const MainLayout = () => {
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-3 px-2">
+                  <div className="space-y-3 px-2 pb-6">
                     <button
                       onClick={() => {
                         handleNavigate("/user/user-sign-up");
