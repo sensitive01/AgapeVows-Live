@@ -23,7 +23,6 @@ const UserSearchResult = () => {
   const state = location.state;
   const navigate = useNavigate();
 
-  console.log(state);
   const userId = localStorage.getItem("userId");
   const [users, setUsers] = useState([]);
   const [sortBy, setSortBy] = useState("");
@@ -229,7 +228,6 @@ const UserSearchResult = () => {
 
   const handleSendInterest = (user) => {
     setSelectedUser(user);
-    console.log("Interest sent to:", user.userName);
   };
 
 
@@ -251,8 +249,6 @@ const UserSearchResult = () => {
       targetUserActivePlan?.subscriptionType?.toLowerCase() || "";
     const myCanViewRaw = currentUserPlan?.canViewProfiles || "All Profiles";
 
-    console.log("My Can View (Search):", myCanViewRaw);
-    console.log("Target Plan (Search):", targetPlanName);
     const myCanView = myCanViewRaw.toString().trim().toLowerCase();
 
     const isTargetPlatinumOrGold =
@@ -296,7 +292,6 @@ const UserSearchResult = () => {
     const response = await saveTheProfileAsShortlisted(user._id, userId);
     if (response.status === 200) {
       showAlert({ text: response.data.message, icon: "success" });
-      console.log("Profile saved as shortlisted");
     } else {
       console.error("Failed to save profile as shortlisted");
       showAlert({ text: response.data.message, icon: "error" });
@@ -417,21 +412,22 @@ const UserSearchResult = () => {
                               width: "50%",
                               padding: "0 10px",
                               marginBottom: "20px",
+                              display: "flex",
                             }
-                            : { width: "100%", marginBottom: "20px" }
+                            : { width: "100%", marginBottom: "20px", display: "flex" }
                         }
                       >
                         <div
-                          className="search-result-card"
+                          className="search-result-card w-100 d-flex flex-column"
                           style={{
                             border: "1px solid #ddd",
                             padding: "15px",
                             backgroundColor: "#fff",
                             borderRadius: "4px",
                             boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                            flexGrow: 1,
                           }}
                         >
-                          {/* Header: ID and Last Login */}
                           <div
                             className="d-flex justify-content-between align-items-center mb-3"
                             style={{
@@ -472,7 +468,7 @@ const UserSearchResult = () => {
                             </span>
                           </div>
 
-                          <div className="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+                          <div className={`d-flex ${viewType === "grid" ? "flex-column" : "flex-column flex-sm-row"} align-items-sm-center gap-3`} style={{ flexGrow: 1 }}>
                             {/* Left: Image */}
                             <div
                               onClick={(e) => handleViewProfile(user, e)}
@@ -513,11 +509,7 @@ const UserSearchResult = () => {
                                     <span className="badge-text">Verified</span>
                                   </div>
                                 )}
-                                {user.isPhoneVerified && (
-                                  <div className="badge bg-info text-white p-1 shadow-sm" style={{ fontSize: '8px', borderRadius: '2px', border: '1px solid white' }}>
-                                    <i className="fa fa-phone"></i>
-                                  </div>
-                                )}
+
                               </div>
                             </div>
 
@@ -589,7 +581,7 @@ const UserSearchResult = () => {
                             </div>
 
                             {/* Right: Buttons */}
-                            <div className="d-flex align-items-center justify-content-md-end justify-content-center gap-2 mt-3 mt-sm-0 px-sm-2 pe-sm-5" style={{ alignSelf: "center", flexShrink: 0 }}>
+                            <div className={`d-flex align-items-center justify-content-center gap-2 mt-3 mt-sm-0 ${viewType === "grid" ? "pb-2" : "px-sm-2 pe-sm-5"}`} style={{ alignSelf: viewType === "grid" ? "center" : "center", flexShrink: 0 }}>
                               <button
                                 className="btn btn-sm text-white"
                                 style={{

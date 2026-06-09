@@ -156,6 +156,9 @@ const verifyLogin = async (req, res) => {
       return res.status(401).json({ message: "Invalid password" });
     }
 
+    user.lastLogin = new Date();
+    await user.save();
+
     return res.status(200).json({
       message: "Login successful",
       userId: user._id,

@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema(
       userMobile: { type: String, required: true, unique: true, trim: true },
       userPassword: { type: String, required: true },
       agwid: { type: String, unique: true, index: true },
+      lastLogin: { type: Date },
 
       isTermsAggreed: { type: Boolean, default: false },
       aboutMe: { type: String },

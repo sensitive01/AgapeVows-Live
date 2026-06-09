@@ -193,8 +193,6 @@ const MoreDetails = () => {
     };
   }, []);
 
-
-
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
@@ -260,35 +258,22 @@ const MoreDetails = () => {
   if (loadingUser) return null;
 
   const handleContactClick = async () => {
-    console.log("📞 handleContactClick triggered");
-    console.log("📞 isPaidUser:", isPaidUser);
-
     if (!isPaidUser) {
-      console.log("❌ User is not paid, showing upgrade popup");
       setUpgradePopupType('premium');
       setShowUpgradePopup(true);
       return;
     }
-
     try {
-      console.log("🔄 Calling viewContactDetails API...");
       const response = await viewContactDetails(profileId, currentUserId);
-      console.log("✅ viewContactDetails response:", response);
-
       if (response?.data?.success) {
         setShowContact(true);
-        // Removed the success toast notification here as requested
         window.dispatchEvent(new Event("planUpdated"));
       }
     } catch (err) {
-      console.log("❌ viewContactDetails error:", err.response?.data);
-      // Instead of small text error toast, show the upgrade popup when limit is reached
       setUpgradePopupType('limit');
       setShowUpgradePopup(true);
     }
   };
-
-
 
   const handleShortlistClick = async () => {
     if (isShortlisting) return;
@@ -470,14 +455,9 @@ const MoreDetails = () => {
                       <i className="fa fa-check-circle"></i> VERIFIED
                     </div>
                   )}
-                  {userInfo?.isPhoneVerified && (
-                    <div className="badge bg-info text-white border border-white shadow-sm" style={{ padding: '6px 12px', fontSize: '11px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <i className="fa fa-phone"></i> MOBILE VERIFIED
-                    </div>
-                  )}
+
                 </div>
               </div>
-
 
               <div style={{ display: "flex", flexDirection: "column", gap: "6px", width: "100%" }}>
                 <button
@@ -635,11 +615,7 @@ const MoreDetails = () => {
                       <i className="fa fa-check-circle me-1"></i>Verified
                     </span>
                   )}
-                  {userInfo?.isPhoneVerified && (
-                    <span className="badge rounded-pill bg-info text-white" style={{ fontSize: '12px', padding: '5px 12px' }}>
-                      <i className="fa fa-phone me-1"></i>Phone Verified
-                    </span>
-                  )}
+
                 </div>
               </div>
 

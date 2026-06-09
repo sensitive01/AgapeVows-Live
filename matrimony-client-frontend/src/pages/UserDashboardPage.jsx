@@ -629,29 +629,31 @@ const UserDashboardPage = () => {
                                       AgapeVows.com
                                     </span>
 
-                                    <div style={{ padding: '0px 10px 10px' }}>
-                                      <h5 style={{ margin: '5px 0', fontSize: '15px', fontWeight: 'bold' }}>
-                                        {profile.agwid || profile.userName}
+                                    <div
+                                      style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'flex-end',
+                                        position: 'absolute',
+                                        bottom: 0,
+                                        left: 0,
+                                        right: 0,
+                                        width: '100%',
+                                        background: 'transparent',
+                                        padding: '20px 35px 15px',
+                                        color: '#fff',
+                                        borderBottomLeftRadius: '10px',
+                                        borderBottomRightRadius: '10px',
+                                        zIndex: 10,
+                                      }}
+                                    >
+                                      <h5 style={{ position: 'static', display: 'block', width: '100%', margin: '0 0 8px', fontSize: '16px', fontWeight: 'bold', textAlign: 'center', color: '#fff', float: 'none', clear: 'both' }}>
+                                        {profile.agwid}
                                       </h5>
                                       
-                                      <div style={{ fontSize: '13px', color: '#555', marginBottom: '3px' }}>
-                                        {[
-                                          profile.motherTongue,
-                                          profile.age && `${profile.age} Yrs`,
-                                          profile.height
-                                        ].filter(Boolean).join(", ")}
-                                      </div>
-
-                                      <div style={{ fontSize: '12px', color: '#666', marginBottom: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                        {[profile.religion, profile.caste].filter(Boolean).join(", ")}
-                                      </div>
-
-                                      <div style={{ fontSize: '12px', color: '#666', marginBottom: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                        {[profile.education || profile.degree, profile.occupation || profile.jobType].filter(Boolean).join(", ")}
-                                      </div>
-
-                                      <div style={{ fontSize: '12px', color: '#666' }}>
-                                        {[profile.city, profile.state].filter(Boolean).join(", ")}
+                                      <div style={{ position: 'static', display: 'flex', width: '100%', justifyContent: 'space-between', fontSize: '13px', color: '#eee', float: 'none', clear: 'both' }}>
+                                        <span>{profile.city}</span>
+                                        <span>{profile.age && `${profile.age} Years old`}</span>
                                       </div>
                                     </div>
                                     <div

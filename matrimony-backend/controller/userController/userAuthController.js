@@ -1343,6 +1343,8 @@ const getNewProfileMatches = async (req, res) => {
         gender: user.gender,
         isPhoneVerified: user.isPhoneVerified,
         citizenOf: user.citizenOf,
+        createdAt: user.createdAt,
+        lastLogin: user.lastLogin,
       };
     });
 

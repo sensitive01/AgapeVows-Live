@@ -860,11 +860,7 @@ const UserProfilePage = () => {
                           gap: '4px',
                           zIndex: 10
                         }}>
-                          {userInfo?.isPhoneVerified && (
-                            <div className="badge bg-info text-white shadow-sm" style={{ padding: '4px 8px', fontSize: '9px', borderRadius: '4px', border: '1px solid white' }}>
-                              <i className="fa fa-phone"></i>
-                            </div>
-                          )}
+
                         </div>
                       </div>
                       <div
@@ -1014,23 +1010,7 @@ const UserProfilePage = () => {
                               )}
 
 
-                              {userInfo?.isPhoneVerified && (
-                                <span
-                                  className="badge bg-info text-white"
-                                  style={{
-                                    padding: "6px 12px",
-                                    fontSize: "clamp(0.7rem, 2.5vw, 0.9rem)",
-                                    fontWeight: "600",
-                                    borderRadius: "20px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "4px"
-                                  }}
-                                >
-                                  <i className="fa fa-phone"></i>
-                                  Phone Verified
-                                </span>
-                              )}
+
                             </div>
                           </div>
                         </div>

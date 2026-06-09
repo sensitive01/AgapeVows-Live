@@ -565,11 +565,7 @@ const UserAllProfilePage = () => {
                                   <span className="badge-text">Verified</span>
                                 </div>
                               )}
-                              {user.isPhoneVerified && (
-                                <div className="badge bg-info text-white p-1 shadow-sm" style={{ fontSize: '8px', borderRadius: '2px', border: '1px solid white' }}>
-                                  <i className="fa fa-phone"></i>
-                                </div>
-                              )}
+
                             </div>
                           </div>
 
