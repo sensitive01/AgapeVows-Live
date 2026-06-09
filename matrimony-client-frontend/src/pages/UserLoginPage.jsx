@@ -308,6 +308,11 @@ const UserLoginPage = () => {
           localStorage.setItem("userImage", response.data.profileImage);
         }
 
+        // Remember Me logic
+        localStorage.setItem("rememberMe", formData.rememberMe.toString());
+        document.cookie = "session_active=true; path=/";
+
+
         const redirectPath =
           location.state?.from || "/user/user-dashboard-page";
 

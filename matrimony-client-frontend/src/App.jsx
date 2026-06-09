@@ -75,6 +75,22 @@ function ReloadHandler() {
 
 function App() {
   useEffect(() => {
+    // Remember Me - Session Expiration Logic
+    const rememberMe = localStorage.getItem("rememberMe");
+    const isSessionActive = sessionStorage.getItem("session_active");
+    
+    if (rememberMe === "false" && !isSessionActive) {
+      // If we don't have an active session for this tab, clear the global login state
+      localStorage.removeItem("userId");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("userImage");
+      localStorage.removeItem("gender");
+      localStorage.removeItem("rememberMe");
+    } else if (localStorage.getItem("userId")) {
+      // Mark this tab as having an active session
+      sessionStorage.setItem("session_active", "true");
+    }
+
     // Synchronize logout across tabs
     const handleStorageChange = (e) => {
       // If userId is removed or localStorage is cleared
