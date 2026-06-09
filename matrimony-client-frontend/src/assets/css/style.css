@@ -5101,16 +5101,16 @@ span.mail::before {
 /* PRICING PLAN
 /*-------------------------------------------------------*/
 .plans-ban {
-    margin-top: var(--mtop);
-    padding: 80px 0px 140px;
-    text-align: center;
-    color: rgb(255, 255, 255);
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../images/plans-bg.png') no-repeat center center;
-    background-size: cover;
-    overflow: hidden;
-    float: left;
-    width: 100%;
-    position: relative;
+  margin-top: var(--mtop);
+  padding: 40px 0px 80px;
+  text-align: center;
+  color: rgb(255, 255, 255);
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../images/plans-bg.png') no-repeat center center;
+  background-size: cover;
+  overflow: hidden;
+  float: left;
+  width: 100%;
+  position: relative;
 }
 
 
@@ -5158,7 +5158,7 @@ span.mail::before {
   float: left;
   width: 100%;
   padding: 0px 0px 110px;
-  margin: -80px 0px 0px;
+  margin: -40px 0px 0px;
   position: relative;
 }
 
@@ -9493,6 +9493,70 @@ h2.db-tit {
   padding-top: 0;
 }
 
+.db-inte-prof-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px !important;
+  margin-bottom: 15px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  border: 1px solid #eaeaea;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.db-inte-prof-item-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-width: 150px;
+}
+
+.db-inte-prof-item-data {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 200px;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.db-inte-prof-item-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+@media screen and (max-width: 768px) {
+  .db-inte-prof-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 15px;
+    padding: 15px !important;
+  }
+  
+  .db-inte-prof-item-profile {
+    min-width: 100%;
+  }
+  
+  .db-inte-prof-item-data {
+    min-width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .db-inte-prof-item-buttons {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
 .db-inte-prof-chat ul {
   margin-top: 13px;
 }
@@ -10221,7 +10285,7 @@ select {
   }
 
   .plans-ban {
-    padding: 60px 0 200px 0;
+    padding: 10px 0 30px 0;
   }
 
   .plans-ban h1 {
@@ -11507,28 +11571,67 @@ select {
   }
 
   .pri-box {
-    width: 90%;
+    width: 80%;
     display: table;
     margin: 0 auto;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     float: initial;
     max-width: 400px;
+    padding: 15px 20px;
+  }
+
+  .pri-box h2 {
+    font-size: 24px;
+    line-height: 28px;
+    padding-bottom: 2px;
+  }
+
+  .pri-box p {
+    font-size: 13px;
+    margin-bottom: 5px;
+  }
+
+  .pri-box a.cta {
+    margin: 10px 0;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .pri-box .pri-cou {
+    font-size: 20px;
+  }
+
+  .pri-box .pri-cou b {
+    font-size: 24px;
+  }
+
+  .pri-box ol {
+    padding-top: 5px;
+  }
+
+  .pri-box ol li {
+    padding: 6px 0;
+    font-size: 13px;
   }
 
   .pri-box-pop {
     margin-top: 0;
   }
 
+  .pri-box-pop .pop-pln {
+    margin-bottom: 15px;
+  }
+
   .plans-main {
-    margin: -150px 0 0 0;
+    margin: -20px 0 0 0;
   }
 
   .plans-ban {
-    padding: 70px 0 200px 0;
+    padding: 10px 0 30px 0;
   }
 
   .plans-main {
-    padding: 0 0 40px 0;
+    padding: 0 0 10px 0;
   }
 
   .pg-pro-big-im {
@@ -12041,7 +12144,7 @@ select {
   }
 
   .plans-ban {
-    padding: 70px 0 200px 0;
+    padding: 10px 0 30px 0;
   }
 
   .plans-ban p,
@@ -12569,5 +12672,3 @@ select {
     margin-right: 7px;
   }
 }
-
-

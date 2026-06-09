@@ -38,12 +38,12 @@ const UserDashboardPage = () => {
   useEffect(() => {
     if (location.state?.purchaseSuccess && location.state?.planDetails) {
       const plan = location.state.planDetails;
-      
+
       const formatNum = (val) => {
         if (val === "NaN" || Number.isNaN(val) || String(val).toLowerCase() === "unlimited" || val === 0) return "Unlimited";
         return val;
       };
-      
+
       Swal.fire({
         title: '🎉 Congratulations!',
         html: `
@@ -499,7 +499,7 @@ const UserDashboardPage = () => {
                           </span>
                         )}
                         {profileMatches.length === 0 && <span className="me-3"></span>}
-                        <span 
+                        <span
                           style={{ fontSize: '14px', color: '#00bcd5', cursor: 'pointer', fontWeight: '600', textDecoration: 'underline' }}
                           onClick={() => navigate('/show-searched-result', { state: { isMatchSearch: true } })}
                         >
@@ -527,10 +527,10 @@ const UserDashboardPage = () => {
                     {profileMatches.length > 0 ? (
                       (() => {
                         // If we have 5 or fewer profiles, duplicate them so infinite scroll works properly
-                        const displayProfiles = profileMatches.length <= 5 
+                        const displayProfiles = profileMatches.length <= 5
                           ? [...profileMatches, ...profileMatches, ...profileMatches]
                           : profileMatches;
-                        
+
                         return (
                           <div style={{ position: "relative", padding: "0 20px" }}>
                             <style>
@@ -548,14 +548,14 @@ const UserDashboardPage = () => {
                             <ul className="slider" ref={sliderRef} key={profileMatches.map((p, i) => p._id || i).join('-')} style={{ margin: 0, padding: 0 }}>
                               {displayProfiles.map((profile, index) => (
                                 <li key={(profile._id || 'match') + "-" + index}>
-                            <div
-                              className="db-new-pro"
-                              style={{ position: "relative", paddingTop: "10px", cursor: "pointer" }}
-                              onClick={(e) => handleProfileClick(profile, e)}
-                            >
-                              {/* ✅ Badges - TOP LEFT */}
-                              <style>
-                                {`
+                                  <div
+                                    className="db-new-pro"
+                                    style={{ position: "relative", paddingTop: "10px", cursor: "pointer" }}
+                                    onClick={(e) => handleProfileClick(profile, e)}
+                                  >
+                                    {/* ✅ Badges - TOP LEFT */}
+                                    <style>
+                                      {`
                                   .db-new-pro .top-left-badges div {
                                     position: relative !important;
                                     bottom: auto !important;
@@ -574,80 +574,94 @@ const UserDashboardPage = () => {
                                     padding: 0;
                                   }
                                 `}
-                              </style>
-                              <span className="top-left-badges" style={{
-                                position: 'absolute',
-                                top: '8px',
-                                left: '8px',
-                                zIndex: 10,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '6px',
-                                alignItems: 'flex-start',
-                              }}>
-                                <span className="badge-card-wrapper">
-                                  <MembershipBadge user={profile} isMini={true} isMinimal={true} />
-                                </span>
-                                {profile.idVerificationStatus === 'Verified' && (
-                                  <span className="badge bg-success shadow-sm" style={{ fontSize: "11px", display: "flex", alignItems: "center", gap: "4px", padding: "4px 8px", margin: 0 }}>
-                                    <i className="fa fa-check-circle"></i> Verified
-                                  </span>
-                                )}
-                              </span>
+                                    </style>
+                                    <span className="top-left-badges" style={{
+                                      position: 'absolute',
+                                      top: '8px',
+                                      left: '8px',
+                                      zIndex: 10,
+                                      display: 'flex',
+                                      flexDirection: 'column',
+                                      gap: '6px',
+                                      alignItems: 'flex-start',
+                                    }}>
+                                      <span className="badge-card-wrapper">
+                                        <MembershipBadge user={profile} isMini={true} isMinimal={true} />
+                                      </span>
+                                      {profile.idVerificationStatus === 'Verified' && (
+                                        <span className="badge bg-success shadow-sm" style={{ fontSize: "11px", display: "flex", alignItems: "center", gap: "4px", padding: "4px 8px", margin: 0 }}>
+                                          <i className="fa fa-check-circle"></i> Verified
+                                        </span>
+                                      )}
+                                    </span>
 
-                              <img
-                                src={
-                                  profile.profileImage ||
-                                  "images/profiles/default.jpg"
-                                }
-                                alt={`${profile.userName}'s Profile`}
-                                className="profile"
-                                onError={(e) => {
-                                  e.target.src = "images/profiles/default.jpg";
-                                }}
-                              />
+                                    <img
+                                      src={
+                                        profile.profileImage ||
+                                        "images/profiles/default.jpg"
+                                      }
+                                      alt={`${profile.userName}'s Profile`}
+                                      className="profile"
+                                      onError={(e) => {
+                                        e.target.src = "images/profiles/default.jpg";
+                                      }}
+                                    />
 
-                              <span
-                                style={{
-                                  position: "absolute",
-                                  right: "5px",
-                                  top: "35%",
-                                  color: "rgba(255, 255, 255, 0.45)",
-                                  fontFamily: "'Outfit', 'Inter', sans-serif",
-                                  fontSize: "12px",
-                                  fontWeight: "600",
-                                  letterSpacing: "2px",
-                                  whiteSpace: "nowrap",
-                                  textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
-                                  writingMode: "vertical-rl",
-                                  transform: "rotate(180deg)",
-                                  pointerEvents: "none",
-                                  userSelect: "none",
-                                  zIndex: 5,
-                                }}
-                              >
-                                AgapeVows.com
-                              </span>
+                                    <span
+                                      style={{
+                                        position: "absolute",
+                                        right: "5px",
+                                        top: "35%",
+                                        color: "rgba(255, 255, 255, 0.45)",
+                                        fontFamily: "'Outfit', 'Inter', sans-serif",
+                                        fontSize: "12px",
+                                        fontWeight: "600",
+                                        letterSpacing: "2px",
+                                        whiteSpace: "nowrap",
+                                        textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
+                                        writingMode: "vertical-rl",
+                                        transform: "rotate(180deg)",
+                                        pointerEvents: "none",
+                                        userSelect: "none",
+                                        zIndex: 5,
+                                      }}
+                                    >
+                                      AgapeVows.com
+                                    </span>
 
-                              <div>
-                                <h5>
-                                  {profile.agwid || profile.userName}
-                                </h5>
-                                <span className="city mr-5">
-                                  {profile.city}
-                                </span>
-                                <span className="age ml-5">
-                                  {profile.age} Years old
-                                </span>
-                              </div>
-                              <div
-                                className="fclick"
-                              >
-                                &nbsp;
-                              </div>
-                            </div>
-                          </li>
-                        ))}
+                                    <div style={{ padding: '0px 10px 10px' }}>
+                                      <h5 style={{ margin: '5px 0', fontSize: '15px', fontWeight: 'bold' }}>
+                                        {profile.agwid || profile.userName}
+                                      </h5>
+                                      
+                                      <div style={{ fontSize: '13px', color: '#555', marginBottom: '3px' }}>
+                                        {[
+                                          profile.motherTongue,
+                                          profile.age && `${profile.age} Yrs`,
+                                          profile.height
+                                        ].filter(Boolean).join(", ")}
+                                      </div>
+
+                                      <div style={{ fontSize: '12px', color: '#666', marginBottom: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {[profile.religion, profile.caste].filter(Boolean).join(", ")}
+                                      </div>
+
+                                      <div style={{ fontSize: '12px', color: '#666', marginBottom: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {[profile.education || profile.degree, profile.occupation || profile.jobType].filter(Boolean).join(", ")}
+                                      </div>
+
+                                      <div style={{ fontSize: '12px', color: '#666' }}>
+                                        {[profile.city, profile.state].filter(Boolean).join(", ")}
+                                      </div>
+                                    </div>
+                                    <div
+                                      className="fclick"
+                                    >
+                                      &nbsp;
+                                    </div>
+                                  </div>
+                                </li>
+                              ))}
                             </ul>
                           </div>
                         );

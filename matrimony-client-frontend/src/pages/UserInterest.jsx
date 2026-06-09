@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import UserSideBar from "../components/UserSideBar";
@@ -13,6 +13,62 @@ import {
 import { showAlert } from "../utils/alertService";
 import MembershipBadge from "../components/common/MembershipBadge";
 
+const ProfileActionMenu = ({ profile, activeTab, navigate, handleAccept, handleReject }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div ref={menuRef} style={{ position: "relative", display: "inline-block", textAlign: "left" }}>
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        style={{ background: "#f8f9fa", border: "1px solid #ddd", borderRadius: "4px", fontSize: "1.2rem", padding: "2px 12px", color: "#444", cursor: "pointer", outline: "none", fontWeight: "bold" }}
+      >
+        &#8942;
+      </button>
+      {isOpen && (
+        <div style={{ position: "absolute", right: "50%", transform: "translateX(50%)", top: "100%", marginTop: "5px", background: "#fff", border: "1px solid #eaeaea", borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 9999, minWidth: "140px", overflow: "hidden" }}>
+          <button style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", borderBottom: "1px solid #f1f1f1", padding: "10px 15px", cursor: "pointer", fontSize: "0.85rem", color: "#333", whiteSpace: "nowrap" }} onClick={() => { setIsOpen(false); navigate(`/profile-more-details/${profile.senderDetails._id}`); }}>
+            <i className="fa fa-user" style={{ width: "20px", color: "#4b5563" }}></i> View Profile
+          </button>
+          
+          {activeTab === "pending" && (
+            <>
+              <button style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", borderBottom: "1px solid #f1f1f1", padding: "10px 15px", cursor: "pointer", fontSize: "0.85rem", color: "#333", whiteSpace: "nowrap" }} onClick={() => { setIsOpen(false); handleAccept(profile.senderId, "accepted"); }}>
+                <i className="fa fa-check-circle" style={{ width: "20px", color: "#10b981" }}></i> Accept
+              </button>
+              <button style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", padding: "10px 15px", cursor: "pointer", fontSize: "0.85rem", color: "#333", whiteSpace: "nowrap" }} onClick={() => { setIsOpen(false); handleReject(profile.senderId, "rejected"); }}>
+                <i className="fa fa-trash" style={{ width: "20px", color: "#ef4444" }}></i> Reject
+              </button>
+            </>
+          )}
+
+          {activeTab === "accepted" && (
+            <button style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", padding: "10px 15px", cursor: "pointer", fontSize: "0.85rem", color: "#333", whiteSpace: "nowrap" }} onClick={() => { setIsOpen(false); handleReject(profile.senderId, "rejected"); }}>
+              <i className="fa fa-trash" style={{ width: "20px", color: "#ef4444" }}></i> Reject
+            </button>
+          )}
+
+          {activeTab === "rejected" && (
+            <button style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", padding: "10px 15px", cursor: "pointer", fontSize: "0.85rem", color: "#333", whiteSpace: "nowrap" }} onClick={() => { setIsOpen(false); handleAccept(profile.senderId, "accepted"); }}>
+              <i className="fa fa-check-circle" style={{ width: "20px", color: "#10b981" }}></i> Accept
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const UserInterest = () => {
   const userId = localStorage.getItem("userId");
   const navigate = useNavigate();
@@ -20,6 +76,8 @@ const UserInterest = () => {
   const [profileData, setProfileData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 2;
 
   // Fetch data based on status
   const fetchProfileData = async (status) => {
@@ -43,6 +101,7 @@ const UserInterest = () => {
   // Handle tab change
   const handleTabChange = (status) => {
     setActiveTab(status);
+    setCurrentPage(1);
     fetchProfileData(status);
   };
 
@@ -128,157 +187,157 @@ const UserInterest = () => {
       return <div className="alert alert-danger">{error}</div>;
     }
 
-    if (!profileData || profileData.length === 0) {
+    const filteredData = profileData.filter((profile) => profile && profile.senderDetails);
+
+    if (!filteredData || filteredData.length === 0) {
       return (
         <div className="text-center">No profiles found for this category.</div>
       );
     }
 
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    const currentData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
     return (
-      <div className="db-inte-prof-list">
-        <ul>
-          {profileData
-            .filter((profile) => profile && profile.senderDetails)
-            .map((profile) => (
-              <li 
-                key={profile._id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "20px",
-                  marginBottom: "15px",
-                  background: "#fff",
-                  borderRadius: "12px",
-                  boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
-                  border: "1px solid #eaeaea",
-                  gap: "20px",
-                  flexWrap: "wrap"
-                }}
-              >
-                {/* 1. Profile Section (Image, Badge, Name) */}
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", minWidth: "150px" }}>
-                  <div style={{ position: "relative", width: "80px", height: "80px", marginTop: "15px" }}>
-                    <div style={{ position: "absolute", top: "-25px", left: "50%", transform: "translateX(-50%)", zIndex: 10, display: "flex", flexDirection: "column", gap: "2px", alignItems: "center" }}>
-                      <MembershipBadge user={profile.senderDetails} isMini={true} />
-                      {profile.senderDetails.idVerificationStatus === "Verified" && (
-                        <div className="badge bg-success shadow-sm" style={{ fontSize: "0.65rem", padding: "3px 6px", borderRadius: "10px", display: "flex", alignItems: "center", gap: "3px" }}>
-                          <i className="fa fa-check-circle"></i> VERIFIED
-                        </div>
-                      )}
+      <div className="table-responsive mt-3 interest-responsive-table" style={{ background: "#fff", borderRadius: "12px", padding: "15px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)", border: "1px solid #eaeaea" }}>
+        <style>{`
+          @media (max-width: 768px) {
+            .interest-responsive-table {
+              overflow-x: visible !important;
+            }
+            .interest-responsive-table table, .interest-responsive-table thead, .interest-responsive-table tbody, .interest-responsive-table th, .interest-responsive-table td, .interest-responsive-table tr {
+              display: block;
+            }
+            .interest-responsive-table thead tr {
+              display: none;
+            }
+            .interest-responsive-table tr {
+              margin-bottom: 20px;
+              border: 1px solid #eaeaea;
+              border-radius: 12px;
+              padding: 20px 10px 15px 10px;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+              position: relative;
+              background: #fff;
+            }
+            .interest-responsive-table td {
+              border: none !important;
+              padding: 10px 5px !important;
+              text-align: center;
+              width: 100% !important;
+            }
+            /* Hide S.No */
+            .interest-responsive-table td:nth-child(1) {
+              display: none;
+            }
+            /* Stack details vertically */
+            .interest-responsive-table td:nth-child(3) > div {
+              flex-direction: column !important;
+              gap: 5px !important;
+            }
+            /* Position the Actions dropdown in top right corner of card */
+            .interest-responsive-table td:nth-child(5) {
+              position: absolute;
+              top: 10px;
+              right: 10px;
+              width: auto !important;
+              padding: 0 !important;
+            }
+          }
+        `}</style>
+        <table className="table align-middle table-hover">
+          <thead className="table-light">
+            <tr>
+              <th scope="col" style={{ width: "5%", color: "#444", fontWeight: "600" }}>S.No</th>
+              <th scope="col" style={{ width: "20%", textAlign: "center", color: "#444", fontWeight: "600" }}>Profile</th>
+              <th scope="col" style={{ width: "45%", color: "#444", fontWeight: "600" }}>Details</th>
+              <th scope="col" style={{ width: "15%", color: "#444", fontWeight: "600" }}>Date</th>
+              <th scope="col" style={{ width: "15%", textAlign: "center", color: "#444", fontWeight: "600" }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody style={{ borderTop: "none" }}>
+            {currentData.map((profile, index) => (
+                <tr key={profile._id}>
+                  <td style={{ fontWeight: "500", color: "#666", padding: "2px 8px" }}>{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                  {/* 1. Profile Section */}
+                  <td style={{ padding: "2px 8px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
+                      <div style={{ transform: "scale(0.4)", transformOrigin: "center center", marginBottom: "-25px", marginTop: "-15px" }}>
+                        <MembershipBadge user={profile.senderDetails} isMini={true} />
+                      </div>
+                      <div style={{ position: "relative", width: "95px", height: "95px" }}>
+                        <img
+                          src={profile.senderDetails.profileImage || "images/profiles/default.jpg"}
+                          alt={profile.senderDetails.userName}
+                          style={{ width: "95px", height: "95px", objectFit: "cover", borderRadius: "50%", border: "none" }}
+                        />
+                        {profile.senderDetails.idVerificationStatus === "Verified" && (
+                          <span className="badge bg-success shadow-sm" style={{ position: "absolute", bottom: "-5px", left: "50%", transform: "translateX(-50%)", fontSize: "0.5rem", padding: "2px 4px", borderRadius: "10px" }}>
+                            <i className="fa fa-check-circle"></i>
+                          </span>
+                        )}
+                      </div>
+                      <h5 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "600", color: "#333", textAlign: "center", marginTop: "0", marginBottom: "0" }}>
+                        {profile.senderDetails.agwid}
+                      </h5>
                     </div>
-                    <img
-                      src={profile.senderDetails.profileImage || "images/profiles/default.jpg"}
-                      alt={profile.senderDetails.userName}
-                      style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "50%", border: "2px solid #f3f4f6" }}
-                    />
-                  </div>
-                  <div style={{ textAlign: "center" }}>
-                    <h5 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "600", color: "#333" }}>
-                      {profile.senderDetails.agwid}
-                    </h5>
-                    <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "4px" }}>
-                      {new Date(profile.createdAt).toLocaleDateString()}
+                  </td>
+
+                  {/* 2. Details Section */}
+                  <td style={{ color: "#555", fontSize: "0.85rem", padding: "2px 8px" }}>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
+                      <div style={{ whiteSpace: "nowrap" }}><strong>Age:</strong> {profile.senderDetails.age} yrs</div>
+                      <div style={{ whiteSpace: "nowrap" }}><strong>Height:</strong> {profile.senderDetails.height} cm</div>
+                      <div style={{ whiteSpace: "nowrap" }}><strong>City:</strong> {profile.senderDetails.city}</div>
+                      <div style={{ whiteSpace: "nowrap" }}><strong>Job:</strong> {profile.senderDetails.jobType || "Not specified"}</div>
                     </div>
-                  </div>
-                </div>
+                  </td>
 
-                {/* 2. Data Section (Age, Height, City, Job) */}
-                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px", minWidth: "200px", color: "#555", fontSize: "0.95rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span style={{ fontWeight: "600", color: "#444", minWidth: "60px" }}>Age:</span>
-                    <span>{profile.senderDetails.age} yrs</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span style={{ fontWeight: "600", color: "#444", minWidth: "60px" }}>Height:</span>
-                    <span>{profile.senderDetails.height} cm</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span style={{ fontWeight: "600", color: "#444", minWidth: "60px" }}>City:</span>
-                    <span>{profile.senderDetails.city}</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span style={{ fontWeight: "600", color: "#444", minWidth: "60px" }}>Job:</span>
-                    <span>{profile.senderDetails.jobType || "Not specified"}</span>
-                  </div>
-                  
-                  {profile.message && (
-                    <div style={{ fontSize: "0.85rem", color: "#666", fontStyle: "italic", padding: "6px 12px", background: "#fef8f8", borderRadius: "8px", borderLeft: "3px solid #ff5e62", marginTop: "4px", display: "inline-block" }}>
-                      "{profile.message}"
+                  {/* 3. Date Section */}
+                  <td style={{ color: "#888", fontSize: "0.85rem", whiteSpace: "nowrap", padding: "2px 8px" }}>
+                    {new Date(profile.createdAt).toLocaleDateString()}
+                  </td>
+
+                  {/* 4. Actions Section */}
+                  <td style={{ overflow: "visible", padding: "2px 8px" }}>
+                    <div style={{ textAlign: "center" }}>
+                      <ProfileActionMenu 
+                        profile={profile} 
+                        activeTab={activeTab} 
+                        navigate={navigate} 
+                        handleAccept={handleAccept} 
+                        handleReject={handleReject} 
+                      />
                     </div>
-                  )}
-                </div>
+                  </td>
+                </tr>
+            ))}
+          </tbody>
+        </table>
 
-                {/* 3. Buttons Section */}
-                <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
-                  <button
-                    type="button"
-                    onClick={() => navigate(`/profile-more-details/${profile.senderDetails._id}`)}
-                    style={{
-                      backgroundColor: "#f3f4f6", color: "#4b5563", border: "none", padding: "8px 16px", borderRadius: "8px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "500", transition: "0.2s"
-                    }}
-                    onMouseOver={(e) => (e.target.style.backgroundColor = "#e5e7eb")}
-                    onMouseOut={(e) => (e.target.style.backgroundColor = "#f3f4f6")}
-                  >
-                    View Profile
-                  </button>
-
-                  {activeTab === "pending" && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => handleAccept(profile.senderId, "accepted")}
-                        style={{
-                          backgroundColor: "#10b981", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "8px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "500", transition: "0.2s"
-                        }}
-                        onMouseOver={(e) => (e.target.style.backgroundColor = "#059669")}
-                        onMouseOut={(e) => (e.target.style.backgroundColor = "#10b981")}
-                      >
-                        Accept
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleReject(profile.senderId, "rejected")}
-                        style={{
-                          backgroundColor: "#ef4444", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "8px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "500", transition: "0.2s"
-                        }}
-                        onMouseOver={(e) => (e.target.style.backgroundColor = "#dc2626")}
-                        onMouseOut={(e) => (e.target.style.backgroundColor = "#ef4444")}
-                      >
-                        Reject
-                      </button>
-                    </>
-                  )}
-                  {activeTab === "accepted" && (
-                    <button
-                      type="button"
-                      onClick={() => handleReject(profile.senderId, "rejected")}
-                      style={{
-                        backgroundColor: "#ef4444", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "8px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "500", transition: "0.2s"
-                      }}
-                      onMouseOver={(e) => (e.target.style.backgroundColor = "#dc2626")}
-                      onMouseOut={(e) => (e.target.style.backgroundColor = "#ef4444")}
-                    >
-                      Reject
-                    </button>
-                  )}
-                  {activeTab === "rejected" && (
-                    <button
-                      type="button"
-                      onClick={() => handleAccept(profile.senderId, "accepted")}
-                      style={{
-                        backgroundColor: "#10b981", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "8px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "500", transition: "0.2s"
-                      }}
-                      onMouseOver={(e) => (e.target.style.backgroundColor = "#059669")}
-                      onMouseOut={(e) => (e.target.style.backgroundColor = "#10b981")}
-                    >
-                      Accept
-                    </button>
-                  )}
-                </div>
-              </li>
-          ))}
-        </ul>
+        {totalPages > 1 && (
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "15px", padding: "10px 5px", borderTop: "1px solid #eaeaea" }}>
+            <button 
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
+              disabled={currentPage === 1}
+              className="btn btn-sm"
+              style={{ background: currentPage === 1 ? "#f8f9fa" : "#fff", border: "1px solid #ddd", color: currentPage === 1 ? "#aaa" : "#555", borderRadius: "6px", padding: "6px 15px", fontWeight: "500", cursor: currentPage === 1 ? "not-allowed" : "pointer", outline: "none" }}
+            >
+              Previous
+            </button>
+            <span style={{ fontSize: "0.95rem", color: "#666", fontWeight: "500" }}>
+              Page {currentPage} of {totalPages}
+            </span>
+            <button 
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} 
+              disabled={currentPage === totalPages}
+              className="btn btn-sm"
+              style={{ background: currentPage === totalPages ? "#f8f9fa" : "#fff", border: "1px solid #ddd", color: currentPage === totalPages ? "#aaa" : "#555", borderRadius: "6px", padding: "6px 15px", fontWeight: "500", cursor: currentPage === totalPages ? "not-allowed" : "pointer", outline: "none" }}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     );
   };

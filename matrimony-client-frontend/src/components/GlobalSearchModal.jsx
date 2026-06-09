@@ -710,7 +710,6 @@ const GlobalSearchModal = () => {
 
   const handleBnrSearch = () => {
     if (!bnrId.trim()) {
-      alert("Please enter an AGWID ID");
       return;
     }
     navigate("/show-searched-result", {

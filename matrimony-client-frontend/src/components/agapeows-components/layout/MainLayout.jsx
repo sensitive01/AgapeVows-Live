@@ -723,7 +723,7 @@ const MainLayout = () => {
                     >
                       My Profile
                     </button>
-                    {/* Kept My Chats */}
+                    {/* Kept My Chats
                     <button
                       onClick={() => {
                         handleNavigate("/user/show-all-profiles/all-profile");
@@ -733,6 +733,7 @@ const MainLayout = () => {
                     >
                       My Chats
                     </button>
+                    */}
                     <button
                       onClick={() => {
                         handleNavigate(`/reset-password/${userId}`);

@@ -244,9 +244,13 @@ const Events = () => {
                     {/* Image Container - Responsive sizing */}
                     <div className="md:w-2/5 lg:w-1/3 relative h-auto flex-shrink-0">
                       <img
-                        src={event.image || "https://via.placeholder.com/600x400?text=Event+Image"}
+                        src={event.image && event.image.trim().length > 5 && event.image !== "null" ? event.image : "https://placehold.co/600x400/f8f5fd/5c2a9d?text=Event"}
                         alt={event.name}
-                        className="w-full h-auto object-contain rounded-l-2xl transition-transform duration-700 ease-out group-hover:scale-105"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "https://placehold.co/600x400/f8f5fd/5c2a9d?text=Event";
+                        }}
+                        className="w-full h-48 md:h-full object-cover rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none transition-transform duration-700 ease-out group-hover:scale-105"
                       />
                       {/* Status Badge */}
                       {activeTab === "Active" ? (
@@ -402,15 +406,17 @@ const Events = () => {
               <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl w-full">
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div className="sm:flex sm:items-start flex-col">
-                    {selectedEvent.image && (
-                      <div className="w-full mb-4 rounded-lg">
-                        <img
-                          src={selectedEvent.image}
-                          alt={selectedEvent.name}
-                          className="w-full h-auto object-contain"
-                        />
-                      </div>
-                    )}
+                    <div className="w-full mb-4 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
+                      <img
+                        src={selectedEvent.image && selectedEvent.image.trim().length > 5 && selectedEvent.image !== "null" ? selectedEvent.image : "https://placehold.co/600x400/f8f5fd/5c2a9d?text=Event"}
+                        alt={selectedEvent.name}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "https://placehold.co/600x400/f8f5fd/5c2a9d?text=Event";
+                        }}
+                        className="w-full h-auto max-h-[400px] object-contain rounded-lg"
+                      />
+                    </div>
 
                     <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                       <h3

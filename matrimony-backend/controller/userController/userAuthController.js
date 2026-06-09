@@ -1329,6 +1329,20 @@ const getNewProfileMatches = async (req, res) => {
         subscriptionType: user.subscriptionType,
         planName: user.planName,
         idVerificationStatus: user.idVerificationStatus,
+        motherTongue: user.motherTongue,
+        height: user.height,
+        religion: user.religion,
+        caste: user.caste,
+        education: user.education,
+        degree: user.degree,
+        occupation: user.occupation,
+        jobType: user.jobType,
+        state: user.state,
+        aboutMe: user.aboutMe,
+        jobDetails: user.jobDetails,
+        gender: user.gender,
+        isPhoneVerified: user.isPhoneVerified,
+        citizenOf: user.citizenOf,
       };
     });
 
@@ -2700,7 +2714,7 @@ const updatePrivacySettings = async (req, res) => {
   try {
     const { userId } = req.params;
     const { profileVisibility } = req.body;
-    
+
     if (!profileVisibility) {
       return res.status(400).json({ success: false, message: "profileVisibility is required" });
     }
@@ -2710,7 +2724,7 @@ const updatePrivacySettings = async (req, res) => {
       { profileVisibility },
       { new: true }
     );
-    
+
     res.status(200).json({
       success: true,
       message: "Privacy settings updated successfully",

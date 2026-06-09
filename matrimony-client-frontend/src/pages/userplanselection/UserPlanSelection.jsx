@@ -54,10 +54,10 @@ const UserPlanSelection = () => {
   const formatNumber = (num) => {
     if (num === null || num === undefined || num === "") return "";
     if (num === "NaN" || Number.isNaN(num)) return "Unlimited";
-    
+
     const number = parseInt(num);
     if (isNaN(number)) return num; // If it's already "unlimited" or similar string
-    
+
     if (number >= 1000000000000 || number >= 1000000000) {
       return "Unlimited";
     } else if (number >= 1000000) {
@@ -174,11 +174,11 @@ const UserPlanSelection = () => {
       try {
         const backendResponse = await sendPaymentDataToBackend(paymentData, userId);
         if (backendResponse) {
-          navigate("/user/user-dashboard-page", { 
-            state: { 
-              purchaseSuccess: true, 
-              planDetails: paymentData.planDetails 
-            } 
+          navigate("/user/user-dashboard-page", {
+            state: {
+              purchaseSuccess: true,
+              planDetails: paymentData.planDetails
+            }
           });
         }
       } catch (error) {
@@ -242,11 +242,11 @@ const UserPlanSelection = () => {
           );
 
           if (backendResponse) {
-            navigate("/user/user-dashboard-page", { 
-              state: { 
-                purchaseSuccess: true, 
-                planDetails: paymentData.planDetails 
-              } 
+            navigate("/user/user-dashboard-page", {
+              state: {
+                purchaseSuccess: true,
+                planDetails: paymentData.planDetails
+              }
             });
           } else {
             showAlert({
@@ -380,180 +380,184 @@ const UserPlanSelection = () => {
                 </div>
               ) : (
                 <>
-                  {/* Carousel Navigation - Only show if more than 3 plans */}
-              {plans.length > 3 && (
-                <>
-                  {/* LEFT */}
-                  <button
-                    onClick={prevSlide}
-                    disabled={currentSlide === 0}
-                    style={{
-                      position: "absolute",
-                      left: isMobile ? "10px" : "-50px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      zIndex: 10,
-                      background: "#a020f0",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "50%",
-                      width: "50px",
-                      height: "50px",
-                      fontSize: "22px",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-                    }}
-                  >
-                    ←
-                  </button>
+                  {/* Carousel Navigation */}
+                  {(isMobile ? plans.length > 1 : plans.length > 3) && (
+                    <>
+                      {/* LEFT */}
+                      <button
+                        onClick={prevSlide}
+                        disabled={currentSlide === 0}
+                        style={{
+                          position: "absolute",
+                          left: isMobile ? "-12px" : "-50px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          zIndex: 10,
+                          background: currentSlide === 0 ? "#ccc" : "#4a2580",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "50%",
+                          width: isMobile ? "30px" : "45px",
+                          height: isMobile ? "30px" : "45px",
+                          fontSize: isMobile ? "12px" : "18px",
+                          cursor: currentSlide === 0 ? "not-allowed" : "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                          transition: "all 0.3s ease"
+                        }}
+                      >
+                        <i className="fa fa-chevron-left"></i>
+                      </button>
 
-                  {/* RIGHT */}
-                  <button
+                      {/* RIGHT */}
+                      <button
+                        onClick={nextSlide}
+                        disabled={currentSlide === totalSlides - 1}
+                        style={{
+                          position: "absolute",
+                          right: isMobile ? "-12px" : "-50px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          zIndex: 10,
+                          background: currentSlide === totalSlides - 1 ? "#ccc" : "#4a2580",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "50%",
+                          width: isMobile ? "30px" : "45px",
+                          height: isMobile ? "30px" : "45px",
+                          fontSize: isMobile ? "12px" : "18px",
+                          cursor: currentSlide === totalSlides - 1 ? "not-allowed" : "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                          transition: "all 0.3s ease"
+                        }}
+                      >
+                        <i className="fa fa-chevron-right"></i>
+                      </button>
 
-                    onClick={nextSlide}
-                    disabled={currentSlide === totalSlides - 1}
-                    style={{
-                      position: "absolute",
-                      right: isMobile ? "10px" : "-50px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      zIndex: 10,
-                      background: "#a020f0",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "50%",
-                      width: "50px",
-                      height: "50px",
-                      fontSize: "22px",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-                    }}
-                  >
-                    →
-                  </button>
+                    </>
+                  )}
 
-                </>
-              )}
+                  {/* Plans Display */}
+                  <ul className="flex justify-center items-stretch gap-6 flex-nowrap overflow-hidden">
+                    {getCurrentPlans().map((plan, index) => {
 
-              {/* Plans Display */}
-              <ul className="flex justify-center items-stretch gap-6 flex-nowrap overflow-hidden">
-                {getCurrentPlans().map((plan, index) => {
+                      // const isMobile = window.innerWidth < 768;
+                      const isCenter = isMobile ? true : index === 1;
 
-                  // const isMobile = window.innerWidth < 768;
-                  const isCenter = isMobile ? true : index === 1;
-
-                  return (
-                    <li
-                      key={plan._id}
-                      className="flex justify-center"
-                      style={{ width: isMobile ? "100%" : "33.33%" }}
-                    >
-                      <div className={`pri-box ${isCenter ? "pri-box-pop" : ""}`}>
-
-                        {isCenter && (
-                          <span className="pop-pln">Most popular plan</span>
-                        )}
-
-                        <h2>{plan.name}</h2>
-                        <p>Printer took a type and scrambled</p>
-
-                        <a
-                          href="#"
-                          className="cta"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handlePayment(plan);
-                          }}
+                      return (
+                        <li
+                          key={plan._id}
+                          className="flex justify-center"
+                          style={{ width: isMobile ? "100%" : "33.33%" }}
                         >
-                          Get Started
-                        </a>
+                          <div className={`pri-box ${isCenter ? "pri-box-pop" : ""}`}>
 
-                        <span className="pri-cou">
-                          <b>₹{plan.price}</b>/
-                          {formatPlanDuration(plan.duration, plan.durationType)}
-                        </span>
-
-                        <ol>
-                          <li>
-                            {renderFeatureIcon(
-                              plan.maxProfiles > 0 || 
-                              String(plan.maxProfiles).toLowerCase() === "unlimited" || 
-                              String(plan.maxProfiles) === "NaN" 
-                                ? "Yes" 
-                                : "No"
+                            {isCenter && (
+                              <span className="pop-pln">Most popular plan</span>
                             )}
-                            {getFeatureText(plan, "profiles")}
-                          </li>
 
-                          {plan.dailyLimit && (
-                            <li>
-                              {renderFeatureIcon(plan.dailyLimit)}
-                              {getFeatureText(plan, "dailyLimit")}
-                            </li>
-                          )}
+                            <h2>{plan.name}</h2>
+                            <p>Printer took a type and scrambled</p>
 
-                          <li>
-                            {renderFeatureIcon(plan.canViewProfiles)}
-                            {getFeatureText(plan, "viewProfiles")}
-                          </li>
+                            <a
+                              href="#"
+                              className="cta"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handlePayment(plan);
+                              }}
+                            >
+                              Get Started
+                            </a>
 
-                          <li>
-                            {renderFeatureIcon("Yes")}
-                            Send interest: {plan.maxSendInterest === "Unlimited" || (typeof plan.maxSendInterest === 'string' && plan.maxSendInterest.toLowerCase() === 'unlimited') ? "Unlimited" : plan.maxSendInterest}
-                          </li>
-                          <li>
-                            {renderFeatureIcon("Yes")}
-                            Daily interest limit: {plan.dailyLimitSendInterest}
-                          </li>
-                          <li>
-                            {renderFeatureIcon("Yes")}
-                            View contact details: {plan.maxViewContact === "Unlimited" || (typeof plan.maxViewContact === 'string' && plan.maxViewContact.toLowerCase() === 'unlimited') ? "Unlimited" : plan.maxViewContact}
-                          </li>
-                          <li>
-                            {renderFeatureIcon("Yes")}
-                            Daily view contact limit: {plan.dailyLimitViewContact}
-                          </li>
-                        </ol>
+                            <span className="pri-cou">
+                              <b>₹{plan.price}</b>/
+                              {formatPlanDuration(plan.duration, plan.durationType)}
+                            </span>
 
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
+                            <ol>
+                              <li>
+                                {renderFeatureIcon(
+                                  plan.maxProfiles > 0 ||
+                                    String(plan.maxProfiles).toLowerCase() === "unlimited" ||
+                                    String(plan.maxProfiles) === "NaN"
+                                    ? "Yes"
+                                    : "No"
+                                )}
+                                {getFeatureText(plan, "profiles")}
+                              </li>
 
-              {/* Carousel Dots - Only show if more than 3 plans */}
-              {plans.length > 3 && (
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    marginTop: "30px",
-                    gap: "10px",
-                  }}
-                >
-                  {Array.from({ length: totalSlides }).map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => goToSlide(index)}
+                              {plan.dailyLimit && (
+                                <li>
+                                  {renderFeatureIcon(plan.dailyLimit)}
+                                  {getFeatureText(plan, "dailyLimit")}
+                                </li>
+                              )}
+
+                              <li>
+                                {renderFeatureIcon(plan.canViewProfiles)}
+                                {getFeatureText(plan, "viewProfiles")}
+                              </li>
+
+                              <li>
+                                {renderFeatureIcon("Yes")}
+                                Send interest: {plan.maxSendInterest === "Unlimited" || (typeof plan.maxSendInterest === 'string' && plan.maxSendInterest.toLowerCase() === 'unlimited') ? "Unlimited" : plan.maxSendInterest}
+                              </li>
+                              <li>
+                                {renderFeatureIcon("Yes")}
+                                Daily interest limit: {plan.dailyLimitSendInterest}
+                              </li>
+                              <li>
+                                {renderFeatureIcon("Yes")}
+                                View contact details: {plan.maxViewContact === "Unlimited" || (typeof plan.maxViewContact === 'string' && plan.maxViewContact.toLowerCase() === 'unlimited') ? "Unlimited" : plan.maxViewContact}
+                              </li>
+                              <li>
+                                {renderFeatureIcon("Yes")}
+                                Daily view contact limit: {plan.dailyLimitViewContact}
+                              </li>
+                            </ol>
+
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+
+                  {/* Carousel Dots */}
+                  {(isMobile ? plans.length > 1 : plans.length > 3) && (
+                    <div
                       style={{
-                        width: "12px",
-                        height: "12px",
-                        borderRadius: "50%",
-                        border: "none",
-                        background: currentSlide === index ? "#a020f0" : "#ddd",
-                        cursor: "pointer",
-                        transition: "background 0.3s ease",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginTop: "30px",
+                        gap: "10px",
                       }}
-                    />
-                  ))}
-                </div>
-              )}
+                    >
+                      <div style={{ display: "flex", gap: "10px" }}>
+                        {Array.from({ length: totalSlides }).map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={() => goToSlide(index)}
+                            style={{
+                              width: "12px",
+                              height: "12px",
+                              borderRadius: "50%",
+                              border: "none",
+                              background: currentSlide === index ? "#4a2580" : "#ddd",
+                              cursor: "pointer",
+                              transition: "background 0.3s ease",
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </div>

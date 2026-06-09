@@ -15,10 +15,18 @@ import profImage from "../../assets/images/blue-circle-with-white-user_78370-470
 
 // Helper Components
 const InfoRow = ({ label, value }) => {
+  let displayValue = value;
+  
+  if (Array.isArray(value)) {
+    displayValue = value.length > 0 ? value.join(", ") : null;
+  } else if (typeof value === 'string' && value.trim() === '') {
+    displayValue = null;
+  }
+
   return (
     <div className="info-row">
       <span className="info-label">{label}:</span>
-      <span className="info-value">{value || "Not Specified"}</span>
+      <span className="info-value">{displayValue || "Not Specified"}</span>
     </div>
   );
 };
@@ -1179,6 +1187,13 @@ const MoreDetails = () => {
 
 .profile-section-grid > div {
   flex: 1;
+}
+
+@media (max-width: 992px) {
+  .profile-section-grid {
+    flex-direction: column;
+    gap: 15px;
+  }
 }
         .zoom-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 10000; cursor: zoom-out; }
         .zoom-image-wrapper { position: relative; }

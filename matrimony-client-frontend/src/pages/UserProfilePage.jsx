@@ -314,7 +314,7 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
         flexDirection: "row",
         flexWrap: "wrap"
       }}>
-        <div style={{
+        <div className="doc-verify-left" style={{
           flex: "1 1 400px",
           padding: "40px",
           background: "#f8faff",
@@ -342,7 +342,7 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
         </div>
 
         {/* Right Side: Form */}
-        <div style={{
+        <div className="doc-verify-right" style={{
           flex: "2 1 500px",
           padding: "40px"
         }}>
@@ -745,10 +745,8 @@ const UserProfilePage = () => {
 
               {/* Profile Content - Right Column with Vertical Scroll */}
               <div
-                className="col-12 col-md-9 col-lg-10"
+                className="col-12 col-md-9 col-lg-10 profile-right-column"
                 style={{
-                  paddingLeft: "20px",
-                  paddingRight: "80px",
                   height: "auto",
                   overflow: "visible",
                   overflowX: "hidden",
@@ -795,7 +793,7 @@ const UserProfilePage = () => {
                   {/* Profile Header Card */}
                   <div className="col-12 mb-4">
                     <div
-                      className="db-profile"
+                      className="db-profile profile-header"
                       style={{
                         display: "flex",
                         flexDirection: "row",
@@ -953,6 +951,7 @@ const UserProfilePage = () => {
 
                             {/* BADGES */}
                             <div
+                              className="badge-container"
                               style={{
                                 marginTop: "8px",
                                 display: "flex",

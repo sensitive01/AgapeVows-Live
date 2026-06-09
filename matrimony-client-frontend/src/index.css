@@ -348,3 +348,36 @@ footer {
 .upgrade-btn:hover {
   background: #6d28d9;
 }
+
+/* Profile Details Mobile Fixes */
+@media (max-width: 992px) {
+  .profile-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+  .profile-left {
+    position: relative !important;
+    top: 0 !important;
+    width: 100% !important;
+  }
+  .profile-right {
+    width: 100% !important;
+  }
+  .info-row {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    padding: 10px 0 !important;
+  }
+  .info-label {
+    width: 100% !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+  }
+  .info-value {
+    width: 100% !important;
+    word-break: break-word !important;
+  }
+}

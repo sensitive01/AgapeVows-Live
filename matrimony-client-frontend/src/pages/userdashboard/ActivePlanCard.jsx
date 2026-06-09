@@ -390,7 +390,7 @@ const ActivePlanCard = ({ externalPlanData }) => {
               </li>
             </>
           )}
-          
+
         </ul>
 
         <div className="mt-4 pt-3 border-top small text-muted">

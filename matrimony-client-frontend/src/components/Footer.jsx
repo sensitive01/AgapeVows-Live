@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Youtube, Phone, MessageSquare, MessageCircle } from 'lucide-react';
 
-const Footer = ({ paddingTop = '80px' }) => {
+const Footer = ({ paddingTop = '40px' }) => {
   return (
     <>
       <footer className="agape-vows-footer mt-auto" style={{
@@ -49,7 +49,7 @@ const Footer = ({ paddingTop = '80px' }) => {
             font-size: 22px;
             font-weight: 700;
             color: #d4af37;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             text-shadow: 0 0 10px rgba(255,213,79,0.6);
           }
 
@@ -96,8 +96,8 @@ const Footer = ({ paddingTop = '80px' }) => {
             gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
             gap: '30px',
             borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
-            paddingBottom: '30px',
-            marginBottom: '40px',
+            paddingBottom: '20px',
+            marginBottom: '25px',
             width: '100%'
           }}>
             {/* Call Us */}
@@ -206,8 +206,8 @@ const Footer = ({ paddingTop = '80px' }) => {
           <div
             style={{
               borderTop: "1px solid rgba(255,255,255,0.3)",
-              marginTop: "60px",
-              paddingTop: "20px",
+              marginTop: "30px",
+              paddingTop: "15px",
               textAlign: "center",
               fontSize: "14px",
             }}
