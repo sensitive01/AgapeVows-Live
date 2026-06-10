@@ -5,14 +5,13 @@ import { approveNewUser, getNewRequestedUsers, deleteUserById } from "../../api/
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { confirmAction, showAlert } from "../../utils/alertService";
+import DataTable from "react-data-table-component";
 
 export default function AdminNewUserRequest() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
   const [loading, setLoading] = useState(true);
   const [genderFilter, setGenderFilter] = useState("All");
   const [paymentFilter, setPaymentFilter] = useState("All");
@@ -63,14 +62,7 @@ export default function AdminNewUserRequest() {
     }
 
     setFilteredUsers(filtered);
-    setCurrentPage(1); // Reset to first page when filters change
   }, [searchTerm, genderFilter, paymentFilter, users]);
-
-  // Pagination calculations
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentUsers = filteredUsers?.slice(indexOfFirstItem, indexOfLastItem) || [];
-  const totalPages = Math.ceil((filteredUsers?.length || 0) / itemsPerPage);
 
   // Helper function to format date
   const formatDate = (dateString) => {
@@ -204,273 +196,290 @@ export default function AdminNewUserRequest() {
     XLSX.writeFile(wb, `New_Join_Requests_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
-  // Pagination component
-  const Pagination = () => {
-    const pageNumbers = [];
-    const maxVisiblePages = 5;
-
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(i);
-    }
-
-    return (
-      <nav
-        aria-label="Page navigation"
-        className="d-flex justify-content-center mt-4"
-      >
-        <ul className="pagination">
-          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-            <button
-              className="page-link"
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
+  const columns = [
+    {
+      name: "S.No",
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: "70px",
+      center: true,
+    },
+    {
+      name: "PROFILE DETAILS",
+      selector: row => row.userName,
+      sortable: true,
+      cell: row => (
+        <div style={{ display: "flex", alignItems: "center", gap: "15px", textAlign: "left", padding: "10px 0" }}>
+          {row.profileImage ? (
+            <img
+              src={row.profileImage}
+              alt={row.userName}
+              style={{
+                width: "45px",
+                height: "45px",
+                borderRadius: "50%",
+                objectFit: "cover",
+                border: "2px solid #e9ecef",
+                boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                width: "45px",
+                height: "45px",
+                borderRadius: "50%",
+                backgroundColor: "#f0f0f0",
+                boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                border: "2px solid #e9ecef",
+              }}
             >
-              Previous
-            </button>
-          </li>
-
-          {startPage > 1 && (
-            <>
-              <li className="page-item">
-                <button className="page-link" onClick={() => setCurrentPage(1)}>
-                  1
-                </button>
-              </li>
-              {startPage > 2 && (
-                <li className="page-item disabled">
-                  <span className="page-link">...</span>
-                </li>
-              )}
-            </>
+              <i className="fa fa-user" style={{ color: "#bbb", fontSize: "16px" }}></i>
+            </div>
           )}
-
-          {pageNumbers.map((number) => (
-            <li
-              key={number}
-              className={`page-item ${currentPage === number ? "active" : ""}`}
-            >
-              <button
-                className="page-link"
-                onClick={() => setCurrentPage(number)}
-                style={
-                  currentPage === number
-                    ? {
-                        backgroundColor: "#1a73e8",
-                        borderColor: "#1a73e8",
-                        color: "white",
-                      }
-                    : { color: "#1a73e8" }
-                }
-              >
-                {number}
-              </button>
-            </li>
-          ))}
-
-          {endPage < totalPages && (
-            <>
-              {endPage < totalPages - 1 && (
-                <li className="page-item disabled">
-                  <span className="page-link">...</span>
-                </li>
-              )}
-              <li className="page-item">
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(totalPages)}
-                >
-                  {totalPages}
-                </button>
-              </li>
-            </>
-          )}
-
-          <li
-            className={`page-item ${currentPage === totalPages ? "disabled" : ""
-              }`}
+          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "4px" }}>
+            <h5 style={{ fontWeight: "600", color: "#212529", fontSize: "15px", margin: "0" }}>
+              {row.userName}
+            </h5>
+            <p style={{ color: "#6c757d", fontSize: "13px", margin: "0" }}>
+              {row.userEmail}
+            </p>
+            <p style={{ color: "#495057", fontSize: "13px", margin: "0", fontWeight: "500" }}>
+              {row.userMobile ? `+91-${row.userMobile.replace(/^91/, "")}` : ""}
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      name: "GENDER",
+      selector: row => row.gender,
+      sortable: true,
+      cell: row => (
+        <span
+          style={{
+            padding: "4px 8px",
+            borderRadius: "12px",
+            fontSize: "11px",
+            fontWeight: "600",
+            textTransform: "uppercase",
+            letterSpacing: "0.5px",
+            ...(row.gender === "Male"
+              ? { backgroundColor: "#e3f2fd", color: "#1976d2" }
+              : { backgroundColor: "#fce4ec", color: "#c2185b" }),
+          }}
+        >
+          {row.gender || "N/A"}
+        </span>
+      ),
+      center: true,
+    },
+    {
+      name: "CREATED AT",
+      selector: row => row.createdAt ? new Date(row.createdAt).getTime() : 0,
+      sortable: true,
+      cell: row => (
+        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+          <p style={{ fontSize: "13px", fontWeight: "600", color: "#212529", margin: "0", lineHeight: "1.2" }}>
+            {formatDate(row.createdAt)}
+          </p>
+          <p style={{ fontSize: "11px", color: "#6c757d", margin: "0", lineHeight: "1.2" }}>
+            {formatTime(row.createdAt)}
+          </p>
+        </div>
+      ),
+      center: true,
+    },
+    {
+      name: "PAYMENT",
+      selector: row => getPaymentInfo(row.paymentDetails).status,
+      sortable: true,
+      cell: row => {
+        const paymentInfo = getPaymentInfo(row.paymentDetails);
+        return (
+          <span
+            style={{
+              padding: "4px 8px",
+              borderRadius: "12px",
+              fontSize: "11px",
+              fontWeight: "600",
+              textTransform: "uppercase",
+              ...(paymentInfo.status === "Paid"
+                ? { backgroundColor: "#e8f5e8", color: "#2e7d32" }
+                : paymentInfo.status === "Pending"
+                  ? { backgroundColor: "#fff3e0", color: "#f57c00" }
+                  : { backgroundColor: "#ffebee", color: "#d32f2f" }),
+            }}
           >
-            <button
-              className="page-link"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </li>
-        </ul>
-      </nav>
-    );
-  };
+            {paymentInfo.status}
+          </span>
+        );
+      },
+      center: true,
+    },
+    {
+      name: "PLAN TYPE",
+      selector: row => getPaymentInfo(row.paymentDetails).type,
+      sortable: true,
+      cell: row => {
+        const paymentInfo = getPaymentInfo(row.paymentDetails);
+        return (
+          <span
+            style={{
+              padding: "4px 8px",
+              borderRadius: "12px",
+              fontSize: "11px",
+              fontWeight: "600",
+              textTransform: "uppercase",
+              backgroundColor: paymentInfo.type === "Premium" ? "#e8f5e8" : "#e3f2fd",
+              color: paymentInfo.type === "Premium" ? "#2e7d32" : "#1976d2",
+            }}
+          >
+            {paymentInfo.type}
+          </span>
+        );
+      },
+      center: true,
+    },
+    {
+      name: "AMOUNT",
+      selector: row => getPaymentInfo(row.paymentDetails).amount,
+      sortable: true,
+      cell: row => {
+        const paymentInfo = getPaymentInfo(row.paymentDetails);
+        return (
+          <strong>
+            {paymentInfo.amount > 0 ? `₹${paymentInfo.amount}` : "Free"}
+          </strong>
+        );
+      },
+      center: true,
+    },
+    {
+      name: "ACTION",
+      cell: row => {
+        const isApproving = approvingUsers.has(row._id);
+        return (
+          <button
+            style={{
+              padding: "6px 16px",
+              backgroundColor: isApproving ? "#6c757d" : "#28a745",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              fontSize: "12px",
+              fontWeight: "600",
+              cursor: isApproving ? "not-allowed" : "pointer",
+              transition: "all 0.2s ease-in-out",
+              textTransform: "uppercase",
+              letterSpacing: "0.5px",
+            }}
+            onClick={() => handleApproveUser(row._id)}
+            disabled={isApproving}
+          >
+            {isApproving ? "Approving..." : "Approve"}
+          </button>
+        );
+      },
+      center: true,
+      ignoreRowClick: true,
+      button: true,
+    },
+    {
+      name: "MORE",
+      cell: (row, index) => (
+        <div className={`dropdown ${index >= 5 ? "dropup" : ""}`}>
+          <button
+            type="button"
+            style={{
+              padding: "6px 10px",
+              backgroundColor: "transparent",
+              border: "1px solid #dee2e6",
+              borderRadius: "4px",
+              color: "#495057",
+              cursor: "pointer",
+              fontSize: "12px",
+            }}
+            data-bs-toggle="dropdown"
+          >
+            <i className="fa fa-ellipsis-h" aria-hidden="true"></i>
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <a
+                className="dropdown-item"
+                style={{cursor: "pointer"}}
+                onClick={() => handleDeleteUser(row._id)}
+              >
+                Delete
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                style={{cursor: "pointer"}}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(`/admin/billing-info/${row._id}`);
+                }}
+              >
+                Billing info
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                style={{cursor: "pointer"}}
+                onClick={() => navigate(`/admin/new-user/${row._id}`)}
+              >
+                View more details
+              </a>
+            </li>
+          </ul>
+        </div>
+      ),
+      center: true,
+      ignoreRowClick: true,
+      button: true,
+    }
+  ];
 
-  // Table styles
+  const customStyles = {
+    table: {
+      style: {
+        backgroundColor: "#fff",
+        borderRadius: "8px",
+      },
+    },
+    headCells: {
+      style: {
+        fontWeight: "600",
+        fontSize: "13px",
+        textTransform: "uppercase",
+        letterSpacing: "0.5px",
+        color: "#495057",
+        backgroundColor: "#f8f9fa",
+        padding: "12px 15px",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "14px",
+        padding: "12px 15px",
+        color: "#212529",
+      },
+    },
+  };
+  
   const tableStyles = {
     tableContainer: {
       backgroundColor: "#fff",
       borderRadius: "8px",
       boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
       overflow: "hidden",
-    },
-    table: {
-      width: "100%",
-      borderCollapse: "collapse",
-      fontSize: "14px",
-      fontFamily:
-        '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    },
-    tableHeader: {
-      backgroundColor: "#f8f9fa",
-      borderBottom: "2px solid #e9ecef",
-    },
-    th: {
-      padding: "12px 15px",
-      textAlign: "center",
-      fontWeight: "600",
-      color: "#495057",
-      fontSize: "13px",
-      textTransform: "uppercase",
-      letterSpacing: "0.5px",
-    },
-    td: {
-      padding: "12px 15px",
-      borderBottom: "1px solid #e9ecef",
-      color: "#212529",
-      fontSize: "14px",
-      fontWeight: "400",
-      textAlign: "center",
-    },
-    profileCell: {
-      display: "flex",
-      alignItems: "center",
-      gap: "15px",
-      textAlign: "left",
-    },
-
-    profileImage: {
-      width: "45px",
-      height: "45px",
-      borderRadius: "50%",
-      objectFit: "cover",
-      border: "2px solid #e9ecef",
-      boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
-    },
-
-    profileInfo: {
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      gap: "4px",
-    },
-
-    profileName: {
-      fontWeight: "600",
-      color: "#212529",
-      fontSize: "15px",
-      margin: "0",
-    },
-
-    profileEmail: {
-      color: "#6c757d",
-      fontSize: "13px",
-      margin: "0",
-    },
-
-    profileMobile: {
-      color: "#495057",
-      fontSize: "13px",
-      margin: "0",
-      fontWeight: "500",
-    },
-
-    dateTimeContainer: {
-      display: "flex",
-      flexDirection: "column",
-      gap: "2px",
-    },
-    dateText: {
-      fontSize: "13px",
-      fontWeight: "600",
-      color: "#212529",
-      margin: "0",
-      lineHeight: "1.2",
-    },
-    timeText: {
-      fontSize: "11px",
-      color: "#6c757d",
-      margin: "0",
-      lineHeight: "1.2",
-    },
-    badge: {
-      padding: "4px 8px",
-      borderRadius: "12px",
-      fontSize: "11px",
-      fontWeight: "600",
-      textTransform: "uppercase",
-      letterSpacing: "0.5px",
-    },
-    maleBadge: {
-      backgroundColor: "#e3f2fd",
-      color: "#1976d2",
-    },
-    femaleBadge: {
-      backgroundColor: "#fce4ec",
-      color: "#c2185b",
-    },
-    statusBadge: {
-      padding: "4px 8px",
-      borderRadius: "12px",
-      fontSize: "11px",
-      fontWeight: "600",
-      textTransform: "uppercase",
-    },
-    paidStatus: {
-      backgroundColor: "#e8f5e8",
-      color: "#2e7d32",
-    },
-    unpaidStatus: {
-      backgroundColor: "#ffebee",
-      color: "#d32f2f",
-    },
-    pendingStatus: {
-      backgroundColor: "#fff3e0",
-      color: "#f57c00",
-    },
-    approveButton: {
-      padding: "6px 16px",
-      backgroundColor: "#28a745",
-      color: "white",
-      border: "none",
-      borderRadius: "4px",
-      fontSize: "12px",
-      fontWeight: "600",
-      cursor: "pointer",
-      transition: "all 0.2s ease-in-out",
-      textTransform: "uppercase",
-      letterSpacing: "0.5px",
-    },
-    approveButtonHover: {
-      backgroundColor: "#218838",
-      transform: "translateY(-1px)",
-    },
-    approveButtonDisabled: {
-      backgroundColor: "#6c757d",
-      cursor: "not-allowed",
-      transform: "none",
-    },
-    dropdownButton: {
-      padding: "6px 10px",
-      backgroundColor: "transparent",
-      border: "1px solid #dee2e6",
-      borderRadius: "4px",
-      color: "#495057",
-      cursor: "pointer",
-      fontSize: "12px",
     },
   };
 
@@ -592,274 +601,27 @@ export default function AdminNewUserRequest() {
                 </div>
               </div>
 
-              {/* Results info */}
-              <div className="mb-3">
-                <small className="text-muted">
-                  Showing {indexOfFirstItem + 1} to{" "}
-                  {Math.min(indexOfLastItem, filteredUsers.length)} of{" "}
-                  {filteredUsers.length} entries
-                </small>
-              </div>
-
               {/* Data Table */}
               <div style={tableStyles.tableContainer}>
-                <table style={tableStyles.table}>
-                  <thead style={tableStyles.tableHeader}>
-                    <tr>
-                      <th style={tableStyles.th}>S.No</th>
-                      <th style={tableStyles.th}>Profile Details</th>
-                      <th style={tableStyles.th}>Gender</th>
-                      <th style={tableStyles.th}>Created At</th>
-                      <th style={tableStyles.th}>Payment</th>
-                      <th style={tableStyles.th}>Plan Type</th>
-                      <th style={tableStyles.th}>Amount</th>
-                      <th style={tableStyles.th}>Action</th>
-                      <th style={tableStyles.th}>More</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentUsers && currentUsers.length > 0 ? (
-                      currentUsers.map((user, index) => {
-                        const paymentInfo = getPaymentInfo(user.paymentDetails);
-                        const serialNumber = indexOfFirstItem + index + 1;
-                        const isApproving = approvingUsers.has(user._id);
-
-                        return (
-                          <tr key={user._id}>
-                            <td style={tableStyles.td}>{serialNumber}</td>
-                            <td style={tableStyles.td}>
-                              <div style={tableStyles.profileCell}>
-                                {/* <img
-                                  src={user.profileImage || img1}
-                                  alt={user.userName}
-                                  style={tableStyles.profileImage}
-                                  onError={(e) => {
-                                    e.target.src = img1;
-                                  }}
-                                /> */}
-
-                                {user.profileImage ? (
-                                  <img
-                                    src={user.profileImage}
-                                    alt={user.userName}
-                                    style={tableStyles.profileImage}
-                                  />
-                                ) : (
-                                  <div
-                                    style={{
-                                      ...tableStyles.profileImage,
-                                      backgroundColor: "#f0f0f0",
-                                      boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "center",
-                                    }}
-                                  >
-                                    <i
-                                      className="fa fa-user"
-                                      style={{ color: "#bbb", fontSize: "16px" }}
-                                    ></i>
-                                  </div>
-
-                                )}
-
-                                <div style={tableStyles.profileInfo}>
-                                  <h5 style={tableStyles.profileName}>
-                                    {user.userName}
-                                  </h5>
-                                  <p style={tableStyles.profileEmail}>
-                                    {user.userEmail}
-                                  </p>
-                                  <p style={tableStyles.profileMobile}>
-                                    {user.userMobile
-                                      ? `+91-${user.userMobile.replace(/^91/, "")}`
-                                      : ""}
-                                  </p>
-
-                                </div>
-                              </div>
-                            </td>
-                            <td style={tableStyles.td}>
-                              <span
-                                style={{
-                                  ...tableStyles.badge,
-                                  ...(user.gender === "Male"
-                                    ? tableStyles.maleBadge
-                                    : tableStyles.femaleBadge),
-                                }}
-                              >
-                                {user.gender || "N/A"}
-                              </span>
-                            </td>
-                            <td style={tableStyles.td}>
-                              <div style={tableStyles.dateTimeContainer}>
-                                <p style={tableStyles.dateText}>
-                                  {formatDate(user.createdAt)}
-                                </p>
-                                <p style={tableStyles.timeText}>
-                                  {formatTime(user.createdAt)}
-                                </p>
-                              </div>
-                            </td>
-                            <td style={tableStyles.td}>
-                              <span
-                                style={{
-                                  ...tableStyles.statusBadge,
-                                  ...(paymentInfo.status === "Paid"
-                                    ? tableStyles.paidStatus
-                                    : paymentInfo.status === "Pending"
-                                      ? tableStyles.pendingStatus
-                                      : tableStyles.unpaidStatus),
-                                }}
-                              >
-                                {paymentInfo.status}
-                              </span>
-                            </td>
-                            <td style={tableStyles.td}>
-                              <span
-                                style={{
-                                  ...tableStyles.statusBadge,
-                                  backgroundColor:
-                                    paymentInfo.type === "Premium"
-                                      ? "#e8f5e8"
-                                      : "#e3f2fd",
-                                  color:
-                                    paymentInfo.type === "Premium"
-                                      ? "#2e7d32"
-                                      : "#1976d2",
-                                }}
-                              >
-                                {paymentInfo.type}
-                              </span>
-                            </td>
-                            <td style={tableStyles.td}>
-                              <strong>
-                                {paymentInfo.amount > 0
-                                  ? `₹${paymentInfo.amount}`
-                                  : "Free"}
-                              </strong>
-                            </td>
-                            <td style={tableStyles.td}>
-                              <button
-                                style={{
-                                  ...tableStyles.approveButton,
-                                  ...(isApproving
-                                    ? tableStyles.approveButtonDisabled
-                                    : {}),
-                                }}
-                                onClick={() => handleApproveUser(user._id)}
-                                disabled={isApproving}
-                                onMouseOver={(e) =>
-                                  !isApproving &&
-                                  Object.assign(
-                                    e.target.style,
-                                    tableStyles.approveButtonHover
-                                  )
-                                }
-                                onMouseOut={(e) =>
-                                  !isApproving &&
-                                  Object.assign(
-                                    e.target.style,
-                                    tableStyles.approveButton
-                                  )
-                                }
-                              >
-                                {isApproving ? "Approving..." : "Approve"}
-                              </button>
-                            </td>
-                            <td style={tableStyles.td}>
-                              <div className="dropdown">
-                                <button
-                                  type="button"
-                                  style={tableStyles.dropdownButton}
-                                  data-bs-toggle="dropdown"
-                                >
-                                  <i
-                                    className="fa fa-ellipsis-h"
-                                    aria-hidden="true"
-                                  ></i>
-                                </button>
-                                <ul className="dropdown-menu">
-                                 {/* <li>
-                                      <a
-                                        className="dropdown-item"
-                                        href="#"
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          setOpenDropdown(null);
-                                          handleEdit(user._id);
-                                        }}
-                                      >
-                                        <i className="fa fa-edit me-2"></i>Edit
-                                      </a>
-                                    </li> */}
-
-                                  <li>
-                                    <a
-                                      className="dropdown-item"
-                                      onClick={() => handleDeleteUser(user._id)}
-                                    >
-                                      Delete
-                                    </a>
-                                  </li>
-                                  <li>
-                                    <a
-                                      className="dropdown-item"
-                                      href="#"
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        navigate(`/admin/billing-info/${user._id}`);
-                                      }}
-                                    >
-                                      Billing info
-                                    </a>
-                                  </li>
-                                  <li>
-                                    <a
-                                      className="dropdown-item"
-                                      href="#"
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        navigate(`/admin/new-user/${user._id}`);
-                                      }}
-                                    >
-                                      View more details
-                                    </a>
-                                  </li>
-                                  {/* <a
-                                    className="dropdown-item"
-                                    onClick={() => navigate(`/admin/new-user/${user._id}`)}
-                                  >
-                                    View profile
-                                  </a> */}
-                                </ul>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })
-                    ) : (
-                      <tr>
-                        <td
-                          colSpan="9"
-                          style={{ ...tableStyles.td, textAlign: "center" }}
-                        >
-                          <div className="p-4">
-                            <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                            <h5>No users found</h5>
-                            <p className="text-muted">
-                              Try adjusting your search or filter criteria
-                            </p>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                <DataTable
+                  columns={columns}
+                  data={filteredUsers}
+                  pagination
+                  paginationRowsPerPageOptions={[5, 10, 15, 20]}
+                  paginationPerPage={5}
+                  highlightOnHover
+                  customStyles={customStyles}
+                  noDataComponent={
+                    <div className="p-4 text-center">
+                      <i className="fa fa-search fa-2x text-muted mb-3"></i>
+                      <h5>No users found</h5>
+                      <p className="text-muted">
+                        Try adjusting your search or filter criteria
+                      </p>
+                    </div>
+                  }
+                />
               </div>
-
-              {/* Pagination */}
-              {totalPages > 1 && <Pagination />}
             </div>
           </div>
         </div>

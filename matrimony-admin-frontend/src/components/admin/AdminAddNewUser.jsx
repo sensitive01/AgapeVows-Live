@@ -5,6 +5,7 @@ import { Country, State, City } from "country-state-city";
 import BasicInfomation from "./BasicInfomation";
 import * as XLSX from "xlsx";
 import { Modal } from "react-bootstrap";
+import DataTable from "react-data-table-component";
 import { registerUserByAdmin, bulkRegisterUsersByAdmin } from "../../api/service/adminServices";
 import { showAlert } from "../../utils/alertService";
 
@@ -449,6 +450,35 @@ const AdminAddNewUser = () => {
     }
   };
 
+  const bulkColumns = bulkData.length > 0 ? [
+    ...Object.keys(bulkData[0]).slice(0, 8).map(key => ({
+      name: key,
+      selector: row => row[key],
+      format: row => <div className="text-truncate" style={{ maxWidth: '100px' }} title={row[key]}>{row[key]}</div>,
+      sortable: false
+    })),
+    ...(Object.keys(bulkData[0]).length > 8 ? [{
+      name: "...",
+      cell: () => "..."
+    }] : [])
+  ] : [];
+
+  const customStyles = {
+    headCells: {
+      style: {
+        fontWeight: "bold",
+        fontSize: "12px",
+        backgroundColor: "#f8f9fa",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "12px",
+        padding: "5px",
+      },
+    },
+  };
+
 
 
   return (
@@ -680,27 +710,13 @@ const AdminAddNewUser = () => {
 
           {bulkData.length > 0 && (
             <div className="table-responsive mb-4" style={{ maxHeight: '250px' }}>
-              <table className="table table-sm table-hover small">
-                <thead className="table-light sticky-top">
-                  <tr>
-                    {Object.keys(bulkData[0]).slice(0, 8).map((key, i) => (
-                      <th key={i}>{key}</th>
-                    ))}
-                    {Object.keys(bulkData[0]).length > 8 && <th>...</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {bulkData.slice(0, 5).map((row, i) => (
-                    <tr key={i}>
-                      {Object.values(row).slice(0, 8).map((val, j) => (
-                        <td key={j} className="text-truncate" style={{ maxWidth: '100px' }}>{val}</td>
-                      ))}
-                      {Object.values(row).length > 8 && <td>...</td>}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {bulkData.length > 5 && <p className="text-muted small text-center italic">Showing 5 of {bulkData.length} records</p>}
+              <DataTable
+                columns={bulkColumns}
+                data={bulkData.slice(0, 5)}
+                customStyles={customStyles}
+                noHeader
+              />
+              {bulkData.length > 5 && <p className="text-muted small text-center italic mt-2">Showing 5 of {bulkData.length} records</p>}
             </div>
           )}
         </Modal.Body>

@@ -392,7 +392,7 @@ const MoreDetails = () => {
                         style={{
                           color: "rgba(255, 255, 255, 0.45)",
                           fontFamily: "'Outfit', 'Inter', sans-serif",
-                          fontSize: "14px",
+                          fontSize: "16px",
                           fontWeight: "600",
                           letterSpacing: "3px",
                           whiteSpace: "nowrap",

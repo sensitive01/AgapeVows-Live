@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Chart, registerables } from "chart.js";
 import { Link } from "react-router-dom";
+import DataTable from "react-data-table-component";
 
 import profImages from "/assets/images/profiles/1.jpg";
 import NewLayout from "./layout/NewLayout";
@@ -33,15 +34,7 @@ const DashboardPage = () => {
   const [newUsersThisMonth, setNewUsersThisMonth] = useState(0);
   const [adminRole, setAdminRole] = useState("superadmin");
 
-  const [recentMembersPage, setRecentMembersPage] = useState(1);
-  const [renewalReminderPage, setRenewalReminderPage] = useState(1);
-  const dashboardTableRecordsPerPage = 5;
 
-  const handleRecentMembersNextPage = () => setRecentMembersPage(p => p + 1);
-  const handleRecentMembersPrevPage = () => setRecentMembersPage(p => Math.max(1, p - 1));
-
-  const handleRenewalReminderNextPage = () => setRenewalReminderPage(p => p + 1);
-  const handleRenewalReminderPrevPage = () => setRenewalReminderPage(p => Math.max(1, p - 1));
 
   useEffect(() => {
     const adminId = localStorage.getItem("adminId");
@@ -351,10 +344,125 @@ const DashboardPage = () => {
 
   // Users Pie Chart
 
+  const customStyles = {
+    headCells: {
+      style: {
+        fontWeight: "600",
+        fontSize: "13px",
+        textTransform: "uppercase",
+        color: "#495057",
+        backgroundColor: "#e0e0e0",
+        borderBottom: "2px solid #cfcfcf",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "14px",
+      },
+    },
+  };
 
+  const recentMembersColumns = [
+    { name: "No", selector: (row, index) => index + 1, sortable: false, width: "60px" },
+    {
+      name: "Profile",
+      selector: row => row.userName,
+      sortable: true,
+      minWidth: "320px",
+      cell: row => (
+        <div className="prof-table-thum d-flex align-items-center" style={{ minWidth: 0, width: "100%" }}>
+          <div className="pro me-3">
+            <img src={row.profileImage || profImages} alt="" className="rounded-circle" style={{width: "40px", height: "40px", objectFit: "cover"}} />
+          </div>
+          <div className="pro-info" style={{ minWidth: 0, overflow: 'hidden' }}>
+            <h5 className="mb-0 fs-6 text-truncate" style={{ maxWidth: '250px' }}>{row.userName}</h5>
+            <p className="mb-0 text-muted small text-truncate" style={{ maxWidth: '250px' }}>{row.userEmail}</p>
+          </div>
+        </div>
+      )
+    },
+    { name: "Phone", selector: row => row.userMobile, sortable: true },
+    {
+      name: "Join date",
+      selector: row => row.createdAt ? new Date(row.createdAt).getTime() : 0,
+      sortable: true,
+      format: row => new Date(row.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+    },
+    {
+      name: "Plan type",
+      selector: row => row.isAnySubscriptionTaken,
+      sortable: true,
+      cell: row => {
+        const activePlan = row.paymentDetails?.find(p => p.subscriptionStatus === "Active");
+        const planFromList = plans.find(p => p.name === activePlan?.subscriptionType);
+        return (
+          <span className={row.isAnySubscriptionTaken ? "hig-grn text-success fw-bold" : "hig-red text-danger fw-bold"}>
+            {planFromList ? planFromList.name : (row.isAnySubscriptionTaken ? "Premium" : "Free")}
+          </span>
+        );
+      }
+    }
+  ];
 
-
-
+  const renewalReminderColumns = [
+    { name: "No", selector: (row, index) => index + 1, sortable: false, width: "60px" },
+    {
+      name: "Profile",
+      selector: row => row.userName,
+      sortable: true,
+      minWidth: "320px",
+      cell: row => (
+        <div className="prof-table-thum d-flex align-items-center" style={{ minWidth: 0, width: "100%" }}>
+          <div className="pro me-3">
+            <img src={row.profileImage || profImages} alt="" className="rounded-circle" style={{width: "40px", height: "40px", objectFit: "cover"}} />
+          </div>
+          <div className="pro-info" style={{ minWidth: 0, overflow: 'hidden' }}>
+            <h5 className="mb-0 fs-6 text-truncate" style={{ maxWidth: '250px' }}>{row.userName}</h5>
+            <p className="mb-0 text-muted small text-truncate" style={{ maxWidth: '250px' }}>{row.userEmail}</p>
+          </div>
+        </div>
+      )
+    },
+    { name: "Phone", selector: row => row.userMobile, sortable: true },
+    {
+      name: "Expiry date",
+      selector: row => row.paymentDetails,
+      sortable: false,
+      cell: row => {
+        const expiringPayment = row.paymentDetails?.find(payment => {
+          const expiry = new Date(payment.subscriptionValidTo);
+          const today = new Date();
+          const diff = (expiry - today) / (1000 * 60 * 60 * 24);
+          return diff <= 7 && diff >= 0;
+        });
+        return (
+          <span className="hig-red text-danger fw-bold">
+            {expiringPayment ? new Date(expiringPayment.subscriptionValidTo).toLocaleDateString('en-GB', {
+              day: '2-digit', month: 'short', year: 'numeric'
+            }) : "N/A"}
+          </span>
+        );
+      }
+    },
+    {
+      name: "Plan type",
+      selector: row => row.paymentDetails,
+      sortable: false,
+      cell: row => {
+        const expiringPayment = row.paymentDetails?.find(payment => {
+          const expiry = new Date(payment.subscriptionValidTo);
+          const today = new Date();
+          const diff = (expiry - today) / (1000 * 60 * 60 * 24);
+          return diff <= 7 && diff >= 0;
+        });
+        return (
+          <span className="hig-grn text-success fw-bold">
+            {expiringPayment?.subscriptionType || "Premium"}
+          </span>
+        );
+      }
+    }
+  ];
 
   return (
     <NewLayout>
@@ -502,356 +610,18 @@ const DashboardPage = () => {
                   </ul>
                 </div>
               </div>
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Profile</th>
-                    <th>Phone</th>
-                    <th>Join date</th>
-                    <th>Plan type</th>
-                  </tr>
-                </thead>
-                {/* <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>
-                      <div className="prof-table-thum">
-                        <div className="pro">
-                          <img src={profImages} alt="" />
-                        </div>
-                        <div className="pro-info">
-                          <h5>Ashley emyy</h5>
-                          <p>ashleyipsum@gmail.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>01 321-998-91</td>
-                    <td>22, Feb 2024</td>
-                    <td>
-                      <span className="hig-grn">Premium</span>
-                    </td>
-                    <td>
-                      <div className="dropdown">
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          data-bs-toggle="dropdown"
-                        >
-                          <i
-                            className="fa fa-ellipsis-h"
-                            aria-hidden="true"
-                          ></i>
-                        </button>
-                        <ul className="dropdown-menu">
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              More details
-                            </a>
-                          </li>
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              View profile
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td>
-                      <div className="prof-table-thum">
-                        <div className="pro">
-                          <img src={profImages} alt="" />
-                        </div>
-                        <div className="pro-info">
-                          <h5>Elizabeth Taylor</h5>
-                          <p>ashleyipsum@gmail.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>01 321-998-91</td>
-                    <td>22, Feb 2024</td>
-                    <td>
-                      <span className="hig-grn">Premium</span>
-                    </td>
-                    <td>
-                      <div className="dropdown">
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          data-bs-toggle="dropdown"
-                        >
-                          <i
-                            className="fa fa-ellipsis-h"
-                            aria-hidden="true"
-                          ></i>
-                        </button>
-                        <ul className="dropdown-menu">
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              More details
-                            </a>
-                          </li>
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              View profile
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td>
-                      <div className="prof-table-thum">
-                        <div className="pro">
-                          <img src={profImages} alt="" />
-                        </div>
-                        <div className="pro-info">
-                          <h5>Angelina Jolie</h5>
-                          <p>ashleyipsum@gmail.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>01 321-998-91</td>
-                    <td>22, Feb 2024</td>
-                    <td>
-                      <span className="hig-grn">Premium</span>
-                    </td>
-                    <td>
-                      <div className="dropdown">
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          data-bs-toggle="dropdown"
-                        >
-                          <i
-                            className="fa fa-ellipsis-h"
-                            aria-hidden="true"
-                          ></i>
-                        </button>
-                        <ul className="dropdown-menu">
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              More details
-                            </a>
-                          </li>
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              View profile
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>4</td>
-                    <td>
-                      <div className="prof-table-thum">
-                        <div className="pro">
-                          <img src={profImages} alt="" />
-                        </div>
-                        <div className="pro-info">
-                          <h5>Olivia mia</h5>
-                          <p>ashleyipsum@gmail.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>01 321-998-91</td>
-                    <td>22, Feb 2024</td>
-                    <td>
-                      <span className="hig-grn">Premium</span>
-                    </td>
-                    <td>
-                      <div className="dropdown">
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          data-bs-toggle="dropdown"
-                        >
-                          <i
-                            className="fa fa-ellipsis-h"
-                            aria-hidden="true"
-                          ></i>
-                        </button>
-                        <ul className="dropdown-menu">
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              More details
-                            </a>
-                          </li>
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              View profile
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>5</td>
-                    <td>
-                      <div className="prof-table-thum">
-                        <div className="pro">
-                          <img src={profImages} alt="" />
-                        </div>
-                        <div className="pro-info">
-                          <h5>Jennifer</h5>
-                          <p>ashleyipsum@gmail.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>01 321-998-91</td>
-                    <td>22, Feb 2024</td>
-                    <td>
-                      <span className="hig-grn">Premium</span>
-                    </td>
-                    <td>
-                      <div className="dropdown">
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          data-bs-toggle="dropdown"
-                        >
-                          <i
-                            className="fa fa-ellipsis-h"
-                            aria-hidden="true"
-                          ></i>
-                        </button>
-                        <ul className="dropdown-menu">
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              More details
-                            </a>
-                          </li>
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              View profile
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>6</td>
-                    <td>
-                      <div className="prof-table-thum">
-                        <div className="pro">
-                          <img src={profImages} alt="" />
-                        </div>
-                        <div className="pro-info">
-                          <h5>Emmy jack</h5>
-                          <p>ashleyipsum@gmail.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>01 321-998-91</td>
-                    <td>22, Feb 2024</td>
-                    <td>
-                      <span className="hig-grn">Premium</span>
-                    </td>
-                    <td>
-                      <div className="dropdown">
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          data-bs-toggle="dropdown"
-                        >
-                          <i
-                            className="fa fa-ellipsis-h"
-                            aria-hidden="true"
-                          ></i>
-                        </button>
-                        <ul className="dropdown-menu">
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              More details
-                            </a>
-                          </li>
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              View profile
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody> */}
-
-                <tbody>
-                  {(() => {
-                    const rmLastIndex = recentMembersPage * dashboardTableRecordsPerPage;
-                    const rmFirstIndex = rmLastIndex - dashboardTableRecordsPerPage;
-                    const currentRecentMembers = newRequestedUsers.slice(rmFirstIndex, rmLastIndex);
-                    
-                    if (currentRecentMembers.length === 0) {
-                      return (
-                        <tr>
-                          <td colSpan="5" className="text-center">No recent members</td>
-                        </tr>
-                      );
-                    }
-
-                    return currentRecentMembers.map((user, index) => {
-                      const activePlan = user.paymentDetails?.find(p => p.subscriptionStatus === "Active");
-                      const planFromList = plans.find(p => p.name === activePlan?.subscriptionType);
-                      
-                      return (
-                        <tr key={user._id}>
-                          <td>{rmFirstIndex + index + 1}</td>
-
-                        <td>
-                          <div className="prof-table-thum">
-                            <div className="pro">
-                              <img src={user.profileImage || profImages} alt="" />
-                            </div>
-
-                            <div className="pro-info">
-                              <h5>{user.userName}</h5>
-                              <p>{user.userEmail}</p>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td>{user.userMobile}</td>
-
-                        <td>
-                          {new Date(user.createdAt).toLocaleDateString('en-GB', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric'
-                          })}
-                        </td>
-
-                        <td>
-                          <span className={user.isAnySubscriptionTaken ? "hig-grn" : "hig-red"}>
-                            {planFromList ? planFromList.name : (user.isAnySubscriptionTaken ? "Premium" : "Free")}
-                          </span>
-                        </td>
-                        </tr>
-                      );
-                    });
-                  })()}
-                </tbody>
-              </table>
-              {newRequestedUsers.length > dashboardTableRecordsPerPage && (
-                <div className="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-                  <span className="text-muted small">
-                    Showing {(recentMembersPage - 1) * dashboardTableRecordsPerPage + 1} to {Math.min(recentMembersPage * dashboardTableRecordsPerPage, newRequestedUsers.length)} of {newRequestedUsers.length} entries
-                  </span>
-                  <div>
-                    <button className="btn btn-sm btn-outline-secondary me-2" onClick={handleRecentMembersPrevPage} disabled={recentMembersPage === 1}>Previous</button>
-                    <button className="btn btn-sm btn-outline-secondary" onClick={handleRecentMembersNextPage} disabled={recentMembersPage === Math.ceil(newRequestedUsers.length / dashboardTableRecordsPerPage)}>Next</button>
-                  </div>
-                </div>
-              )}
+              <div className="table-responsive">
+                <DataTable
+                  columns={recentMembersColumns}
+                  data={newRequestedUsers}
+                  pagination
+                  paginationPerPage={5}
+                  paginationRowsPerPageOptions={[5, 10, 20]}
+                  highlightOnHover
+                  customStyles={customStyles}
+                  noDataComponent={<div className="py-4 text-center text-muted">No recent members</div>}
+                />
+              </div>
             </div>
           </div>
           <div className="col-md-12 mb-4">
@@ -876,84 +646,18 @@ const DashboardPage = () => {
                   </ul>
                 </div>
               </div>
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Profile</th>
-                    <th>Phone</th>
-                    <th>Expairy date</th>
-                    <th>Plan type</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(() => {
-                    const rrLastIndex = renewalReminderPage * dashboardTableRecordsPerPage;
-                    const rrFirstIndex = rrLastIndex - dashboardTableRecordsPerPage;
-                    const currentRenewalUsers = renewalUsers.slice(rrFirstIndex, rrLastIndex);
-
-                    if (currentRenewalUsers.length === 0) {
-                      return (
-                        <tr>
-                          <td colSpan="5" className="text-center">No renewal reminders</td>
-                        </tr>
-                      );
-                    }
-
-                    return currentRenewalUsers.map((user, index) => {
-                      const expiringPayment = user.paymentDetails?.find(payment => {
-                        const expiry = new Date(payment.subscriptionValidTo);
-                        const today = new Date();
-                        const diff = (expiry - today) / (1000 * 60 * 60 * 24);
-                        return diff <= 7 && diff >= 0;
-                      });
-
-                      return (
-                        <tr key={user._id}>
-                          <td>{rrFirstIndex + index + 1}</td>
-                          <td>
-                            <div className="prof-table-thum">
-                              <div className="pro">
-                                <img src={user.profileImage || profImages} alt="" />
-                              </div>
-                              <div className="pro-info">
-                                <h5>{user.userName}</h5>
-                                <p>{user.userEmail}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td>{user.userMobile}</td>
-                          <td>
-                            <span className="hig-red">
-                              {expiringPayment ? new Date(expiringPayment.subscriptionValidTo).toLocaleDateString('en-GB', {
-                                day: '2-digit',
-                                month: 'short',
-                                year: 'numeric'
-                              }) : "N/A"}
-                            </span>
-                          </td>
-                          <td>
-                            <span className="hig-grn">
-                              {expiringPayment?.subscriptionType || "Premium"}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    });
-                  })()}
-                </tbody>
-              </table>
-              {renewalUsers.length > dashboardTableRecordsPerPage && (
-                <div className="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-                  <span className="text-muted small">
-                    Showing {(renewalReminderPage - 1) * dashboardTableRecordsPerPage + 1} to {Math.min(renewalReminderPage * dashboardTableRecordsPerPage, renewalUsers.length)} of {renewalUsers.length} entries
-                  </span>
-                  <div>
-                    <button className="btn btn-sm btn-outline-secondary me-2" onClick={handleRenewalReminderPrevPage} disabled={renewalReminderPage === 1}>Previous</button>
-                    <button className="btn btn-sm btn-outline-secondary" onClick={handleRenewalReminderNextPage} disabled={renewalReminderPage === Math.ceil(renewalUsers.length / dashboardTableRecordsPerPage)}>Next</button>
-                  </div>
-                </div>
-              )}
+              <div className="table-responsive">
+                <DataTable
+                  columns={renewalReminderColumns}
+                  data={renewalUsers}
+                  pagination
+                  paginationPerPage={5}
+                  paginationRowsPerPageOptions={[5, 10, 20]}
+                  highlightOnHover
+                  customStyles={customStyles}
+                  noDataComponent={<div className="py-4 text-center text-muted">No renewal reminders</div>}
+                />
+              </div>
             </div>
           </div>
         </div>

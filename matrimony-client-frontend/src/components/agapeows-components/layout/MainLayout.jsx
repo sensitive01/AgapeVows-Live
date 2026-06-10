@@ -228,10 +228,8 @@ const MainLayout = () => {
 
   return (
     <>
-      {/* Top Bar - Fixed Responsive */}
       <div className="bg-[#4a2580] text-white text-xs py-2 px-4 border-b border-white/10">
         <div className="max-w-7xl mx-auto">
-          {/* Desktop & Tablet */}
           <div className="hidden md:flex justify-between items-center">
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-1 cursor-pointer hover:text-purple-200">
@@ -240,12 +238,9 @@ const MainLayout = () => {
                     onClick={() => handleNavigate("/user/find-matches")}
                     className="flex items-center space-x-1"
                   >
-                    {/* <Search className="w-4 h-4" /> */}
                   </div>
                 )}
-                {/* <button onClick={() => handleNavigate("/blogs")}>
-                  BLOGS
-                </button> */}
+                
               </div> 
               <button
                 onClick={() => handleNavigate("/faq")}
@@ -276,7 +271,6 @@ const MainLayout = () => {
             </div>
           </div>
 
-          {/* Mobile */}
           <div className="md:hidden flex justify-between items-center">
             <div className="flex items-center space-x-3">
               {isUserActive && (
@@ -312,11 +306,9 @@ const MainLayout = () => {
         </div>
       </div>
 
-      {/* Main Header */}
       <header className="bg-white shadow-md relative">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4">
           <div className="flex items-center gap-4 md:gap-8">
-            {/* Logo - Aligned to Left */}
             <a
               href="/"
               className="flex items-center cursor-pointer shrink-0 mr-auto"
@@ -341,7 +333,6 @@ const MainLayout = () => {
               </div>
             </a>
 
-            {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
               <a
                 href="/about-us"
@@ -350,10 +341,6 @@ const MainLayout = () => {
                     e.preventDefault();
                     handleNavigate("/about-us");
                   } else {
-                    // Standard Ctrl+Click behavior often opens in background;
-                    // we'll explicitly open and focus if we want foreground.
-                    // But wait, if we let the default happen, we can't focus.
-                    // So we prevent default even for Ctrl+Click and open manually.
                     e.preventDefault();
                     const newTab = window.open("/about-us", "_blank");
                     if (newTab) newTab.focus();
@@ -472,7 +459,6 @@ const MainLayout = () => {
               </div>
             </nav>
 
-            {/* User Profile or Auth Buttons */}
             <div className="hidden md:flex items-center space-x-3 justify-end">
               {isUserActive ? (
                 <div
@@ -528,7 +514,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-login");
                       }
                     }}
-                    className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors font-medium shadow-md shadow-purple-100"
+                    className="bg-[#7c3aed] text-white px-6 py-2 rounded-full hover:bg-[#6d28d9] transition-colors font-medium shadow-md shadow-purple-100"
                   >
                     LOGIN
                   </a>
@@ -536,7 +522,6 @@ const MainLayout = () => {
               )}
             </div>
 
-            {/* Mobile Menu Button */}
             <button
               className="md:hidden"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -581,7 +566,6 @@ const MainLayout = () => {
                   </button>
                 )}
 
-                {/* SERVICES Mobile Dropdown Accordion */}
                 <div className="w-full">
                   <button
                     onClick={() => setIsMobileServicesOpen(!isMobileServicesOpen)}
@@ -591,7 +575,6 @@ const MainLayout = () => {
                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isMobileServicesOpen ? "rotate-180" : ""}`} />
                   </button>
 
-                  {/* Expanded Dropdown Panel */}
                   <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isMobileServicesOpen ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"}`}>
                     <div className="pl-4 pr-2 flex flex-col space-y-1 mt-1 bg-gray-50/50 rounded-md py-2 border-l-2 border-purple-100 ml-2">
                       {SERVICE_CATEGORIES.map((category, index) => (
@@ -648,7 +631,6 @@ const MainLayout = () => {
                   PLANS
                 </a>
 
-                {/* HELP & SUPPORT Dropdown Accordion */}
                 <div className="w-full">
                   <button
                     onClick={() => setIsMobileHelpOpen(!isMobileHelpOpen)}
@@ -681,7 +663,6 @@ const MainLayout = () => {
                 </div>
               </nav>
 
-              {/* Mobile Profile or Auth */}
               <div className="mt-6 pt-4 border-t border-gray-100">
                 {isUserActive ? (
                   <div className="space-y-1 px-2 pb-6">
@@ -723,17 +704,7 @@ const MainLayout = () => {
                     >
                       My Profile
                     </button>
-                    {/* Kept My Chats
-                    <button
-                      onClick={() => {
-                        handleNavigate("/user/show-all-profiles/all-profile");
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full text-left text-gray-700 hover:text-[#4a2580] hover:bg-purple-50 px-3 py-2.5 rounded-md transition-colors font-medium text-sm"
-                    >
-                      My Chats
-                    </button>
-                    */}
+
                     <button
                       onClick={() => {
                         handleNavigate(`/reset-password/${userId}`);
@@ -772,7 +743,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-sign-up");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full text-center text-purple-600 border border-purple-600 font-medium py-2.5 rounded-lg hover:bg-purple-50 transition-colors"
+                      className="w-full text-center text-[#7c3aed] border border-[#7c3aed] font-medium py-2.5 rounded-lg hover:bg-purple-50 transition-colors"
                     >
                       Register
                     </button>
@@ -782,7 +753,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-login");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full bg-purple-600 text-white py-2.5 rounded-lg font-medium hover:bg-purple-700 transition-colors shadow-sm"
+                      className="w-full bg-[#7c3aed] text-white py-2.5 rounded-lg font-medium hover:bg-[#6d28d9] transition-colors shadow-sm"
                     >
                       Login
                     </button>
@@ -794,9 +765,7 @@ const MainLayout = () => {
         </div>
       </header>
 
-      {/* LOGIN POPUP */}
       <SidebarLoginComponent closePopup={closePopup} />
-      {/* END LOGIN POPUP */}
 
     </>
   );

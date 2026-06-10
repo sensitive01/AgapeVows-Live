@@ -14,56 +14,75 @@ import { showAlert } from "../utils/alertService";
 import MembershipBadge from "../components/common/MembershipBadge";
 
 const ProfileActionMenu = ({ profile, activeTab, navigate, handleAccept, handleReject }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const btnStyle = {
+    padding: "6px 14px",
+    borderRadius: "5px",
+    fontSize: "0.85rem",
+    fontWeight: "600",
+    border: "none",
+    cursor: "pointer",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "6px",
+    transition: "all 0.2s ease",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+    whiteSpace: "nowrap",
+    width: "130px"
+  };
 
   return (
-    <div ref={menuRef} style={{ position: "relative", display: "inline-block", textAlign: "left" }}>
+    <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap", padding: "5px 0" }}>
       <button 
-        onClick={() => setIsOpen(!isOpen)}
-        style={{ background: "#f8f9fa", border: "1px solid #ddd", borderRadius: "4px", fontSize: "1.2rem", padding: "2px 12px", color: "#444", cursor: "pointer", outline: "none", fontWeight: "bold" }}
+        style={{ ...btnStyle, backgroundColor: "#f3f4f6", color: "#374151" }} 
+        onClick={() => navigate(`/profile-more-details/${profile.senderDetails._id}`)}
+        onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#e5e7eb"; }}
+        onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "#f3f4f6"; }}
       >
-        &#8942;
+        <i className="fa fa-user"></i> View Profile
       </button>
-      {isOpen && (
-        <div style={{ position: "absolute", right: "50%", transform: "translateX(50%)", top: "100%", marginTop: "5px", background: "#fff", border: "1px solid #eaeaea", borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 9999, minWidth: "140px", overflow: "hidden" }}>
-          <button style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", borderBottom: "1px solid #f1f1f1", padding: "10px 15px", cursor: "pointer", fontSize: "0.85rem", color: "#333", whiteSpace: "nowrap" }} onClick={() => { setIsOpen(false); navigate(`/profile-more-details/${profile.senderDetails._id}`); }}>
-            <i className="fa fa-user" style={{ width: "20px", color: "#4b5563" }}></i> View Profile
+      
+      {activeTab === "pending" && (
+        <>
+          <button 
+            style={{ ...btnStyle, backgroundColor: "#10b981", color: "white" }} 
+            onClick={() => handleAccept(profile.senderId, "accepted")}
+            onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#059669"; e.currentTarget.style.boxShadow = "0 4px 6px rgba(16, 185, 129, 0.3)"; }}
+            onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "#10b981"; e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.05)"; }}
+          >
+            <i className="fa fa-check"></i> Accept
           </button>
-          
-          {activeTab === "pending" && (
-            <>
-              <button style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", borderBottom: "1px solid #f1f1f1", padding: "10px 15px", cursor: "pointer", fontSize: "0.85rem", color: "#333", whiteSpace: "nowrap" }} onClick={() => { setIsOpen(false); handleAccept(profile.senderId, "accepted"); }}>
-                <i className="fa fa-check-circle" style={{ width: "20px", color: "#10b981" }}></i> Accept
-              </button>
-              <button style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", padding: "10px 15px", cursor: "pointer", fontSize: "0.85rem", color: "#333", whiteSpace: "nowrap" }} onClick={() => { setIsOpen(false); handleReject(profile.senderId, "rejected"); }}>
-                <i className="fa fa-trash" style={{ width: "20px", color: "#ef4444" }}></i> Reject
-              </button>
-            </>
-          )}
+          <button 
+            style={{ ...btnStyle, backgroundColor: "#ef4444", color: "white" }} 
+            onClick={() => handleReject(profile.senderId, "rejected")}
+            onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#dc2626"; e.currentTarget.style.boxShadow = "0 4px 6px rgba(239, 68, 68, 0.3)"; }}
+            onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "#ef4444"; e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.05)"; }}
+          >
+            <i className="fa fa-times"></i> Reject
+          </button>
+        </>
+      )}
 
-          {activeTab === "accepted" && (
-            <button style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", padding: "10px 15px", cursor: "pointer", fontSize: "0.85rem", color: "#333", whiteSpace: "nowrap" }} onClick={() => { setIsOpen(false); handleReject(profile.senderId, "rejected"); }}>
-              <i className="fa fa-trash" style={{ width: "20px", color: "#ef4444" }}></i> Reject
-            </button>
-          )}
+      {activeTab === "accepted" && (
+        <button 
+          style={{ ...btnStyle, backgroundColor: "#ef4444", color: "white" }} 
+          onClick={() => handleReject(profile.senderId, "rejected")}
+          onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#dc2626"; e.currentTarget.style.boxShadow = "0 4px 6px rgba(239, 68, 68, 0.3)"; }}
+          onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "#ef4444"; e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.05)"; }}
+        >
+          <i className="fa fa-times"></i> Reject
+        </button>
+      )}
 
-          {activeTab === "rejected" && (
-            <button style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", padding: "10px 15px", cursor: "pointer", fontSize: "0.85rem", color: "#333", whiteSpace: "nowrap" }} onClick={() => { setIsOpen(false); handleAccept(profile.senderId, "accepted"); }}>
-              <i className="fa fa-check-circle" style={{ width: "20px", color: "#10b981" }}></i> Accept
-            </button>
-          )}
-        </div>
+      {activeTab === "rejected" && (
+        <button 
+          style={{ ...btnStyle, backgroundColor: "#10b981", color: "white" }} 
+          onClick={() => handleAccept(profile.senderId, "accepted")}
+          onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#059669"; e.currentTarget.style.boxShadow = "0 4px 6px rgba(16, 185, 129, 0.3)"; }}
+          onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "#10b981"; e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.05)"; }}
+        >
+          <i className="fa fa-check"></i> Accept
+        </button>
       )}
     </div>
   );
@@ -235,12 +254,11 @@ const UserInterest = () => {
               flex-direction: column !important;
               gap: 5px !important;
             }
-            /* Position the Actions dropdown in top right corner of card */
+            /* Position the Actions dropdown normally on mobile */
             .interest-responsive-table td:nth-child(5) {
-              position: absolute;
-              top: 10px;
-              right: 10px;
-              width: auto !important;
+              position: static;
+              margin-top: 15px;
+              width: 100% !important;
               padding: 0 !important;
             }
             /* Make top right 3-dot circle smaller on mobile */
@@ -260,7 +278,7 @@ const UserInterest = () => {
             <tr>
               <th scope="col" style={{ width: "5%", color: "#444", fontWeight: "600" }}>S.No</th>
               <th scope="col" style={{ width: "20%", textAlign: "center", color: "#444", fontWeight: "600" }}>Profile</th>
-              <th scope="col" style={{ width: "45%", color: "#444", fontWeight: "600" }}>Details</th>
+              <th scope="col" style={{ width: "45%", textAlign: "center", color: "#444", fontWeight: "600" }}>Details</th>
               <th scope="col" style={{ width: "15%", color: "#444", fontWeight: "600" }}>Date</th>
               <th scope="col" style={{ width: "15%", textAlign: "center", color: "#444", fontWeight: "600" }}>Actions</th>
             </tr>
@@ -271,21 +289,23 @@ const UserInterest = () => {
                   <td style={{ fontWeight: "500", color: "#666", padding: "2px 8px" }}>{(currentPage - 1) * itemsPerPage + index + 1}</td>
                   {/* 1. Profile Section */}
                   <td style={{ padding: "2px 8px" }}>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
-                      <div style={{ transform: "scale(0.4)", transformOrigin: "center center", marginBottom: "-25px", marginTop: "-15px" }}>
-                        <MembershipBadge user={profile.senderDetails} isMini={true} />
-                      </div>
-                      <div style={{ position: "relative", width: "95px", height: "95px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "5px", marginTop: "-35px", marginBottom: "-10px" }}>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
+                        <div style={{ transform: "scale(0.65)", transformOrigin: "center bottom", marginTop: "-15px", marginBottom: "-15px", marginLeft: "20px", zIndex: 10 }}>
+                          <MembershipBadge user={profile.senderDetails} isMini={true} />
+                        </div>
+                        <div style={{ position: "relative", width: "130px", height: "130px", minWidth: "130px", flexShrink: 0 }}>
                         <img
                           src={profile.senderDetails.profileImage || "images/profiles/default.jpg"}
                           alt={profile.senderDetails.userName}
-                          style={{ width: "95px", height: "95px", objectFit: "cover", borderRadius: "50%", border: "none" }}
+                          style={{ width: "130px", height: "130px", minWidth: "130px", minHeight: "130px", objectFit: "cover", borderRadius: "50%", border: "none" }}
                         />
                         {profile.senderDetails.idVerificationStatus === "Verified" && (
                           <span className="badge bg-success shadow-sm" style={{ position: "absolute", bottom: "-5px", left: "50%", transform: "translateX(-50%)", fontSize: "0.5rem", padding: "2px 4px", borderRadius: "10px" }}>
                             <i className="fa fa-check-circle"></i>
                           </span>
                         )}
+                      </div>
                       </div>
                       <h5 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "600", color: "#333", textAlign: "center", marginTop: "0", marginBottom: "0" }}>
                         {profile.senderDetails.agwid}
@@ -466,7 +486,7 @@ const UserInterest = () => {
                                 type="button"
                                 onClick={() => handleTabChange("accepted")}
                               >
-                                Accept Request
+                                Accepted Request
                               </button>
                             </li>
                             <li className="nav-item" style={{ flex: "0 0 auto" }}>
@@ -477,7 +497,7 @@ const UserInterest = () => {
                                 type="button"
                                 onClick={() => handleTabChange("rejected")}
                               >
-                                Reject Request
+                                Rejected Request
                               </button>
                             </li>
                           </ul>

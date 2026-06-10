@@ -5,6 +5,7 @@ import {
   updateReportStatus,
 } from "../../api/service/adminServices";
 import { confirmAction, showAlert } from "../../utils/alertService";
+import DataTable from "react-data-table-component";
 
 const AdminReports = () => {
   const [reports, setReports] = useState([]);
@@ -81,6 +82,201 @@ const AdminReports = () => {
     }
 
     setLoading(false);
+  };
+
+  const filteredReports = reports.filter((report) => {
+    const isResolvedTab = activeTab === "Resolved";
+    const matchesTab = isResolvedTab 
+      ? report.status === "Resolved" 
+      : report.status !== "Resolved";
+    
+    const searchLower = searchQuery.toLowerCase();
+    const reporterName = report.reporterId?.userName?.toLowerCase() || "";
+    const reporterAgwid = report.reporterId?.agwid?.toLowerCase() || "";
+    const reportedName = report.reportedUserId?.userName?.toLowerCase() || "";
+    const reportedAgwid = report.reportedUserId?.agwid?.toLowerCase() || "";
+    const reason = report.reason?.toLowerCase() || "";
+
+    const matchesSearch = 
+      reporterName.includes(searchLower) ||
+      reporterAgwid.includes(searchLower) ||
+      reportedName.includes(searchLower) ||
+      reportedAgwid.includes(searchLower) ||
+      reason.includes(searchLower);
+
+    return matchesTab && matchesSearch;
+  });
+
+  const columns = [
+    {
+      name: "S.No",
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: "70px",
+    },
+    {
+      name: "Reporter",width:"150px",
+      selector: row => row.reporterId?.userName || "Unknown",
+      sortable: true,
+      cell: row => (
+        row.reporterId?._id ? (
+          <a
+            href={`/admin/new-user/${row.reporterId._id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-decoration-none"
+          >
+            <div className="fw-bold text-primary">{row.reporterId.userName || "Unknown"}</div>
+            <div className="text-muted small">{row.reporterId.agwid || "N/A"}</div>
+          </a>
+        ) : (
+          <>
+            <div className="fw-bold">Unknown</div>
+            <div className="text-muted small">N/A</div>
+          </>
+        )
+      ),
+    },
+    {
+      name: "Reported User", width:"160px",
+      selector: row => row.reportedUserId?.userName || "Unknown",
+      sortable: true,
+      cell: row => (
+        row.reportedUserId?._id ? (
+          <a
+            href={`/admin/new-user/${row.reportedUserId._id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-decoration-none"
+          >
+            <div className="fw-bold text-danger">{row.reportedUserId.userName || "Unknown"}</div>
+            <div className="text-muted small">{row.reportedUserId.agwid || "N/A"}</div>
+          </a>
+        ) : (
+          <>
+            <div className="fw-bold text-danger">Unknown</div>
+            <div className="text-muted small">N/A</div>
+          </>
+        )
+      ),
+    },
+    {
+      name: "Reason",
+      selector: row => row.reason,
+      sortable: true,
+      minWidth: "180px",
+      cell: row => (
+        <div style={{ whiteSpace: "normal", wordBreak: "break-word", margin: "10px 0" }}>
+          {row.reason}
+        </div>
+      ),
+    },
+    {
+      name: "Comments",
+      selector: row => row.comments || "-",
+      sortable: true,
+      minWidth: "220px",
+      cell: row => (
+        <div style={{ whiteSpace: "normal", wordBreak: "break-word", margin: "10px 0" }}>
+          {row.comments || "-"}
+        </div>
+      ),
+    },
+    {
+      name: "Admin Reply",
+      selector: row => row.adminReply || "-",
+      sortable: true,
+      minWidth: "200px",
+      cell: row => (
+        <div className="small text-muted" style={{ whiteSpace: "normal", wordBreak: "break-word", margin: "10px 0" }}>
+          {row.adminReply || "-"}
+        </div>
+      ),
+    },
+    {
+      name: "Status",
+      selector: row => row.status,
+      sortable: true,
+      cell: row => (
+        <span
+          className={`badge px-3 py-2 ${
+            row.status === "Resolved"
+              ? "bg-success"
+              : row.status === "In Progress"
+              ? "bg-primary"
+              : "bg-warning text-dark"
+          }`}
+        >
+          {row.status}
+        </span>
+      ),
+    },
+    {
+      name: "Date",width:"130px",
+      selector: row => row.createdAt ? new Date(row.createdAt).getTime() : 0,
+      sortable: true,
+      format: row => new Date(row.createdAt).toLocaleDateString(),
+    },
+    {
+      name: "Actions",
+      cell: (row, index) => (
+        <div className={`dropdown ${index >= 5 ? "dropup" : ""}`}>
+          <button
+            className="btn btn-light rounded-circle"
+            data-bs-toggle="dropdown"
+          >
+            &#8230;
+          </button>
+          <ul className="dropdown-menu dropdown-menu-end shadow-sm">
+            {row.reporterId?._id && (
+              <li>
+                <button
+                  className="dropdown-item"
+                  onClick={() => window.open(`/admin/new-user/${row.reporterId._id}`, '_blank')}
+                >
+                  👤 View Reporter
+                </button>
+              </li>
+            )}
+            {row.reportedUserId?._id && (
+              <li>
+                <button
+                  className="dropdown-item text-danger"
+                  onClick={() => window.open(`/admin/new-user/${row.reportedUserId._id}`, '_blank')}
+                >
+                  🚨 View Reported User
+                </button>
+              </li>
+            )}
+            <li>
+              <button
+                className="dropdown-item"
+                data-bs-toggle="modal"
+                data-bs-target="#reportModal"
+                onClick={() => handleOpenModal(row)}
+              >
+                ✏️ Update
+              </button>
+            </li>
+          </ul>
+        </div>
+      ),
+      ignoreRowClick: true,
+      button: true,
+    }
+  ];
+
+  const customStyles = {
+    headCells: {
+      style: {
+        fontWeight: "600",
+        fontSize: "13px",
+        textTransform: "uppercase",
+        color: "#495057",
+        backgroundColor: "#e0e0e0",
+        borderBottom: "2px solid #cfcfcf",
+      },
+    },
   };
 
   return (
@@ -160,198 +356,26 @@ const AdminReports = () => {
           </div>
         </div>
 
+
+
         {/* TABLE */}
         <div className="card border-0 shadow-sm rounded-4">
           <div className="card-body p-0">
             <div className="table-responsive" style={{ minHeight: "400px" }}>
-              <table className="table align-middle mb-0 text-center" style={{ minWidth: "1000px" }}>
-              <thead>
-                <tr>
-                  {[
-                    "S.No",
-                    "Reporter",
-                    "Reported User",
-                    "Reason",
-                    "Comments",
-                    "Admin Reply",
-                    "Status",
-                    "Date",
-                    "Actions",
-                  ].map((head, index) => (
-                    <th
-                      key={index}
-                      className={["Reporter", "Reported User", "Reason", "Comments", "Admin Reply"].includes(head) ? "text-start" : ""}
-                      style={{
-                        backgroundColor: "#e0e0e0",
-                        borderBottom: "2px solid #cfcfcf",
-                      }}
-                    >
-                      {head}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-
-              <tbody>
-                {(() => {
-                  const filteredReports = reports.filter((report) => {
-                    const isResolvedTab = activeTab === "Resolved";
-                    const matchesTab = isResolvedTab 
-                      ? report.status === "Resolved" 
-                      : report.status !== "Resolved";
-                    
-                    const searchLower = searchQuery.toLowerCase();
-                    const reporterName = report.reporterId?.userName?.toLowerCase() || "";
-                    const reporterAgwid = report.reporterId?.agwid?.toLowerCase() || "";
-                    const reportedName = report.reportedUserId?.userName?.toLowerCase() || "";
-                    const reportedAgwid = report.reportedUserId?.agwid?.toLowerCase() || "";
-                    const reason = report.reason?.toLowerCase() || "";
-
-                    const matchesSearch = 
-                      reporterName.includes(searchLower) ||
-                      reporterAgwid.includes(searchLower) ||
-                      reportedName.includes(searchLower) ||
-                      reportedAgwid.includes(searchLower) ||
-                      reason.includes(searchLower);
-
-                    return matchesTab && matchesSearch;
-                  });
-
-                  return filteredReports.length > 0 ? (
-                    filteredReports.map((report, index) => (
-                      <tr key={report._id}>
-                        <td>{index + 1}</td>
-
-                        <td className="text-start">
-                          {report.reporterId?._id ? (
-                            <a 
-                              href={`/admin/new-user/${report.reporterId._id}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-decoration-none"
-                            >
-                              <div className="fw-bold text-primary">{report.reporterId.userName || "Unknown"}</div>
-                              <div className="text-muted small">{report.reporterId.agwid || "N/A"}</div>
-                            </a>
-                          ) : (
-                            <>
-                              <div className="fw-bold">Unknown</div>
-                              <div className="text-muted small">N/A</div>
-                            </>
-                          )}
-                        </td>
-
-                        <td className="text-start">
-                          {report.reportedUserId?._id ? (
-                            <a 
-                              href={`/admin/new-user/${report.reportedUserId._id}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-decoration-none"
-                            >
-                              <div className="fw-bold text-danger">{report.reportedUserId.userName || "Unknown"}</div>
-                              <div className="text-muted small">{report.reportedUserId.agwid || "N/A"}</div>
-                            </a>
-                          ) : (
-                            <>
-                              <div className="fw-bold text-danger">Unknown</div>
-                              <div className="text-muted small">N/A</div>
-                            </>
-                          )}
-                        </td>
-
-                        <td className="text-start">{report.reason}</td>
-                        
-                        <td className="text-start" style={{ maxWidth: "200px" }}>
-                          <div className="text-truncate" title={report.comments}>
-                            {report.comments || "-"}
-                          </div>
-                        </td>
-
-                        <td className="text-start">
-                          <div className="small text-muted" style={{ maxWidth: "200px" }}>
-                            {report.adminReply || "-"}
-                          </div>
-                        </td>
-
-                        <td>
-                          <span
-                            className={`badge px-3 py-2 ${
-                              report.status === "Resolved"
-                                ? "bg-success"
-                                : report.status === "In Progress"
-                                ? "bg-primary"
-                                : "bg-warning text-dark"
-                            }`}
-                          >
-                            {report.status}
-                          </span>
-                        </td>
-
-                        <td>
-                          {new Date(report.createdAt).toLocaleDateString()}
-                        </td>
-
-                      <td>
-                        <div className="dropdown">
-                          <button
-                            className="btn btn-light rounded-circle"
-                            data-bs-toggle="dropdown"
-                          >
-                            &#8230;
-                          </button>
-
-                          <ul className="dropdown-menu dropdown-menu-end shadow-sm">
-                            {/* VIEW REPORTER */}
-                            {report.reporterId?._id && (
-                              <li>
-                                <button
-                                  className="dropdown-item"
-                                  onClick={() => window.open(`/admin/new-user/${report.reporterId._id}`, '_blank')}
-                                >
-                                  👤 View Reporter
-                                </button>
-                              </li>
-                            )}
-
-                            {/* VIEW REPORTED USER */}
-                            {report.reportedUserId?._id && (
-                              <li>
-                                <button
-                                  className="dropdown-item text-danger"
-                                  onClick={() => window.open(`/admin/new-user/${report.reportedUserId._id}`, '_blank')}
-                                >
-                                  🚨 View Reported User
-                                </button>
-                              </li>
-                            )}
-
-                            {/* UPDATE */}
-                            <li>
-                              <button
-                                className="dropdown-item"
-                                data-bs-toggle="modal"
-                                data-bs-target="#reportModal"
-                                onClick={() => handleOpenModal(report)}
-                              >
-                                ✏️ Update
-                              </button>
-                            </li>
-                          </ul>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                  ) : (
-                    <tr>
-                      <td colSpan="9" className="py-4 text-muted">
-                        No reports found.
-                      </td>
-                    </tr>
-                  );
-                })()}
-              </tbody>
-            </table>
+              <DataTable
+                columns={columns}
+                data={filteredReports}
+                pagination
+                paginationRowsPerPageOptions={[5, 10, 15, 20]}
+                paginationPerPage={5}
+                highlightOnHover
+                customStyles={customStyles}
+                noDataComponent={
+                  <div className="py-4 text-muted">
+                    No reports found.
+                  </div>
+                }
+              />
             </div>
           </div>
         </div>

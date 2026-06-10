@@ -1,260 +1,6 @@
-// import React, { useEffect, useState } from "react";
-// import NewLayout from "./layout/NewLayout";
-// import {
-//   getAllIssues,
-//   updateIssue,
-// } from "../../api/service/adminServices";
-
-// const AdminIssues = () => {
-//   const [issues, setIssues] = useState([]);
-//   const [loading, setLoading] = useState(false);
-//   const [selectedIssue, setSelectedIssue] = useState(null);
-//   const [reply, setReply] = useState("");
-//   const [status, setStatus] = useState("Pending");
-//   const [success, setSuccess] = useState("");
-
-//   // ================= FETCH =================
-//   const fetchIssues = async () => {
-//     try {
-//       const res = await getAllIssues();
-
-//       console.log("API Response:", res.data); // ✅ DEBUG
-
-//       // ✅ FIX HERE
-//       if (res?.data?.data) {
-//         setIssues(res.data.data);
-//       } else {
-//         setIssues([]);
-//       }
-//     } catch (error) {
-//       console.error("Error fetching issues:", error);
-//       setIssues([]);
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchIssues();
-//   }, []);
-
-//   // ================= OPEN MODAL =================
-//   const handleOpenModal = (issue) => {
-//     setSelectedIssue(issue);
-//     setReply(issue.adminReply || "");
-//     setStatus(issue.status || "Pending");
-//   };
-
-//   // ================= UPDATE =================
-//   const handleUpdate = async (e) => {
-//     e.preventDefault();
-//     setLoading(true);
-
-//     try {
-//       await updateIssue(selectedIssue._id, {
-//         status,
-//         adminReply: reply,
-//       });
-
-//       await fetchIssues();
-
-//       setSuccess("Issue updated successfully!");
-//       window.$("#issueModal").modal("hide");
-
-//       setTimeout(() => setSuccess(""), 3000);
-//     } catch (error) {
-//       console.error("Update error:", error);
-//     }
-
-//     setLoading(false);
-//   };
-
-//   return (
-//     <NewLayout>
-//       <div
-//         style={{
-//           marginLeft: "260px",
-//           padding: "40px",
-//           minHeight: "100vh",
-//           background: "#f4f6f9",
-//         }}
-//       >
-//         {/* HEADER */}
-//         <div className="mb-4">
-//           <h2 className="fw-bold mb-1">Issue Management</h2>
-//           <p className="text-muted mb-0">
-//             Manage user reported issues here
-//           </p>
-//         </div>
-
-//         {success && (
-//           <div className="alert alert-success shadow-sm">{success}</div>
-//         )}
-
-//         {/* TABLE */}
-//         <div className="card border-0 shadow-sm rounded-4">
-//           <div className="card-body p-0">
-//             <table className="table align-middle mb-0 text-center">
-//               <thead>
-//                 <tr>
-//                   {[
-//                     "S.No",
-//                     "User",
-//                     "Issue",
-//                     "Attachment",
-//                     "Status",
-//                     "Admin Reply",
-//                     "Created",
-//                     "Actions",
-//                   ].map((head, index) => (
-//                     <th
-//                       key={index}
-//                       style={{
-//                         backgroundColor: "#e0e0e0",
-//                         borderBottom: "2px solid #cfcfcf",
-//                       }}
-//                     >
-//                       {head}
-//                     </th>
-//                   ))}
-//                 </tr>
-//               </thead>
-
-//               <tbody>
-//                 {issues.length > 0 ? (
-//                   issues.map((issue, index) => (
-//                     <tr key={issue._id}>
-//                       <td>{index + 1}</td>
-
-//                       {/* ✅ FIXED */}
-//                       <td>{issue.userName || "User"}</td>
-
-//                       <td>{issue.details}</td>
-
-//                       <td>
-//                         {issue.attachment ? (
-//                           <a
-//                             href={`http://localhost:4000/${issue.attachment}`}
-//                             target="_blank"
-//                             rel="noreferrer"
-//                           >
-//                             View
-//                           </a>
-//                         ) : (
-//                           "-"
-//                         )}
-//                       </td>
-
-//                       <td>
-//                         <span
-//                           className={`badge px-3 py-2 ${
-//                             issue.status === "Resolved"
-//                               ? "bg-success"
-//                               : issue.status === "In Progress"
-//                               ? "bg-primary"
-//                               : "bg-warning"
-//                           }`}
-//                         >
-//                           {issue.status}
-//                         </span>
-//                       </td>
-
-//                       <td>{issue.adminReply || "-"}</td>
-
-//                       <td>
-//                         {new Date(issue.createdAt).toLocaleDateString()}
-//                       </td>
-
-//                       <td>
-//                         <div className="dropdown">
-//                           <button
-//                             className="btn btn-light rounded-circle"
-//                             data-bs-toggle="dropdown"
-//                           >
-//                             &#8230;
-//                           </button>
-
-//                           <ul className="dropdown-menu dropdown-menu-end shadow-sm">
-//                             <li>
-//                               <button
-//                                 className="dropdown-item"
-//                                 data-bs-toggle="modal"
-//                                 data-bs-target="#issueModal"
-//                                 onClick={() =>
-//                                   handleOpenModal(issue)
-//                                 }
-//                               >
-//                                 ✏️ Update
-//                               </button>
-//                             </li>
-//                           </ul>
-//                         </div>
-//                       </td>
-//                     </tr>
-//                   ))
-//                 ) : (
-//                   <tr>
-//                     <td colSpan="8" className="py-4 text-muted">
-//                       No issues found.
-//                     </td>
-//                   </tr>
-//                 )}
-//               </tbody>
-//             </table>
-//           </div>
-//         </div>
-
-//         {/* MODAL */}
-//         <div className="modal fade" id="issueModal">
-//           <div className="modal-dialog modal-lg modal-dialog-centered">
-//             <div className="modal-content p-4 rounded-4">
-
-//               <h4 className="fw-bold mb-3 text-primary">
-//                 Update Issue
-//               </h4>
-
-//               <form onSubmit={handleUpdate}>
-//                 <label className="fw-semibold">Status</label>
-//                 <select
-//                   className="form-control mb-3"
-//                   value={status}
-//                   onChange={(e) => setStatus(e.target.value)}
-//                 >
-//                   <option>Pending</option>
-//                   <option>In Progress</option>
-//                   <option>Resolved</option>
-//                 </select>
-
-//                 <label className="fw-semibold">Admin Reply</label>
-//                 <textarea
-//                   rows="4"
-//                   className="form-control mb-4"
-//                   value={reply}
-//                   onChange={(e) => setReply(e.target.value)}
-//                 />
-
-//                 <button
-//                   type="submit"
-//                   className="btn btn-primary w-100 rounded-pill py-2"
-//                   disabled={loading}
-//                 >
-//                   {loading ? "Updating..." : "Update Issue"}
-//                 </button>
-//               </form>
-
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </NewLayout>
-//   );
-// };
-
-
-// export default AdminIssues;
-
-
-
 import React, { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
+import DataTable from "react-data-table-component";
 import {
   getAllIssues,
   updateIssue,
@@ -386,113 +132,162 @@ const AdminIssues = () => {
     return matchesTab && matchesSearch;
   });
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentIssues = filteredIssues.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredIssues.length / itemsPerPage);
-
-  const Pagination = () => {
-    const pageNumbers = [];
-    const maxVisiblePages = 5;
-
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(i);
-    }
-
-    return (
-      <nav
-        aria-label="Page navigation"
-        className="d-flex justify-content-center mt-4"
-      >
-        <ul className="pagination">
-          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-            <button
-              className="page-link"
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-          </li>
-
-          {startPage > 1 && (
-            <>
-              <li className="page-item">
-                <button className="page-link" onClick={() => setCurrentPage(1)}>
-                  1
+  const columns = [
+    { name: "S.No", selector: (row, index) => index + 1, sortable: false, width: "70px" },
+    {
+      name: "User",width:"140px",
+      selector: row => row.userName,
+      sortable: true,
+      cell: row => (
+        <div className="text-start">
+          <div className="fw-bold">{row.userName || "Unknown"}</div>
+          <div className="text-muted small">{row.agwid || "N/A"}</div>
+        </div>
+      )
+    },
+    {
+      name: "Contact Info",width:"240px",
+      selector: row => row.userEmail,
+      sortable: true,
+      cell: row => (
+        <div className="text-start">
+          <div className="small">{row.userEmail || "N/A"}</div>
+          <div className="text-muted small">{row.userMobile || "N/A"}</div>
+        </div>
+      )
+    },
+    {
+      name: "Issue",
+      selector: row => row.details,
+      sortable: true,
+      cell: row => (
+        <div className="text-truncate" style={{ maxWidth: "200px" }} title={row.details}>
+          {row.details}
+        </div>
+      )
+    },
+    {
+      name: "Attachment",width:"180px",
+      cell: row => row.attachment ? (
+        <a
+          href={row.attachment.startsWith('http') ? row.attachment : `http://localhost:3001/${row.attachment}`}
+          target="_blank"
+          rel="noreferrer"
+          className="btn btn-success btn-sm"
+        >
+          View
+        </a>
+      ) : "-"
+    },
+    {
+      name: "Admin Reply", width:"220px",
+      selector: row => row.adminReply,
+      sortable: true,
+      cell: row => (
+        <div className="small" style={{ maxWidth: "200px" }}>
+          {row.adminReply || "-"}
+        </div>
+      )
+    },
+    {
+      name: "Status",width:"140px",
+      selector: row => row.status,
+      sortable: true,
+      cell: row => (
+        <span
+          className={`badge px-3 py-2 ${
+            row.status === "Resolved"
+              ? "bg-success"
+              : row.status === "In Progress"
+              ? "bg-primary"
+              : "bg-warning"
+          }`}
+        >
+          {row.status}
+        </span>
+      )
+    },
+    {
+      name: "Created",width:"120px",
+      selector: row => row.createdAt,
+      sortable: true,
+      format: row => new Date(row.createdAt).toLocaleDateString()
+    },
+    {
+      name: "Actions",
+      cell: (row, index) => (
+        <div className={`dropdown ${index >= 5 ? "dropup" : ""}`}>
+          <button
+            className="btn btn-light rounded-circle"
+            data-bs-toggle="dropdown"
+          >
+            &#8230;
+          </button>
+          <ul className="dropdown-menu dropdown-menu-end shadow-sm">
+            {row.userId && (
+              <li>
+                <button
+                  className="dropdown-item"
+                  onClick={() => window.open(`/admin/new-user/${row.userId}`, '_blank')}
+                >
+                  👤 View Profile
                 </button>
               </li>
-              {startPage > 2 && (
-                <li className="page-item disabled">
-                  <span className="page-link">...</span>
-                </li>
-              )}
-            </>
-          )}
-
-          {pageNumbers.map((number) => (
-            <li
-              key={number}
-              className={`page-item ${currentPage === number ? "active" : ""}`}
-            >
+            )}
+            <li>
               <button
-                className="page-link"
-                onClick={() => setCurrentPage(number)}
-                style={
-                  currentPage === number
-                    ? {
-                        backgroundColor: "#1a73e8",
-                        borderColor: "#1a73e8",
-                        color: "white",
-                      }
-                    : { color: "#1a73e8" }
-                }
+                className="dropdown-item"
+                data-bs-toggle="modal"
+                data-bs-target="#issueModal"
+                onClick={() => handleOpenModal(row)}
               >
-                {number}
+                ✏️ Update
               </button>
             </li>
-          ))}
+            <li>
+              <button
+                className="dropdown-item text-danger"
+                onClick={() => handleDelete(row._id)}
+              >
+                🗑️ Delete
+              </button>
+            </li>
+          </ul>
+        </div>
+      )
+    }
+  ];
 
-          {endPage < totalPages && (
-            <>
-              {endPage < totalPages - 1 && (
-                <li className="page-item disabled">
-                  <span className="page-link">...</span>
-                </li>
-              )}
-              <li className="page-item">
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(totalPages)}
-                >
-                  {totalPages}
-                </button>
-              </li>
-            </>
-          )}
-
-          <li
-            className={`page-item ${currentPage === totalPages ? "disabled" : ""
-              }`}
-          >
-            <button
-              className="page-link"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </li>
-        </ul>
-      </nav>
-    );
+  const customStyles = {
+    headCells: {
+      style: {
+        fontWeight: "600",
+        fontSize: "13px",
+        textTransform: "uppercase",
+        letterSpacing: "0.5px",
+        color: "#6c757d",
+        backgroundColor: "#e0e0e0",
+        borderBottom: "2px solid #cfcfcf",
+        padding: "15px",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "14px",
+        padding: "15px",
+      },
+    },
+    tableWrapper: {
+      style: {
+        minHeight: "300px",
+        overflow: "visible !important",
+      }
+    },
+    table: {
+      style: {
+        overflow: "visible !important",
+      }
+    },
   };
 
   return (
@@ -575,164 +370,20 @@ const AdminIssues = () => {
         {/* TABLE */}
         <div className="card border-0 shadow-sm rounded-4">
           <div className="card-body p-0">
-            <div className="table-responsive" style={{ minHeight: "400px" }}>
-              <table className="table align-middle mb-0 text-center" style={{ minWidth: "1000px" }}>
-              <thead>
-                <tr>
-                  {[
-                    "S.No",
-                    "User",
-                    "Contact Info",
-                    "Issue",
-                    "Attachment",
-                    "Admin Reply",
-                    "Status",
-                    "Created",
-                    "Actions",
-                  ].map((head, index) => (
-                    <th
-                      key={index}
-                      className={["User", "Contact Info", "Admin Reply"].includes(head) ? "text-start" : ""}
-                      style={{
-                        backgroundColor: "#e0e0e0",
-                        borderBottom: "2px solid #cfcfcf",
-                      }}
-                    >
-                      {head}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-
-              <tbody>
-                {currentIssues.length > 0 ? (
-                  currentIssues.map((issue, index) => (
-                    <tr key={issue._id}>
-                      <td>{indexOfFirstItem + index + 1}</td>
-
-                      <td>
-                        <div className="text-start">
-                          <div className="fw-bold">{issue.userName || "Unknown"}</div>
-                          <div className="text-muted small">{issue.agwid || "N/A"}</div>
-                        </div>
-                      </td>
-
-                      <td>
-                        <div className="text-start">
-                          <div className="small">{issue.userEmail || "N/A"}</div>
-                          <div className="text-muted small">{issue.userMobile || "N/A"}</div>
-                        </div>
-                      </td>
-
-                      <td>
-                        <div className="text-truncate" style={{ maxWidth: "200px" }} title={issue.details}>
-                          {issue.details}
-                        </div>
-                      </td>
-
-                      {/* ✅ GREEN VIEW BUTTON */}
-                      <td>
-                        {issue.attachment ? (
-                          <a
-                            href={issue.attachment.startsWith('http') ? issue.attachment : `http://localhost:3001/${issue.attachment}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="btn btn-success btn-sm"
-                          >
-                            View
-                          </a>
-                        ) : (
-                          "-"
-                        )}
-                      </td>
-
-                      <td className="text-start">
-                        <div className="small" style={{ maxWidth: "200px" }}>
-                          {issue.adminReply || "-"}
-                        </div>
-                      </td>
-
-                      <td>
-                        <span
-                          className={`badge px-3 py-2 ${
-                            issue.status === "Resolved"
-                              ? "bg-success"
-                              : issue.status === "In Progress"
-                              ? "bg-primary"
-                              : "bg-warning"
-                          }`}
-                        >
-                          {issue.status}
-                        </span>
-                      </td>
-
-                      <td>
-                        {new Date(issue.createdAt).toLocaleDateString()}
-                      </td>
-
-                      <td>
-                        <div className="dropdown">
-                          <button
-                            className="btn btn-light rounded-circle"
-                            data-bs-toggle="dropdown"
-                          >
-                            &#8230;
-                          </button>
-
-                          <ul className="dropdown-menu dropdown-menu-end shadow-sm">
-                            {/* VIEW PROFILE */}
-                            {issue.userId && (
-                              <li>
-                                <button
-                                  className="dropdown-item"
-                                  onClick={() => window.open(`/admin/new-user/${issue.userId}`, '_blank')}
-                                >
-                                  👤 View Profile
-                                </button>
-                              </li>
-                            )}
-
-                            {/* UPDATE */}
-                            <li>
-                              <button
-                                className="dropdown-item"
-                                data-bs-toggle="modal"
-                                data-bs-target="#issueModal"
-                                onClick={() => handleOpenModal(issue)}
-                              >
-                                ✏️ Update
-                              </button>
-                            </li>
-
-                            {/* DELETE */}
-                            <li>
-                              <button
-                                className="dropdown-item text-danger"
-                                onClick={() => handleDelete(issue._id)}
-                              >
-                                🗑️ Delete
-                              </button>
-                            </li>
-                          </ul>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="9" className="py-4 text-muted">
-                      No issues found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+            <div className="table-responsive">
+              <DataTable
+                columns={columns}
+                data={filteredIssues}
+                pagination
+                paginationRowsPerPageOptions={[5, 10, 15, 20]}
+                paginationPerPage={5}
+                highlightOnHover
+                customStyles={customStyles}
+                noDataComponent={<div className="py-4 text-muted">No issues found.</div>}
+              />
             </div>
           </div>
         </div>
-        
-        {/* Pagination */}
-        {totalPages > 1 && <Pagination />}
 
         {/* MODAL */}
         <div className="modal fade" id="issueModal">

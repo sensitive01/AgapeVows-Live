@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
+import DataTable from "react-data-table-component";
 import {
   addNewBlog,
   getAllBlogs,
@@ -159,6 +160,207 @@ const AdminBlogs = () => {
 
     setTimeout(() => setSuccess(""), 3000);
   };
+
+  const columns = [
+    { name: "S.No", selector: (row, index) => index + 1, sortable: false, width: "70px" },
+    {
+      name: "Cover Image",
+      cell: row => (
+        <img
+          src={row.coverImage}
+          alt=""
+          width="70"
+          height="50"
+          style={{
+            objectFit: "cover",
+            borderRadius: 8,
+          }}
+        />
+      )
+    },
+    { name: "Title", selector: row => row.title, sortable: true, cell: row => <span className="fw-semibold">{row.title}</span> },
+    { name: "Category", selector: row => row.category, sortable: true },
+    {
+      name: "Content",
+      cell: row => (
+        <>
+          <span
+            style={{
+              cursor: "pointer",
+              color: "#4e73df",
+              fontWeight: 500,
+            }}
+            data-bs-toggle="modal"
+            data-bs-target={`#contentModal${row._id}`}
+          >
+            View Content
+          </span>
+
+          <div
+            className="modal fade"
+            id={`contentModal${row._id}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content p-4 rounded-4">
+                <div
+                  style={{
+                    background: "#f1f5ff",
+                    padding: "20px",
+                    borderRadius: "20px",
+                    position: "relative",
+                  }}
+                >
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "-10px",
+                      left: "30px",
+                      width: "20px",
+                      height: "20px",
+                      background: "#f1f5ff",
+                      transform: "rotate(45deg)",
+                    }}
+                  ></div>
+                  <h5 className="fw-bold mb-3">
+                    {row.title}
+                  </h5>
+                  <p
+                    style={{
+                      whiteSpace: "pre-line",
+                      lineHeight: "1.7",
+                    }}
+                  >
+                    {row.content}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )
+    },
+    {
+      name: "Author Photo",
+      cell: row => (
+        <img
+          src={row.authorPhoto}
+          alt=""
+          width="45"
+          height="45"
+          style={{
+            borderRadius: "50%",
+            objectFit: "cover",
+          }}
+        />
+      )
+    },
+    { name: "Author", selector: row => row.authorName, sortable: true },
+    { name: "Role", selector: row => row.authorRole, sortable: true },
+    {
+      name: "Status",
+      selector: row => row.status,
+      sortable: true,
+      cell: row => (
+        <span
+          className={`badge px-3 py-2 ${
+            row.status === "Published"
+              ? "bg-success"
+              : "bg-secondary"
+          }`}
+        >
+          {row.status}
+        </span>
+      )
+    },
+    {
+      name: "Created",
+      selector: row => row.createdAt,
+      sortable: true,
+      format: row => new Date(row.createdAt).toLocaleDateString()
+    },
+    {
+      name: "Actions",
+      center: true,
+      cell: (row, index) => (
+        <div className={`dropdown ${index >= 5 ? "dropup" : ""}`}>
+          <button
+            type="button"
+            data-bs-toggle="dropdown"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            style={{
+              width: "34px",
+              height: "34px",
+              borderRadius: "50%",
+              border: "none",
+              backgroundColor: "#eef1f7",
+              fontSize: "18px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+            }}
+          >
+            &#8230;
+          </button>
+          <ul
+            className="dropdown-menu dropdown-menu-end shadow-sm"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <li>
+              <button
+                type="button"
+                className="dropdown-item"
+                data-bs-toggle="modal"
+                data-bs-target="#blogsModal"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleEdit(row);
+                }}
+              >
+                ✏️ Edit
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                className="dropdown-item text-danger"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDelete(row._id);
+                }}
+              >
+                🗑 Delete
+              </button>
+            </li>
+          </ul>
+        </div>
+      )
+    }
+  ];
+
+  const customStyles = {
+    headCells: {
+      style: {
+        backgroundColor: "#e0e0e0",
+        color: "#000",
+        borderBottom: "2px solid #cfcfcf",
+        fontWeight: "600",
+        fontSize: "13px",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "14px",
+        verticalAlign: "middle",
+        padding: "10px",
+      },
+    },
+  };
+
 return (
   <NewLayout>
     <div
@@ -195,228 +397,17 @@ return (
 <div className="card border-0 shadow-sm rounded-4">
   <div className="card-body p-0">
 
-    <div >
-      <table className="table align-middle mb-0 text-center">
-
-        {/* HEADER COLOR CHANGED */}
-       <thead>
-  <tr>
-    {[
-      "S.No",
-      "Cover Image",
-      "Title",
-      "Category",
-      "Content",
-      "Author Photo",
-      "Author",
-      "Role",
-      "Status",
-      "Created",
-      "Actions",
-    ].map((head, index) => (
-      <th
-        key={index}
-        style={{
-          backgroundColor: "#e0e0e0",
-          color: "#000",
-          borderBottom: "2px solid #cfcfcf",
-        }}
-      >
-        {head}
-      </th>
-    ))}
-  </tr>
-</thead>
-        <tbody>
-          {filteredBlogs.length > 0 ? (
-            filteredBlogs.map((blog, index) => (
-              <tr key={blog._id}>
-
-                <td>{index + 1}</td>
-
-                <td>
-                  <img
-                    src={blog.coverImage}
-                    alt=""
-                    width="70"
-                    height="50"
-                    style={{
-                      objectFit: "cover",
-                      borderRadius: 8,
-                    }}
-                  />
-                </td>
-
-                <td className="fw-semibold">{blog.title}</td>
-
-                <td>{blog.category}</td>
-
-                {/* CLICKABLE CONTENT */}
-                <td>
-                  <span
-                    style={{
-                      cursor: "pointer",
-                      color: "#4e73df",
-                      fontWeight: 500,
-                    }}
-                    data-bs-toggle="modal"
-                    data-bs-target={`#contentModal${blog._id}`}
-                  >
-                    View Content
-                  </span>
-
-                  {/* CONTENT MODAL */}
-                  <div
-                    className="modal fade"
-                    id={`contentModal${blog._id}`}
-                  >
-                    <div className="modal-dialog modal-dialog-centered">
-                      <div className="modal-content p-4 rounded-4">
-
-                        {/* CLOUD STYLE */}
-                        <div
-                          style={{
-                            background: "#f1f5ff",
-                            padding: "20px",
-                            borderRadius: "20px",
-                            position: "relative",
-                          }}
-                        >
-                          <div
-                            style={{
-                              position: "absolute",
-                              bottom: "-10px",
-                              left: "30px",
-                              width: "20px",
-                              height: "20px",
-                              background: "#f1f5ff",
-                              transform: "rotate(45deg)",
-                            }}
-                          ></div>
-
-                          <h5 className="fw-bold mb-3">
-                            {blog.title}
-                          </h5>
-
-                          <p
-                            style={{
-                              whiteSpace: "pre-line",
-                              lineHeight: "1.7",
-                            }}
-                          >
-                            {blog.content}
-                          </p>
-                        </div>
-
-                      </div>
-                    </div>
-                  </div>
-
-                </td>
-
-                <td>
-                  <img
-                    src={blog.authorPhoto}
-                    alt=""
-                    width="45"
-                    height="45"
-                    style={{
-                      borderRadius: "50%",
-                      objectFit: "cover",
-                    }}
-                  />
-                </td>
-
-                <td>{blog.authorName}</td>
-                <td>{blog.authorRole}</td>
-
-                <td>
-                  <span
-                    className={`badge px-3 py-2 ${
-                      blog.status === "Published"
-                        ? "bg-success"
-                        : "bg-secondary"
-                    }`}
-                  >
-                    {blog.status}
-                  </span>
-                </td>
-
-                <td>
-                  {new Date(blog.createdAt).toLocaleDateString()}
-                </td>
-
-                {/* CIRCULAR 3 DOT ACTION */}
-              <td>
-  <div className="dropdown">
-    <button
-      type="button"
-      data-bs-toggle="dropdown"
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      }}
-      style={{
-        width: "34px",
-        height: "34px",
-        borderRadius: "50%",
-        border: "none",
-        backgroundColor: "#eef1f7",
-        fontSize: "18px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        cursor: "pointer",
-      }}
-    >
-      &#8230;
-    </button>
-
-    <ul
-      className="dropdown-menu dropdown-menu-end shadow-sm"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <li>
-        <button
-          type="button"
-          className="dropdown-item"
-          data-bs-toggle="modal"
-          data-bs-target="#blogsModal"
-          onClick={(e) => {
-            e.preventDefault();
-            handleEdit(blog);
-          }}
-        >
-          ✏️ Edit
-        </button>
-      </li>
-      <li>
-        <button
-          type="button"
-          className="dropdown-item text-danger"
-          onClick={(e) => {
-            e.preventDefault();
-            handleDelete(blog._id);
-          }}
-        >
-          🗑 Delete
-        </button>
-      </li>
-    </ul>
-  </div>
-</td>
-
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="11" className="py-4 text-muted text-center">
-                No blogs found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+    <div className="table-responsive">
+      <DataTable
+        columns={columns}
+        data={filteredBlogs}
+        pagination
+        paginationRowsPerPageOptions={[5, 10, 15, 20]}
+        paginationPerPage={5}
+        highlightOnHover
+        customStyles={customStyles}
+        noDataComponent={<div className="py-4 text-muted text-center">No blogs found.</div>}
+      />
     </div>
   </div>
 </div>

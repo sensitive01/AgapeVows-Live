@@ -6,6 +6,7 @@ import {
   updateEnquiry,
 } from "../../api/service/adminServices";
 import { confirmAction, showAlert } from "../../utils/alertService";
+import DataTable from "react-data-table-component";
 
 const AdminEnquiries = () => {
   const [enquiries, setEnquiries] = useState([]);
@@ -18,7 +19,7 @@ const AdminEnquiries = () => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("All");
+  const [filterStatus, setFilterStatus] = useState("New and Contacted");
   const [showFullMessage, setShowFullMessage] = useState(false);
 
   // ================= FETCH =================
@@ -44,8 +45,10 @@ const AdminEnquiries = () => {
   const filterEnquiries = (data, statusFilter, search) => {
     let filtered = data;
 
-    if (statusFilter !== "All") {
-      filtered = filtered.filter(item => item.status === statusFilter);
+    if (statusFilter === "New and Contacted") {
+      filtered = filtered.filter(item => item.status === "New" || item.status === "Contacted");
+    } else if (statusFilter === "Closed") {
+      filtered = filtered.filter(item => item.status === "Closed");
     }
 
     if (search) {
@@ -166,6 +169,219 @@ const AdminEnquiries = () => {
   };
 
   const stats = getStats();
+
+  const columns = [
+    {
+      name: "S.No",
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: "70px",
+      center: true,
+      cell: (row, index) => (
+        <span style={{ backgroundColor: "#f0f0f0", padding: "4px 8px", borderRadius: "4px" }}>
+          {index + 1}
+        </span>
+      ),
+    },
+    {
+      name: "Name", width: "180px",
+      selector: row => row.name,
+      sortable: true,
+      cell: row => <div style={{ fontWeight: "500" }}>{row.name}</div>
+    },
+    {
+      name: "Contact", width: "140px",
+      selector: row => row.phone,
+      sortable: true,
+      cell: row => (
+        <a href={`tel:${row.phone}`} style={{ color: "#667eea", textDecoration: "none" }}>
+          {row.phone}
+        </a>
+      )
+    },
+    {
+      name: "Email", width: "250px",
+      selector: row => row.email,
+      sortable: true,
+      cell: row => (
+        <a href={`mailto:${row.email}`} style={{ color: "#667eea", textDecoration: "none" }}>
+          {row.email || "-"}
+        </a>
+      )
+    },
+    {
+      name: "Message",
+      selector: row => row.message,
+      sortable: true,
+      minWidth: "250px",
+      cell: row => (
+        <div style={{ whiteSpace: "normal", wordBreak: "break-word", margin: "10px 0", textAlign: "left" }}>
+          {row.message}
+        </div>
+      )
+    },
+    {
+      name: "Reply Content",
+      selector: row => row.replyMessage,
+      sortable: true,
+      minWidth: "250px",
+      cell: row => (
+        <div style={{ whiteSpace: "normal", wordBreak: "break-word", margin: "10px 0", color: "#084298", textAlign: "left" }}>
+          {row.replyMessage || "-"}
+        </div>
+      )
+    },
+    {
+      name: "Status",width:"150px",
+      selector: row => row.status,
+      sortable: true,
+      cell: row => (
+        <span
+          style={{
+            backgroundColor:
+              row.status === "Closed"
+                ? "#d4edda"
+                : row.status === "Contacted"
+                ? "#cfe2ff"
+                : "#fff3cd",
+            color:
+              row.status === "Closed"
+                ? "#155724"
+                : row.status === "Contacted"
+                ? "#084298"
+                : "#856404",
+            padding: "6px 12px",
+            borderRadius: "20px",
+            fontSize: "12px",
+            fontWeight: "600",
+            display: "inline-block",
+          }}
+        >
+          {row.status === "Closed"
+            ? "✅ Closed"
+            : row.status === "Contacted"
+            ? "📞 Contacted"
+            : "🆕 New"}
+        </span>
+      )
+    },
+    {
+      name: "Date",width:"120px",
+      selector: row => row.createdAt ? new Date(row.createdAt).getTime() : 0,
+      sortable: true,
+      format: row => new Date(row.createdAt).toLocaleDateString(),
+    },
+    {
+      name: "Actions",
+      cell: (item, index) => (
+        <div className={`dropdown ${index >= 5 ? 'dropup' : ''}`} style={{ display: "inline-block" }}>
+          <button
+            className="btn btn-light btn-sm rounded-circle"
+            data-bs-toggle="dropdown"
+            style={{
+              width: "40px",
+              height: "40px",
+              padding: "0",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "20px",
+              border: "1px solid #e0e0e0",
+              backgroundColor: "#f5f5f5",
+              cursor: "pointer",
+            }}
+            title="More actions"
+          >
+            ⋯
+          </button>
+
+          <ul 
+            className="dropdown-menu dropdown-menu-end shadow"
+            style={{ 
+              borderRadius: "8px",
+              border: "1px solid #e0e0e0",
+              minWidth: "160px",
+              padding: "6px 0",
+              backgroundColor: "#fff",
+              zIndex: 9999,
+            }}
+          >
+            <li>
+              <button
+                onClick={() => handleViewMessage(item)}
+                className="dropdown-item d-flex align-items-center gap-2"
+                style={{ padding: "8px 12px", fontSize: "14px", fontWeight: "500", cursor: "pointer", color: "#333", transition: "all 0.2s ease" }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#f5f8ff"; e.currentTarget.style.color = "#4facfe"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "#333"; }}
+              >
+                <span style={{ fontSize: "16px", width: "20px", textAlign: "center" }}>👁️</span>
+                <span>View Message</span>
+              </button>
+            </li>
+            <li>
+              <button
+                data-bs-toggle="modal"
+                data-bs-target="#enquiryModal"
+                onClick={() => handleOpenModal(item)}
+                className="dropdown-item d-flex align-items-center gap-2"
+                style={{ padding: "8px 12px", fontSize: "14px", fontWeight: "500", cursor: "pointer", color: "#333", transition: "all 0.2s ease" }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#fff5f0"; e.currentTarget.style.color = "#f5576c"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "#333"; }}
+              >
+                <span style={{ fontSize: "16px", width: "20px", textAlign: "center" }}>✏️</span>
+                <span>Edit Status</span>
+              </button>
+            </li>
+            <li style={{ margin: "8px 0", borderTop: "1px solid #f0f0f0" }}></li>
+            <li>
+              <button
+                onClick={() => handleDelete(item._id)}
+                className="dropdown-item d-flex align-items-center gap-2"
+                style={{ padding: "8px 12px", fontSize: "14px", fontWeight: "500", cursor: "pointer", color: "#ff6b6b", transition: "all 0.2s ease" }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#ffe5e5"; e.currentTarget.style.color = "#ff4757"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "#ff6b6b"; }}
+              >
+                <span style={{ fontSize: "16px", width: "20px", textAlign: "center" }}>🗑️</span>
+                <span>Delete</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      ),
+      ignoreRowClick: true,
+      button: true,
+    }
+  ];
+
+  const customStyles = {
+    headCells: {
+      style: {
+        fontWeight: "600",
+        color: "#2c3e50",
+        backgroundColor: "#f8f9fa",
+        borderBottom: "2px solid #e0e0e0",
+        padding: "15px",
+        fontSize: "13px",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "14px",
+        padding: "15px",
+      },
+    },
+    tableWrapper: {
+      style: {
+        minHeight: "300px",
+        overflow: "visible !important",
+      }
+    },
+    table: {
+      style: {
+        overflow: "visible !important",
+      }
+    },
+  };
 
   return (
     <NewLayout>
@@ -330,21 +546,17 @@ const AdminEnquiries = () => {
 
               {/* Filter */}
               <div className="col-lg-6">
-                <div className="d-flex gap-2 flex-wrap">
-                  {["All", "New", "Contacted", "Closed"].map((stat) => (
+                <div className="d-flex gap-2 flex-wrap justify-content-lg-end">
+                  {["New and Contacted", "Closed"].map((stat) => (
                     <button
                       key={stat}
                       onClick={() => handleStatusFilter(stat)}
-                      className={`btn btn-sm rounded-pill fw-500`}
+                      className={`btn btn-sm rounded-pill fw-bold`}
                       style={{
                         backgroundColor:
                           filterStatus === stat
-                            ? stat === "All"
-                              ? "#667eea"
-                              : stat === "New"
+                            ? stat === "New and Contacted"
                               ? "#f5576c"
-                              : stat === "Contacted"
-                              ? "#00f2fe"
                               : "#43e97b"
                             : "#f0f0f0",
                         color: filterStatus === stat ? "white" : "#666",
@@ -364,273 +576,36 @@ const AdminEnquiries = () => {
           </div>
         </div>
 
+
         {/* ========== TABLE ========== */}
         <div className="card border-0 shadow-sm" style={{ borderRadius: "12px", overflow: "visible" }}>
-          <div className="card-body p-0">
-            {filteredEnquiries.length > 0 ? (
-              <div style={{ width: "100%", overflow: "visible" }}>
-                <table className="table mb-0">
-                  <thead>
-                    <tr style={{ backgroundColor: "#f8f9fa", borderBottom: "2px solid #e0e0e0" }}>
-                      <th style={{ padding: "15px", fontWeight: "600", color: "#2c3e50", textAlign: "center" }}>S.No</th>
-                      <th style={{ padding: "15px", fontWeight: "600", color: "#2c3e50", textAlign: "center" }}>Name</th>
-                      <th style={{ padding: "15px", fontWeight: "600", color: "#2c3e50", textAlign: "center" }}>Contact</th>
-                      <th style={{ padding: "15px", fontWeight: "600", color: "#2c3e50", textAlign: "center" }}>Email</th>
-                      <th style={{ padding: "15px", fontWeight: "600", color: "#2c3e50", textAlign: "center" }}>Message</th>
-                      {filterStatus === "Contacted" && (
-                        <th style={{ padding: "15px", fontWeight: "600", color: "#2c3e50", textAlign: "center" }}>Reply Content</th>
-                      )}
-                      <th style={{ padding: "15px", fontWeight: "600", color: "#2c3e50", textAlign: "center" }}>Status</th>
-                      <th style={{ padding: "15px", fontWeight: "600", color: "#2c3e50", textAlign: "center" }}>Date</th>
-                      <th style={{ padding: "15px", fontWeight: "600", color: "#2c3e50", textAlign: "center" }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredEnquiries.map((item, index) => (
-                      <tr
-                        key={item._id}
-                        style={{
-                          borderBottom: "1px solid #e8e8e8",
-                          transition: "all 0.3s ease",
-                        }}
-                        onMouseEnter={(e) =>
-                          (e.currentTarget.style.backgroundColor = "#f5f7fa")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.currentTarget.style.backgroundColor = "transparent")
-                        }
-                      >
-                        <td style={{ padding: "15px", fontSize: "14px", textAlign: "center" }}>
-                          <span style={{ backgroundColor: "#f0f0f0", padding: "4px 8px", borderRadius: "4px" }}>
-                            {index + 1}
-                          </span>
-                        </td>
-
-                        <td style={{ padding: "15px", fontSize: "14px", fontWeight: "500", textAlign: "center" }}>
-                          {item.name}
-                        </td>
-
-                        <td style={{ padding: "15px", fontSize: "14px", textAlign: "center" }}>
-                          <a href={`tel:${item.phone}`} style={{ color: "#667eea", textDecoration: "none" }}>
-                            {item.phone}
-                          </a>
-                        </td>
-
-                        <td style={{ padding: "15px", fontSize: "14px", textAlign: "center" }}>
-                          <a href={`mailto:${item.email}`} style={{ color: "#667eea", textDecoration: "none" }}>
-                            {item.email || "-"}
-                          </a>
-                        </td>
-
-                        <td style={{ padding: "15px", fontSize: "14px", textAlign: "center" }}>
-                          <div style={{ maxWidth: "200px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", margin: "0 auto" }} title={item.message}>
-                            {item.message}
-                          </div>
-                        </td>
-
-                        {filterStatus === "Contacted" && (
-                          <td style={{ padding: "15px", fontSize: "14px", textAlign: "center" }}>
-                            <div style={{ maxWidth: "200px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", margin: "0 auto", color: "#084298" }} title={item.replyMessage}>
-                              {item.replyMessage || "-"}
-                            </div>
-                          </td>
-                        )}
-
-                        <td style={{ padding: "15px", textAlign: "center" }}>
-                          <span
-                            style={{
-                              backgroundColor:
-                                item.status === "Closed"
-                                  ? "#d4edda"
-                                  : item.status === "Contacted"
-                                  ? "#cfe2ff"
-                                  : "#fff3cd",
-                              color:
-                                item.status === "Closed"
-                                  ? "#155724"
-                                  : item.status === "Contacted"
-                                  ? "#084298"
-                                  : "#856404",
-                              padding: "6px 12px",
-                              borderRadius: "20px",
-                              fontSize: "12px",
-                              fontWeight: "600",
-                              display: "inline-block",
-                            }}
-                          >
-                            {item.status === "Closed"
-                              ? "✅ Closed"
-                              : item.status === "Contacted"
-                              ? "📞 Contacted"
-                              : "🆕 New"}
-                          </span>
-                        </td>
-
-                        <td style={{ padding: "15px", fontSize: "13px", color: "#666", textAlign: "center" }}>
-                          {new Date(item.createdAt).toLocaleDateString()}
-                        </td>
-
-                        <td style={{ padding: "15px", textAlign: "center", position: "relative" }}>
-                          <div className="dropdown" style={{ display: "inline-block" }}>
-                            <button
-                              className="btn btn-light btn-sm rounded-circle"
-                              data-bs-toggle="dropdown"
-                              style={{
-                                width: "40px",
-                                height: "40px",
-                                padding: "0",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontSize: "20px",
-                                border: "1px solid #e0e0e0",
-                                backgroundColor: "#f5f5f5",
-                                cursor: "pointer",
-                              }}
-                              title="More actions"
-                            >
-                              ⋯
-                            </button>
-
-                          <ul 
-  className="dropdown-menu dropdown-menu-end"
-  style={{ 
-    borderRadius: "8px",
-    border: "1px solid #e0e0e0",
-    minWidth: "160px",
-    padding: "6px 0",
-    backgroundColor: "#fff",
-    zIndex: 9999,   // 🔥 IMPORTANT
-  }}
->
-                              {/* VIEW MESSAGE */}
-                              <li>
-                                <button
-                                  onClick={() => handleViewMessage(item)}
-                                  style={{
-                                    padding: "8px 12px",
-                                    fontSize: "14px",
-                                    fontWeight: "500",
-                                    cursor: "pointer",
-                                    border: "none",
-                                    background: "transparent",
-                                    width: "100%",
-                                    textAlign: "left",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "8px",
-                                    color: "#333",
-                                    transition: "all 0.2s ease",
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.backgroundColor = "#f5f8ff";
-                                    e.currentTarget.style.color = "#4facfe";
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.backgroundColor = "transparent";
-                                    e.currentTarget.style.color = "#333";
-                                  }}
-                                >
-                                  <span style={{ fontSize: "16px", width: "20px", textAlign: "center" }}>👁️</span>
-                                  <span>View Message</span>
-                                </button>
-                              </li>
-
-                              {/* UPDATE STATUS */}
-                              <li>
-                                <button
-                                  data-bs-toggle="modal"
-                                  data-bs-target="#enquiryModal"
-                                  onClick={() => handleOpenModal(item)}
-                                  style={{
-                                    padding: "8px 12px",
-                                    fontSize: "14px",
-                                    fontWeight: "500",
-                                    cursor: "pointer",
-                                    border: "none",
-                                    background: "transparent",
-                                    width: "100%",
-                                    textAlign: "left",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "8px",
-                                    color: "#333",
-                                    transition: "all 0.2s ease",
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.backgroundColor = "#fff5f0";
-                                    e.currentTarget.style.color = "#f5576c";
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.backgroundColor = "transparent";
-                                    e.currentTarget.style.color = "#333";
-                                  }}
-                                >
-                                  <span style={{ fontSize: "16px", width: "20px", textAlign: "center" }}>✏️</span>
-                                  <span>Edit Status</span>
-                                </button>
-                              </li>
-
-                              {/* DIVIDER */}
-                              <li style={{ margin: "8px 0", borderTop: "1px solid #f0f0f0" }}></li>
-
-                              {/* DELETE */}
-                              <li>
-                                <button
-                                  onClick={() => handleDelete(item._id)}
-                                  style={{
-                                    padding: "8px 12px",
-                                    fontSize: "14px",
-                                    fontWeight: "500",
-                                    cursor: "pointer",
-                                    border: "none",
-                                    background: "transparent",
-                                    width: "100%",
-                                    textAlign: "left",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "8px",
-                                    color: "#ff6b6b",
-                                    transition: "all 0.2s ease",
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.backgroundColor = "#ffe5e5";
-                                    e.currentTarget.style.color = "#ff4757";
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.backgroundColor = "transparent";
-                                    e.currentTarget.style.color = "#ff6b6b";
-                                  }}
-                                >
-                                  <span style={{ fontSize: "16px", width: "20px", textAlign: "center" }}>🗑️</span>
-                                  <span>Delete</span>
-                                </button>
-                              </li>
-                            </ul>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div
-                style={{
-                  textAlign: "center",
-                  padding: "60px 20px",
-                  color: "#999",
-                }}
-              >
-                <div style={{ fontSize: "50px", marginBottom: "15px" }}>📭</div>
-                <h5 className="fw-bold mb-2">No Enquiries Found</h5>
-                <p>
-                  {searchTerm || filterStatus !== "All"
-                    ? "Try adjusting your search or filter criteria"
-                    : "No enquiries at this moment"}
-                </p>
-              </div>
-            )}
+          <div className="card-body p-0 table-responsive" style={{ minHeight: "350px", overflow: "visible" }}>
+            <DataTable
+              columns={columns}
+              data={filteredEnquiries}
+              pagination
+              paginationRowsPerPageOptions={[5, 10, 15, 20]}
+              paginationPerPage={5}
+              highlightOnHover
+              customStyles={customStyles}
+              noDataComponent={
+                <div
+                  style={{
+                    textAlign: "center",
+                    padding: "60px 20px",
+                    color: "#999",
+                  }}
+                >
+                  <div style={{ fontSize: "50px", marginBottom: "15px" }}>📭</div>
+                  <h5 className="fw-bold mb-2">No Enquiries Found</h5>
+                  <p>
+                    {searchTerm || filterStatus !== "All"
+                      ? "Try adjusting your search or filter criteria"
+                      : "No enquiries at this moment"}
+                  </p>
+                </div>
+              }
+            />
           </div>
         </div>
 

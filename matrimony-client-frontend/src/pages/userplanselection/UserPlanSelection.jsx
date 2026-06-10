@@ -374,8 +374,8 @@ const UserPlanSelection = () => {
                   <h2 style={{ fontSize: "2rem", color: "#333", marginBottom: "15px" }}>Login to View Premium Plans</h2>
                   <p style={{ fontSize: "1.1rem", color: "#666", marginBottom: "30px" }}>Create an account or login to unlock our exclusive membership plans and find your perfect match.</p>
                   <div style={{ display: "flex", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
-                    <button onClick={() => navigate('/user/user-login')} style={{ padding: "12px 35px", fontSize: "1.1rem", borderRadius: "50px", border: "2px solid #a020f0", background: "transparent", color: "#a020f0", cursor: "pointer", fontWeight: "600" }}>Login</button>
-                    <button onClick={() => navigate('/user/user-sign-up')} style={{ padding: "12px 35px", fontSize: "1.1rem", borderRadius: "50px", background: "#a020f0", color: "#fff", border: "2px solid #a020f0", cursor: "pointer", fontWeight: "600" }}>Register Now</button>
+                    <button onClick={() => navigate('/user/user-login')} style={{ padding: "12px 35px", fontSize: "1.1rem", borderRadius: "50px", border: "2px solid #7c3aed", background: "transparent", color: "#7c3aed", cursor: "pointer", fontWeight: "600" }}>Login</button>
+                    <button onClick={() => navigate('/user/user-sign-up')} style={{ padding: "12px 35px", fontSize: "1.1rem", borderRadius: "50px", background: "#7c3aed", color: "#fff", border: "2px solid #7c3aed", cursor: "pointer", fontWeight: "600" }}>Register Now</button>
                   </div>
                 </div>
               ) : (

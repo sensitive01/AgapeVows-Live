@@ -285,7 +285,7 @@ const TopHeader = () => {
                   </button>
                   <button
                     onClick={() => handleNavigate("/user/user-login")}
-                    className="bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors"
+                    className="bg-[#7c3aed] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#6d28d9] transition-colors"
                   >
                     LOGIN
                   </button>
@@ -399,7 +399,7 @@ const TopHeader = () => {
                           handleNavigate("/user/user-login");
                           setIsMobileMenuOpen(false);
                         }}
-                        className="w-full bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors"
+                        className="w-full bg-[#7c3aed] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#6d28d9] transition-colors"
                       >
                         LOGIN
                       </button>

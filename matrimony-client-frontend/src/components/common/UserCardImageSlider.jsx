@@ -117,14 +117,14 @@ const UserCardImageSlider = ({ user, height = "220px", blur = false, onImageClic
             style={{
               color: "rgba(255, 255, 255, 0.45)",
               fontFamily: "'Outfit', 'Inter', sans-serif",
-              fontSize: "12px",
+              fontSize: "14px",
               fontWeight: "600",
               letterSpacing: "3px",
               whiteSpace: "nowrap",
               textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
               writingMode: "vertical-rl",
               transform: "rotate(180deg)",
-              opacity: blur ? 0 : 1, // Hide watermark if blurred
+              opacity: blur ? 0 : 1,
               transition: "opacity 0.3s ease"
             }}
           >
@@ -246,7 +246,7 @@ const UserCardImageSlider = ({ user, height = "220px", blur = false, onImageClic
                 style={{
                   color: "rgba(255, 255, 255, 0.45)",
                   fontFamily: "'Outfit', 'Inter', sans-serif",
-                  fontSize: "18px",
+                  fontSize: "30px",
                   fontWeight: "600",
                   letterSpacing: "4px",
                   whiteSpace: "nowrap",

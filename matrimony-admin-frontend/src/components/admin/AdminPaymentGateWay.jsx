@@ -1,7 +1,82 @@
 import React from "react";
 import NewLayout from "./layout/NewLayout";
+import DataTable from "react-data-table-component";
 
 const AdminPaymentGateWay = () => {
+  const columns = [
+    { name: "No", selector: row => row.no, sortable: true, width: "60px" },
+    {
+      name: "Plan name",
+      selector: row => row.planName,
+      sortable: true,
+      cell: row => <span className="hig-blu text-primary fw-bold">{row.planName}</span>
+    },
+    {
+      name: "Price",
+      selector: row => row.price,
+      sortable: true,
+      cell: row => <span className="hig-red text-danger fw-bold">{row.price}</span>
+    },
+    {
+      name: "Status",
+      selector: row => row.status,
+      sortable: true,
+      cell: row => <span className="hig-grn text-success fw-bold">{row.status}</span>
+    },
+    {
+      name: "More",
+      cell: (row, index) => (
+        <div className={`dropdown ${index >= 5 ? "dropup" : ""}`}>
+          <button
+            type="button"
+            className="btn btn-outline-secondary btn-sm"
+            data-bs-toggle="dropdown"
+          >
+            <i className="fa fa-ellipsis-h" aria-hidden="true"></i>
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <a
+                className="dropdown-item"
+                href="#"
+                data-bs-toggle="modal"
+                data-bs-target="#pricing"
+              >
+                Edit
+              </a>
+            </li>
+          </ul>
+        </div>
+      )
+    }
+  ];
+
+  const data = [
+    { id: 1, no: 1, planName: "Free", price: "$0", status: "Active" },
+    { id: 2, no: 2, planName: "Gold", price: "$349", status: "Active" },
+    { id: 3, no: 3, planName: "Platinum", price: "$549", status: "Active" }
+  ];
+
+  const customStyles = {
+    headCells: {
+      style: {
+        fontWeight: "600",
+        fontSize: "13px",
+        textTransform: "uppercase",
+        letterSpacing: "0.5px",
+        color: "#6c757d",
+        backgroundColor: "#f8f9fa",
+        padding: "15px",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "14px",
+        padding: "15px",
+      },
+    },
+  };
+
   return (
     <NewLayout>
       <div className="pan-rhs">
@@ -33,133 +108,17 @@ const AdminPaymentGateWay = () => {
               <div className="tit">
                 <h3>All pricing plans</h3>
               </div>
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Plan name</th>
-                    <th>price</th>
-                    <th>Status</th>
-                    <th>More</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>
-                      <span className="hig-blu">Free</span>
-                    </td>
-                    <td>
-                      <span className="hig-red">$0</span>
-                    </td>
-                    <td>
-                      <span className="hig-grn">Active</span>
-                    </td>
-                    <td>
-                      <div className="dropdown">
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          data-bs-toggle="dropdown"
-                        >
-                          <i
-                            className="fa fa-ellipsis-h"
-                            aria-hidden="true"
-                          ></i>
-                        </button>
-                        <ul className="dropdown-menu">
-                          <li>
-                            <a
-                              className="dropdown-item"
-                              href="#"
-                              data-bs-toggle="modal"
-                              data-bs-target="#pricing"
-                            >
-                              Edit
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td>
-                      <span className="hig-blu">Gold</span>
-                    </td>
-                    <td>
-                      <span className="hig-red">$349</span>
-                    </td>
-                    <td>
-                      <span className="hig-grn">Active</span>
-                    </td>
-                    <td>
-                      <div className="dropdown">
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          data-bs-toggle="dropdown"
-                        >
-                          <i
-                            className="fa fa-ellipsis-h"
-                            aria-hidden="true"
-                          ></i>
-                        </button>
-                        <ul className="dropdown-menu">
-                          <li>
-                            <a
-                              className="dropdown-item"
-                              href="#"
-                              data-bs-toggle="modal"
-                              data-bs-target="#pricing"
-                            >
-                              Edit
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td>
-                      <span className="hig-blu">Platinum</span>
-                    </td>
-                    <td>
-                      <span className="hig-red">$549</span>
-                    </td>
-                    <td>
-                      <span className="hig-grn">Active</span>
-                    </td>
-                    <td>
-                      <div className="dropdown">
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          data-bs-toggle="dropdown"
-                        >
-                          <i
-                            className="fa fa-ellipsis-h"
-                            aria-hidden="true"
-                          ></i>
-                        </button>
-                        <ul className="dropdown-menu">
-                          <li>
-                            <a
-                              className="dropdown-item"
-                              href="#"
-                              data-bs-toggle="modal"
-                              data-bs-target="#pricing"
-                            >
-                              Edit
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="table-responsive">
+                <DataTable
+                  columns={columns}
+                  data={data}
+                  pagination
+                  paginationRowsPerPageOptions={[5, 10, 15, 20]}
+                  paginationPerPage={5}
+                  highlightOnHover
+                  customStyles={customStyles}
+                />
+              </div>
             </div>
           </div>
         </div>

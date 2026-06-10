@@ -86,7 +86,7 @@
 .hero-badge {
     display: inline-flex;
     align-items: center;
-    background: #2b124c;
+    background: #4a2580;
     padding: 8px 16px;
     border-radius: 50px;
     font-size: 14px;
@@ -191,7 +191,7 @@
 .hero-form-block {
     flex: 0 0 380px;
     margin-right: 45px;
-    animation: fadeInRight 1s ease;  
+    animation: fadeInRight 1s ease;
 }
 
 @media (max-width: 1024px) {
@@ -257,7 +257,7 @@
     font-size: 15px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .gender-toggle-btn.active {

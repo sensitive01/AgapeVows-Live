@@ -120,7 +120,7 @@ const WhoViewedYou = () => {
                 <div
                   style={{
                     position: "absolute",
-                    right: "8px",
+                    right: "15px",
                     top: "15px",
                     bottom: 0,
                     display: "flex",
@@ -133,11 +133,11 @@ const WhoViewedYou = () => {
                 >
                   <span
                     style={{
-                      color: "rgba(255, 255, 255, 0.45)",
+                      color: "rgba(255, 255, 255, 0.7)",
                       fontFamily: "'Outfit', 'Inter', sans-serif",
-                      fontSize: "8px",
-                      fontWeight: "600",
-                      letterSpacing: "1px",
+                      fontSize: "7px",
+                      fontWeight: "900",
+                      letterSpacing: "2px",
                       whiteSpace: "nowrap",
                       textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
                       writingMode: "vertical-rl",

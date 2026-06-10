@@ -706,7 +706,7 @@ img {
   z-index: 5;
 }
 .users-cir-thum-hori,
-. lead-cir-thum-hori {
+.lead-cir-thum-hori {
   padding: 5px 0 0 15px;
 }
 .users-cir-thum-hori span,
@@ -2162,4 +2162,26 @@ a.ui-button:active,
   }
 }
 @media screen and (max-width: 1450px) {
+}
+
+/* Fix for React Data Table Component dropdown clipping */
+.table-responsive,
+.rdt_TableWrapper,
+.rdt_Table,
+.rdt_TableBody,
+.rdt_TableRow,
+.rdt_TableCell {
+  overflow: visible !important;
+}
+
+.rdt_TableWrapper {
+  z-index: 10 !important;
+  position: relative !important;
+  min-height: 300px !important;
+}
+
+.table-responsive {
+  min-height: 250px !important;
+  position: relative !important;
+  z-index: 9 !important;
 }

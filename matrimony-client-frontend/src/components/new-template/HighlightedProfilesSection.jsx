@@ -382,10 +382,10 @@ const HighlightedProfilesSection = () => {
                       >
                         <span
                           style={{
-                            color: "rgba(255, 255, 255, 0.45)",
+                            color: "rgba(255, 255, 255, 0.45)",// 0.45 - 0.7
                             fontFamily: "'Outfit', 'Inter', sans-serif",
-                            fontSize: "14px",
-                            fontWeight: "600",
+                            fontSize: "26px",
+                            fontWeight: "900",
                             letterSpacing: "3px",
                             whiteSpace: "nowrap",
                             textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",

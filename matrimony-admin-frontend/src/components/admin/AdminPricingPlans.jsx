@@ -220,13 +220,13 @@ const AdminPricingPlans = () => {
     } else {
       display = "N/A";
     }
-    
+
     if (dailyLimit && dailyLimit !== "unlimited" && dailyLimit !== "Unlimited") {
       display += ` (${dailyLimit}/day max)`;
     } else if (dailyLimit === "unlimited" || dailyLimit === "Unlimited") {
       display += " (Unlimited daily)";
     }
-    
+
     return display;
   };
 
@@ -347,7 +347,7 @@ const AdminPricingPlans = () => {
                     Plan
                   </button>
                 </div>
-                
+
                 <div style={{ borderBottom: "1px solid #dee2e6", marginBottom: "15px", marginTop: "10px" }}>
                   <button
                     onClick={() => setActiveTab("Active")}
@@ -430,9 +430,8 @@ const AdminPricingPlans = () => {
                           </td>
                           <td className="border-0 ">
                             <span
-                              className={`badge text-white ${
-                                plan.status === "Active" ? "bg-success" : "bg-danger"
-                              }`}
+                              className={`badge text-white ${plan.status === "Active" ? "bg-success" : "bg-danger"
+                                }`}
                             >
                               {plan.status}
                             </span>
@@ -450,11 +449,11 @@ const AdminPricingPlans = () => {
                                 <i className="fa fa-ellipsis-h" aria-hidden="true"></i>
                               </button>
                               {openDropdown === plan._id && (
-                                <ul 
+                                <ul
                                   className="dropdown-menu show position-absolute"
-                                  style={{ 
-                                    display: 'block', 
-                                    top: '100%', 
+                                  style={{
+                                    display: 'block',
+                                    top: '100%',
                                     left: 'auto',
                                     right: '0',
                                     zIndex: 1000,
@@ -550,7 +549,7 @@ const AdminPricingPlans = () => {
                             }
                           >
                             <option value="">Select Plan</option>
-                           
+
                             <option value="Basic">Basic</option>
                             <option value="Premium">Premium</option>
                             <option value="Platinum">Platinum</option>
@@ -873,8 +872,8 @@ const AdminPricingPlans = () => {
                     {loading
                       ? "Saving..."
                       : modalMode === "add"
-                      ? "Add Plan"
-                      : "Update Plan"}
+                        ? "Add Plan"
+                        : "Update Plan"}
                   </button>
                 </div>
               </div>

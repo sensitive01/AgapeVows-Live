@@ -706,7 +706,7 @@ img {
   z-index: 5;
 }
 .users-cir-thum-hori,
-. lead-cir-thum-hori {
+.lead-cir-thum-hori {
   padding: 5px 0 0 15px;
 }
 .users-cir-thum-hori span,
@@ -2161,5 +2161,221 @@ a.ui-button:active,
     width: calc(100% - 250px);
   }
 }
+.pass-view {
+  position: absolute;
+  right: 18px;
+  bottom: 11px;
+  cursor: pointer;
+}
+/*-------------------------------------------------------*/
+/* LOGIN, REGISTER PAGE
+/*-------------------------------------------------------*/
+.login {
+  padding: 80px 0px 85px 0px;
+  background: rgb(237 237 237);
+  overflow-x: hidden !important;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.login .inn {
+  background: rgb(255, 255, 255);
+  position: relative;
+  margin: 0px auto;
+  display: table;
+  box-shadow: rgb(51, 51, 51) 0px 1px 19px -17px;
+  border-radius: 10px;
+  width: 450px;
+  padding: 0;
+}
+
+.login .lhs {
+  float: left;
+  width: 40%;
+  background: linear-gradient(
+    45deg,
+    rgb(242, 209, 132),
+    rgb(255, 238, 178) 80%
+  );
+  padding: 45px;
+  position: absolute;
+  height: 100%;
+  border-radius: 10px 0px 0px 10px;
+  overflow: hidden;
+}
+
+.login .lhs .tit {
+  padding: 0px 0px 30px;
+}
+
+.login .lhs .tit img {
+  width: 200px;
+  margin-bottom: 10px;
+}
+
+.login .lhs .tit h2 {
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 52px;
+  color: #66451c;
+}
+
+.login .lhs .tit h2 b {
+  font-weight: 800;
+  display: block;
+  font-size: 62px;
+  font-family: var(--tit-font);
+  line-height: 66px;
+  margin: 10px 0;
+}
+
+.login .lhs .im {
+  float: left;
+  width: 100%;
+}
+
+.login .lhs .im img {
+  width: 90%;
+  float: left;
+  border-radius: 5px;
+}
+
+.login .lhs .log-bg {
+  width: 100%;
+  height: 77px;
+  background: url("../images/login-bg.html") center bottom / 300px;
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  transition: all 0.5s ease-in-out 0s;
+  animation: 800s linear 0s infinite normal both running movehor;
+  border-radius: 0px 0px 10px 10px;
+  background-repeat-y: no-repeat;
+}
+
+@keyframes movehor {
+  0% {
+    background-position: 0px -18px;
+  }
+
+  100% {
+    background-position: -10000% -18px;
+  }
+}
+
+.login .lhs .log-bg img {
+}
+
+.login .rhs {
+  float: left;
+  width: 100%;
+  padding: 50px 55px;
+  /* margin-left: 40%; */
+}
+
+.login .rhs .inn {
+  box-shadow: none;
+}
+.log-bot {
+  border-radius: 0 0 8px 8px;
+  padding: 15px 0;
+  float: left;
+  width: 100%;
+  text-align: left;
+  border-top: 1px solid #dee2e6;
+  margin-top: 25px;
+}
+.log-bot ul {
+  /* margin:0 auto; */ /* display:table; */
+}
+.log-bot ul li {
+  float: left;
+  padding: 0 8px;
+}
+.log-bot ul li span {
+  color: #333333;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.pro-edit-update {
+}
+.pro-edit-update .rhs {
+  width: 100%;
+  margin: 0;
+}
+.pass-view i {
+}
+.ud-notes {
+  background: #ebf8ff;
+  border: 1px solid #c5ddea;
+  padding: 25px;
+  margin-top: 40px;
+  float: left;
+  width: 100%;
+  border-radius: 5px;
+}
+.ud-notes p {
+  font-size: 12px;
+  line-height: 24px;
+  margin: 0;
+  color: #25688c;
+}
+.ud-notes ul {
+  margin-top: 15px;
+}
+.ud-notes ul li {
+  font-size: 12px;
+  line-height: 24px;
+  color: #25688c;
+  padding-left: 20px;
+}
+.ud-notes ul li:before {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50px;
+  background: #25688c;
+  margin: 8px 0 0 -15px;
+}
+@media screen and (max-width: 1500px) {
+  .pan-lhs {
+    padding: 0 10px 0 20px;
+    width: 250px;
+  }
+  .ad-menu-main {
+  }
+  .pan-rhs {
+    width: calc(100% - 250px);
+  }
+}
 @media screen and (max-width: 1450px) {
+}
+
+/* Fix for React Data Table Component dropdown clipping */
+.table-responsive,
+.rdt_TableWrapper,
+.rdt_Table,
+.rdt_TableBody,
+.rdt_TableRow,
+.rdt_TableCell {
+  overflow: visible !important;
+}
+
+.rdt_TableWrapper {
+  z-index: 10 !important;
+  position: relative !important;
+}
+
+.table-responsive {
+  min-height: 250px !important;
+  position: relative !important;
+  z-index: 9 !important;
 }

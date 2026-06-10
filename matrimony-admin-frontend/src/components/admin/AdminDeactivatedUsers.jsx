@@ -4,14 +4,13 @@ import { getDeactivatedUsers, restoreUserById } from "../../api/service/adminSer
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { confirmAction, showAlert } from "../../utils/alertService";
+import DataTable from "react-data-table-component";
 
 const AdminDeactivatedUsers = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
@@ -35,13 +34,12 @@ const AdminDeactivatedUsers = () => {
 
   useEffect(() => {
     const filtered = users.filter((user) =>
-      user.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.userEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.userMobile?.includes(searchTerm)
     );
 
     setFilteredUsers(filtered);
-    setCurrentPage(1);
   }, [searchTerm, users]);
 
   const handleRestore = async (id) => {
@@ -103,114 +101,128 @@ const AdminDeactivatedUsers = () => {
   const getInitials = (name) =>
     name.split(" ").map((n) => n[0]).join("").toUpperCase();
 
-  // Pagination
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredUsers?.slice(indexOfFirstItem, indexOfLastItem) || [];
-  const totalPages = Math.ceil((filteredUsers?.length || 0) / itemsPerPage);
-
-  const Pagination = () => {
-    const pageNumbers = [];
-    const maxVisiblePages = 5;
-
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(i);
-    }
-
-    return (
-      <nav
-        aria-label="Page navigation"
-        className="d-flex justify-content-center mt-4"
-      >
-        <ul className="pagination">
-          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-            <button
-              className="page-link"
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
+  const columns = [
+    {
+      name: "S.NO",
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: "80px",
+      center: true,
+    },
+    {
+      name: "PROFILE",
+      selector: row => row.userName,
+      sortable: true,
+      minWidth: "280px",
+      cell: row => (
+        <div className="d-flex align-items-center py-2">
+          {row.profileImage ? (
+            <img
+              src={row.profileImage}
+              alt={row.userName}
+              className="rounded-circle me-3"
+              style={{ width: "40px", height: "40px", objectFit: "cover" }}
+              onError={(e) => {
+                e.target.style.display = "none";
+                e.target.nextSibling.style.display = "flex";
+              }}
+            />
+          ) : (
+            <div
+              className="rounded-circle bg-warning text-white d-flex align-items-center justify-content-center me-3"
+              style={{ width: "40px", height: "40px", fontSize: "14px", fontWeight: "bold" }}
             >
-              Previous
-            </button>
-          </li>
-
-          {startPage > 1 && (
-            <>
-              <li className="page-item">
-                <button className="page-link" onClick={() => setCurrentPage(1)}>
-                  1
-                </button>
-              </li>
-              {startPage > 2 && (
-                <li className="page-item disabled">
-                  <span className="page-link">...</span>
-                </li>
-              )}
-            </>
+              {getInitials(row.userName)}
+            </div>
           )}
-
-          {pageNumbers.map((number) => (
-            <li
-              key={number}
-              className={`page-item ${currentPage === number ? "active" : ""}`}
-            >
-              <button
-                className="page-link"
-                onClick={() => setCurrentPage(number)}
-                style={
-                  currentPage === number
-                    ? {
-                        backgroundColor: "#1a73e8",
-                        borderColor: "#1a73e8",
-                        color: "white",
-                      }
-                    : { color: "#1a73e8" }
-                }
-              >
-                {number}
-              </button>
-            </li>
-          ))}
-
-          {endPage < totalPages && (
-            <>
-              {endPage < totalPages - 1 && (
-                <li className="page-item disabled">
-                  <span className="page-link">...</span>
-                </li>
-              )}
-              <li className="page-item">
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(totalPages)}
-                >
-                  {totalPages}
-                </button>
-              </li>
-            </>
-          )}
-
-          <li
-            className={`page-item ${currentPage === totalPages ? "disabled" : ""
-              }`}
+          <div style={{ minWidth: 0 }}>
+            <h6 className="mb-0 fw-bold text-truncate" style={{ maxWidth: '250px' }}>{row.userName}</h6>
+            <small className="text-muted text-truncate d-block" style={{ maxWidth: '250px' }}>{row.userEmail}</small>
+            <div className="d-md-none">
+              <small className="text-muted d-block text-truncate" style={{ maxWidth: '250px' }}>{row.userMobile}</small>
+              <small className="text-muted d-lg-none text-truncate" style={{ maxWidth: '250px' }}>{row.city}</small>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      name: "AV ID",width:"110px",
+      selector: row => row.agwid || "N/A",
+      sortable: true,
+      cell: row => <span className="fw-bold text-primary">{row.agwid || "N/A"}</span>,
+      center: true,
+    },
+    {
+      name: "CREATED AT",width:"150px",
+      selector: row => row.createdAt ? new Date(row.createdAt).getTime() : 0,
+      sortable: true,
+      format: row => row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "N/A",
+      center: true,
+    },
+    {
+      name: "REASON", minWidth:"250px",
+      selector: row => row.deactivationReason || "No reason provided",
+      sortable: true,
+      cell: row => (
+        <div style={{ whiteSpace: "normal", wordBreak: "break-word", margin: "10px 0" }}>
+          {row.deactivationReason || "No reason provided"}
+        </div>
+      )
+    },
+    {
+      name: "DEACTIVATED ON", width: "150px",
+      selector: row => row.deactivatedAt ? new Date(row.deactivatedAt).getTime() : 0,
+      sortable: true,
+      format: row => row.deactivatedAt ? new Date(row.deactivatedAt).toLocaleDateString() : "N/A",
+    },
+    {
+      name: "ACTION", width: "220px",
+      cell: row => (
+        <div className="d-flex gap-2">
+          <button
+            className="btn btn-info btn-sm shadow-sm text-white fw-semibold"
+            style={{ borderRadius: "20px" }}
+            onClick={() => {
+              setSelectedUser(row);
+              setShowModal(true);
+            }}
           >
-            <button
-              className="page-link"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </li>
-        </ul>
-      </nav>
-    );
+            <i className="fa fa-eye me-1 text-white"></i>
+            View
+          </button>
+          <button
+            className="btn btn-success btn-sm shadow-sm text-white fw-semibold"
+            style={{ borderRadius: "20px" }}
+            onClick={() => handleRestore(row._id)}
+          >
+            <i className="fa fa-undo me-1 text-white"></i>
+            Reactivate
+          </button>
+        </div>
+      ),
+      ignoreRowClick: true,
+    }
+  ];
+
+  const customStyles = {
+    headCells: {
+      style: {
+        fontWeight: "600",
+        fontSize: "13px",
+        textTransform: "uppercase",
+        letterSpacing: "0.5px",
+        color: "#6c757d",
+        backgroundColor: "#f8f9fa",
+        padding: "15px",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "14px",
+        padding: "15px",
+      },
+    },
   };
 
   return (
@@ -251,106 +263,23 @@ const AdminDeactivatedUsers = () => {
                 <div className="spinner-border" role="status"></div>
               </div>
             ) : (
-              <div className="table-responsive" style={{ height: "70vh", overflowY: "auto" }}>
-                <table className="table table-hover">
-                  <thead>
-                    <tr>
-                      <th className="text-center">S.NO</th>
-                      <th>PROFILE</th>
-                      <th className="text-center">AV ID</th>
-                      <th className="text-center">CREATED AT</th>
-                      <th className="text-center">REASON</th>
-                      <th className="text-center">DEACTIVATED ON</th>
-                      <th className="text-center">ACTION</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentItems.length > 0 ? (
-                      currentItems.map((user, index) => {
-                        const serialNumber = indexOfFirstItem + index + 1;
-                        return (
-                          <tr key={user._id}>
-                            <td className="text-center align-middle">{serialNumber}</td>
-                            <td className="align-middle">
-                              <div className="d-flex align-items-center">
-                                {user.profileImage ? (
-                                  <img
-                                    src={user.profileImage}
-                                    alt={user.userName}
-                                    className="rounded-circle me-3"
-                                    style={{ width: 40, height: 40, objectFit: "cover" }}
-                                  />
-                                ) : (
-                                  <div
-                                    className="rounded-circle bg-warning text-white d-flex align-items-center justify-content-center me-3"
-                                    style={{ width: 40, height: 40 }}
-                                  >
-                                    {getInitials(user.userName)}
-                                  </div>
-                                )}
-                                <div>
-                                  <h6 className="mb-0 fw-bold">
-                                    {user.userName}
-                                  </h6>
-                                  <small className="text-muted">
-                                    {user.userEmail}
-                                  </small>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="text-center align-middle">
-                              <span className="fw-bold text-primary">{user.agwid || "N/A"}</span>
-                            </td>
-                            <td className="text-center align-middle">
-                              {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}
-                            </td>
-                            <td className="text-center align-middle">
-                              <div style={{ maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={user.deactivationReason}>
-                                {user.deactivationReason || "No reason provided"}
-                              </div>
-                            </td>
-                            <td className="text-center align-middle">
-                              {user.deactivatedAt ? new Date(user.deactivatedAt).toLocaleDateString() : "N/A"}
-                            </td>
-                            <td className="text-center align-middle">
-                                <button
-                                  className="btn btn-info btn-sm me-2 shadow-sm text-white fw-semibold"
-                                  style={{ minWidth: "80px", borderRadius: "20px" }}
-                                  onClick={() => {
-                                    setSelectedUser(user);
-                                    setShowModal(true);
-                                  }}
-                                >
-                                  <i className="fa fa-eye me-1 text-white"></i>
-                                  View
-                                </button>
-                                <button
-                                  className="btn btn-success btn-sm shadow-sm text-white fw-semibold"
-                                  style={{ minWidth: "100px", borderRadius: "20px" }}
-                                  onClick={() => handleRestore(user._id)}
-                                >
-                                  <i className="fa fa-undo me-1 text-white"></i>
-                                  Reactivate
-                                </button>
-                              </td>
-                          </tr>
-                        );
-                      })
-                    ) : (
-                      <tr>
-                        <td colSpan="5" className="text-center py-5">
-                          No deactivated users found
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+              <div className="table-responsive">
+                <DataTable
+                  columns={columns}
+                  data={filteredUsers}
+                  pagination
+                  paginationRowsPerPageOptions={[5, 10, 15, 20]}
+                  paginationPerPage={5}
+                  highlightOnHover
+                  customStyles={customStyles}
+                  noDataComponent={
+                    <div className="text-center py-5">
+                      <h5 className="text-muted">No deactivated users found</h5>
+                    </div>
+                  }
+                />
               </div>
             )}
-            
-
-            {/* Pagination */}
-            {totalPages > 1 && <Pagination />}
           </div>
         </div>
       </div>

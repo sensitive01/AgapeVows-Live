@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
+import DataTable from "react-data-table-component";
 
 import {
   addNewEvent,
@@ -254,6 +255,112 @@ const AdminEvents = () => {
     }
   });
 
+  const columns = [
+    { name: "S.No", selector: (row, index) => index + 1, sortable: false, width: "70px" },
+    {
+      name: "Event Name", width: "200px",
+      selector: row => row.name,
+      sortable: true,
+      cell: row => (
+        <span className="hig-blu fw-bold">
+          {row.isPinned && (
+            <i className="fa fa-thumb-tack text-danger me-2" title="Pinned Event"></i>
+          )}
+          {row.name}
+        </span>
+      )
+    },
+    {
+      name: "Image", width: "100px",
+      cell: row => (
+        <div className="users-cir-thum-hori">
+          <span>
+            {row.image ? (
+              <img src={row.image} alt={row.name} style={{ width: "40px", height: "40px", objectFit: "cover", borderRadius: "5px" }} />
+            ) : (
+              <div style={{ width: "40px", height: "40px", background: "#eee", borderRadius: "5px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <i className="fa fa-image text-muted"></i>
+              </div>
+            )}
+          </span>
+        </div>
+      )
+    },
+    {
+      name: "Date", width: "150px",
+      selector: row => row.date,
+      sortable: true,
+      cell: row => formatDate(row.date)
+    },
+    {
+      name: "Location", minWidth: "200px",
+      selector: row => row.location,
+      sortable: true,
+      cell: row => (
+        <div style={{ whiteSpace: "normal", wordBreak: "break-word", margin: "10px 0" }}>
+          <div className="fw-bold text-dark">{row.churchName}</div>
+          <small className="text-muted">{row.location} - {row.state}</small>
+        </div>
+      )
+    },
+    {
+      name: "Status", width: "120px",
+      selector: row => row.status,
+      sortable: true,
+      cell: row => (
+        <span className={`badge text-white ${row.status === "Inactive" ? "bg-danger" : new Date(row.date) < new Date() ? "bg-secondary" : "bg-success"}`}>
+          {row.status === "Inactive" ? "Inactive" : new Date(row.date) < new Date() ? "Expired" : "Active"}
+        </span>
+      )
+    },
+    {
+      name: "Actions",
+      cell: (row, index) => (
+        <div className={`dropdown ${index >= 5 ? "dropup" : ""}`}>
+          <button className="btn btn-light rounded-circle" data-bs-toggle="dropdown">&#8230;</button>
+          <ul className="dropdown-menu dropdown-menu-end shadow-sm">
+            <li><button className="dropdown-item" data-bs-toggle="modal" data-bs-target="#eventsModal" onClick={() => handleViewEvent(row)}><i className="fa fa-eye me-2"></i> View Details</button></li>
+            <li><button className="dropdown-item" data-bs-toggle="modal" data-bs-target="#eventsModal" onClick={() => handleEditEvent(row)}><i className="fa fa-edit me-2"></i> Edit</button></li>
+            <li><button className="dropdown-item text-danger" onClick={() => deleteEvent(row._id)}><i className="fa fa-trash me-2"></i> Delete</button></li>
+          </ul>
+        </div>
+      )
+    }
+  ];
+
+  const customStyles = {
+    headCells: {
+      style: {
+        fontWeight: "600",
+        fontSize: "13px",
+        textTransform: "uppercase",
+        letterSpacing: "0.5px",
+        color: "#6c757d",
+        backgroundColor: "#f8f9fa",
+        padding: "15px",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "14px",
+        verticalAlign: "middle",
+        padding: "15px",
+      },
+    },
+    tableWrapper: {
+      style: {
+        minHeight: "300px",
+        overflow: "visible !important",
+      }
+    },
+    table: {
+      style: {
+        overflow: "visible !important",
+      }
+    },
+  };
+
+
   return (
     <>
       <style jsx>{`
@@ -373,188 +480,24 @@ const AdminEvents = () => {
                   </button>
                 </div>
 
-                <div
-                  className="table-responsive"
-                  style={{ height: "60vh", overflowY: "auto" }}
-                >
-                  <table className="table table-hover">
-                    <thead>
-                      <tr>
-                        <th className="border-0">S.NO</th>
-                        <th className="border-0">Event Name</th>
-                        <th className="border-0">Image</th>
-                        <th className="border-0">Date</th>
-                        <th className="border-0">LOCATION</th>
-                        <th className="border-0">STATUS</th>
-                        <th className="border-0 text-center">ACTION</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredEvents.map((event, index) => (
-                        <tr key={event._id}>
-                          <td className="border-0">{index + 1}</td>
-                          <td className="border-0">
-                            <span className="hig-blu fw-bold">
-                              {event.isPinned && (
-                                <i
-                                  className="fa fa-thumb-tack text-danger me-2"
-                                  title="Pinned Event"
-                                ></i>
-                              )}
-                              {event.name}
-                            </span>
-                          </td>
-                          <td className="border-0">
-                            <div className="users-cir-thum-hori">
-                              <span>
-                                {event.image ? (
-                                  <img
-                                    src={event.image}
-                                    alt={event.name}
-                                    style={{
-                                      width: "40px",
-                                      height: "40px",
-                                      objectFit: "cover",
-                                      borderRadius: "5px",
-                                    }}
-                                  />
-                                ) : (
-                                  <div
-                                    style={{
-                                      width: "40px",
-                                      height: "40px",
-                                      background: "#eee",
-                                      borderRadius: "5px",
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "center",
-                                    }}
-                                  >
-                                    <i className="fa fa-image text-muted"></i>
-                                  </div>
-                                )}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="border-0">{formatDate(event.date)}</td>
-                          <td className="border-0">
-                            <div>{event.churchName}</div>
-                            <small className="text-muted">
-                              {event.location} - {event.state}
-                            </small>
-                          </td>
-                          <td className="border-0">
-                            <span
-                              className={`badge text-white ${
-                                event.status === "Inactive"
-                                  ? "bg-danger"
-                                  : new Date(event.date) < new Date()
-                                    ? "bg-secondary"
-                                    : "bg-success"
-                              }`}
-                            >
-                              {event.status === "Inactive"
-                                ? "Inactive"
-                                : new Date(event.date) < new Date()
-                                  ? "Expired"
-                                  : "Active"}
-                            </span>
-                          </td>
-                          <td className="border-0 text-center">
-                            <div className="dropdown position-relative">
-                              <button
-                                type="button"
-                                className="btn btn-outline-secondary btn-sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setOpenDropdown(
-                                    openDropdown === event._id
-                                      ? null
-                                      : event._id,
-                                  );
-                                }}
-                              >
-                                <i
-                                  className="fa fa-ellipsis-h"
-                                  aria-hidden="true"
-                                ></i>
-                              </button>
-                              {openDropdown === event._id && (
-                                <ul
-                                  className="dropdown-menu show position-absolute"
-                                  style={{
-                                    display: "block",
-                                    top: "100%",
-                                    right: "0",
-                                    zIndex: 1000,
-                                    minWidth: "150px",
-                                  }}
-                                >
-                                  <li>
-                                    <a
-                                      className="dropdown-item"
-                                      href="#"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#eventsModal"
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        setOpenDropdown(null);
-                                        handleViewEvent(event);
-                                      }}
-                                    >
-                                      <i className="fa fa-eye me-2"></i>View
-                                      Details
-                                    </a>
-                                  </li>
-                                  <li>
-                                    <a
-                                      className="dropdown-item"
-                                      href="#"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#eventsModal"
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        setOpenDropdown(null);
-                                        handleEditEvent(event);
-                                      }}
-                                    >
-                                      <i className="fa fa-edit me-2"></i>Edit
-                                    </a>
-                                  </li>
-                                  <li>
-                                    <a
-                                      className="dropdown-item text-danger"
-                                      href="#"
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        setOpenDropdown(null);
-                                        deleteEvent(event._id);
-                                      }}
-                                    >
-                                      <i className="fa fa-trash me-2"></i>
-                                      Delete
-                                    </a>
-                                  </li>
-                                </ul>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                      {filteredEvents.length === 0 && (
-                        <tr>
-                          <td colSpan="7" className="text-center py-5 border-0">
-                            <div>
-                              <i className="fa fa-calendar fa-3x text-muted mb-3"></i>
-                              <h5 className="text-muted">
-                                No events found in {activeTab}
-                              </h5>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                <div className="table-responsive">
+                  <DataTable
+                    columns={columns}
+                    data={filteredEvents}
+                    pagination
+                    paginationRowsPerPageOptions={[5, 10, 15, 20]}
+                    paginationPerPage={5}
+                    highlightOnHover
+                    customStyles={customStyles}
+                    noDataComponent={
+                      <div className="text-center py-5">
+                        <i className="fa fa-calendar fa-3x text-muted mb-3"></i>
+                        <h5 className="text-muted">
+                          No events found in {activeTab}
+                        </h5>
+                      </div>
+                    }
+                  />
                 </div>
               </div>
             </div>

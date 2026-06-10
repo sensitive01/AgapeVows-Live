@@ -485,8 +485,8 @@ const UserLoginPage = () => {
                           className="btn"
                           disabled={isLoading}
                           style={{
-                            background: "#A020F0",
-                            borderColor: "#A020F0",
+                            background: "#7c3aed",
+                            borderColor: "#7c3aed",
                             color: "#fff",
                           }}
                         >

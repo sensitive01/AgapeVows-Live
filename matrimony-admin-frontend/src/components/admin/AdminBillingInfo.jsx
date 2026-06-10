@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import NewLayout from "./layout/NewLayout";
+import DataTable from "react-data-table-component";
 import { getUserById, emailUserInvoice } from "../../api/service/adminServices";
 import profImages from "/assets/images/profiles/1.jpg";
 
@@ -84,6 +85,76 @@ const AdminBillingInfo = () => {
     }
   };
 
+  const columns = [
+    {
+      name: "Plan Type",width:"120px",
+      selector: row => row.subscriptionType,
+      sortable: true,
+      cell: row => <span className="fw-bold text-dark">{row.subscriptionType}</span>
+    },
+    {
+      name: "Amount",width:"110px",
+      selector: row => row.subscriptionAmount,
+      sortable: true,
+      cell: row => <span className="fw-bold">₹{row.subscriptionAmount}</span>
+    },
+    {
+      name: "Status",width:"95px",
+      selector: row => row.subscriptionStatus,
+      sortable: true,
+      cell: row => (
+        <span className={`badge ${getStatusBadgeClass(row.subscriptionStatus)} rounded-pill`}>
+          {row.subscriptionStatus}
+        </span>
+      )
+    },
+    {
+      name: "Duration",
+      cell: row => (
+        <div>
+          <small className="d-block text-success fw-semibold">
+            {new Date(row.subscriptionValidFrom).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})}
+          </small>
+          <small className="text-muted">to</small>
+          <small className="d-block text-danger fw-semibold">
+            {new Date(row.subscriptionValidTo).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})}
+          </small>
+        </div>
+      )
+    },
+    {
+      name: "Txn Details",width:"200px",
+      cell: row => (
+        <div>
+          <div className="small text-muted mb-0" style={{maxWidth: "150px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}} title={row.subscriptionTransactionId}>
+            ID: {row.subscriptionTransactionId || 'N/A'}
+          </div>
+          <small className="text-muted d-block">Method: {row.paymentType || 'Online'}</small>
+        </div>
+      )
+    }
+  ];
+
+  const customStyles = {
+    headCells: {
+      style: {
+        fontWeight: "bold",
+        fontSize: "12px",
+        textTransform: "uppercase",
+        color: "#6c757d",
+        backgroundColor: "#f8f9fa",
+        padding: "15px",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "14px",
+        verticalAlign: "middle",
+        padding: "15px",
+      },
+    },
+  };
+
   return (
     <NewLayout>
       <div className="row mb-4">
@@ -165,49 +236,15 @@ const AdminBillingInfo = () => {
                   
                   {user.paymentDetails && user.paymentDetails.length > 0 ? (
                     <div className="table-responsive">
-                      <table className="table border align-middle shadow-sm">
-                        <thead className="bg-light">
-                          <tr>
-                            <th className="border-0 small text-uppercase fw-bold text-muted py-3 px-3">Plan Type</th>
-                            <th className="border-0 small text-uppercase fw-bold text-muted py-3 px-3">Amount</th>
-                            <th className="border-0 small text-uppercase fw-bold text-muted py-3 px-3">Status</th>
-                            <th className="border-0 small text-uppercase fw-bold text-muted py-3 px-3">Duration</th>
-                            <th className="border-0 small text-uppercase fw-bold text-muted py-3 px-3">Txn Details</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {user.paymentDetails.map((payment, index) => (
-                            <tr key={index}>
-                              <td className="py-3 px-3">
-                                <span className="fw-bold text-dark">{payment.subscriptionType}</span>
-                              </td>
-                              <td className="py-3 px-3">
-                                <span className="fw-bold">₹{payment.subscriptionAmount}</span>
-                              </td>
-                              <td className="py-3 px-3">
-                                <span className={`badge ${getStatusBadgeClass(payment.subscriptionStatus)} rounded-pill`}>
-                                  {payment.subscriptionStatus}
-                                </span>
-                              </td>
-                              <td className="py-3 px-3">
-                                <small className="d-block text-success fw-semibold">
-                                  {new Date(payment.subscriptionValidFrom).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})}
-                                </small>
-                                <small className="text-muted">to</small>
-                                <small className="d-block text-danger fw-semibold">
-                                  {new Date(payment.subscriptionValidTo).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})}
-                                </small>
-                              </td>
-                              <td className="py-3 px-3">
-                                <div className="small text-muted mb-0" style={{maxWidth: "150px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}} title={payment.subscriptionTransactionId}>
-                                  ID: {payment.subscriptionTransactionId || 'N/A'}
-                                </div>
-                                <small className="text-muted d-block">Method: {payment.paymentType || 'Online'}</small>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                      <DataTable
+                        columns={columns}
+                        data={user.paymentDetails}
+                        pagination
+                        paginationRowsPerPageOptions={[5, 10, 15, 20]}
+                        paginationPerPage={5}
+                        highlightOnHover
+                        customStyles={customStyles}
+                      />
                     </div>
                   ) : (
                     <div className="text-center py-5 border rounded-4 bg-light bg-opacity-50">
