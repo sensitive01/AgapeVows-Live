@@ -1116,6 +1116,16 @@ const UserProfileEditPage = () => {
           const parsedCurrent = parseAddress(userData.currentAddress);
           const parsedPermanent = parseAddress(userData.permanentAddress);
 
+          const parseMulti = (val) => {
+            if (Array.isArray(val)) {
+              return val.flatMap(item => 
+                typeof item === 'string' ? item.split(',').map(s => s.trim()).filter(Boolean) : item
+              );
+            }
+            if (typeof val === 'string' && val.trim() !== '') return val.split(',').map(s => s.trim()).filter(Boolean);
+            return val ? [val] : [];
+          };
+
           const loadedData = {
             aboutMe: userData.aboutMe || "",
             gender: userData.gender || "",
@@ -1196,7 +1206,7 @@ const UserProfileEditPage = () => {
             position: userData.position || "",
             companyName: userData.companyName || "",
             annualIncome: userData.annualIncome || "",
-            hobbies: Array.isArray(userData.hobbies) ? userData.hobbies : [],
+            hobbies: parseMulti(userData.hobbies),
             interests: userData.interests || "",
             music: userData.music || "",
             favouriteReads: userData.favouriteReads || "",
@@ -1214,23 +1224,23 @@ const UserProfileEditPage = () => {
             partnerAgeTo: userData.partnerAgeTo || "",
             partnerHeight: userData.partnerHeight || "",
             partnerHeightTo: userData.partnerHeightTo || "",
-            partnerMaritalStatus: Array.isArray(userData.partnerMaritalStatus) ? userData.partnerMaritalStatus : userData.partnerMaritalStatus ? [userData.partnerMaritalStatus] : [],
-            partnerMotherTongue: Array.isArray(userData.partnerMotherTongue) ? userData.partnerMotherTongue : userData.partnerMotherTongue ? [userData.partnerMotherTongue] : [],
-            partnerCaste: Array.isArray(userData.partnerCaste) ? userData.partnerCaste : userData.partnerCaste ? [userData.partnerCaste] : [],
-            partnerPhysicalStatus: Array.isArray(userData.partnerPhysicalStatus) ? userData.partnerPhysicalStatus : userData.partnerPhysicalStatus ? [userData.partnerPhysicalStatus] : [],
-            partnerEatingHabits: Array.isArray(userData.partnerEatingHabits) ? userData.partnerEatingHabits : userData.partnerEatingHabits ? [userData.partnerEatingHabits] : [],
-            partnerDrinkingHabits: Array.isArray(userData.partnerDrinkingHabits) ? userData.partnerDrinkingHabits : userData.partnerDrinkingHabits ? [userData.partnerDrinkingHabits] : [],
-            partnerSmokingHabits: Array.isArray(userData.partnerSmokingHabits) ? userData.partnerSmokingHabits : userData.partnerSmokingHabits ? [userData.partnerSmokingHabits] : [],
-            partnerDenomination: Array.isArray(userData.partnerDenomination) ? userData.partnerDenomination : userData.partnerDenomination ? [userData.partnerDenomination] : [],
-            partnerSpirituality: Array.isArray(userData.partnerSpirituality) ? userData.partnerSpirituality : userData.partnerSpirituality ? [userData.partnerSpirituality] : [],
-            partnerEducation: Array.isArray(userData.partnerEducation) ? userData.partnerEducation : userData.partnerEducation ? [userData.partnerEducation] : [],
-            partnerEmploymentType: Array.isArray(userData.partnerEmploymentType) ? userData.partnerEmploymentType : userData.partnerEmploymentType ? [userData.partnerEmploymentType] : [],
-            partnerOccupation: Array.isArray(userData.partnerOccupation) ? userData.partnerOccupation : userData.partnerOccupation ? [userData.partnerOccupation] : [],
+            partnerMaritalStatus: parseMulti(userData.partnerMaritalStatus),
+            partnerMotherTongue: parseMulti(userData.partnerMotherTongue),
+            partnerCaste: parseMulti(userData.partnerCaste),
+            partnerPhysicalStatus: parseMulti(userData.partnerPhysicalStatus),
+            partnerEatingHabits: parseMulti(userData.partnerEatingHabits),
+            partnerDrinkingHabits: parseMulti(userData.partnerDrinkingHabits),
+            partnerSmokingHabits: parseMulti(userData.partnerSmokingHabits),
+            partnerDenomination: parseMulti(userData.partnerDenomination),
+            partnerSpirituality: parseMulti(userData.partnerSpirituality),
+            partnerEducation: parseMulti(userData.partnerEducation),
+            partnerEmploymentType: parseMulti(userData.partnerEmploymentType),
+            partnerOccupation: parseMulti(userData.partnerOccupation),
             partnerAnnualIncomeFrom: userData.partnerAnnualIncomeFrom || "",
             partnerAnnualIncomeTo: userData.partnerAnnualIncomeTo || "",
-            partnerCountry: Array.isArray(userData.partnerCountry) ? userData.partnerCountry : userData.partnerCountry ? [userData.partnerCountry] : [],
-            partnerState: Array.isArray(userData.partnerState) ? userData.partnerState : userData.partnerState ? [userData.partnerState] : [],
-            partnerDistrict: Array.isArray(userData.partnerDistrict) ? userData.partnerDistrict : userData.partnerDistrict ? [userData.partnerDistrict] : [],
+            partnerCountry: parseMulti(userData.partnerCountry),
+            partnerState: parseMulti(userData.partnerState),
+            partnerDistrict: parseMulti(userData.partnerDistrict),
             profileVisibility: userData.profileVisibility || "Public",
           };
 
@@ -1581,17 +1591,17 @@ const UserProfileEditPage = () => {
     // 2. Handle React Router client-side navigation (intercepting link clicks)
     const handleGlobalClick = (e) => {
       if (!hasUnsavedChanges) return;
-      
+
       const target = e.target.closest('a');
       if (target && target.href && !target.hasAttribute("download") && target.target !== "_blank") {
         try {
           const url = new URL(target.href);
           // Exclude in-page anchors
           if (url.origin === window.location.origin && url.pathname === window.location.pathname) return;
-          
+
           e.preventDefault();
           e.stopPropagation();
-          
+
           setShowUnsavedModal(true);
           setPendingNav(target.href);
         } catch (err) {
@@ -1936,7 +1946,7 @@ const UserProfileEditPage = () => {
                     title="Basic Details"
                     zIndex={20}
                     subtitle={
-                      <p style={{ color: "purple", fontWeight: "bold", margin: 0 }}>
+                      <p style={{ color: "#5c2a9d", fontWeight: "bold", margin: 0 }}>
                         Please ensure your Name and Date of Birth matches with your ID Proof (Aadhaar or Passport) for verification
                       </p>
                     }
@@ -2803,13 +2813,13 @@ const UserProfileEditPage = () => {
                   {/* Contact Information Section */}
                   <FormSection title="Contact Information" zIndex={17}>
                     <div style={{ marginBottom: "30px", marginTop: "10px" }}>
-                      <p style={{ fontWeight: "700", color: "#6a1b9a", fontSize: "1.2rem", marginBottom: "16px" }}>
+                      <p style={{ fontWeight: "700", color: "#5c2a9d", fontSize: "1.2rem", marginBottom: "16px" }}>
                         Prefer communication through a family member or a trusted representative?
                       </p>
                       <ul style={{ paddingLeft: "20px", margin: "0", fontSize: "1.05rem", lineHeight: "1.7", display: "flex", flexDirection: "column", gap: "10px", fontWeight: "500" }}>
-                        <li style={{ color: "#6a1b9a" }}>To help protect your privacy and avoid unwanted spam or fraudulent calls, AgapeVows recommends providing an alternate contact number for communication with interested matches. This number should be different from the primary phone number used to create your profile (if the profile was created by the Bride or Groom).</li>
-                        <li style={{ color: "#6a1b9a" }}>You may share the contact details of a parent, family member, guardian, or trusted representative who can communicate on your behalf. Only users who express interest in connecting with you will be able to view these details.</li>
-                        <li style={{ color: "#6a1b9a" }}>If you prefer to communicate directly with interested matches, you may enter your own phone number in the Alternate Mobile Number field.</li>
+                        <li style={{ color: "#5c2a9d" }}>To help protect your privacy and avoid unwanted spam or fraudulent calls, AgapeVows recommends providing an alternate contact number for communication with interested matches. This number should be different from the primary phone number used to create your profile (if the profile was created by the Bride or Groom).</li>
+                        <li style={{ color: "#5c2a9d" }}>You may share the contact details of a parent, family member, guardian, or trusted representative who can communicate on your behalf. Only users who express interest in connecting with you will be able to view these details.</li>
+                        <li style={{ color: "#5c2a9d" }}>If you prefer to communicate directly with interested matches, you may enter your own phone number in the Alternate Mobile Number field.</li>
                       </ul>
                     </div>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-x-[120px] md:gap-y-6'>
@@ -3297,31 +3307,31 @@ const UserProfileEditPage = () => {
                         </span>
                       </div>
 
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "24px" }}>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                          <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151" }}>Partner Age</label>
-                          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-                            <select name="partnerAgeFrom" value={formData.partnerAgeFrom} onChange={handleInputChange} style={selectStyle}>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="flex flex-col gap-2">
+                          <label className="text-[14px] font-[600] text-[#374151]">Partner Age</label>
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
+                            <select name="partnerAgeFrom" value={formData.partnerAgeFrom} onChange={handleInputChange} style={selectStyle} className="w-full sm:flex-1">
                               <option value="">Select Age</option>
                               {ageOptions.map(age => <option key={age} value={age}>{age}</option>)}
                             </select>
-                            <span style={{ fontSize: "14px", color: "#6b7280", whiteSpace: "nowrap" }}>To</span>
-                            <select name="partnerAgeTo" value={formData.partnerAgeTo} onChange={handleInputChange} style={selectStyle}>
+                            <span className="text-[14px] text-[#6b7280] text-center sm:text-left">To</span>
+                            <select name="partnerAgeTo" value={formData.partnerAgeTo} onChange={handleInputChange} style={selectStyle} className="w-full sm:flex-1">
                               <option value="">Select Age</option>
                               {ageOptions.map(age => <option key={age} value={age}>{age}</option>)}
                             </select>
                           </div>
                         </div>
 
-                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                          <label style={{ fontSize: "14px", fontWeight: "600", color: "#374151" }}>Partner Height</label>
-                          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-                            <select name="partnerHeight" value={formData.partnerHeight} onChange={handleInputChange} style={selectStyle}>
+                        <div className="flex flex-col gap-2">
+                          <label className="text-[14px] font-[600] text-[#374151]">Partner Height</label>
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
+                            <select name="partnerHeight" value={formData.partnerHeight} onChange={handleInputChange} style={selectStyle} className="w-full sm:flex-1">
                               <option value="">Select Height</option>
                               {heightOptions.map(h => <option key={h} value={h}>{h}</option>)}
                             </select>
-                            <span style={{ fontSize: "14px", color: "#6b7280", whiteSpace: "nowrap" }}>To</span>
-                            <select name="partnerHeightTo" value={formData.partnerHeightTo} onChange={handleInputChange} style={selectStyle}>
+                            <span className="text-[14px] text-[#6b7280] text-center sm:text-left">To</span>
+                            <select name="partnerHeightTo" value={formData.partnerHeightTo} onChange={handleInputChange} style={selectStyle} className="w-full sm:flex-1">
                               <option value="">Select Height</option>
                               {heightOptions.map(h => <option key={h} value={h}>{h}</option>)}
                             </select>
@@ -3330,15 +3340,7 @@ const UserProfileEditPage = () => {
                       </div>
                     </div>
 
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-                        columnGap: "20px",
-                        marginTop: "20px",
-                        marginBottom: "20px",
-                      }}
-                    >
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-5 mt-5 mb-0">
                       <FormInput
                         label="Partner Mother Tongue"
                         name="partnerMotherTongue"
@@ -3624,7 +3626,7 @@ const UserProfileEditPage = () => {
                       />
                     </div>
 
-                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-x-[120px] md:gap-y-6 mt-5'>
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-x-[120px] md:gap-y-6 mt-3'>
                       <CheckboxGroup
                         label="Partner Marital Status"
                         name="partnerMaritalStatus"
@@ -3646,7 +3648,7 @@ const UserProfileEditPage = () => {
                         name="partnerPhysicalStatus"
                         selectedValues={formData.partnerPhysicalStatus}
                         onChange={handleInputChange}
-                        options={["Normal", "Physically Challenged", "Any"]}
+                        options={["Any", "Normal", "Physically Challenged",]}
                       />
                       <CheckboxGroup
                         label="Partner Eating Habits"
