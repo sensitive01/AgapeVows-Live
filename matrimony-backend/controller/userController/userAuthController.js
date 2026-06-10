@@ -2511,7 +2511,7 @@ const getBlockedProfiles = async (req, res) => {
 
     const user = await userModel.findById(userId).populate({
       path: "blockedUsers.user",
-      select: "userName profileImage city age height degree paymentDetails isAnySubscriptionTaken"
+      select: "userName profileImage city age height degree paymentDetails isAnySubscriptionTaken agwid"
     });
 
     if (!user) {

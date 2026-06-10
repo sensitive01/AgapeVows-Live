@@ -243,6 +243,16 @@ const UserInterest = () => {
               width: auto !important;
               padding: 0 !important;
             }
+            /* Make top right 3-dot circle smaller on mobile */
+            .interest-top-dropdown {
+              width: 32px !important;
+              height: 32px !important;
+              padding: 0 !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              font-size: 14px !important;
+            }
           }
         `}</style>
         <table className="table align-middle table-hover">
@@ -344,6 +354,21 @@ const UserInterest = () => {
 
   return (
     <div className="min-h-screen">
+      <style>{`
+        @media (max-width: 768px) {
+          .db-pro-stat .dropdown {
+            top: 10px !important;
+            right: 10px !important;
+          }
+          .db-pro-stat .dropdown button.interest-top-dropdown {
+            width: 30px !important;
+            height: 30px !important;
+            min-width: 30px !important;
+            min-height: 30px !important;
+            font-size: 14px !important;
+          }
+        }
+      `}</style>
       <div className="fixed top-0 left-0 right-0 z-50">
         <LayoutComponent />
       </div>
@@ -375,7 +400,7 @@ const UserInterest = () => {
                       <div className="dropdown">
                         <button
                           type="button"
-                          className="btn btn-outline-secondary"
+                          className="btn btn-outline-secondary interest-top-dropdown"
                           data-bs-toggle="dropdown"
                         >
                           <i
@@ -406,6 +431,7 @@ const UserInterest = () => {
                           </li>
                         </ul>
                       </div>
+
                       <div className="db-inte-main">
                         <div
                           style={{

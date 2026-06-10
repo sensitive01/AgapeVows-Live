@@ -106,8 +106,9 @@ const BlockedProfile = () => {
             <li key={profile._id}>
               <div className="db-int-pro-1" style={{ position: "relative" }}>
                 <img
-                  src={profile.profileImage || "images/profiles/default.jpg"}
-                  alt={profile.userName}
+                  src={profile.profileImage || "/images/img-profile.jpg"}
+                  alt={profile.userName || "Blocked Profile"}
+                  onError={(e) => { e.target.onerror = null; e.target.src = "/images/img-profile.jpg"; }}
                   style={{
                     width: "80px",
                     height: "80px",
@@ -117,41 +118,11 @@ const BlockedProfile = () => {
                   }}
                 />
 
-                {/* Watermark Overlay on the Right Side */}
-                <div
-                  style={{
-                    position: "absolute",
-                    right: "4px",
-                    top: 0,
-                    bottom: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    pointerEvents: "none",
-                    userSelect: "none",
-                    zIndex: 5,
-                  }}
-                >
-                  <span
-                    style={{
-                      color: "rgba(255, 255, 255, 0.45)",
-                      fontFamily: "'Outfit', 'Inter', sans-serif",
-                      fontSize: "8px",
-                      fontWeight: "600",
-                      letterSpacing: "1px",
-                      whiteSpace: "nowrap",
-                      textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
-                      writingMode: "vertical-rl",
-                      transform: "rotate(180deg)",
-                    }}
-                  >
-                    AgapeVows.com
-                  </span>
-                </div>
+
               </div>
               <div className="db-int-pro-2">
                 <h5>
-                  {profile.userName}
+                  {profile.agwid || "No AV ID"}
                   <span
                     className="badge bg-danger ms-2"
                     style={{ fontSize: "0.7rem" }}
@@ -161,16 +132,16 @@ const BlockedProfile = () => {
                 </h5>
                 <ol className="poi">
                   <li>
-                    City: <strong>{profile.city}</strong>
+                    City: <strong>{profile.city || "Not Updated"}</strong>
                   </li>
                   <li>
-                    Age: <strong>{profile.age}</strong>
+                    Age: <strong>{profile.age ? `${profile.age}` : "Not Updated"}</strong>
                   </li>
                   <li>
-                    Height: <strong>{profile.height} cm</strong>
+                    Height: <strong>{profile.height ? `${profile.height} cm` : "Not Updated"}</strong>
                   </li>
                   <li>
-                    Education: <strong>{profile.degree}</strong>
+                    Education: <strong>{profile.degree || profile.education || "Not Updated"}</strong>
                   </li>
                 </ol>
                 <div className="d-flex gap-2 align-items-center">

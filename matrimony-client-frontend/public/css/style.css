@@ -12443,3 +12443,24 @@ select {
     margin-right: 7px;
   }
 }
+
+/*-------------------------------------------------------*/
+/* Custom fix for .db-pro-stat dropdown button size on mobile
+/*-------------------------------------------------------*/
+@media screen and (max-width: 768px) {
+  .db-pro-stat .dropdown {
+    top: 10px !important;
+    right: 10px !important;
+  }
+  .db-pro-stat .dropdown button {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+    font-size: 14px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
