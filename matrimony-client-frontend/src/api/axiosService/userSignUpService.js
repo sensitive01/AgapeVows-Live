@@ -49,3 +49,19 @@ export const getAllPublishedBlogs = async () => {
   const response = await axiosInstance.get(`/user-auth/get-blogs`);
   return response;
 };
+export const sendLoginOtpRequest = async (emailOrPhone) => {
+  const response = await axiosInstance.post(`/user/send-login-otp`, { emailOrPhone });
+  return response;
+};
+
+export const verifyLoginOtpRequest = async ({ userId, otp }) => {
+  const response = await axiosInstance.post(`/user/verify-login-otp`, { userId, otp });
+  return response;
+};
+
+
+export const verifyFirebaseLoginRequest = async (idToken) => {
+  const response = await axiosInstance.post(`/user/verify-firebase-login`, { idToken });
+  return response;
+};
+

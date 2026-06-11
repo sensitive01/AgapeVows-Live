@@ -18,4 +18,8 @@ userSignupRoutes.post("/save-new-password/:userId",userSignupController.saveNewP
 
 
 
+userSignupRoutes.post("/send-login-otp",userSignupController.sendLoginOtp)
+userSignupRoutes.post("/verify-login-otp",userSignupController.verifyLoginOtp)
+userSignupRoutes.post("/verify-firebase-login",userSignupController.verifyFirebaseLogin)
+
 module.exports = userSignupRoutes;

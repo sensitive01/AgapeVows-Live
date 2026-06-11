@@ -1,44 +1,10 @@
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const sendEmail = require("../../utils/nodeMailerMessages");
+const admin = require("../../utils/firebaseAdmin");
+const { getAuth } = require("firebase-admin/auth");
 
 const userModel = require("../../model/user/userModel");
-
-// const generateAgwid = async () => {
-//   try {
-//     let isUnique = false;
-//     let agwid = "";
-//     let attempts = 0;
-
-//     while (!isUnique && attempts < 20) {
-//       attempts++;
-//       // Determine number of digits: start with 6, switch to 7 if we have too many collisions
-//       const digits = attempts > 10 ? 7 : 6;
-
-//       // Generate random number
-//       const max = Math.pow(10, digits);
-//       const randomNumber = Math.floor(Math.random() * max);
-//       const paddedNumber = randomNumber.toString().padStart(digits, "0");
-
-//       agwid = `AGPW${paddedNumber}`;
-
-//       const existingUser = await userModel.findOne({ agwid });
-//       if (!existingUser) {
-//         isUnique = true;
-//       }
-//     }
-
-//     if (!isUnique) {
-//       throw new Error("Failed to generate unique AGW ID after multiple attempts");
-//     }
-
-//     return agwid;
-//   } catch (error) {
-//     console.error("Error generating AGW ID:", error);
-//     throw error;
-//   }
-// };
-
 
 const generateAgwid = async () => {
   try {
@@ -356,10 +322,168 @@ const verifyRegistrationOtp = async (req, res) => {
 };
 
 
+const sendLoginOtp = async (req, res) => {
+  try {
+    const { emailOrPhone } = req.body;
+    if (!emailOrPhone) {
+      return res.status(400).json({ success: false, message: "Email or Phone is required" });
+    }
 
+    const user = await userModel.findOne({
+      $or: [{ userEmail: emailOrPhone }, { userMobile: emailOrPhone }],
+    });
 
+    if (!user) {
+      return res.status(401).json({ success: false, message: "User not found" });
+    }
 
+    if (user.isDeleted) {
+      return res.status(403).json({ success: false, message: "This account has been deleted. Please contact admin" });
+    }
 
+    if (user.profileStatus === "Deactivated") {
+      return res.status(403).json({ success: false, message: "Account is deactivated. Contact admin to reactivate." });
+    }
+
+    const otp = Math.floor(1000 + Math.random() * 9000);
+    const key = `login_otp_${user._id}`;
+    
+    req.app.locals[key] = {
+      otp,
+      expiresAt: Date.now() + 5 * 60 * 1000, // 5 minutes
+    };
+
+    console.log("------------------------------------------");
+    console.log(`LOGIN OTP FOR ${emailOrPhone}: ${otp}`);
+    console.log("------------------------------------------");
+
+    // If it's an email, try sending an email
+    if (emailOrPhone.includes('@')) {
+      try {
+        await sendEmail(emailOrPhone, "Your Login OTP - Agape Vows Matrimony", "otpVerification", [otp]);
+        return res.status(200).json({
+          success: true,
+          message: "OTP sent successfully to your email",
+          userId: user._id
+        });
+      } catch (emailError) {
+        console.error("Failed to send login email:", emailError);
+        return res.status(200).json({ 
+          success: true, 
+          message: "OTP generated (Email failed to send, please check console)",
+          userId: user._id
+        });
+      }
+    } else {
+      return res.status(400).json({ success: false, message: "Please use Mobile OTP login option for phone numbers." });
+    }
+
+  } catch (err) {
+    console.error("Error in sendLoginOtp", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+const verifyLoginOtp = async (req, res) => {
+  try {
+    const { userId, otp } = req.body;
+
+    if (!userId || !otp) {
+      return res.status(400).json({ success: false, message: "User ID and OTP are required" });
+    }
+
+    const key = `login_otp_${userId}`;
+    const storedOtpData = req.app.locals[key];
+
+    if (!storedOtpData) {
+      return res.status(400).json({ success: false, message: "OTP not found or expired" });
+    }
+
+    if (Date.now() > storedOtpData.expiresAt) {
+      delete req.app.locals[key];
+      return res.status(400).json({ success: false, message: "OTP has expired" });
+    }
+
+    if (parseInt(otp) !== storedOtpData.otp) {
+      return res.status(400).json({ success: false, message: "Invalid OTP" });
+    }
+
+    delete req.app.locals[key];
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+       return res.status(401).json({ success: false, message: "User not found" });
+    }
+
+    return res.status(200).json({ 
+      success: true, 
+      message: "Login successful",
+      userId: user._id,
+      userName: user.userName,
+      profileImage: user.profileImage,
+      gender: user.gender
+    });
+  } catch (err) {
+    console.error("Error in verifyLoginOtp", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+const verifyFirebaseLogin = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) {
+      return res.status(400).json({ success: false, message: "Firebase ID token is required" });
+    }
+
+    // Verify token
+    const decodedToken = await getAuth().verifyIdToken(idToken);
+    const phoneNumber = decodedToken.phone_number; // e.g. +919876543210
+
+    if (!phoneNumber) {
+      return res.status(400).json({ success: false, message: "No phone number found in Firebase token" });
+    }
+
+    // Usually Firebase sends numbers with country codes.
+    // Try to find the user exactly, or strip +91 and try.
+    // We will search for exact match or the last 10 digits.
+    const last10Digits = phoneNumber.slice(-10);
+
+    const user = await userModel.findOne({
+      $or: [
+        { userMobile: phoneNumber },
+        { userMobile: last10Digits }
+      ]
+    });
+
+    if (!user) {
+      return res.status(401).json({ success: false, message: "User not found with this mobile number" });
+    }
+
+    if (user.isDeleted) {
+      return res.status(403).json({ success: false, message: "This account has been deleted. Please contact admin" });
+    }
+
+    if (user.profileStatus === "Deactivated") {
+      return res.status(403).json({ success: false, message: "Account is deactivated. Contact admin to reactivate." });
+    }
+
+    // Successful login
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      userId: user._id,
+      userName: user.userName,
+      profileImage: user.profileImage,
+      gender: user.gender
+    });
+
+  } catch (error) {
+    console.error("Error verifying Firebase login:", error);
+    let detailedMsg = "Invalid or expired authentication token. Details: " + (error.message || "");
+    res.status(401).json({ success: false, message: detailedMsg });
+  }
+};
 
 module.exports = {
   saveSignUpData,
@@ -370,4 +494,7 @@ module.exports = {
   generateAgwid,
   sendRegistrationOtp,
   verifyRegistrationOtp,
+  sendLoginOtp,
+  verifyLoginOtp,
+  verifyFirebaseLogin,
 };
