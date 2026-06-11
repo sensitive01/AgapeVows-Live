@@ -5,7 +5,7 @@ import {
   updateReportStatus,
 } from "../../api/service/adminServices";
 import { confirmAction, showAlert } from "../../utils/alertService";
-import DataTable from "react-data-table-component";
+import CustomTable from "./common/CustomTable";
 
 const AdminReports = () => {
   const [reports, setReports] = useState([]);
@@ -112,7 +112,6 @@ const AdminReports = () => {
       name: "S.No",
       selector: (row, index) => index + 1,
       sortable: false,
-      width: "70px",
     },
     {
       name: "Reporter",width:"150px",
@@ -161,10 +160,9 @@ const AdminReports = () => {
       ),
     },
     {
-      name: "Reason",
+      name: "Reason",width:"200px",
       selector: row => row.reason,
       sortable: true,
-      minWidth: "180px",
       cell: row => (
         <div style={{ whiteSpace: "normal", wordBreak: "break-word", margin: "10px 0" }}>
           {row.reason}
@@ -175,7 +173,7 @@ const AdminReports = () => {
       name: "Comments",
       selector: row => row.comments || "-",
       sortable: true,
-      minWidth: "220px",
+      minWidth: "200px",
       cell: row => (
         <div style={{ whiteSpace: "normal", wordBreak: "break-word", margin: "10px 0" }}>
           {row.comments || "-"}
@@ -188,7 +186,16 @@ const AdminReports = () => {
       sortable: true,
       minWidth: "200px",
       cell: row => (
-        <div className="small text-muted" style={{ whiteSpace: "normal", wordBreak: "break-word", margin: "10px 0" }}>
+        <div 
+          className="small text-muted" 
+          style={{ 
+            whiteSpace: "normal", 
+            wordBreak: "break-word", 
+            margin: "10px 0",
+            width: "100%",
+            textAlign: row.adminReply ? "left" : "center"
+          }}
+        >
           {row.adminReply || "-"}
         </div>
       ),
@@ -212,7 +219,7 @@ const AdminReports = () => {
       ),
     },
     {
-      name: "Date",width:"130px",
+      name: "Date",
       selector: row => row.createdAt ? new Date(row.createdAt).getTime() : 0,
       sortable: true,
       format: row => new Date(row.createdAt).toLocaleDateString(),
@@ -362,7 +369,7 @@ const AdminReports = () => {
         <div className="card border-0 shadow-sm rounded-4">
           <div className="card-body p-0">
             <div className="table-responsive" style={{ minHeight: "400px" }}>
-              <DataTable
+              <CustomTable itemsPerPage={10}
                 columns={columns}
                 data={filteredReports}
                 pagination

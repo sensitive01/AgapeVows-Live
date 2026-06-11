@@ -4,7 +4,7 @@ import { getDeactivatedUsers, restoreUserById } from "../../api/service/adminSer
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { confirmAction, showAlert } from "../../utils/alertService";
-import DataTable from "react-data-table-component";
+import CustomTable from "./common/CustomTable";
 
 const AdminDeactivatedUsers = () => {
   const [users, setUsers] = useState([]);
@@ -147,21 +147,21 @@ const AdminDeactivatedUsers = () => {
       ),
     },
     {
-      name: "AV ID",width:"110px",
+      name: "AV ID",
       selector: row => row.agwid || "N/A",
       sortable: true,
       cell: row => <span className="fw-bold text-primary">{row.agwid || "N/A"}</span>,
       center: true,
     },
     {
-      name: "CREATED AT",width:"150px",
+      name: "CREATED AT",
       selector: row => row.createdAt ? new Date(row.createdAt).getTime() : 0,
       sortable: true,
       format: row => row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "N/A",
       center: true,
     },
     {
-      name: "REASON", minWidth:"250px",
+      name: "REASON",
       selector: row => row.deactivationReason || "No reason provided",
       sortable: true,
       cell: row => (
@@ -171,13 +171,13 @@ const AdminDeactivatedUsers = () => {
       )
     },
     {
-      name: "DEACTIVATED ON", width: "150px",
+      name: "DEACTIVATED ON",
       selector: row => row.deactivatedAt ? new Date(row.deactivatedAt).getTime() : 0,
       sortable: true,
       format: row => row.deactivatedAt ? new Date(row.deactivatedAt).toLocaleDateString() : "N/A",
     },
     {
-      name: "ACTION", width: "220px",
+      name: "ACTION",
       cell: row => (
         <div className="d-flex gap-2">
           <button
@@ -264,13 +264,13 @@ const AdminDeactivatedUsers = () => {
               </div>
             ) : (
               <div className="table-responsive">
-                <DataTable
+                <CustomTable itemsPerPage={10}
                   columns={columns}
                   data={filteredUsers}
                   pagination
                   paginationRowsPerPageOptions={[5, 10, 15, 20]}
                   paginationPerPage={5}
-                  highlightOnHover
+                  highlightOnHover={false}
                   customStyles={customStyles}
                   noDataComponent={
                     <div className="text-center py-5">

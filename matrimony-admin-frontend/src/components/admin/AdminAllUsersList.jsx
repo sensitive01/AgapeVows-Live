@@ -4,7 +4,7 @@ import { getAllUserData, deleteUserById, exportUsersData, deactivateUserById, ge
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { confirmAction, showAlert } from "../../utils/alertService";
-import DataTable from "react-data-table-component";
+import CustomTable from "./common/CustomTable";
 
 
 
@@ -200,7 +200,7 @@ const AdminAllUsersList = () => {
         const exportData = data.map(user => {
           // Flatten some fields if necessary or remove sensitive/internal ones
           const { _id, __v, userPassword, profileViews, paymentDetails, blockedUsers, ignoredUsers, isApproved, isDeleted, profileStatus, ...rest } = user;
-          
+
           // Ensure hobbies is a string if it's an array
           if (Array.isArray(rest.hobbies)) {
             rest.hobbies = rest.hobbies.join(", ");
@@ -312,112 +312,89 @@ const AdminAllUsersList = () => {
     },
     {
       name: "MORE",
-      cell: (row, index) => {
-        const isNearBottom = index >= 5;
-        return (
-        <div className="dropdown position-relative">
+      cell: (row, index) => (
+        <div className={`dropdown ${index >= 2 ? "dropup" : ""}`}>
           <button
             type="button"
             className="btn btn-outline-secondary btn-sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              setOpenDropdown(openDropdown === row._id ? null : row._id);
-            }}
+            data-bs-toggle="dropdown"
+            onClick={(e) => e.stopPropagation()}
           >
             <i className="fa fa-ellipsis-h" aria-hidden="true"></i>
           </button>
-          {openDropdown === row._id && (
-            <ul
-              className="dropdown-menu show"
-              style={{
-                position: "absolute",
-                right: "0",
-                top: isNearBottom ? "auto" : "100%",
-                bottom: isNearBottom ? "100%" : "auto",
-                zIndex: 1050,
-                margin: isNearBottom ? "0 0 0.125rem 0" : "0.125rem 0 0",
-                minWidth: "160px",
-              }}
-            >
-              {hasPermission("users.all.edit") && (
-                <li>
-                  <a
-                    className="dropdown-item text-primary"
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setOpenDropdown(null);
-                      handleEdit(row._id);
-                    }}
-                  >
-                    <i className="fa fa-edit me-2"></i>Edit
-                  </a>
-                </li>
-              )}
-              {hasPermission("users.all.delete") && (
-                <li>
-                  <a
-                    className="dropdown-item text-danger"
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setOpenDropdown(null);
-                      handleDelete(row._id);
-                    }}
-                  >
-                    <i className="fa fa-trash me-2"></i>
-                    Delete
-                  </a>
-                </li>
-              )}
-              {hasPermission("users.all.deactivate") && (
-                <li>
-                  <a
-                    className="dropdown-item text-warning"
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setOpenDropdown(null);
-                      handleDeactivate(row._id);
-                    }}
-                  >
-                    <i className="fa fa-ban me-2"></i>
-                    Deactivate
-                  </a>
-                </li>
-              )}
+          <ul className="dropdown-menu dropdown-menu-end shadow-sm">
+            {hasPermission("users.all.edit") && (
               <li>
                 <a
-                  className="dropdown-item"
+                  className="dropdown-item text-primary"
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    setOpenDropdown(null);
-                    navigate(`/admin/billing-info/${row._id}`);
+                    handleEdit(row._id);
                   }}
                 >
-                  <i className="fa fa-credit-card me-2"></i>
-                  Billing info
+                  <i className="fa fa-edit me-2"></i>Edit
                 </a>
               </li>
+            )}
+            {hasPermission("users.all.delete") && (
               <li>
                 <a
-                  className="dropdown-item"
+                  className="dropdown-item text-danger"
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    setOpenDropdown(null);
-                    window.open(`/admin/new-user/${row._id}`, '_blank');
+                    handleDelete(row._id);
                   }}
                 >
-                  <i className="fa fa-user me-2"></i>View profile
+                  <i className="fa fa-trash me-2"></i>
+                  Delete
                 </a>
               </li>
-            </ul>
-          )}
+            )}
+            {hasPermission("users.all.deactivate") && (
+              <li>
+                <a
+                  className="dropdown-item text-warning"
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDeactivate(row._id);
+                  }}
+                >
+                  <i className="fa fa-ban me-2"></i>
+                  Deactivate
+                </a>
+              </li>
+            )}
+            <li>
+              <a
+                className="dropdown-item"
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(`/admin/billing-info/${row._id}`);
+                }}
+              >
+                <i className="fa fa-credit-card me-2"></i>
+                Billing info
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.open(`/admin/new-user/${row._id}`, '_blank');
+                }}
+              >
+                <i className="fa fa-user me-2"></i>View profile
+              </a>
+            </li>
+          </ul>
         </div>
-        );
-      },
+      ),
       center: true,
       ignoreRowClick: true,
       minWidth: "120px",
@@ -442,6 +419,19 @@ const AdminAllUsersList = () => {
         padding: "15px",
         overflow: "visible",
       },
+    },
+    tableWrapper: {
+      style: {
+        minHeight: "300px",
+        overflow: "visible !important",
+        position: "relative",
+        zIndex: 10,
+      }
+    },
+    table: {
+      style: {
+        overflow: "visible !important",
+      }
     },
   };
 
@@ -494,7 +484,7 @@ const AdminAllUsersList = () => {
               </div>
             ) : (
               <div>
-                <DataTable
+                <CustomTable itemsPerPage={10}
                   columns={columns}
                   data={filteredUsers}
                   pagination
@@ -567,6 +557,11 @@ const AdminAllUsersList = () => {
 
         .table-responsive::-webkit-scrollbar-thumb:hover {
           background: #a8a8a8;
+        }
+
+        .rdt_TableRow:focus-within {
+          z-index: 11 !important;
+          position: relative;
         }
 
         .badge {

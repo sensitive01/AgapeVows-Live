@@ -213,23 +213,7 @@ const Footer = ({ paddingTop = '40px' }) => {
             }}
           >
             <p style={{ color: "white", marginBottom: 0 }}>
-              © {new Date().getFullYear()} AgapeVows Christian Matrimony. All rights reserved. | Designed and Developed by{" "}
-              <a
-                href="https://sensitive.co.in/"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  color: "#9de2c7",
-                  fontWeight: "bold",
-                  textDecoration: "underline",
-                  transition: "0.3s ease",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => (e.target.style.color = "#ffffff")}
-                onMouseLeave={(e) => (e.target.style.color = "#9de2c7")}
-              >
-                Sensitive Technologies
-              </a>
+              © {new Date().getFullYear()} AgapeVows Christian Matrimony. All rights reserved.
             </p>
           </div>
         </div>

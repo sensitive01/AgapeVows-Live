@@ -5,7 +5,7 @@ import { approveNewUser, getNewRequestedUsers, deleteUserById } from "../../api/
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { confirmAction, showAlert } from "../../utils/alertService";
-import DataTable from "react-data-table-component";
+import CustomTable from "./common/CustomTable";
 
 export default function AdminNewUserRequest() {
   const navigate = useNavigate();
@@ -603,13 +603,13 @@ export default function AdminNewUserRequest() {
 
               {/* Data Table */}
               <div style={tableStyles.tableContainer}>
-                <DataTable
+                <CustomTable itemsPerPage={10}
                   columns={columns}
                   data={filteredUsers}
                   pagination
                   paginationRowsPerPageOptions={[5, 10, 15, 20]}
                   paginationPerPage={5}
-                  highlightOnHover
+                  highlightOnHover={false}
                   customStyles={customStyles}
                   noDataComponent={
                     <div className="p-4 text-center">

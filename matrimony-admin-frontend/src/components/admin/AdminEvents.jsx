@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
-import DataTable from "react-data-table-component";
+import CustomTable from "./common/CustomTable";
 
 import {
   addNewEvent,
@@ -287,7 +287,7 @@ const AdminEvents = () => {
       )
     },
     {
-      name: "Date", width: "150px",
+      name: "Date", width: "130px",
       selector: row => row.date,
       sortable: true,
       cell: row => formatDate(row.date)
@@ -314,9 +314,9 @@ const AdminEvents = () => {
       )
     },
     {
-      name: "Actions",
+      name: "Actions", width: "100px",
       cell: (row, index) => (
-        <div className={`dropdown ${index >= 5 ? "dropup" : ""}`}>
+        <div className={`dropdown ${index >= 10 ? "dropup" : ""}`}>
           <button className="btn btn-light rounded-circle" data-bs-toggle="dropdown">&#8230;</button>
           <ul className="dropdown-menu dropdown-menu-end shadow-sm">
             <li><button className="dropdown-item" data-bs-toggle="modal" data-bs-target="#eventsModal" onClick={() => handleViewEvent(row)}><i className="fa fa-eye me-2"></i> View Details</button></li>
@@ -345,12 +345,20 @@ const AdminEvents = () => {
         fontSize: "14px",
         verticalAlign: "middle",
         padding: "15px",
+        overflow: "visible",
       },
+    },
+    rows: {
+      style: {
+        position: "static !important",
+        zIndex: "auto !important",
+      }
     },
     tableWrapper: {
       style: {
-        minHeight: "300px",
         overflow: "visible !important",
+        position: "relative",
+        zIndex: 10,
       }
     },
     table: {
@@ -364,6 +372,9 @@ const AdminEvents = () => {
   return (
     <>
       <style jsx>{`
+        .rdt_TableRow:focus-within {
+          z-index: 11 !important;
+        }
         .pan-rhs::-webkit-scrollbar {
           display: none !important;
         }
@@ -480,14 +491,14 @@ const AdminEvents = () => {
                   </button>
                 </div>
 
-                <div className="table-responsive">
-                  <DataTable
+                <div>
+                  <CustomTable itemsPerPage={10}
                     columns={columns}
                     data={filteredEvents}
                     pagination
                     paginationRowsPerPageOptions={[5, 10, 15, 20]}
                     paginationPerPage={5}
-                    highlightOnHover
+                    highlightOnHover={false}
                     customStyles={customStyles}
                     noDataComponent={
                       <div className="text-center py-5">

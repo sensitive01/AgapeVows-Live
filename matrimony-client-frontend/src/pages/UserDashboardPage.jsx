@@ -100,25 +100,29 @@ const UserDashboardPage = () => {
           setLoading(true);
           setPlanLoading(true);
 
-          const [userRes, planRes] = await Promise.all([
-            getUserProfile(userId),
-            getMyActivePlanData(userId)
-          ]);
-
-          if (userRes.data && userRes.data.data) {
-            setUserInfo(userRes.data.data);
-          } else if (userRes.data) {
-            setUserInfo(userRes.data);
+          try {
+            const userRes = await getUserProfile(userId);
+            if (userRes.data && userRes.data.data) {
+              setUserInfo(userRes.data.data);
+            } else if (userRes.data) {
+              setUserInfo(userRes.data);
+            }
+          } catch (err) {
+            console.error("Error fetching user profile:", err);
+            // We can still continue if the profile fails, or handle it specifically
           }
 
-          if (planRes.status === 200 && planRes.data?.activePlan) {
-            setActivePlan(planRes.data.activePlan);
-          } else {
+          try {
+            const planRes = await getMyActivePlanData(userId);
+            if (planRes.status === 200 && planRes.data?.activePlan) {
+              setActivePlan(planRes.data.activePlan);
+            } else {
+              setActivePlan(null);
+            }
+          } catch (planErr) {
+            console.log("No active plan found");
             setActivePlan(null);
           }
-        } catch (error) {
-          console.error("Error fetching dashboard data:", error);
-          setError("Failed to load dashboard information");
         } finally {
           setLoading(false);
           setPlanLoading(false);

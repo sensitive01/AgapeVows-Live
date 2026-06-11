@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
 import { Link } from "react-router-dom";
-import DataTable from "react-data-table-component";
+import CustomTable from "./common/CustomTable";
 import {
   getContactUpdateRequests,
   approveContactUpdate,
@@ -222,13 +222,13 @@ const AdminContactUpdateRequests = () => {
             </div>
 
             <div className="table-responsive">
-              <DataTable
+              <CustomTable itemsPerPage={10}
                 columns={columns}
                 data={requests}
                 pagination
                 paginationRowsPerPageOptions={[5, 10, 15, 20]}
                 paginationPerPage={5}
-                highlightOnHover
+                highlightOnHover={false}
                 customStyles={customStyles}
                 noDataComponent={<div className="py-4 text-muted text-center">No pending contact update requests.</div>}
               />

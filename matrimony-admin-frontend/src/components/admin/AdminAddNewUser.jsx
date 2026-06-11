@@ -5,7 +5,7 @@ import { Country, State, City } from "country-state-city";
 import BasicInfomation from "./BasicInfomation";
 import * as XLSX from "xlsx";
 import { Modal } from "react-bootstrap";
-import DataTable from "react-data-table-component";
+import CustomTable from "./common/CustomTable";
 import { registerUserByAdmin, bulkRegisterUsersByAdmin } from "../../api/service/adminServices";
 import { showAlert } from "../../utils/alertService";
 
@@ -710,7 +710,7 @@ const AdminAddNewUser = () => {
 
           {bulkData.length > 0 && (
             <div className="table-responsive mb-4" style={{ maxHeight: '250px' }}>
-              <DataTable
+              <CustomTable itemsPerPage={10}
                 columns={bulkColumns}
                 data={bulkData.slice(0, 5)}
                 customStyles={customStyles}

@@ -232,7 +232,7 @@ const MoreDetails = () => {
             text: errMsg,
             icon: "error",
           });
-          setTimeout(() => navigate(-1), 1500);
+          setTimeout(() => navigate("/user/user-plan-selection"), 1500);
         } else {
           console.error("Error fetching profile details:", err);
         }

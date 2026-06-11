@@ -4,7 +4,7 @@ import { getPaidUserData, removeUserSubscription } from "../../api/service/admin
 import { useNavigate } from "react-router-dom";
 import { confirmAction, showAlert } from "../../utils/alertService";
 import * as XLSX from "xlsx";
-import DataTable from "react-data-table-component";
+import CustomTable from "./common/CustomTable";
 
 const AdminFreeUserList = () => {
   const [users, setUsers] = useState([]);
@@ -147,7 +147,7 @@ const AdminFreeUserList = () => {
     },
     {
       name: "MEMBER",
-      selector: row => row.userName, width:"280px",
+      selector: row => row.userName, width: "280px",
       sortable: true,
       cell: row => (
         <div className="d-flex align-items-center py-2">
@@ -161,8 +161,8 @@ const AdminFreeUserList = () => {
             )}
           </div>
           <div>
-            <h6 className="mb-0 fw-bold text-dark" style={{fontSize: "14px"}}>{row.userName}</h6>
-            <p className="mb-0 text-muted small" style={{fontSize: "12px"}}>{row.userEmail}</p>
+            <h6 className="mb-0 fw-bold text-dark" style={{ fontSize: "14px" }}>{row.userName}</h6>
+            <p className="mb-0 text-muted small" style={{ fontSize: "12px" }}>{row.userEmail}</p>
           </div>
         </div>
       ),
@@ -174,23 +174,23 @@ const AdminFreeUserList = () => {
       sortable: true,
       cell: row => (
         <div>
-           <div className="small text-dark fw-medium">{row.userMobile}</div>
-           <div className="small text-muted">{row.city}</div>
+          <div className="small text-dark fw-medium">{row.userMobile}</div>
+          <div className="small text-muted">{row.city}</div>
         </div>
       ),
     },
     {
-      name: "PLAN DETAILS", width:"150px",
+      name: "PLAN DETAILS", width: "150px",
       selector: row => row.planType,
       sortable: true,
       cell: row => (
         <div>
-           <div className="d-flex align-items-center gap-2 mb-1">
-              <span className={`badge rounded-pill px-2 py-1 ${row.planType === "Gold" ? "bg-warning-subtle text-warning border border-warning-subtle" : "bg-info-subtle text-info border border-info-subtle"}`} style={{fontSize: "10px"}}>
-                  {row.planType}
-              </span>
-           </div>
-           <div className="text-muted" style={{fontSize: "11px"}}>Exp: {formatDate(row.expiryDate)}</div>
+          <div className="d-flex align-items-center gap-2 mb-1">
+            <span className={`badge rounded-pill px-2 py-1 ${row.planType === "Gold" ? "bg-warning-subtle text-warning border border-warning-subtle" : "bg-info-subtle text-info border border-info-subtle"}`} style={{ fontSize: "10px" }}>
+              {row.planType}
+            </span>
+          </div>
+          <div className="text-muted" style={{ fontSize: "11px" }}>Exp: {formatDate(row.expiryDate)}</div>
         </div>
       ),
     },
@@ -200,7 +200,7 @@ const AdminFreeUserList = () => {
       sortable: true,
       center: true,
       cell: row => (
-        <span className={`badge ${row.payment === "Success" ? "bg-success" : "bg-warning"} px-3 py-1 rounded-pill`} style={{fontSize: "11px"}}>{row.payment}</span>
+        <span className={`badge ${row.payment === "Success" ? "bg-success" : "bg-warning"} px-3 py-1 rounded-pill`} style={{ fontSize: "11px" }}>{row.payment}</span>
       ),
     },
     {
@@ -209,7 +209,7 @@ const AdminFreeUserList = () => {
       sortable: true,
       center: true,
       cell: row => (
-        <span className={`badge ${row.subscriptionStatus === "Active" ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger"} border px-3 py-1 rounded-pill`} style={{fontSize: "11px"}}>{row.subscriptionStatus}</span>
+        <span className={`badge ${row.subscriptionStatus === "Active" ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger"} border px-3 py-1 rounded-pill`} style={{ fontSize: "11px" }}>{row.subscriptionStatus}</span>
       ),
     },
     {
@@ -222,25 +222,25 @@ const AdminFreeUserList = () => {
     {
       name: "ACTIONS",
       center: true,
-      cell: (row, index) => {
-        const isNearBottom = index >= 5;
-        return (
-        <div className={`dropdown ${isNearBottom ? 'dropup' : ''}`}>
-          <button className="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center mx-auto" style={{width: "32px", height: "32px"}} onClick={(e) => { e.stopPropagation(); setOpenDropdown(openDropdown === row._id ? null : row._id); }}>
-            <i className="fa fa-ellipsis-v text-muted" style={{fontSize: "14px"}}></i>
+      cell: (row, index) => (
+        <div className={`dropdown ${index >= 2 ? "dropup" : ""}`}>
+          <button
+            className="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center mx-auto"
+            style={{ width: "32px", height: "32px" }}
+            data-bs-toggle="dropdown"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <i className="fa fa-ellipsis-v text-muted" style={{ fontSize: "14px" }}></i>
           </button>
-          {openDropdown === row._id && (
-            <ul className="dropdown-menu show shadow-lg border-0 rounded-3 mt-1 py-2" style={{ right: 0, left: "auto", position: "absolute", top: isNearBottom ? "auto" : "100%", bottom: isNearBottom ? "100%" : "auto", zIndex: 1050, minWidth: "160px" }}>
-              <li><button className="dropdown-item py-2" onClick={() => navigate(`/admin/edit-user/${row._id}`)}><i className="fa fa-edit me-2 text-primary"></i>Edit Profile</button></li>
-              <li><button className="dropdown-item py-2" onClick={() => navigate(`/admin/billing-info/${row._id}`)}><i className="fa fa-credit-card me-2 text-info"></i>Billing Info</button></li>
-              <li><button className="dropdown-item py-2" onClick={() => navigate(`/admin/new-user/${row._id}`)}><i className="fa fa-user me-2 text-success"></i>View Details</button></li>
-              <li className="dropdown-divider"></li>
-              <li><button className="dropdown-item py-2 text-danger" onClick={() => { setOpenDropdown(null); handleRemove(row._id); }}><i className="fa fa-trash me-2"></i>Remove</button></li>
-            </ul>
-          )}
+          <ul className="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-1 py-2" style={{ minWidth: "160px" }}>
+            <li><button className="dropdown-item py-2" onClick={() => navigate(`/admin/edit-user/${row._id}`)}><i className="fa fa-edit me-2 text-primary"></i>Edit Profile</button></li>
+            <li><button className="dropdown-item py-2" onClick={() => navigate(`/admin/billing-info/${row._id}`)}><i className="fa fa-credit-card me-2 text-info"></i>Billing Info</button></li>
+            <li><button className="dropdown-item py-2" onClick={() => navigate(`/admin/new-user/${row._id}`)}><i className="fa fa-user me-2 text-success"></i>View Details</button></li>
+            <li className="dropdown-divider"></li>
+            <li><button className="dropdown-item py-2 text-danger" onClick={() => handleRemove(row._id)}><i className="fa fa-trash me-2"></i>Remove</button></li>
+          </ul>
         </div>
-        );
-      },
+      ),
       ignoreRowClick: true,
       button: true,
     }
@@ -262,7 +262,21 @@ const AdminFreeUserList = () => {
       style: {
         fontSize: "14px",
         padding: "15px",
+        overflow: "visible",
       },
+    },
+    tableWrapper: {
+      style: {
+        minHeight: "300px",
+        overflow: "visible !important",
+        position: "relative",
+        zIndex: 10,
+      }
+    },
+    table: {
+      style: {
+        overflow: "visible !important",
+      }
     },
   };
 
@@ -306,22 +320,22 @@ const AdminFreeUserList = () => {
               </div>
               <div className="col-lg-2 col-md-4">
                 <select className="form-select rounded-pill border-light shadow-none bg-light ps-3" value={filterPlan} onChange={(e) => setFilterPlan(e.target.value)}>
-                    <option value="all">Plan: All</option>
-                    <option value="Gold">Gold</option>
-                    <option value="Premium">Premium</option> 
-                    <option value="Platinum">Platinum</option>
+                  <option value="all">Plan: All</option>
+                  <option value="Gold">Gold</option>
+                  <option value="Premium">Premium</option>
+                  <option value="Platinum">Platinum</option>
                 </select>
               </div>
               <div className="col-lg-2 col-md-4">
                 <select className="form-select rounded-pill border-light shadow-none bg-light ps-3" value={filterPayment} onChange={(e) => setFilterPayment(e.target.value)}>
-                    <option value="all">Payment: All</option>
-                    <option value="Success">Success</option>
-                    <option value="Pending">Pending</option>
+                  <option value="all">Payment: All</option>
+                  <option value="Success">Success</option>
+                  <option value="Pending">Pending</option>
                 </select>
               </div>
               <div className="col-lg-3 col-md-4">
                 <button className="btn btn-outline-secondary rounded-pill w-100 btn-sm h-100" onClick={() => { setSearchTerm(""); setFilterPlan("all"); setFilterPayment("all"); }}>
-                   Clear Filters
+                  Clear Filters
                 </button>
               </div>
             </div>
@@ -334,8 +348,8 @@ const AdminFreeUserList = () => {
             {loading ? (
               <div className="text-center py-5"><div className="spinner-border text-primary" role="status"></div></div>
             ) : (
-              <div className="table-responsive">
-                <DataTable
+              <div>
+                <CustomTable itemsPerPage={10}
                   columns={columns}
                   data={filteredUsers}
                   pagination
@@ -358,6 +372,7 @@ const AdminFreeUserList = () => {
       </div>
 
       <style>{`
+        .rdt_TableRow:focus-within { z-index: 11 !important; position: relative; }
         .table thead th { border: none; letter-spacing: 0.05em; }
         .table tbody tr:hover { background-color: #fbfcfe; transition: background 0.2s ease; }
         .cursor-pointer { cursor: pointer; }

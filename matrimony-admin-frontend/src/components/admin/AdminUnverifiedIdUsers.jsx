@@ -3,7 +3,7 @@ import NewLayout from "./layout/NewLayout";
 import { getUnverifiedIdUsers, verifyIdProof, deleteUserById } from "../../api/service/adminServices";
 import { useNavigate, Link } from "react-router-dom";
 import { confirmAction, showAlert } from "../../utils/alertService";
-import DataTable from "react-data-table-component";
+import CustomTable from "./common/CustomTable";
 
 export default function AdminUnverifiedIdUsers() {
   const navigate = useNavigate();
@@ -51,16 +51,18 @@ export default function AdminUnverifiedIdUsers() {
       name: "S.No",
       selector: (row, index) => index + 1,
       sortable: false,
-      width: "70px",
       center: true,
+      width: "60px",
     },
     {
       name: "User Details",
       selector: row => row.userName,
       sortable: true,
+      width: "320px",
       minWidth: "280px",
+      wrap: true,
       cell: row => (
-        <div className="d-flex align-items-center py-2">
+        <div className="d-flex align-items-center py-2" style={{ wordBreak: "break-word", minWidth: "250px" }}>
           <img 
             src={row.profileImage || "/assets/images/user-placeholder.png"} 
             alt="" 
@@ -68,22 +70,18 @@ export default function AdminUnverifiedIdUsers() {
             onError={(e) => e.target.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
           />
           <div className="text-start" style={{ minWidth: 0 }}>
-            <div className="fw-bold text-truncate" style={{ maxWidth: '250px' }}>{row.userName}</div>
-            <small className="text-muted text-truncate d-block" style={{ maxWidth: '250px' }}>{row.userEmail}</small>
+            <div className="fw-bold">{row.userName}</div>
+            <small className="text-muted d-block">{row.userEmail}</small>
+            <small className="text-info fw-bold d-block">{row.agwid || "N/A"}</small>
           </div>
         </div>
       )
     },
     {
-      name: "AV ID",
-      selector: row => row.agwid || "N/A",
-      sortable: true,
-      center: true,
-    },
-    {
-      name: "Status",width:"130px",
+      name: "Status",
       selector: row => row.idVerificationStatus || 'Pending',
       sortable: true,
+      width: "90px",
       cell: row => (
         <span className={`badge text-white ${ 
           row.idVerificationStatus === 'Uploaded' ? 'bg-info' : 
@@ -95,29 +93,34 @@ export default function AdminUnverifiedIdUsers() {
       center: true,
     },
     {
-      name: "ID Type", minWidth: "180px",
+      name: "ID Type",
       selector: row => row.idProofType || "N/A",
       sortable: true,
       center: true,
+      width: "100px",
+      wrap: true,
       cell: row => (
-        <div style={{ whiteSpace: "nowrap" }}>
+        <div style={{ wordBreak: "break-word" }}>
           {row.idProofType || "N/A"}
         </div>
       )
     },
     {
-      name: "ID Number", minWidth: "180px",
+      name: "ID Number", 
       selector: row => row.idProofNumber || "N/A",
       sortable: true,
       center: true,
+      width: "110px",
+      wrap: true,
       cell: row => (
-        <div style={{ whiteSpace: "nowrap" }}>
+        <div style={{ wordBreak: "break-word" }}>
           {row.idProofNumber || "N/A"}
         </div>
       )
     },
     {
-      name: "Document",width:"120px",
+      name: "Document",
+      width: "90px",
       cell: row => row.idProofDocument ? (
         <button 
           className="btn btn-sm btn-outline-info"
@@ -131,52 +134,47 @@ export default function AdminUnverifiedIdUsers() {
       center: true,
     },
     {
-      name: "Created At",width:"145px",
+      name: "Created At",
       selector: row => row.createdAt ? new Date(row.createdAt).getTime() : 0,
       sortable: true,
+      width: "90px",
       format: row => row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "N/A",
       center: true,
     },
     {
       name: "Actions",
+      width: "140px",
       cell: row => (
-        <div className="d-flex justify-content-center gap-2">
-          <button 
-            className="btn btn-sm btn-success text-white"
-            disabled={processingUsers.has(row._id)}
-            onClick={() => handleVerifyId(row._id, "Verified")}
+        <div className="d-flex flex-column gap-2 align-items-center">
+          <div className="d-flex justify-content-center gap-2 w-100">
+            <button 
+              className="btn btn-sm btn-success text-white w-50"
+              disabled={processingUsers.has(row._id)}
+              onClick={() => handleVerifyId(row._id, "Verified")}
+            >
+              {processingUsers.has(row._id) ? "..." : "Verify"}
+            </button>
+            <button 
+              className="btn btn-sm btn-danger text-white w-50"
+              disabled={processingUsers.has(row._id)}
+              onClick={() => handleVerifyId(row._id, "Rejected")}
+            >
+              {processingUsers.has(row._id) ? "..." : "Reject"}
+            </button>
+          </div>
+          <Link 
+            to={`/admin/new-user/${row._id}`} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="btn btn-sm btn-outline-primary px-2 py-1 w-100"
+            style={{ fontSize: "12px" }}
           >
-            {processingUsers.has(row._id) ? "..." : "Verify"}
-          </button>
-          <button 
-            className="btn btn-sm btn-danger text-white"
-            disabled={processingUsers.has(row._id)}
-            onClick={() => handleVerifyId(row._id, "Rejected")}
-          >
-            {processingUsers.has(row._id) ? "..." : "Reject"}
-          </button>
+            <i className="fa fa-user me-1"></i> Profile
+          </Link>
         </div>
       ),
       center: true,
       ignoreRowClick: true,
-      minWidth: "180px",
-    },
-    {
-      name: "Profile",
-      cell: row => (
-        <Link 
-          to={`/admin/new-user/${row._id}`} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="btn btn-sm btn-outline-primary px-2 py-1"
-          style={{ fontSize: "12px", whiteSpace: "nowrap" }}
-        >
-          <i className="fa fa-user me-1"></i> View Profile
-        </Link>
-      ),
-      center: true,
-      ignoreRowClick: true,
-      minWidth: "140px",
     }
   ];
 
@@ -283,13 +281,13 @@ export default function AdminUnverifiedIdUsers() {
                   </div>
                 </div>
               ) : (
-                <DataTable
+                <CustomTable itemsPerPage={10}
                   columns={columns}
                   data={filteredUsers}
                   pagination
                   paginationRowsPerPageOptions={[5, 10, 15, 20]}
                   paginationPerPage={5}
-                  highlightOnHover
+                  highlightOnHover={false}
                   customStyles={customStyles}
                   noDataComponent={
                     <div className="text-center py-5">

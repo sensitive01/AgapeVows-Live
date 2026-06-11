@@ -185,16 +185,13 @@ const Blogs = () => {
       <div className="pt-16">
         {/* SECTION 1: HEADER BANNER */}
         <section className="str">
-          <div className="ban-inn ab-ban mb-0">
+          <div className="ban-inn ab-ban mb-0" style={{ padding: "60px 0 60px 0", height: "auto", minHeight: "auto" }}>
             <div className="container">
               <div className="row">
-                <div className="hom-ban">
+                <div className="hom-ban" style={{ paddingTop: "0px" }}>
                   <div className="ban-tit">
-                    <span>
-                      <i className="no1">#1</i> Wedding Website
-                    </span>
-                    <h1>Our Blogs</h1>
-                    <p>
+                    <h1 style={{  marginBottom: "15px" }}>Our Blogs</h1>
+                    <p style={{ marginBottom: "0px" }}>
                       Inspiration, tips, and stories to help you on your journey to a beautiful wedding.
                     </p>
                   </div>

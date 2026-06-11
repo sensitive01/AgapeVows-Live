@@ -1,6 +1,6 @@
 import React from "react";
 import NewLayout from "./layout/NewLayout";
-import DataTable from "react-data-table-component";
+import CustomTable from "./common/CustomTable";
 
 const AdminPaymentGateWay = () => {
   const columns = [
@@ -109,13 +109,13 @@ const AdminPaymentGateWay = () => {
                 <h3>All pricing plans</h3>
               </div>
               <div className="table-responsive">
-                <DataTable
+                <CustomTable itemsPerPage={10}
                   columns={columns}
                   data={data}
                   pagination
                   paginationRowsPerPageOptions={[5, 10, 15, 20]}
                   paginationPerPage={5}
-                  highlightOnHover
+                  highlightOnHover={false}
                   customStyles={customStyles}
                 />
               </div>

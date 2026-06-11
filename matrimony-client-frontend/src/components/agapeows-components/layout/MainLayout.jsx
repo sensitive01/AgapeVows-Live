@@ -160,24 +160,13 @@ const MainLayout = () => {
   const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
   const [isMobileHelpOpen, setIsMobileHelpOpen] = useState(false);
   const [userName, setUserName] = useState(localStorage.getItem("userName"));
-  /* import { User as UserIcon } from "lucide-react"; */
-  // Need to add User to imports first.
-
   const [userImage, setUserImage] = useState(
     localStorage.getItem("userImage") || null,
-  ); // Initialize from storage
-  /* const [isSearchModalOpen, setIsSearchModalOpen] = useState(false); */ // Removed unused var
+  ); 
   const [isUserActive, setIsUserActive] = useState(Boolean(userId));
   const [isHelpDropdownVisible, setIsHelpDropdownVisible] = useState(false);
 
   useEffect(() => {
-    // setIsUserActive(Boolean(userId)); // Removed to prevent double check/re-render logic if handled in init.
-    // Actually, keep it if userId changes dynamically? no, userId is const outside.
-    // Ideally useEffect should react to something. But userId is from localstorage at render time.
-    /* const storedUserName = localStorage.getItem("userName");
-    if (storedUserName) {
-      setUserName(storedUserName);
-    } */
   }, []);
 
   useEffect(() => {
@@ -242,6 +231,12 @@ const MainLayout = () => {
                 )}
                 
               </div> 
+              <button
+                onClick={() => handleNavigate("/blogs")}
+                className="cursor-pointer hover:text-purple-200"
+              >
+                BLOGS
+              </button>
               <button
                 onClick={() => handleNavigate("/faq")}
                 className="cursor-pointer hover:text-purple-200"

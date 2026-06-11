@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
-import DataTable from "react-data-table-component";
+import CustomTable from "./common/CustomTable";
 import {
   addNewBlog,
   getAllBlogs,
@@ -162,9 +162,10 @@ const AdminBlogs = () => {
   };
 
   const columns = [
-    { name: "S.No", selector: (row, index) => index + 1, sortable: false, width: "70px" },
+    { name: "S.No", selector: (row, index) => index + 1, sortable: false, width: "60px", center: true },
     {
       name: "Cover Image",
+      center: true,
       cell: row => (
         <img
           src={row.coverImage}
@@ -178,8 +179,20 @@ const AdminBlogs = () => {
         />
       )
     },
-    { name: "Title", selector: row => row.title, sortable: true, cell: row => <span className="fw-semibold">{row.title}</span> },
-    { name: "Category", selector: row => row.category, sortable: true },
+    { 
+      name: "Title", 
+      selector: row => row.title, 
+      sortable: true, 
+      wrap: true,
+      cell: row => <div style={{ fontWeight: "600", wordBreak: "break-word" }}>{row.title}</div> 
+    },
+    { 
+      name: "Category", 
+      selector: row => row.category, 
+      sortable: true,
+      wrap: true,
+      cell: row => <div style={{ wordBreak: "break-word" }}>{row.category}</div>
+    },
     {
       name: "Content",
       cell: row => (
@@ -242,6 +255,7 @@ const AdminBlogs = () => {
     },
     {
       name: "Author Photo",
+      center: true,
       cell: row => (
         <img
           src={row.authorPhoto}
@@ -255,8 +269,20 @@ const AdminBlogs = () => {
         />
       )
     },
-    { name: "Author", selector: row => row.authorName, sortable: true },
-    { name: "Role", selector: row => row.authorRole, sortable: true },
+    { 
+      name: "Author", 
+      selector: row => row.authorName, 
+      sortable: true,
+      wrap: true,
+      cell: row => <div style={{ wordBreak: "break-word" }}>{row.authorName}</div>
+    },
+    { 
+      name: "Role", 
+      selector: row => row.authorRole, 
+      sortable: true,
+      wrap: true,
+      cell: row => <div style={{ wordBreak: "break-word" }}>{row.authorRole}</div>
+    },
     {
       name: "Status",
       selector: row => row.status,
@@ -283,7 +309,7 @@ const AdminBlogs = () => {
       name: "Actions",
       center: true,
       cell: (row, index) => (
-        <div className={`dropdown ${index >= 5 ? "dropup" : ""}`}>
+        <div className={`dropdown ${index >= 10 ? "dropup" : ""}`}>
           <button
             type="button"
             data-bs-toggle="dropdown"
@@ -398,7 +424,7 @@ return (
   <div className="card-body p-0">
 
     <div className="table-responsive">
-      <DataTable
+      <CustomTable itemsPerPage={10}
         columns={columns}
         data={filteredBlogs}
         pagination

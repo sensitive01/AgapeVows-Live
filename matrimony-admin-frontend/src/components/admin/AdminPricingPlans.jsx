@@ -7,6 +7,7 @@ import {
   getAllPlanData,
 } from "../../api/service/adminServices";
 import { confirmAction, showAlert } from "../../utils/alertService";
+import CustomTable from "./common/CustomTable";
 
 const AdminPricingPlans = () => {
   const [modalMode, setModalMode] = useState("add"); // 'add' or 'edit'
@@ -230,6 +231,119 @@ const AdminPricingPlans = () => {
     return display;
   };
 
+  const columns = [
+    {
+      name: "S.No",
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: "60px",
+      center: true,
+      cell: (row, index) => (
+        <span style={{ backgroundColor: "#f0f0f0", padding: "4px 8px", borderRadius: "4px" }}>
+          {index + 1}
+        </span>
+      ),
+    },
+    {
+      name: "Plan Name",
+      selector: row => row.name,
+      sortable: true,
+      cell: row => (
+        <div>
+          <span className="hig-blu fw-bold">{row.name}</span>
+          {row.dedicatedManager === "Yes" && (
+            <div className="plan-details">
+              <i className="fa fa-star text-warning me-1"></i>
+              Dedicated Account Manager
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      name: "Price",
+      selector: row => row.price,
+      sortable: true,
+      cell: row => (
+        <span className="hig-red fw-bold">
+          {typeof row.price === "number"
+            ? `₹${row.price}`
+            : `₹${row.price}`}
+        </span>
+      )
+    },
+    {
+      name: "Duration",
+      selector: row => row.duration,
+      sortable: true,
+      cell: row => (
+        <span className="badge bg-info text-dark">
+          {formatDuration(row.duration, row.durationType)}
+        </span>
+      )
+    },
+    {
+      name: "Profile Views",
+      selector: row => row.maxProfiles,
+      sortable: true,
+      cell: row => (
+        <span className="badge bg-primary text-white">
+          {formatProfileViews(row.maxProfiles, row.dailyLimit)}
+        </span>
+      )
+    },
+    {
+      name: "Status",
+      selector: row => row.status,
+      sortable: true,
+      cell: row => (
+        <span
+          className={`badge text-white ${row.status === "Active" ? "bg-success" : "bg-danger"
+            }`}
+        >
+          {row.status}
+        </span>
+      )
+    },
+    {
+      name: "Actions",
+      center: true,
+      width: "80px",
+      cell: (row, index) => (
+        <div className={`dropdown ${index >= 5 ? "dropup" : ""}`}>
+          <button
+            type="button"
+            className="btn btn-outline-secondary btn-sm"
+            data-bs-toggle="dropdown"
+          >
+            <i className="fa fa-ellipsis-h" aria-hidden="true"></i>
+          </button>
+          <ul className="dropdown-menu dropdown-menu-end shadow-sm">
+            <li>
+              <button
+                className="dropdown-item"
+                data-bs-toggle="modal"
+                data-bs-target="#pricing"
+                onClick={() => handleEditPlan(row)}
+              >
+                <i className="fa fa-edit me-2"></i>Edit
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => togglePlanStatus(row._id, row.status)}
+              >
+                <i className={`fa ${row.status === "Active" ? "fa-ban text-danger" : "fa-check text-success"} me-2`}></i>
+                {row.status === "Active" ? "Disable" : "Enable"}
+              </button>
+            </li>
+          </ul>
+        </div>
+      )
+    }
+  ];
+
   return (
     <>
       <style jsx>{`
@@ -383,131 +497,11 @@ const AdminPricingPlans = () => {
                   </button>
                 </div>
 
-                <div className="table-responsive" style={{ height: '60vh', overflowY: 'auto' }}>
-                  <table className="table table-hover">
-                    <thead>
-                      <tr>
-                        <th className="border-0">S.NO</th>
-                        <th className="border-0">PLAN NAME</th>
-                        <th className="border-0">PRICE</th>
-                        <th className="border-0">DURATION</th>
-                        <th className="border-0">PROFILE VIEWS</th>
-                        <th className="border-0">STATUS</th>
-                        <th className="border-0 text-center">MORE</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {plans.filter(plan => plan.status === activeTab).map((plan, index) => (
-                        <tr key={plan._id}>
-                          <td className="border-0">{index + 1}</td>
-                          <td className="border-0">
-                            <div>
-                              <span className="hig-blu fw-bold">{plan.name}</span>
-                              {plan.dedicatedManager === "Yes" && (
-                                <div className="plan-details">
-                                  <i className="fa fa-star text-warning me-1"></i>
-                                  Dedicated Account Manager
-                                </div>
-                              )}
-                            </div>
-                          </td>
-                          <td className="border-0">
-                            <span className="hig-red fw-bold">
-                              {typeof plan.price === "number"
-                                ? `₹${plan.price}`
-                                : `₹${plan.price}`}
-                            </span>
-                          </td>
-                          <td className="border-0">
-                            <span className="badge bg-info text-dark">
-                              {formatDuration(plan.duration, plan.durationType)}
-                            </span>
-                          </td>
-                          <td className="border-0">
-                            <span className="badge bg-primary text-white">
-                              {formatProfileViews(plan.maxProfiles, plan.dailyLimit)}
-                            </span>
-                          </td>
-                          <td className="border-0 ">
-                            <span
-                              className={`badge text-white ${plan.status === "Active" ? "bg-success" : "bg-danger"
-                                }`}
-                            >
-                              {plan.status}
-                            </span>
-                          </td>
-                          <td className="border-0 text-center">
-                            <div className="dropdown position-relative">
-                              <button
-                                type="button"
-                                className="btn btn-outline-secondary btn-sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setOpenDropdown(openDropdown === plan._id ? null : plan._id);
-                                }}
-                              >
-                                <i className="fa fa-ellipsis-h" aria-hidden="true"></i>
-                              </button>
-                              {openDropdown === plan._id && (
-                                <ul
-                                  className="dropdown-menu show position-absolute"
-                                  style={{
-                                    display: 'block',
-                                    top: '100%',
-                                    left: 'auto',
-                                    right: '0',
-                                    zIndex: 1000,
-                                    minWidth: '180px'
-                                  }}
-                                >
-                                  <li>
-                                    <a
-                                      className="dropdown-item"
-                                      href="#"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#pricing"
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        setOpenDropdown(null);
-                                        handleEditPlan(plan);
-                                      }}
-                                    >
-                                      <i className="fa fa-edit me-2"></i>Edit
-                                    </a>
-                                  </li>
-                                  <li>
-                                    <a
-                                      className="dropdown-item"
-                                      href="#"
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        setOpenDropdown(null);
-                                        togglePlanStatus(plan._id, plan.status);
-                                      }}
-                                    >
-                                      <i className={`fa ${plan.status === "Active" ? "fa-ban text-danger" : "fa-check text-success"} me-2`}></i>
-                                      {plan.status === "Active" ? "Disable" : "Enable"}
-                                    </a>
-                                  </li>
-                                </ul>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                      {plans.filter(plan => plan.status === activeTab).length === 0 && (
-                        <tr>
-                          <td colSpan="7" className="text-center py-5 border-0">
-                            <div>
-                              <i className="fa fa-list-alt fa-3x text-muted mb-3"></i>
-                              <h5 className="text-muted">No plans found</h5>
-                              <p className="text-muted">Click "Add New Plan" to create your first pricing plan</p>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                <div className="table-responsive">
+                  <CustomTable
+                    columns={columns}
+                    data={plans.filter(plan => plan.status === activeTab)}
+                  />
                 </div>
               </div>
             </div>

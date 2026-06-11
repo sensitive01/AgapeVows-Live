@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Chart, registerables } from "chart.js";
 import { Link } from "react-router-dom";
-import DataTable from "react-data-table-component";
+import CustomTable from "./common/CustomTable";
 
 import profImages from "/assets/images/profiles/1.jpg";
 import NewLayout from "./layout/NewLayout";
@@ -611,13 +611,13 @@ const DashboardPage = () => {
                 </div>
               </div>
               <div className="table-responsive">
-                <DataTable
+                <CustomTable itemsPerPage={10}
                   columns={recentMembersColumns}
                   data={newRequestedUsers}
                   pagination
                   paginationPerPage={5}
                   paginationRowsPerPageOptions={[5, 10, 20]}
-                  highlightOnHover
+                  highlightOnHover={false}
                   customStyles={customStyles}
                   noDataComponent={<div className="py-4 text-center text-muted">No recent members</div>}
                 />
@@ -647,13 +647,13 @@ const DashboardPage = () => {
                 </div>
               </div>
               <div className="table-responsive">
-                <DataTable
+                <CustomTable itemsPerPage={10}
                   columns={renewalReminderColumns}
                   data={renewalUsers}
                   pagination
                   paginationPerPage={5}
                   paginationRowsPerPageOptions={[5, 10, 20]}
-                  highlightOnHover
+                  highlightOnHover={false}
                   customStyles={customStyles}
                   noDataComponent={<div className="py-4 text-center text-muted">No renewal reminders</div>}
                 />

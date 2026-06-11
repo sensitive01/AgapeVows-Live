@@ -6,7 +6,7 @@ import {
   updateEnquiry,
 } from "../../api/service/adminServices";
 import { confirmAction, showAlert } from "../../utils/alertService";
-import DataTable from "react-data-table-component";
+import CustomTable from "./common/CustomTable";
 
 const AdminEnquiries = () => {
   const [enquiries, setEnquiries] = useState([]);
@@ -175,7 +175,7 @@ const AdminEnquiries = () => {
       name: "S.No",
       selector: (row, index) => index + 1,
       sortable: false,
-      width: "70px",
+      width: "60px",
       center: true,
       cell: (row, index) => (
         <span style={{ backgroundColor: "#f0f0f0", padding: "4px 8px", borderRadius: "4px" }}>
@@ -184,38 +184,43 @@ const AdminEnquiries = () => {
       ),
     },
     {
-      name: "Name", width: "180px",
+      name: "Name",
       selector: row => row.name,
       sortable: true,
-      cell: row => <div style={{ fontWeight: "500" }}>{row.name}</div>
+      width: "200px",
+      minWidth: "160px",
+      wrap: true,
+      cell: row => <div style={{ fontWeight: "500", wordBreak: "break-word" }}>{row.name}</div>
     },
     {
-      name: "Contact", width: "140px",
+      name: "Contact Info",
       selector: row => row.phone,
       sortable: true,
+      width: "260px",
+      minWidth: "220px",
+      wrap: true,
       cell: row => (
-        <a href={`tel:${row.phone}`} style={{ color: "#667eea", textDecoration: "none" }}>
-          {row.phone}
-        </a>
+        <div style={{ wordBreak: "break-word", padding: "8px 0" }}>
+          <a href={`tel:${row.phone}`} style={{ color: "#667eea", textDecoration: "none", display: "block", marginBottom: "4px" }}>
+            {/* <i className="fa fa-phone me-1"></i>*/} {row.phone} 
+          </a>
+          {row.email && (
+            <a href={`mailto:${row.email}`} style={{ color: "#667eea", textDecoration: "none", display: "block" }}>
+              {/* <i className="fa fa-envelope me-1"></i>*/} {row.email}
+            </a>
+          )}
+        </div>
       )
     },
     {
-      name: "Email", width: "250px",
-      selector: row => row.email,
-      sortable: true,
-      cell: row => (
-        <a href={`mailto:${row.email}`} style={{ color: "#667eea", textDecoration: "none" }}>
-          {row.email || "-"}
-        </a>
-      )
-    },
-    {
-      name: "Message",
+      name: "Message", 
       selector: row => row.message,
       sortable: true,
-      minWidth: "250px",
+      width: "220px",
+      minWidth: "180px",
+      wrap: true,
       cell: row => (
-        <div style={{ whiteSpace: "normal", wordBreak: "break-word", margin: "10px 0", textAlign: "left" }}>
+        <div style={{ wordBreak: "break-word" }}>
           {row.message}
         </div>
       )
@@ -224,17 +229,26 @@ const AdminEnquiries = () => {
       name: "Reply Content",
       selector: row => row.replyMessage,
       sortable: true,
-      minWidth: "250px",
+      width: "220px",
+      minWidth: "180px",
+      wrap: true,
       cell: row => (
-        <div style={{ whiteSpace: "normal", wordBreak: "break-word", margin: "10px 0", color: "#084298", textAlign: "left" }}>
+        <div 
+          style={{ 
+            wordBreak: "break-word", 
+            color: "#084298", 
+            textAlign: row.replyMessage ? "left" : "center" 
+          }}
+        >
           {row.replyMessage || "-"}
         </div>
       )
     },
     {
-      name: "Status",width:"150px",
+      name: "Status",
       selector: row => row.status,
       sortable: true,
+      width: "110px",
       cell: row => (
         <span
           style={{
@@ -266,15 +280,18 @@ const AdminEnquiries = () => {
       )
     },
     {
-      name: "Date",width:"120px",
+      name: "Date",
       selector: row => row.createdAt ? new Date(row.createdAt).getTime() : 0,
       sortable: true,
+      width: "90px",
       format: row => new Date(row.createdAt).toLocaleDateString(),
     },
     {
       name: "Actions",
+      width: "80px",
+      center: true,
       cell: (item, index) => (
-        <div className={`dropdown ${index >= 5 ? 'dropup' : ''}`} style={{ display: "inline-block" }}>
+        <div className={`dropdown ${index >= 10 ? 'dropup' : ''}`} style={{ display: "inline-block" }}>
           <button
             className="btn btn-light btn-sm rounded-circle"
             data-bs-toggle="dropdown"
@@ -580,13 +597,13 @@ const AdminEnquiries = () => {
         {/* ========== TABLE ========== */}
         <div className="card border-0 shadow-sm" style={{ borderRadius: "12px", overflow: "visible" }}>
           <div className="card-body p-0 table-responsive" style={{ minHeight: "350px", overflow: "visible" }}>
-            <DataTable
+            <CustomTable itemsPerPage={10}
               columns={columns}
               data={filteredEnquiries}
               pagination
               paginationRowsPerPageOptions={[5, 10, 15, 20]}
               paginationPerPage={5}
-              highlightOnHover
+              highlightOnHover={false}
               customStyles={customStyles}
               noDataComponent={
                 <div

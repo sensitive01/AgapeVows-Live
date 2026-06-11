@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
-import DataTable from "react-data-table-component";
+import CustomTable from "./common/CustomTable";
 import {
   getAllIssues,
   updateIssue,
@@ -135,7 +135,7 @@ const AdminIssues = () => {
   const columns = [
     { name: "S.No", selector: (row, index) => index + 1, sortable: false, width: "70px" },
     {
-      name: "User",width:"140px",
+      name: "User",width:"120px",
       selector: row => row.userName,
       sortable: true,
       cell: row => (
@@ -160,14 +160,16 @@ const AdminIssues = () => {
       name: "Issue",
       selector: row => row.details,
       sortable: true,
+      width: "200px",
+      wrap: true,
       cell: row => (
-        <div className="text-truncate" style={{ maxWidth: "200px" }} title={row.details}>
+        <div className="small" style={{ wordBreak: "break-word" }}>
           {row.details}
         </div>
       )
     },
     {
-      name: "Attachment",width:"180px",
+      name: "Attachment",
       cell: row => row.attachment ? (
         <a
           href={row.attachment.startsWith('http') ? row.attachment : `http://localhost:3001/${row.attachment}`}
@@ -180,17 +182,18 @@ const AdminIssues = () => {
       ) : "-"
     },
     {
-      name: "Admin Reply", width:"220px",
+      name: "Admin Reply", width:"250px",
       selector: row => row.adminReply,
       sortable: true,
+      wrap: true,
       cell: row => (
-        <div className="small" style={{ maxWidth: "200px" }}>
+        <div className="small" style={{ wordBreak: "break-word" }}>
           {row.adminReply || "-"}
         </div>
       )
     },
     {
-      name: "Status",width:"140px",
+      name: "Status",
       selector: row => row.status,
       sortable: true,
       cell: row => (
@@ -208,7 +211,7 @@ const AdminIssues = () => {
       )
     },
     {
-      name: "Created",width:"120px",
+      name: "Created",
       selector: row => row.createdAt,
       sortable: true,
       format: row => new Date(row.createdAt).toLocaleDateString()
@@ -371,7 +374,7 @@ const AdminIssues = () => {
         <div className="card border-0 shadow-sm rounded-4">
           <div className="card-body p-0">
             <div className="table-responsive">
-              <DataTable
+              <CustomTable itemsPerPage={10}
                 columns={columns}
                 data={filteredIssues}
                 pagination

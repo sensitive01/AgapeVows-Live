@@ -3,7 +3,7 @@ import NewLayout from "./layout/NewLayout";
 import { getVerifiedIdUsers, verifyIdProof } from "../../api/service/adminServices";
 import { useNavigate, Link } from "react-router-dom";
 import { confirmAction, showAlert } from "../../utils/alertService";
-import DataTable from "react-data-table-component";
+import CustomTable from "./common/CustomTable";
 
 export default function AdminVerifiedIdUsers() {
   const navigate = useNavigate();
@@ -52,16 +52,18 @@ export default function AdminVerifiedIdUsers() {
       name: "S.No",
       selector: (row, index) => index + 1,
       sortable: false,
-      width: "70px",
       center: true,
+      width: "60px",
     },
     {
       name: "User Details",
       selector: row => row.userName,
       sortable: true,
-      minWidth: "290px",
+      width: "320px",
+      minWidth: "280px",
+      wrap: true,
       cell: row => (
-        <div className="d-flex align-items-center py-2">
+        <div className="d-flex align-items-center py-2" style={{ wordBreak: "break-word", minWidth: "250px" }}>
           <img 
             src={row.profileImage || "/assets/images/user-placeholder.png"} 
             alt="" 
@@ -69,42 +71,42 @@ export default function AdminVerifiedIdUsers() {
             onError={(e) => e.target.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
           />
           <div className="text-start" style={{ minWidth: 0 }}>
-            <div className="fw-bold text-truncate" style={{ maxWidth: '250px' }}>{row.userName}</div>
-            <small className="text-muted text-truncate d-block" style={{ maxWidth: '250px' }}>{row.userEmail}</small>
+            <div className="fw-bold">{row.userName}</div>
+            <small className="text-muted d-block">{row.userEmail}</small>
+            <small className="text-info fw-bold d-block">{row.agwid || "N/A"}</small>
           </div>
         </div>
       )
     },
     {
-      name: "AV ID",width:"130px",
-      selector: row => row.agwid || "N/A",
-      sortable: true,
-      center: true,
-    },
-    {
-      name: "ID Type", minWidth: "180px",
+      name: "ID Type",
       selector: row => row.idProofType || "N/A",
       sortable: true,
       center: true,
+      width: "110px",
+      wrap: true,
       cell: row => (
-        <div style={{ whiteSpace: "nowrap" }}>
+        <div style={{ wordBreak: "break-word" }}>
           {row.idProofType || "N/A"}
         </div>
       )
     },
     {
-      name: "ID Number", minWidth: "180px",
+      name: "ID Number",
       selector: row => row.idProofNumber || "N/A",
       sortable: true,
       center: true,
+      width: "120px",
+      wrap: true,
       cell: row => (
-        <div style={{ whiteSpace: "nowrap" }}>
+        <div style={{ wordBreak: "break-word" }}>
           {row.idProofNumber || "N/A"}
         </div>
       )
     },
     {
-      name: "Document",width:"130px",
+      name: "Document",
+      width: "100px",
       cell: row => row.idProofDocument ? (
         <button 
           className="btn btn-sm btn-outline-info"
@@ -118,9 +120,10 @@ export default function AdminVerifiedIdUsers() {
       center: true,
     },
     {
-      name: "Approved Date",width:"180px",
+      name: "Approved Date",
       selector: row => new Date(row.idVerifiedAt || row.updatedAt || 0).getTime(),
       sortable: true,
+      width: "110px",
       cell: row => (
         <div className="fw-semibold text-secondary text-center">
           <div>{formatDate(row.idVerifiedAt || row.updatedAt)}</div>
@@ -130,43 +133,38 @@ export default function AdminVerifiedIdUsers() {
       center: true,
     },
     {
-      name: "Created At",width:"150px",
+      name: "Created At",
       selector: row => row.createdAt ? new Date(row.createdAt).getTime() : 0,
       sortable: true,
+      width: "90px",
       format: row => row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "N/A",
       center: true,
     },
     {
-      name: "Actions",width:"130px",
+      name: "Actions",
+      width: "120px",
       cell: row => (
-        <button 
-          className="btn btn-sm btn-primary rounded-pill px-3 text-light"
-          disabled={processingUsers.has(row._id)}
-          onClick={() => handleUndoVerification(row._id)}
-        >
-          {processingUsers.has(row._id) ? "..." : "Undo"}
-        </button>
+        <div className="d-flex flex-column gap-2 align-items-center">
+          <button 
+            className="btn btn-sm btn-primary rounded-pill px-3 w-100 text-light"
+            disabled={processingUsers.has(row._id)}
+            onClick={() => handleUndoVerification(row._id)}
+          >
+            {processingUsers.has(row._id) ? "..." : "Undo"}
+          </button>
+          <Link 
+            to={`/admin/new-user/${row._id}`} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="btn btn-sm btn-outline-primary px-2 py-1 w-100"
+            style={{ fontSize: "12px" }}
+          >
+            <i className="fa fa-user me-1"></i> Profile
+          </Link>
+        </div>
       ),
       center: true,
       ignoreRowClick: true,
-      minWidth: "100px",
-    },
-    {
-      name: "Profile",
-      cell: row => (
-        <Link 
-          to={`/admin/new-user/${row._id}`} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="btn btn-sm btn-outline-primary px-2 py-1"
-          style={{ fontSize: "12px", whiteSpace: "nowrap" }}
-        >
-          <i className="fa fa-user me-1"></i> View Profile
-        </Link>
-      ),
-      center: true,
-      ignoreRowClick: true,
-      minWidth: "140px",
     }
   ];
 
@@ -287,13 +285,13 @@ export default function AdminVerifiedIdUsers() {
                   </div>
                 </div>
               ) : (
-                <DataTable
+                <CustomTable itemsPerPage={10}
                   columns={columns}
                   data={filteredUsers}
                   pagination
                   paginationRowsPerPageOptions={[5, 10, 15, 20]}
                   paginationPerPage={5}
-                  highlightOnHover
+                  highlightOnHover={false}
                   customStyles={customStyles}
                   defaultSortFieldId={7}
                   defaultSortAsc={false}

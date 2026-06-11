@@ -272,6 +272,18 @@ const Sidebar = () => {
           </li>
           )}
 
+          {/* BLOGS */}
+          {hasPermission("blogs") && (
+          <li>
+            <Link 
+              to="/admin/blogs" 
+              style={isActive("/admin/blogs") ? activeLinkStyle : normalLinkStyle}
+            >
+              <span style={iconStyle}>📝</span> Blogs
+            </Link>
+          </li>
+          )}
+
 
 
           {/* ISSUES */}
