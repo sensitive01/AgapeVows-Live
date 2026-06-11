@@ -29,16 +29,7 @@ const UserSignUp = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Login Popup Logic (Using MainLayout's sidebar)
-  const openLoginPopup = (e) => {
-    e.preventDefault();
-    const menuPop = document.querySelector('.menu-pop1');
-    const popBg = document.querySelector('.pop-bg');
-    if (menuPop) menuPop.classList.add('act');
-    if (popBg) popBg.classList.add('act');
-    document.querySelectorAll('.mob-me-all').forEach((el) => el.classList.remove('act'));
-    document.body.style.overflow = 'hidden';
-  };
+
 
   // ✅ NEW STATE FOR PASSWORD VIEW
   const [showPassword, setShowPassword] = useState(false);
@@ -214,7 +205,7 @@ const UserSignUp = () => {
                         Already a member?{" "}
                         <a
                           href="#!"
-                          onClick={openLoginPopup}
+                          onClick={(e) => { e.preventDefault(); navigate('/user/user-login'); }}
                         >
                           Login
                         </a>

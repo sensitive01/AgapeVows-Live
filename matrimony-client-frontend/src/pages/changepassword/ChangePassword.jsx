@@ -689,24 +689,24 @@ const ChangePassword = () => {
           <div className="container">
             <div className="row">
               <div className="inn">
-                <div
-                  className="lhs"
-                  style={{
-                    background: '#A020F0',
-                  }}
-                >
-                  <div className="tit">
-                    <h2>
-                      <span style={{ color: "#fff" }}>Create your </span>
-                      <b style={{ color: "#FFD700" }}>New Password</b>
-                      <span style={{ color: "#fff" }}> Easy and fast.</span>
-                    </h2>
-                  </div>
-                  <div className="im">
-                    <img src="images/login-couple.png" alt="" />
-                  </div>
-                  <div className="log-bg">&nbsp;</div>
-                </div>
+                  <style>
+                    {`
+                      .login .inn {
+                        display: flex;
+                        justify-content: center;
+                        width: 100%;
+                        max-width: 500px;
+                        margin: 0 auto;
+                      }
+                      .login .inn .rhs {
+                        width: 100%;
+                        max-width: 100%;
+                        margin: 0;
+                        padding: 40px;
+                        border-radius: 10px;
+                      }
+                    `}
+                  </style>
                 <div className="rhs">
                   <div>
                     <div className="form-tit">
