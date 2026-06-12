@@ -14,7 +14,7 @@ const userAuthController = require("./controller/userController/userAuthControll
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 
-const port = PORT || 3001;
+const port = PORT;
 const server = http.createServer(app);
 
 // ✅ Initialize Socket.IO
@@ -51,7 +51,7 @@ const allowedOrigins = [
   "https://agape-vows-live.vercel.app",
   "https://agape-vows-live-z3cg.vercel.app",
   "http://localhost:3000",
-  "http://localhost:3001",
+  "http://localhost:4000",
   "http://187.127.137.237:3000",
   "http://187.127.137.237:3001"
 ];

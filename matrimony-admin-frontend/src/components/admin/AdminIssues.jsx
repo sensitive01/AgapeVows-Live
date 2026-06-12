@@ -120,12 +120,12 @@ const AdminIssues = () => {
 
   const filteredIssues = issues.filter((issue) => {
     const isResolvedTab = activeTab === "Resolved";
-    const matchesTab = isResolvedTab 
-      ? issue.status === "Resolved" 
+    const matchesTab = isResolvedTab
+      ? issue.status === "Resolved"
       : (issue.status === "Pending" || issue.status === "In Progress");
-    
+
     const searchLower = searchQuery.toLowerCase();
-    const matchesSearch = 
+    const matchesSearch =
       (issue.userName && issue.userName.toLowerCase().includes(searchLower)) ||
       (issue.details && issue.details.toLowerCase().includes(searchLower));
 
@@ -135,7 +135,7 @@ const AdminIssues = () => {
   const columns = [
     { name: "S.No", selector: (row, index) => index + 1, sortable: false, width: "70px" },
     {
-      name: "User",width:"120px",
+      name: "User", width: "120px",
       selector: row => row.userName,
       sortable: true,
       cell: row => (
@@ -146,7 +146,7 @@ const AdminIssues = () => {
       )
     },
     {
-      name: "Contact Info",width:"240px",
+      name: "Contact Info", width: "240px",
       selector: row => row.userEmail,
       sortable: true,
       cell: row => (
@@ -172,7 +172,7 @@ const AdminIssues = () => {
       name: "Attachment",
       cell: row => row.attachment ? (
         <a
-          href={row.attachment.startsWith('http') ? row.attachment : `http://localhost:3001/${row.attachment}`}
+          href={row.attachment.startsWith('http') ? row.attachment : `http://localhost:4000/${row.attachment}`}
           target="_blank"
           rel="noreferrer"
           className="btn btn-success btn-sm"
@@ -182,7 +182,7 @@ const AdminIssues = () => {
       ) : "-"
     },
     {
-      name: "Admin Reply", width:"250px",
+      name: "Admin Reply", width: "250px",
       selector: row => row.adminReply,
       sortable: true,
       wrap: true,
@@ -198,13 +198,12 @@ const AdminIssues = () => {
       sortable: true,
       cell: row => (
         <span
-          className={`badge px-3 py-2 ${
-            row.status === "Resolved"
-              ? "bg-success"
-              : row.status === "In Progress"
+          className={`badge px-3 py-2 ${row.status === "Resolved"
+            ? "bg-success"
+            : row.status === "In Progress"
               ? "bg-primary"
               : "bg-warning"
-          }`}
+            }`}
         >
           {row.status}
         </span>
@@ -405,7 +404,7 @@ const AdminIssues = () => {
                   </div>
                   <div className="row mb-2">
                     <div className="col-4 fw-bold">Contact:</div>
-                    <div className="col-8">{selectedIssue.userEmail || "N/A"} <br/> {selectedIssue.userMobile || "N/A"}</div>
+                    <div className="col-8">{selectedIssue.userEmail || "N/A"} <br /> {selectedIssue.userMobile || "N/A"}</div>
                   </div>
                   <div className="row mb-2">
                     <div className="col-4 fw-bold">Issue:</div>
@@ -415,9 +414,9 @@ const AdminIssues = () => {
                     <div className="row">
                       <div className="col-4 fw-bold">Attachment:</div>
                       <div className="col-8">
-                        <a href={selectedIssue.attachment.startsWith('http') ? selectedIssue.attachment : `http://localhost:3001/${selectedIssue.attachment}`} target="_blank" rel="noreferrer" className="text-primary text-decoration-underline">
+                        <a href={selectedIssue.attachment.startsWith('http') ? selectedIssue.attachment : `http://localhost:4000/${selectedIssue.attachment}`} target="_blank" rel="noreferrer" className="text-primary text-decoration-underline">
                           View Uploaded File
-                        </a>
+                        </a> 
                       </div>
                     </div>
                   )}

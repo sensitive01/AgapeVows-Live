@@ -364,10 +364,10 @@ const completeProfileData = async (req, res) => {
 const getUserProfileImage = async (req, res) => {
   try {
     const { userId } = req.params;
-    if (!userId) {
+    if (!userId || userId === "null" || userId === "undefined" || !mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({
         success: false,
-        message: "User ID is required",
+        message: "Valid User ID is required",
       });
     }
 
@@ -1207,6 +1207,13 @@ const changeInterestStatus = async (req, res) => {
 const getNewProfileMatches = async (req, res) => {
   try {
     const { userId } = req.params;
+
+    if (!userId || userId === "null" || userId === "undefined" || !mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid User ID is required",
+      });
+    }
 
     const currentUser = await userModel.findById(userId);
     if (!currentUser)

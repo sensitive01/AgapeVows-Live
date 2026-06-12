@@ -76,6 +76,8 @@ export default function SidebarLoginComponent({ closePopup }) {
         if (response.data.profileImage) {
           localStorage.setItem("userImage", response.data.profileImage);
         }
+        
+        sessionStorage.setItem("session_active", "true");
 
         // ✅ Get redirect path from sessionStorage
         const redirectPath =

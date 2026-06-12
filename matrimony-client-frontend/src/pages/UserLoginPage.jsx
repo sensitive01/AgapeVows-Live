@@ -158,7 +158,7 @@ const UserLoginPage = () => {
     if (userData.gender) localStorage.setItem("gender", userData.gender);
     if (userData.profileImage) localStorage.setItem("userImage", userData.profileImage);
     localStorage.setItem("rememberMe", formData.rememberMe.toString());
-    document.cookie = "session_active=true; path=/";
+    sessionStorage.setItem("session_active", "true");
 
     const redirectPath = location.state?.from || "/user/user-dashboard-page";
     navigate(redirectPath, { replace: true, state: { formData: location.state?.formData } });
