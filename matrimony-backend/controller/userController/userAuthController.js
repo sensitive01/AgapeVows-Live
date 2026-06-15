@@ -41,10 +41,8 @@ const generateOrderId = () => {
 const getUserInformation = async (req, res) => {
   try {
     const { userId } = req.params;
-    console.log("Fetching info for userId:", userId);
 
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-      console.log("Invalid ID format:", userId);
       return res.status(400).json({
         success: false,
         message: "Invalid user ID format",
@@ -52,7 +50,6 @@ const getUserInformation = async (req, res) => {
     }
 
     const userData = await userModel.findById(userId, { userPassword: 0 });
-    console.log("User data found:", !!userData);
 
     if (!userData) {
       return res.status(404).json({
@@ -99,8 +96,6 @@ const getUserInformation = async (req, res) => {
 const completeProfileData = async (req, res) => {
   try {
     const { userId } = req.params;
-    console.log("req.body", req.body);
-
     const files = req.files;
 
     /* =========================
@@ -341,7 +336,6 @@ const completeProfileData = async (req, res) => {
 
     Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key]);
 
-    console.log("🔄 Final Updates:", updates);
 
     const updatedUser = await userModel.findByIdAndUpdate(userId, updates, {
       new: true,
@@ -497,7 +491,6 @@ const getAllUserProfileData = async (req, res) => {
       data: userData,
     });
   } catch (err) {
-    console.log("Error in getAllUserProfileData:", err);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -522,7 +515,6 @@ const getAllUserProfileDataHome = async (req, res) => {
       data: userData,
     });
   } catch (err) {
-    console.log("Error in getAllUserProfileData:", err);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -530,16 +522,10 @@ const getAllUserProfileDataHome = async (req, res) => {
   }
 };
 
-
-
-
 const getProfileMoreInformation = async (req, res) => {
   try {
     const { profileId } = req.params;
     const { viewerId } = req.query;
-
-    console.log("👉 profileId:", profileId);
-    console.log("👉 viewerId:", viewerId);
 
     const profileData = await userModel.findById(
       profileId,
@@ -579,8 +565,6 @@ const getProfileMoreInformation = async (req, res) => {
             new Date(p.subscriptionValidTo) > now
         );
 
-        console.log("👉 Active plans:", activePlans.length);
-
         if (activePlans.length > 0) {
           // Latest active plan
           activePlans.sort(
@@ -592,8 +576,6 @@ const getProfileMoreInformation = async (req, res) => {
           const actualPlan = activePlans[0];
           currentPlanStartDate = new Date(actualPlan.subscriptionValidFrom);
           const viewerPlanName = actualPlan.subscriptionType || "";
-
-          console.log("👉 Viewer Plan:", viewerPlanName);
 
           const viewerCanViewRaw = actualPlan.canViewProfiles || "All Profiles";
           const viewerCanView = viewerCanViewRaw.toString().trim().toLowerCase();
@@ -608,7 +590,6 @@ const getProfileMoreInformation = async (req, res) => {
 
             if (targetActivePlan) {
               const targetPlanName = targetActivePlan.subscriptionType?.toLowerCase() || "basic";
-              console.log("👉 Target Plan:", targetPlanName);
 
               const isTargetPlatinumOrGold =
                 targetPlanName.includes("platinum") ||
@@ -629,8 +610,6 @@ const getProfileMoreInformation = async (req, res) => {
             }
           }
 
-          console.log("👉 Using plan ID for tracking:", actualPlan._id);
-
           const today = new Date();
           const todayString = today.toISOString().split("T")[0];
 
@@ -642,8 +621,6 @@ const getProfileMoreInformation = async (req, res) => {
 
           // ✅ RESET DAILY COUNT
           if (lastViewStr !== todayString) {
-            console.log("🔄 Resetting daily count");
-
             const resetIndex = viewerData.paymentDetails.findIndex(p => p._id.toString() === actualPlan._id.toString());
             if (resetIndex !== -1) {
               await userModel.updateOne(
@@ -688,7 +665,6 @@ const getProfileMoreInformation = async (req, res) => {
             val === "unlimited" ||
             parseInt(val) >= 999999;
 
-
           const parsedMax = parseInt(maxP);
           const parsedDaily = parseInt(dailyL);
 
@@ -699,10 +675,6 @@ const getProfileMoreInformation = async (req, res) => {
           const currentDailyCount =
             actualPlan.dailyViewedCount || 0;
 
-          console.log("👉 Counts:", currentProfileCount, currentDailyCount);
-          console.log("👉 Limits (Final):", maxP, dailyL);
-
-          // ✅ CHECK TOTAL LIMIT FIRST
           if (
             !isUnlimited(maxP) &&
             !isNaN(parsedMax) &&
@@ -734,9 +706,6 @@ const getProfileMoreInformation = async (req, res) => {
           );
 
           if (profileWithNewView) {
-            console.log("🔥 New Unique View! Incrementing counts...");
-
-            // ✅ ATOMIC INCREMENT WITH PRECISE INDEX
             const incIndex = viewerData.paymentDetails.findIndex(p => p._id.toString() === actualPlan._id.toString());
             if (incIndex !== -1) {
               await userModel.updateOne(
@@ -753,12 +722,8 @@ const getProfileMoreInformation = async (req, res) => {
             if (!profileData.profileViews) profileData.profileViews = [];
             profileData.profileViews.push(viewerId);
             await userModel.findByIdAndUpdate(profileId, { $inc: { unreadViewsCount: 1 } });
-          } else {
-            console.log("ℹ️ Profile already viewed by this user. Skipping increment.");
           }
         } else {
-          console.log("⚠️ No active plan");
-          // Record view but no increment
           if (!profileData.profileViews.includes(viewerId)) {
             profileData.profileViews.push(viewerId);
             await profileData.save();
@@ -766,8 +731,6 @@ const getProfileMoreInformation = async (req, res) => {
           }
         }
       } else {
-        console.log("⚠️ No payment details");
-        // Record view but no increment
         if (!profileData.profileViews.includes(viewerId)) {
           profileData.profileViews.push(viewerId);
           await profileData.save();
@@ -787,8 +750,6 @@ const getProfileMoreInformation = async (req, res) => {
 
       if (interest) {
         if (currentPlanStartDate && new Date(interest.updatedAt) < currentPlanStartDate) {
-          // Interest was sent before the current plan started.
-          // We ignore it so the user can send a new interest under their new plan.
           interestStatus = null;
         } else {
           interestStatus = interest.status;
@@ -807,7 +768,6 @@ const getProfileMoreInformation = async (req, res) => {
       data: responseData,
     });
   } catch (err) {
-    console.log("❌ Error:", err);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -824,18 +784,12 @@ const showUserInterests = async (req, res) => {
 
     const { targetUser, permissions, message } = interestData;
 
-    console.log("userId", userId);
-    console.log("targetUser", targetUser);
-    console.log("permissions", permissions);
-    console.log("message", message);
-
     const user = await userModel.findById(userId);
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
     const now = new Date();
-    // Find latest active plan by checking status and valid to date
     const activePlansIndices = user.paymentDetails
       ?.map((plan, index) => ({ plan, index }))
       .filter(({ plan }) => plan.subscriptionStatus === "Active" && new Date(plan.subscriptionValidTo) > now)
@@ -852,7 +806,6 @@ const showUserInterests = async (req, res) => {
     let maxSendInterest = activePlan.maxSendInterest;
     let dailyLimitSendInterest = activePlan.dailyLimitSendInterest;
 
-    // Fallback to plan model if limits are undefined, null, or 0 (schema defaults)
     if (!sendInterestRequest || !maxSendInterest || maxSendInterest === 0 || maxSendInterest === "0" || maxSendInterest === undefined || !dailyLimitSendInterest || dailyLimitSendInterest === 0 || dailyLimitSendInterest === "0") {
       const planModel = require("../../model/admin/planModel");
       const planDef = await planModel.findOne({ name: activePlan.subscriptionType });
@@ -980,8 +933,6 @@ const viewContactDetails = async (req, res) => {
     const { userId } = req.params;
     const { targetUserId } = req.body;
 
-    console.log("🔍 viewContactDetails called:", { userId, targetUserId });
-
     if (!userId || !targetUserId) {
       return res.status(400).json({ success: false, message: "Missing required data." });
     }
@@ -997,11 +948,7 @@ const viewContactDetails = async (req, res) => {
       .filter(({ plan }) => plan.subscriptionStatus === "Active" && new Date(plan.subscriptionValidTo) > now)
       .sort((a, b) => new Date(b.plan.subscriptionValidFrom) - new Date(a.plan.subscriptionValidFrom));
 
-    console.log("📊 activePlans count:", activePlansIndices?.length);
-    console.log("📊 user.paymentDetails length:", user.paymentDetails?.length);
-
     if (!activePlansIndices || activePlansIndices.length === 0) {
-      console.log("❌ No active plan found");
       return res.status(403).json({ success: false, message: "No active subscription plan found." });
     }
 
@@ -1023,15 +970,9 @@ const viewContactDetails = async (req, res) => {
       }
     }
 
-    console.log("📋 activePlan viewContactDetails raw value:", viewContact);
-    console.log("📋 activePlan type:", typeof viewContact);
-
     const canViewContact = viewContact?.toString()?.trim()?.toLowerCase() === "yes";
 
-    console.log("✅ canViewContact after normalization:", canViewContact);
-
     if (!canViewContact) {
-      console.log("❌ Contact view not allowed:", viewContact);
       return res.status(403).json({ success: false, message: "Your current plan does not allow viewing contact details." });
     }
 
@@ -1073,16 +1014,12 @@ const viewContactDetails = async (req, res) => {
     );
 
     if (targetUserWithNewView) {
-      console.log("🔥 New Unique Contact View! Incrementing limits...");
-
       if (!isUnlimitedTotal && !isNaN(parsedMaxViewContact) && totalCount >= parsedMaxViewContact) {
-        // Revert the push since limit reached
         await userModel.updateOne({ _id: targetUserId }, { $pull: { contactViews: userId } });
         return res.status(403).json({ success: false, message: `You have reached your total contact view limit of ${maxViewContact}.` });
       }
 
       if (!isUnlimitedDaily && !isNaN(parsedDailyLimitViewContact) && dailyCount >= parsedDailyLimitViewContact) {
-        // Revert the push since limit reached
         await userModel.updateOne({ _id: targetUserId }, { $pull: { contactViews: userId } });
         return res.status(403).json({ success: false, message: `You have reached your daily contact view limit of ${dailyLimitViewContact}.` });
       }
@@ -1092,8 +1029,6 @@ const viewContactDetails = async (req, res) => {
       user.paymentDetails[activePlanIndex].lastContactViewDate = new Date();
       user.markModified("paymentDetails");
       await user.save();
-    } else {
-      console.log("ℹ️ User already viewed this contact before. Skipping limits check.");
     }
 
     return res.status(200).json({
@@ -1154,7 +1089,6 @@ const getInterestedProfileRequest = async (req, res) => {
       data: mergedData,
     });
   } catch (err) {
-    console.log("Error in getting the interested profile request", err);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -1166,7 +1100,6 @@ const changeInterestStatus = async (req, res) => {
   try {
     const { userId } = req.params;
     const { reqStatus, profileId } = req.body;
-    console.log(userId, reqStatus, profileId);
 
     if (!userId || !reqStatus || !profileId) {
       return res.status(400).json({
@@ -1194,10 +1127,6 @@ const changeInterestStatus = async (req, res) => {
       data: interest,
     });
   } catch (err) {
-    console.log(
-      "Error in changing the status of the interested profile request",
-      err
-    );
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -1530,10 +1459,6 @@ const savePlanDetails = async (req, res) => {
   try {
     const { paymentData } = req.body;
 
-    console.log("📦 paymentData received:", JSON.stringify(paymentData, null, 2));
-    console.log("📦 planDetails.viewContactDetails:", paymentData.planDetails?.viewContactDetails);
-    console.log("📦 planDetails.sendInterestRequest:", paymentData.planDetails?.sendInterestRequest);
-
     // ✅ VALID FROM
     const validFrom = new Date(paymentData.timestamp);
 
@@ -1608,12 +1533,8 @@ const savePlanDetails = async (req, res) => {
       },
     };
 
-    console.log("📝 Saving to paymentDetails:", JSON.stringify(updateData.$push.paymentDetails, null, 2));
-
     await userModel.findByIdAndUpdate(paymentData.userId, updateData, { new: true });
 
-    // ✅ CLEAR OLD VIEW COUNTS ACROSS ALL USERS
-    // This allows the user to be charged again if they re-view the same profiles on their new plan.
     await userModel.updateMany(
       { profileViews: paymentData.userId },
       { $pull: { profileViews: paymentData.userId } }
@@ -1644,8 +1565,6 @@ const getMyActivePlanDetails = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    console.log("📤 getMyActivePlanDetails called for userId:", userId);
-
     const userData = await userModel.findById(userId, {
       paymentDetails: 1,
       userName: 1,
@@ -1670,21 +1589,13 @@ const getMyActivePlanDetails = async (req, res) => {
 
     const now = new Date();
 
-    // ✅ Remove expired plans
     const validPlans = userData.paymentDetails.filter(
       (plan) => new Date(plan.subscriptionValidTo) > now
     );
 
-    console.log("📊 Valid plans count:", validPlans.length);
-
-    // Expired plans are filtered out below, no need to overwrite DB here
-
-    // ✅ Filter active plans only
     const activePlans = validPlans.filter(
       (plan) => plan.subscriptionStatus === "Active"
     );
-
-    console.log("📊 Active plans count:", activePlans.length);
 
     if (activePlans.length === 0) {
       return res.status(404).json({
@@ -1700,12 +1611,6 @@ const getMyActivePlanDetails = async (req, res) => {
     );
 
     const latestPlan = activePlans[0];
-
-    console.log("📝 Latest plan:", {
-      type: latestPlan.subscriptionType,
-      viewContactDetails: latestPlan.viewContactDetails,
-      canViewProfiles: latestPlan.canViewProfiles,
-    });
 
     const formatDate = (date) =>
       new Date(date).toLocaleString("en-IN", {
@@ -1743,8 +1648,6 @@ const getMyActivePlanDetails = async (req, res) => {
       dailyContactViewCount: latestPlan.dailyContactViewCount || 0,
     };
 
-    console.log("📤 Sending response with viewContactDetails:", response.viewContactDetails);
-    console.log("📤 Full response object:", JSON.stringify(response, null, 2));
 
     return res.status(200).json({
       success: true,
@@ -1763,9 +1666,6 @@ const shortListTheProfile = async (req, res) => {
   try {
     const { userId } = req.params;
     const { profileId } = req.body;
-
-    console.log("userId", userId);
-    console.log("profileId", profileId);
 
     let shortListedData = await shortListedSchema.findOne({ userId });
 
@@ -1800,7 +1700,6 @@ const shortListTheProfile = async (req, res) => {
       });
     }
   } catch (err) {
-    console.log("Error in shortListTheProfile", err);
     res.status(500).json({ success: false, message: "Internal server error." });
   }
 };
@@ -1860,7 +1759,6 @@ const getShortListedProfileData = async (req, res) => {
       },
     });
   } catch (err) {
-    console.log("Error in getShortListedProfileData", err);
     res.status(500).json({ success: false, message: "Internal server error." });
   }
 };
@@ -1887,7 +1785,6 @@ const removeShortlistProfile = async (req, res) => {
 
     return res.status(404).json({ success: false, message: "Shortlist not found" });
   } catch (err) {
-    console.log("Error in removeShortlistProfile", err);
     res.status(500).json({ success: false, message: "Internal server error." });
   }
 };
@@ -2094,16 +1991,10 @@ const calculateValidTo = (validFrom, duration, durationType) => {
   return validTo;
 };
 
-
-
-
 const cancelUserPlan = async (req, res) => {
   try {
     const { userId } = req.params;
     const { reason, message } = req.body;
-
-    console.log("USER ID:", userId);
-    console.log("BODY:", req.body);
 
     const user = await userModel.findById(userId);
 
@@ -2127,9 +2018,7 @@ const cancelUserPlan = async (req, res) => {
       (p) => p.subscriptionStatus !== "Cancelled"
     );
 
-    // 👉 If all plans already cancelled
     if (!plan) {
-      console.log("Already cancelled → cleaning...");
 
       user.isAnySubscriptionTaken = false;
       user.paymentDetails = [];
@@ -2148,10 +2037,8 @@ const cancelUserPlan = async (req, res) => {
     plan.cancelReason = reason;
     plan.cancelMessage = message;
 
-    // ✅ முக்கியம் (MAIN FIX)
     user.isAnySubscriptionTaken = false;
 
-    // ✅ ARRAY EMPTY (YOUR REQUIREMENT)
     user.paymentDetails = [];
 
     await user.save();
@@ -2163,7 +2050,6 @@ const cancelUserPlan = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("🔥 CANCEL ERROR:", err);
 
     return res.status(500).json({
       success: false,
@@ -2323,9 +2209,6 @@ const getAllBlogs = async (req, res) => {
 };
 const reportIssue = async (req, res) => {
   try {
-    console.log("📥 Incoming Issue:", req.body);
-    console.log("📁 Uploaded File:", req.file); // ✅ debug
-
     const {
       userId,
       userName,
@@ -2547,12 +2430,9 @@ const getBlockedProfiles = async (req, res) => {
 };
 
 const uploadIdProof = async (req, res) => {
-  console.log("RECEIVED uploadIdProof request for userId:", req.params.userId);
-  console.log("REQ BODY:", req.body);
   try {
     const { userId } = req.params;
     const file = req.file;
-    console.log("File detected:", file ? file.originalname : "NONE");
 
     if (!file) {
       return res.status(400).json({
@@ -2564,14 +2444,11 @@ const uploadIdProof = async (req, res) => {
     // Upload to Cloudinary
     const result = await cloudinary.uploader.upload(file.path, {
       folder: `matrimony/users/${userId}/idProof`,
-      resource_type: "auto", // Handle PDF or Image
+      resource_type: "auto",
     });
 
     const { idProofType, idProofNumber } = req.body;
 
-    console.log("Extracted ID details:", { idProofType, idProofNumber });
-
-    // Update user record
     const updatedUser = await userModel.findByIdAndUpdate(
       userId,
       {
@@ -2582,9 +2459,6 @@ const uploadIdProof = async (req, res) => {
       },
       { new: true }
     );
-
-    console.log("Updated user status:", updatedUser?.idVerificationStatus);
-    console.log("Updated user ID details:", updatedUser?.idProofType, updatedUser?.idProofNumber);
 
     // Remove local file
     if (file && file.path && fs.existsSync(file.path)) {

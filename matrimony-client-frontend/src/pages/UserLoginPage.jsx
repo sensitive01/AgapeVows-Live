@@ -154,6 +154,7 @@ const UserLoginPage = () => {
 
   const finishLogin = (userData) => {
     localStorage.setItem("userId", userData.userId);
+    if (userData.token) localStorage.setItem("authToken", userData.token);
     if (userData.userName) localStorage.setItem("userName", userData.userName);
     if (userData.gender) localStorage.setItem("gender", userData.gender);
     if (userData.profileImage) localStorage.setItem("userImage", userData.profileImage);

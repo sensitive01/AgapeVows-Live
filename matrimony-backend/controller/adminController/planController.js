@@ -3,8 +3,6 @@ const planModel = require("../../model/admin/planModel");
 const addNewPlanData = async (req, res) => {
   try {
     const { planData } = req.body;
-    console.log("Plan Data", planData);
-
     const requiredFields = [
       "name",
       "price",
@@ -148,7 +146,6 @@ const editPlanStatus = async (req, res) => {
   try {
     const { planId } = req.params;
     const { planStatus } = req.body;
-    console.log("planStatus", planStatus, planId);
 
     if (!["Active", "Inactive"].includes(planStatus)) {
       return res.status(400).json({

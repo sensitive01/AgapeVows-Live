@@ -7,10 +7,13 @@ export const userInstance = axios.create({
 userInstance.interceptors.request.use(
   (config) => {
     const userId = localStorage.getItem("userId");
+    const authToken = localStorage.getItem("authToken");
     if (userId) {
       config.headers["user-id"] = userId; 
     }
-    // Add cache control headers to prevent caching of API responses
+    if (authToken) {
+      config.headers["Authorization"] = `Bearer ${authToken}`;
+    }
     config.headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
     config.headers["Pragma"] = "no-cache";
     config.headers["Expires"] = "0";

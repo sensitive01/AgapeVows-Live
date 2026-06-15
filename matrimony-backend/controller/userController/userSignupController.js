@@ -5,6 +5,7 @@ const admin = require("../../utils/firebaseAdmin");
 const { getAuth } = require("firebase-admin/auth");
 
 const userModel = require("../../model/user/userModel");
+const jwt = require("jsonwebtoken");
 
 const generateAgwid = async () => {
   try {
@@ -43,8 +44,6 @@ const generateAgwid = async () => {
 const saveSignUpData = async (req, res) => {
   try {
     const { formData } = req.body;
-
-    console.log("FormData", formData);
 
     const { name, email, phone, password, agree } = formData;
     if (!name || !email || !phone || !password) {
@@ -125,8 +124,11 @@ const verifyLogin = async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
 
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'agape_vows_secret_key_2026', { expiresIn: '7d' });
+
     return res.status(200).json({
       message: "Login successful",
+      token,
       userId: user._id,
       rememberMe,
       userName: user.userName,
@@ -143,7 +145,6 @@ const userForgotPassword = async (req, res) => {
   try {
     const { emailOrPhone } = req.body.emailOrPhone;
 
-    console.log("emailOrPhone", emailOrPhone);
 
     const user = await userModel.findOne({
       $or: [{ userEmail: emailOrPhone }, { userMobile: emailOrPhone }],
@@ -162,8 +163,6 @@ const userForgotPassword = async (req, res) => {
       otp,
       expiresAt: Date.now() + 60 * 1000,
     };
-
-    console.log(`Generated OTP for ${user.userEmail || user.userMobile}:`, otp);
 
     return res.status(200).json({
       success: true,
@@ -235,7 +234,6 @@ const saveNewPassword = async (req, res) => {
     return res.status(200).json({ success: true, message: "Password updated successfully", userId });
 
   } catch (err) {
-    console.log("Error in saving the new password", err);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
@@ -260,10 +258,6 @@ const sendRegistrationOtp = async (req, res) => {
       otp,
       expiresAt: Date.now() + 5 * 60 * 1000, // 5 minutes
     };
-
-    console.log("------------------------------------------");
-    console.log(`REGISTRATION OTP FOR ${email}: ${otp}`);
-    console.log("------------------------------------------");
 
     try {
       await sendEmail(email, "Verify your email - Agape Vows Matrimony", "otpVerification", [otp]);
@@ -353,10 +347,6 @@ const sendLoginOtp = async (req, res) => {
       expiresAt: Date.now() + 5 * 60 * 1000, // 5 minutes
     };
 
-    console.log("------------------------------------------");
-    console.log(`LOGIN OTP FOR ${emailOrPhone}: ${otp}`);
-    console.log("------------------------------------------");
-
     // If it's an email, try sending an email
     if (emailOrPhone.includes('@')) {
       try {
@@ -415,9 +405,12 @@ const verifyLoginOtp = async (req, res) => {
        return res.status(401).json({ success: false, message: "User not found" });
     }
 
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'agape_vows_secret_key_2026', { expiresIn: '7d' });
+
     return res.status(200).json({ 
       success: true, 
       message: "Login successful",
+      token,
       userId: user._id,
       userName: user.userName,
       profileImage: user.profileImage,
@@ -438,15 +431,12 @@ const verifyFirebaseLogin = async (req, res) => {
 
     // Verify token
     const decodedToken = await getAuth().verifyIdToken(idToken);
-    const phoneNumber = decodedToken.phone_number; // e.g. +919876543210
+    const phoneNumber = decodedToken.phone_number;
 
     if (!phoneNumber) {
       return res.status(400).json({ success: false, message: "No phone number found in Firebase token" });
     }
 
-    // Usually Firebase sends numbers with country codes.
-    // Try to find the user exactly, or strip +91 and try.
-    // We will search for exact match or the last 10 digits.
     const last10Digits = phoneNumber.slice(-10);
 
     const user = await userModel.findOne({
@@ -469,9 +459,12 @@ const verifyFirebaseLogin = async (req, res) => {
     }
 
     // Successful login
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'agape_vows_secret_key_2026', { expiresIn: '7d' });
+
     return res.status(200).json({
       success: true,
       message: "Login successful",
+      token,
       userId: user._id,
       userName: user.userName,
       profileImage: user.profileImage,

@@ -45,6 +45,8 @@ const AdminAddNewUser = () => {
   const [bulkData, setBulkData] = useState([]);
   const [isBulkUploading, setIsBulkUploading] = useState(false);
   const [showBulkModal, setShowBulkModal] = useState(false);
+  const [selectedBulkUser, setSelectedBulkUser] = useState(null);
+  const [showBulkViewModal, setShowBulkViewModal] = useState(false);
 
   const [formData, setFormData] = useState({
     // --- Authentication ---
@@ -107,6 +109,7 @@ const AdminAddNewUser = () => {
 
     // --- Contact Info ---
     alternateMobile: "",
+    alternateEmail: "",
     landlineNumber: "",
     currentAddress: "",
     currentDoorNo: "",
@@ -232,15 +235,12 @@ const AdminAddNewUser = () => {
   };
 
   const downloadTemplate = () => {
-    // Generate an object with all keys from formData as column headers
     const allFields = {
-      // --- Authentication ---
       userName: "John Doe",
-      userEmail: "john@example.com",
-      userMobile: "9876543210",
-      password: "password123",
+      userEmail: "john@example123.com", 
+      userMobile: "9876543222",
+      password: "password123", 
 
-      // --- Basic Info ---
       aboutMe: "I am a software engineer looking for a life partner.",
       gender: "Male",
       profileCreatedFor: "Self",
@@ -264,7 +264,6 @@ const AdminAddNewUser = () => {
       motherTongue: "Malayalam",
       caste: "RC",
 
-      // --- Family Details ---
       fathersName: "James Doe",
       mothersName: "Mary Doe",
       fathersOccupation: "Retired",
@@ -293,6 +292,7 @@ const AdminAddNewUser = () => {
 
       // --- Contact Info ---
       alternateMobile: "9000000000",
+      alternateEmail: "alternate@example.com",
       landlineNumber: "04842345678",
       currentAddress: "123 Main St, Kochi, Kerala",
       currentDoorNo: "123",
@@ -327,9 +327,6 @@ const AdminAddNewUser = () => {
       companyName: "Tech Corp",
       annualIncome: "1200000",
 
-      // --- Social Media ---
-      whatsapp: "9876543210",
-
       // --- Lifestyle ---
       exercise: "Regularly",
       hobbies: "Reading, Travelling",
@@ -363,8 +360,6 @@ const AdminAddNewUser = () => {
       partnerState: "Kerala",
       partnerDistrict: "Ernakulam",
 
-      // --- Profile Visibility ---
-      profileVisibility: "Public",
     };
 
     const ws = XLSX.utils.json_to_sheet([allFields]);
@@ -386,11 +381,21 @@ const AdminAddNewUser = () => {
     try {
       const response = await bulkRegisterUsersByAdmin(bulkData);
       if (response.status === 200) {
-        showAlert({
-          title: "Success",
-          text: `Bulk Registration Complete`,
-          icon: "success",
-        });
+        const { successCount, failCount, errors } = response.data.data;
+        if (failCount > 0) {
+          showAlert({
+            title: "Partial Success",
+            text: `Added ${successCount} users. Failed ${failCount}. Check console for errors.`,
+            icon: "warning",
+          });
+          console.log("Bulk upload errors:", errors);
+        } else {
+          showAlert({
+            title: "Success",
+            text: `Successfully added ${successCount} users.`,
+            icon: "success",
+          });
+        }
         setBulkData([]);
         setShowBulkModal(false);
       }
@@ -450,18 +455,44 @@ const AdminAddNewUser = () => {
     }
   };
 
-  const bulkColumns = bulkData.length > 0 ? [
-    ...Object.keys(bulkData[0]).slice(0, 8).map(key => ({
-      name: key,
-      selector: row => row[key],
-      format: row => <div className="text-truncate" style={{ maxWidth: '100px' }} title={row[key]}>{row[key]}</div>,
-      sortable: false
-    })),
-    ...(Object.keys(bulkData[0]).length > 8 ? [{
-      name: "...",
-      cell: () => "..."
-    }] : [])
-  ] : [];
+  const bulkColumns = [
+    {
+      name: "S.NO",
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: "80px",
+    },
+    {
+      name: "USERNAME",
+      selector: row => row.userName || row.USERNAME || "",
+      sortable: true,
+    },
+    {
+      name: "USEREMAIL",
+      selector: row => row.userEmail || row.USEREMAIL || "",
+      sortable: true,
+    },
+    {
+      name: "PASSWORD",
+      selector: row => row.password || row.PASSWORD || "",
+      sortable: false,
+    },
+    {
+      name: "ACTION",
+      cell: (row) => (
+        <button 
+          className="btn btn-sm btn-outline-primary fw-bold"
+          onClick={() => {
+            setSelectedBulkUser(row);
+            setShowBulkViewModal(true);
+          }}
+        >
+          View Profile
+        </button>
+      ),
+      sortable: false,
+    }
+  ];
 
   const customStyles = {
     headCells: {
@@ -544,7 +575,11 @@ const AdminAddNewUser = () => {
                 <InputField label="Weight" name="weight" formData={formData} handleChange={handleChange} />
                 <InputField label="Body Type" name="bodyType" options={["Average", "Slim", "Athletic", "Heavy"]} formData={formData} handleChange={handleChange} />
                 <InputField label="Complexion" name="complexion" options={["Fair", "Very Fair", "Wheatish", "Dark"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Physical State" name="physicalStatus" options={["Normal", "Physically Challenged"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Age" name="age" type="number" formData={formData} handleChange={handleChange} />
                 <InputField label="Eating Habits" name="eatingHabits" options={["Vegetarian", "Non-Vegetarian", "Eggetarian"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Drinking Habits" name="drinkingHabits" options={["No", "Yes", "Occasionally"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Smoking Habits" name="smokingHabits" options={["No", "Yes", "Occasionally"]} formData={formData} handleChange={handleChange} />
                 <InputField label="Mother Tongue" name="motherTongue" formData={formData} handleChange={handleChange} />
                 <InputField label="Caste" name="caste" formData={formData} handleChange={handleChange} />
               </FormSection>
@@ -570,9 +605,13 @@ const AdminAddNewUser = () => {
                 <InputField label="Father's Occupation" name="fathersOccupation" formData={formData} handleChange={handleChange} />
                 <InputField label="Mother's Name" name="mothersName" formData={formData} handleChange={handleChange} />
                 <InputField label="Mother's Occupation" name="mothersOccupation" formData={formData} handleChange={handleChange} />
+                <InputField label="Father's Profession" name="fathersProfession" formData={formData} handleChange={handleChange} />
                 <InputField label="Mother's Profession" name="mothersProfession" formData={formData} handleChange={handleChange} />
+                <InputField label="Fathers' Native" name="fathersNative" formData={formData} handleChange={handleChange} />
+                <InputField label="Mothers' Native" name="mothersNative" formData={formData} handleChange={handleChange} />
                 <InputField label="Family Value" name="familyValue" options={["Traditional", "Moderate", "Liberal"]} formData={formData} handleChange={handleChange} />
                 <InputField label="Family Type" name="familyType" options={["Joint", "Nuclear"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Residence type" name="residenceType" options={["Apartment", "House", "Villa", "Townhouse", "Condo", "Duplex", "Other"]} formData={formData} handleChange={handleChange} />
                 <InputField label="Family Status" name="familyStatus" options={["Middle Class", "Upper Middle Class", "Rich", "Affluent"]} formData={formData} handleChange={handleChange} />
                 <InputField label="No. of Brothers" name="numberOfBrothers" type="number" formData={formData} handleChange={handleChange} />
                 <InputField label="Married Brothers" name="marriedBrothers" type="number" formData={formData} handleChange={handleChange} />
@@ -586,52 +625,44 @@ const AdminAddNewUser = () => {
                 <InputField label="Denomination" name="denomination" formData={formData} handleChange={handleChange} />
                 <InputField label="Church Name" name="church" formData={formData} handleChange={handleChange} />
                 <InputField label="Pastors Name" name="pastorsName" formData={formData} handleChange={handleChange} />
+                <InputField label="Spirituality" name="spirituality" formData={formData} handleChange={handleChange} />
                 <InputField label="Religious Detail" name="religiousDetail" type="textarea" col="12" formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* PROFESSIONAL */}
               <FormSection title="Professional Information" id="professional" activeTab={activeTab}>
-                <InputField label="Education" name="education" formData={formData} handleChange={handleChange} />
-                <InputField label="College / University" name="college" formData={formData} handleChange={handleChange} />
-                <InputField label="Employment Type" name="employmentType" options={["Government", "Private", "Business", "Self Employed", "Not Working"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Highest Education" name="education" formData={formData} handleChange={handleChange} />
+                <InputField label="Additional Education" name="additionalEducation" formData={formData} handleChange={handleChange} />
+                <InputField label="College" name="college" formData={formData} handleChange={handleChange} />
+                <InputField label="Education in Detail" name="educationDetail" type="textarea" col="12" formData={formData} handleChange={handleChange} />
+                <InputField label="Employee Type" name="employmentType" options={["Government", "Private", "Business", "Self Employed", "Not Working"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Position" name="position" formData={formData} handleChange={handleChange} />
                 <InputField label="Occupation" name="occupation" formData={formData} handleChange={handleChange} />
-                <InputField label="Annual Income" name="annualIncome" formData={formData} handleChange={handleChange} />
                 <InputField label="Company Name" name="companyName" formData={formData} handleChange={handleChange} />
+                <InputField label="Annual Income" name="annualIncome" formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* CONTACT */}
               <FormSection title="Contact Information" id="contact" activeTab={activeTab}>
-                <InputField label="Current Address" name="currentAddress" type="textarea" col="12" formData={formData} handleChange={handleChange} />
-                <InputField label="Current Door No" name="currentDoorNo" formData={formData} handleChange={handleChange} />
-                <InputField label="Current Locality" name="currentLocality" formData={formData} handleChange={handleChange} />
-                <InputField label="Current Country" name="currentCountry" formData={formData} handleChange={handleChange} />
-                <InputField label="Current State" name="currentState" formData={formData} handleChange={handleChange} />
-                <InputField label="Current District" name="currentDistrict" formData={formData} handleChange={handleChange} />
-                <InputField label="Current Pincode" name="currentPincode" formData={formData} handleChange={handleChange} />
-                
-                <InputField label="Permanent Address" name="permanentAddress" type="textarea" col="12" formData={formData} handleChange={handleChange} />
-                <InputField label="Same as Current Address" name="sameAsCurrentAddress" options={["true", "false"]} formData={formData} handleChange={handleChange} />
-                <InputField label="Permanent Door No" name="permanentDoorNo" formData={formData} handleChange={handleChange} />
-                <InputField label="Permanent Locality" name="permanentLocality" formData={formData} handleChange={handleChange} />
-                <InputField label="Permanent Country" name="permanentCountry" formData={formData} handleChange={handleChange} />
-                <InputField label="Permanent State" name="permanentState" formData={formData} handleChange={handleChange} />
-                <InputField label="Permanent District" name="permanentDistrict" formData={formData} handleChange={handleChange} />
-                <InputField label="Permanent Pincode" name="permanentPincode" formData={formData} handleChange={handleChange} />
-
-                <InputField label="City" name="city" formData={formData} handleChange={handleChange} />
-                <InputField label="State" name="state" formData={formData} handleChange={handleChange} />
-                <InputField label="Pincode" name="pincode" formData={formData} handleChange={handleChange} />
-                <InputField label="Citizen Of" name="citizenOf" formData={formData} handleChange={handleChange} />
-                <InputField label="Alternate Mobile" name="alternateMobile" formData={formData} handleChange={handleChange} />
                 <InputField label="Contact Person Name" name="contactPersonName" formData={formData} handleChange={handleChange} />
                 <InputField label="Relationship" name="relationship" options={RELATIONSHIP_OPTIONS} formData={formData} handleChange={handleChange} />
+                <InputField label="Alternate Mobile" name="alternateMobile" formData={formData} handleChange={handleChange} />
+                <InputField label="Alternate Email" name="alternateEmail" type="email" formData={formData} handleChange={handleChange} />
+                <InputField label="Landline" name="landlineNumber" formData={formData} handleChange={handleChange} />
+                <InputField label="Current Address" name="currentAddress" type="textarea" col="12" formData={formData} handleChange={handleChange} />
+                <InputField label="Permanent Address" name="permanentAddress" type="textarea" col="12" formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* LIFESTYLE */}
               <FormSection title="Life style" id="lifestyle" activeTab={activeTab}>
                 <InputField label="Hobbies" name="hobbies" formData={formData} handleChange={handleChange} />
-                <InputField label="Smoking Habits" name="smokingHabits" options={["No", "Yes", "Occasionally"]} formData={formData} handleChange={handleChange} />
-                <InputField label="Drinking Habits" name="drinkingHabits" options={["No", "Yes", "Occasionally"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Interests" name="interests" formData={formData} handleChange={handleChange} />
+                <InputField label="Music" name="music" formData={formData} handleChange={handleChange} />
+                <InputField label="Favorite Reads" name="favouriteReads" formData={formData} handleChange={handleChange} />
+                <InputField label="Favorite Cuisines" name="favouriteCuisines" formData={formData} handleChange={handleChange} />
+                <InputField label="Exercise" name="exercise" formData={formData} handleChange={handleChange} />
+                <InputField label="Sport Activities" name="sportsActivities" formData={formData} handleChange={handleChange} />
+                <InputField label="Dress Style" name="dressStyles" formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* PARTNER PREFERENCES */}
@@ -709,7 +740,7 @@ const AdminAddNewUser = () => {
           </div>
 
           {bulkData.length > 0 && (
-            <div className="table-responsive mb-4" style={{ maxHeight: '250px' }}>
+            <div className="table-responsive mb-4" style={{ maxHeight: '250px', overflowX: 'auto', width: '100%' }}>
               <CustomTable itemsPerPage={10}
                 columns={bulkColumns}
                 data={bulkData.slice(0, 5)}
@@ -729,6 +760,32 @@ const AdminAddNewUser = () => {
           >
             {isBulkUploading ? "Processing..." : `Import ${bulkData.length} Users`}
           </button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* BULK VIEW PROFILE MODAL */}
+      <Modal show={showBulkViewModal} onHide={() => setShowBulkViewModal(false)} size="lg" centered>
+        <Modal.Header closeButton className="border-0 pb-0">
+          <Modal.Title className="fw-bold text-success fs-4">View User Data</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-4" style={{ maxHeight: "70vh", overflowY: "auto" }}>
+          {selectedBulkUser && (
+            <div className="row g-3">
+              {Object.entries(selectedBulkUser).map(([key, value]) => (
+                <div className="col-md-6" key={key}>
+                  <div className="p-3 border rounded bg-light h-100 shadow-sm">
+                    <strong className="text-capitalize text-muted mb-1 d-block" style={{ fontSize: "0.85rem" }}>
+                      {key.replace(/([A-Z])/g, ' $1').trim().toUpperCase()}
+                    </strong>
+                    <span className="fw-bold text-dark">{value !== "" && value !== null && value !== undefined ? String(value) : "N/A"}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer className="border-0 p-4">
+          <button className="btn btn-secondary rounded-pill px-4 shadow-sm fw-bold" onClick={() => setShowBulkViewModal(false)}>Close</button>
         </Modal.Footer>
       </Modal>
     </NewLayout>

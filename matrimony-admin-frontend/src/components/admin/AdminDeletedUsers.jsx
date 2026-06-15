@@ -31,10 +31,11 @@ const AdminDeletedUsers = () => {
   }, []);
 
   useEffect(() => {
+    const lowerSearch = searchTerm.toLowerCase();
     const filtered = users.filter((user) =>
-      user.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.userEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.userMobile?.includes(searchTerm)
+      (user.userName || "").toLowerCase().includes(lowerSearch) ||
+      (user.userEmail || "").toLowerCase().includes(lowerSearch) ||
+      (user.userMobile || "").includes(searchTerm)
     );
 
     setFilteredUsers(filtered);

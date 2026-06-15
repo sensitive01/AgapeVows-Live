@@ -48,6 +48,7 @@ const MatrimonyAdminLogin = () => {
 
       if (response.status === 200) {
         localStorage.setItem("adminId", response?.data?.adminId);
+        if (response?.data?.token) localStorage.setItem("adminToken", response.data.token);
         setMessage("Login successful");
        navigate("/admin/dashboard", { replace: true });
 

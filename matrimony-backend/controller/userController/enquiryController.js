@@ -5,7 +5,6 @@ const Enquiry = require("../../model/user/enquiryModel");
 ========================== */
 const createEnquiry = async (req, res) => {
   try {
-    console.log("📥 Incoming Enquiry:", req.body);
 
     const { name, phone, email, message } = req.body;
 

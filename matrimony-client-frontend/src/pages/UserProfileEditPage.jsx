@@ -1795,7 +1795,6 @@ const UserProfileEditPage = () => {
                     </button>
                   </div>
 
-                  {/* Profile Image Upload Section */}
                   <BasicInfomation
                     profileImagePreview={profileImagePreview}
                     handleProfileImageChange={handleProfileImageChange}
@@ -1805,7 +1804,7 @@ const UserProfileEditPage = () => {
                     handleDeleteProfileImage={handleDeleteProfileImage}
                   />
 
-                  <FormSection title="Government ID Verification" zIndex={22}>
+                  {/* <FormSection title="Government ID Verification" zIndex={22}>
                     <div style={{
                       background: "#f8fafc",
                       padding: "24px",
@@ -1818,7 +1817,7 @@ const UserProfileEditPage = () => {
                             Verify your identity
                           </h4>
                           <p style={{ fontSize: "14px", color: "#64748b" }}>
-                            Please upload a valid government-issued ID (Aadhar, PAN, Passport, etc.) for verification.
+                            Please upload a valid government-issued ID (Aadhar, Passport, etc.) for verification.
                           </p>
                         </div>
                         <div style={{
@@ -1938,10 +1937,8 @@ const UserProfileEditPage = () => {
                         </div>
                       )}
                     </div>
-                  </FormSection>
+                  </FormSection> */}
 
-
-                  {/* Basic Details Section */}
                   <FormSection
                     title="Basic Details"
                     zIndex={20}
@@ -2493,7 +2490,7 @@ const UserProfileEditPage = () => {
                             style={{
                               position: "absolute",
                               right: "12px",
-                              top: "38px",
+                              bottom: "22px",
                               background: "#f3f4f6",
                               border: "none",
                               borderRadius: "4px",
@@ -2547,7 +2544,7 @@ const UserProfileEditPage = () => {
                             style={{
                               position: "absolute",
                               right: "12px",
-                              top: "38px",
+                              bottom: "22px",
                               background: "#f3f4f6",
                               border: "none",
                               borderRadius: "4px",

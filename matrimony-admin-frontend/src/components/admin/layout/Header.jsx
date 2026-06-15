@@ -22,6 +22,7 @@ const Header = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("adminId");
+    localStorage.removeItem("adminToken");
     navigate("/", { replace: true });
   };
 

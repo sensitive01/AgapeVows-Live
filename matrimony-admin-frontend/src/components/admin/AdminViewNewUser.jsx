@@ -222,10 +222,18 @@ export default function AdminViewNewUser() {
     }, [id]);
 
     if (loading)
-        return <p className="text-center mt-4">Loading...</p>;
+        return (
+            <NewLayout>
+                <p className="text-center mt-4">Loading...</p>
+            </NewLayout>
+        );
 
     if (!user)
-        return <p className="text-center mt-4">User not found</p>;
+        return (
+            <NewLayout>
+                <p className="text-center mt-4">User not found</p>
+            </NewLayout>
+        );
     // Add this inside your AdminViewNewUser component, above the return
     const calculateAge = (dob) => {
         if (!dob) return null;

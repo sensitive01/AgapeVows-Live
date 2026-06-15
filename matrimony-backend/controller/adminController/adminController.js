@@ -7,6 +7,7 @@ const {
 const adminModel = require("../../model/admin/adminModel");
 const userModel = require("../../model/user/userModel");
 const { generateAgwid } = require("../userController/userSignupController");
+const jwt = require("jsonwebtoken");
 
 /* =========================
    REGISTER ADMIN
@@ -74,9 +75,12 @@ const verifyAdmin = async (req, res) => {
       });
     }
 
+    const token = jwt.sign({ adminId: admin._id }, process.env.JWT_SECRET || 'agape_vows_secret_key_2026', { expiresIn: '7d' });
+
     res.status(200).json({
       success: true,
       message: "Admin login successful",
+      token,
       adminId: admin._id,
       role: admin.role,
       permissions: admin.permissions,
@@ -267,8 +271,6 @@ const deleteUser = async (req, res) => {
     });
   }
 };
-
-
 
 /* =========================
    PERMANENT DELETE USER (Hard Delete)
@@ -713,7 +715,6 @@ const registerUser = async (req, res) => {
 ========================== */
 const bulkRegisterUsers = async (req, res) => {
   try {
-    console.log("bulk upload",req.body)
     const { users } = req.body;
     if (!Array.isArray(users) || users.length === 0) {
       return res.status(400).json({ success: false, message: "No user data provided" });
@@ -727,7 +728,14 @@ const bulkRegisterUsers = async (req, res) => {
 
     for (const userData of users) {
       try {
-        const { userEmail, userMobile, password } = userData;
+        const sanitizedData = {};
+        for (const [key, value] of Object.entries(userData)) {
+           if (value !== "" && value !== null && value !== undefined) {
+              sanitizedData[key] = value;
+           }
+        }
+
+        const { userEmail, userMobile, password } = sanitizedData;
         
         if (!userEmail || !userMobile) {
           results.failCount++;
@@ -749,7 +757,7 @@ const bulkRegisterUsers = async (req, res) => {
         const agwid = await generateAgwid();
 
         const newUser = new userModel({
-          ...userData,
+          ...sanitizedData,
           userPassword: hashedPassword,
           agwid,
           isApproved: true,

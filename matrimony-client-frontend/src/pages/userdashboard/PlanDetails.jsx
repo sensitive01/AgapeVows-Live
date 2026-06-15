@@ -320,10 +320,10 @@ const PlanDetails = ({ externalPlanData }) => {
 
   if (loading) {
     return (
-      <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com">
+      <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com h-100">
         <h2 className="db-tit">Plan details</h2>
-        <div className="db-pro-stat">
-          <div className="text-center p-4">
+        <div className="db-pro-stat h-100" style={{ minHeight: "450px", display: "flex", flexDirection: "column" }}>
+          <div className="text-center p-4 d-flex flex-column justify-content-center align-items-center flex-grow-1">
             <div className="spinner-border" role="status">
               <span className="visually-hidden">Loading...</span>
             </div>
@@ -336,7 +336,7 @@ const PlanDetails = ({ externalPlanData }) => {
 
   if (error || !planData) {
     return (
-      <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com">
+      <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com h-100">
         <h2 className="db-tit">Plan details</h2>
         <div className="db-pro-stat h-100" style={{ minHeight: "450px", display: "flex", flexDirection: "column" }}>
           <div className="text-center p-4 d-flex flex-column justify-content-center align-items-center flex-grow-1">
@@ -410,8 +410,8 @@ const PlanDetails = ({ externalPlanData }) => {
           </ul>
         </div>
 
-        <div className="db-plan-card">
-          <img src={planIcon} alt="Plan" />
+        <div className="db-plan-card d-flex justify-content-center w-100">
+          <img src={planIcon} alt="Plan" style={{ margin: "0 auto", display: "block" }} />
         </div>
 
         {/* Plan details */}

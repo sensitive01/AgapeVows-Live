@@ -6,9 +6,13 @@ export const adminInstance = axios.create({
 
 adminInstance.interceptors.request.use(
   (config) => {
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      config.headers["user-id"] = userId;
+    const adminId = localStorage.getItem("adminId");
+    const adminToken = localStorage.getItem("adminToken");
+    if (adminId) {
+      config.headers["admin-id"] = adminId;
+    }
+    if (adminToken) {
+      config.headers["Authorization"] = `Bearer ${adminToken}`;
     }
     return config;
   },

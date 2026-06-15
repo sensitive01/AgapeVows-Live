@@ -58,16 +58,17 @@ const AdminFreeUserList = () => {
   }, []);
 
   useEffect(() => {
+    const lowerSearch = searchTerm.toLowerCase();
     let filtered = users.filter((user) => {
       const matchesSearch =
-        user.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.userMobile.includes(searchTerm);
+        (user.userName || "").toLowerCase().includes(lowerSearch) ||
+        (user.userEmail || "").toLowerCase().includes(lowerSearch) ||
+        (user.userMobile || "").includes(searchTerm);
       const matchesPlan = filterPlan === "all" || user.planType === filterPlan;
       const matchesPayment = filterPayment === "all" || user.payment === filterPayment;
       return matchesSearch && matchesPlan && matchesPayment;
     });
-
+    setFilteredUsers(filtered);
   }, [users, searchTerm, filterPlan, filterPayment]);
 
   const getInitials = (name) => name.split(" ").map((n) => n[0]).join("").toUpperCase();
@@ -233,7 +234,7 @@ const AdminFreeUserList = () => {
             <i className="fa fa-ellipsis-v text-muted" style={{ fontSize: "14px" }}></i>
           </button>
           <ul className="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-1 py-2" style={{ minWidth: "160px" }}>
-            <li><button className="dropdown-item py-2" onClick={() => navigate(`/admin/edit-user/${row._id}`)}><i className="fa fa-edit me-2 text-primary"></i>Edit Profile</button></li>
+            {/* <li><button className="dropdown-item py-2" onClick={() => navigate(`/admin/edit-user/${row._id}`)}><i className="fa fa-edit me-2 text-primary"></i>Edit Profile</button></li> */}
             <li><button className="dropdown-item py-2" onClick={() => navigate(`/admin/billing-info/${row._id}`)}><i className="fa fa-credit-card me-2 text-info"></i>Billing Info</button></li>
             <li><button className="dropdown-item py-2" onClick={() => navigate(`/admin/new-user/${row._id}`)}><i className="fa fa-user me-2 text-success"></i>View Details</button></li>
             <li className="dropdown-divider"></li>
