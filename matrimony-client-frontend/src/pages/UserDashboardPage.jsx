@@ -18,6 +18,7 @@ import ProfileCompletion from "./userdashboard/ProfileCompletion";
 import DashboardSearchComponent from "./userdashboard/DashboardSearchComponent";
 import ActivePlanCard from "./userdashboard/ActivePlanCard";
 import MembershipBadge from "../components/common/MembershipBadge";
+import defaultProfileImg from "../assets/images/blue-circle-with-white-user_78370-4707.avif";
 
 const UserDashboardPage = () => {
   const navigate = useNavigate();
@@ -601,13 +602,12 @@ const UserDashboardPage = () => {
 
                                     <img
                                       src={
-                                        profile.profileImage ||
-                                        "images/profiles/default.jpg"
+                                        profile.profileImage || defaultProfileImg
                                       }
                                       alt={`${profile.userName}'s Profile`}
                                       className="profile"
                                       onError={(e) => {
-                                        e.target.src = "images/profiles/default.jpg";
+                                        e.target.src = defaultProfileImg;
                                       }}
                                     />
 

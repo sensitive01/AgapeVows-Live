@@ -2,12 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchAllUserProfiles } from "../../api/axiosService/userAuthService";
 import defaultProfileImg from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
-import maleDefault from "../../assets/images/profiles/men1.jpg";
-import femaleDefault from "../../assets/images/profiles/12.jpg";
 
 const RelatedProfiles = () => {
   const [profiles, setProfiles] = useState([]);
-  const [status, setStatus] = useState("loading"); // loading, success, empty, error
+  const [status, setStatus] = useState("loading");
   const [debugInfo, setDebugInfo] = useState("");
   const [userId] = useState(localStorage.getItem("userId"));
 
@@ -82,16 +80,7 @@ const RelatedProfiles = () => {
         {profiles.map((profile, index) => {
           let image = profile.profileImage;
           if (!image) {
-            if (profile.gender === "Male" || profile.gender === "Groom") {
-              image = maleDefault;
-            } else if (
-              profile.gender === "Female" ||
-              profile.gender === "Bride"
-            ) {
-              image = femaleDefault;
-            } else {
-              image = defaultProfileImg;
-            }
+            image = defaultProfileImg;
           }
 
           return (

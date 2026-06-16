@@ -1,19 +1,13 @@
 import React, { useState, useMemo } from "react";
 import defaultProfileImg from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
-import maleDefault from "../../assets/images/profiles/men1.jpg";
-import femaleDefault from "../../assets/images/profiles/12.jpg";
+
 
 const UserCardImageSlider = ({ user, height = "220px", blur = false, onImageClick }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
 
   const allImages = useMemo(() => {
-    const defaultImg =
-      user.gender === "Male" || user.gender === "Groom"
-        ? maleDefault
-        : user.gender === "Female" || user.gender === "Bride"
-          ? femaleDefault
-          : defaultProfileImg;
+    const defaultImg = defaultProfileImg;
 
     const images = [];
 
@@ -78,13 +72,7 @@ const UserCardImageSlider = ({ user, height = "220px", blur = false, onImageClic
             src={allImages[currentImageIndex]}
             alt={user.userName}
             onError={(e) => {
-              const defaultImg =
-                user.gender === "Male" || user.gender === "Groom"
-                  ? maleDefault
-                  : user.gender === "Female" || user.gender === "Bride"
-                    ? femaleDefault
-                    : defaultProfileImg;
-              e.target.src = defaultImg;
+              e.target.src = defaultProfileImg;
             }}
             style={{
               width: "100%",

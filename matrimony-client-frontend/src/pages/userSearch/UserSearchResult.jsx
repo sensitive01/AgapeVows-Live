@@ -13,8 +13,6 @@ import {
 import { showAlert } from "../../utils/alertService";
 
 import defaultProfileImg from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
-import maleDefault from "../../assets/images/profiles/men1.jpg";
-import femaleDefault from "../../assets/images/profiles/12.jpg";
 import MembershipBadge from "../../components/common/MembershipBadge";
 import UserCardImageSlider from "../../components/common/UserCardImageSlider";
 

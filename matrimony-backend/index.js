@@ -17,7 +17,6 @@ const upload = multer({ dest: "uploads/" });
 const port = PORT;
 const server = http.createServer(app);
 
-// ✅ Initialize Socket.IO
 initializeSocket(server);
 
 app.set("trust proxy", true);
