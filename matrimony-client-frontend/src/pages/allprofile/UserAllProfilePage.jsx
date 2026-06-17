@@ -128,7 +128,6 @@ const UserAllProfilePage = () => {
 
   const handleSendInterest = (user) => {
     setSelectedUser(user);
-    console.log("Interest sent to:", user.userName);
   };
 
   const handleChatSend = (e) => {
@@ -187,9 +186,6 @@ const UserAllProfilePage = () => {
 
     const myPlanName = currentUserPlan?.subscriptionType?.toLowerCase() || "";
     const targetPlanName = targetUserActivePlan?.subscriptionType?.toLowerCase() || "";
-
-    console.log("My Plan (AllProfiles):", myPlanName);
-    console.log("Target Plan (AllProfiles):", targetPlanName);
 
     const myCanViewRaw = currentUserPlan?.canViewProfiles || "All Profiles";
     const myCanView = myCanViewRaw.trim().toLowerCase();

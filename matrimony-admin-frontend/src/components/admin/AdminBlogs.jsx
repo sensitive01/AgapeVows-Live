@@ -184,14 +184,14 @@ const AdminBlogs = () => {
       selector: row => row.title, 
       sortable: true, 
       wrap: true,
-      cell: row => <div style={{ fontWeight: "600", wordBreak: "break-word" }}>{row.title}</div> 
+      cell: row => <div style={{ fontWeight: "600", wordBreak: "normal" }}>{row.title}</div> 
     },
     { 
       name: "Category", 
       selector: row => row.category, 
       sortable: true,
       wrap: true,
-      cell: row => <div style={{ wordBreak: "break-word" }}>{row.category}</div>
+      cell: row => <div style={{ wordBreak: "normal" }}>{row.category}</div>
     },
     {
       name: "Content",
@@ -274,14 +274,14 @@ const AdminBlogs = () => {
       selector: row => row.authorName, 
       sortable: true,
       wrap: true,
-      cell: row => <div style={{ wordBreak: "break-word" }}>{row.authorName}</div>
+      cell: row => <div style={{ wordBreak: "normal" }}>{row.authorName}</div>
     },
     { 
       name: "Role", 
       selector: row => row.authorRole, 
       sortable: true,
       wrap: true,
-      cell: row => <div style={{ wordBreak: "break-word" }}>{row.authorRole}</div>
+      cell: row => <div style={{ wordBreak: "normal" }}>{row.authorRole}</div>
     },
     {
       name: "Status",

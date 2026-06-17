@@ -89,8 +89,6 @@ const MoreDetails = () => {
       try {
         setLoading(true);
 
-        console.log("👉 Sending viewerId:", userId); // DEBUG
-
         const response = await getTheProfieMoreDetails(profileId, userId);
 
         if (response.status === 200) {

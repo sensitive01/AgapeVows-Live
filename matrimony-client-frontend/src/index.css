@@ -33,7 +33,6 @@
   animation: fadeIn 0.4s ease-out forwards;
 }
 
-/* Navigation Events Highlight - Slow Fade Effect */
 @keyframes slowFadeInOut {
   0% {
     opacity: 0.5;
@@ -51,7 +50,6 @@
 .nav-highlight-events {
   position: relative;
   color: black !important;
-  /* Black */
   font-weight: 700 !important;
   letter-spacing: 0.5px;
   transition: all 0.3s ease;
@@ -71,23 +69,16 @@
   transform: translateY(-1px);
 }
 
-
-/* userplansection */
-
-/* ALL CARDS DEFAULT WHITE */
 .pri-box {
   background-color: #ffffff !important;
   border-radius: 20px !important;
   overflow: hidden !important;
 }
 
-/* CENTER CARD */
 .pri-box-pop {
   background-color: #ffffff !important;
   border-radius: 30px !important;
   overflow: visible !important;
-
-  /* HEIGHT DIFFERENCE WITHOUT OVERLAP */
   padding: 85px 20px !important;
   position: relative;
   z-index: 2;
@@ -98,14 +89,12 @@
 
 .plans-main {
   padding-top: 40px;
-  /* gives breathing space above cards */
 }
 
 .pri-box-pop {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
 
-/* Membership Badges */
 .membership-badge {
   display: inline-flex;
   align-items: center;
@@ -197,7 +186,6 @@
   font-size: 10px;
 }
 
-/* Minimal Badge Style (Text & Icon only) */
 .badge-minimal {
   background: transparent !important;
   color: #000 !important;
@@ -214,10 +202,8 @@
 
 .badge-minimal::after {
   display: none !important;
-  /* Remove shine effect for platinum */
 }
 
-/* Consistent inner container for sections */
 .container {
   width: 100%;
   max-width: 1450px;
@@ -243,9 +229,6 @@
   overflow: visible !important;
 }
 
-
-
-/* Sticky Footer Support */
 #root {
   display: flex;
   flex-direction: column;
@@ -258,14 +241,12 @@
   flex: 1;
 }
 
-/* Ensure the main content area grows to fill space */
 .min-h-screen>.pt-16,
 .min-h-screen>main,
 .min-h-screen>div:not(.fixed) {
   flex: 1 0 auto;
 }
 
-/* Specific fix for the general page layout used in many files */
 .login,
 .about,
 .contact,
@@ -279,9 +260,6 @@ footer {
   flex-shrink: 0;
 }
 
-
-
-/* Popup & Modal Styles */
 .upgrade-popup {
   position: fixed;
   top: 0;
@@ -349,7 +327,6 @@ footer {
   background: #6d28d9;
 }
 
-/* Profile Details Mobile Fixes */
 @media (max-width: 992px) {
   .profile-grid {
     display: flex !important;
@@ -382,7 +359,6 @@ footer {
   }
 }
 
-/* Fix .db-pro-stat dropdown button size on mobile globally (Dashboard & other sections) */
 @media screen and (max-width: 768px) {
   .db-pro-stat .dropdown {
     top: 10px !important;
@@ -399,4 +375,4 @@ footer {
     align-items: center !important;
     justify-content: center !important;
   }
-}
+}

@@ -114,7 +114,7 @@ const AdminReports = () => {
       sortable: false,
     },
     {
-      name: "Reporter",width:"150px",
+      name: "Reporter",
       selector: row => row.reporterId?.userName || "Unknown",
       sortable: true,
       cell: row => (
@@ -137,7 +137,7 @@ const AdminReports = () => {
       ),
     },
     {
-      name: "Reported User", width:"160px",
+      name: "Reported User",
       selector: row => row.reportedUserId?.userName || "Unknown",
       sortable: true,
       cell: row => (
@@ -160,11 +160,11 @@ const AdminReports = () => {
       ),
     },
     {
-      name: "Reason",width:"200px",
+      name: "Reason",
       selector: row => row.reason,
       sortable: true,
       cell: row => (
-        <div style={{ whiteSpace: "normal", wordBreak: "break-word", margin: "10px 0" }}>
+        <div style={{ whiteSpace: "normal", wordBreak: "normal", margin: "10px 0" }}>
           {row.reason}
         </div>
       ),
@@ -173,9 +173,8 @@ const AdminReports = () => {
       name: "Comments",
       selector: row => row.comments || "-",
       sortable: true,
-      minWidth: "200px",
       cell: row => (
-        <div style={{ whiteSpace: "normal", wordBreak: "break-word", margin: "10px 0" }}>
+        <div style={{ whiteSpace: "normal", wordBreak: "normal", margin: "10px 0" }}>
           {row.comments || "-"}
         </div>
       ),
@@ -184,13 +183,12 @@ const AdminReports = () => {
       name: "Admin Reply",
       selector: row => row.adminReply || "-",
       sortable: true,
-      minWidth: "200px",
       cell: row => (
         <div 
           className="small text-muted" 
           style={{ 
             whiteSpace: "normal", 
-            wordBreak: "break-word", 
+            wordBreak: "normal", 
             margin: "10px 0",
             width: "100%",
             textAlign: row.adminReply ? "left" : "center"

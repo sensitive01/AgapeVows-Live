@@ -233,8 +233,6 @@ const UserPlanSelection = () => {
 
           };
 
-          console.log("Payment Success Data:", paymentData);
-
           // Send data to backend
           const backendResponse = await sendPaymentDataToBackend(
             paymentData,
@@ -264,7 +262,6 @@ const UserPlanSelection = () => {
       },
       modal: {
         ondismiss: function () {
-          console.log("Payment modal closed");
         },
       },
       prefill: {

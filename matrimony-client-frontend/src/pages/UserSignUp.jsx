@@ -128,7 +128,6 @@ const UserSignUp = () => {
         if (verifyResponse.status === 200) {
           // Step 4: Final Signup
           const response = await sendSignUpRequest(formData);
-          console.log(response.data);
           if (response.status === 201) {
             showAlert({
               title: "Success",

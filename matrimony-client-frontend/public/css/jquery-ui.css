@@ -897,8 +897,7 @@ body .ui-tooltip {
 .ui-widget button {
 	font-size: 1em;
 }
-.ui-widget.ui-widget-content {
-}
+
 .ui-widget-content {
 	background: #ffffff;
 	color: #333333;

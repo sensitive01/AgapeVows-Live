@@ -21,7 +21,6 @@ const AddTodoModal = ({ show, onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission here
-    console.log(formData);
     onClose();
   };
 

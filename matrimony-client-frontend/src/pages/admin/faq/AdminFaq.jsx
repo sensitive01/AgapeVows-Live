@@ -41,7 +41,6 @@ const AdminFaq = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Here you would typically handle the form submission (API call, etc.)
-    console.log('FAQ submitted:', faqData);
     setShowModal(false);
     setFaqData({ question: '', answer: '' });
   };

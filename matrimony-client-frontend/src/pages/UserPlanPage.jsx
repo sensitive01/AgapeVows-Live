@@ -33,7 +33,6 @@ const UserPlanPage = () => {
       try {
         setLoading(true);
         const response = await getMyActivePlanData(userId);
-        console.log(response.data.activePlan);
         if (response.status === 200) {
           setPlanData(response?.data?.activePlan);
         } else {
@@ -59,7 +58,6 @@ const UserPlanPage = () => {
   const handleDownload = async (userId, transactionId) => {
     try {
       if (!userId || !transactionId) {
-        console.log("Missing values:", userId, transactionId);
         showAlert({
           title: "Error",
           text: "Missing data ❌",
@@ -67,8 +65,6 @@ const UserPlanPage = () => {
         });
         return;
       }
-
-      console.log("Downloading:", userId, transactionId);
 
       setDownloadingId(transactionId);
 
@@ -226,8 +222,8 @@ const getRemainingDays = (validFrom, validTo) => {
                     <div className="db-pro-stat">
                       <h6 className="tit-top-curv">Current Plan</h6>
 
-                      <div className="db-plan-card">
-                        <img src={planIcon} alt="" />
+                      <div className="db-plan-card d-flex justify-content-center w-100">
+                        <img src={planIcon} alt="" style={{ margin: "0 auto", display: "block" }} />
                       </div>
 
                       <div className="db-plan-detil">

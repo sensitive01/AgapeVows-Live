@@ -107,10 +107,6 @@ const ReportIssue = () => {
     } catch (error) {
       console.error("Error submitting issue:", error);
 
-      if (error.response) {
-        console.log("Server Error:", error.response.data);
-      }
-
       showAlert({
         title: "Error",
         text: "Something went wrong ❌",

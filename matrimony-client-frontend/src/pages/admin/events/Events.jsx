@@ -151,7 +151,6 @@ const AdminEvents = () => {
     try {
       // 1. Validate admin data with better error handling
       const adminData = JSON.parse(localStorage.getItem("adminData"));
-      console.log("Admin data:", adminData); // Debug log
       
       if (!adminData) {
         throw new Error("Admin data not found in localStorage. Please log in again.");
@@ -206,14 +205,11 @@ const AdminEvents = () => {
       }
 
       // 4. Debug FormData contents
-      console.log("FormData contents:");
       for (let [key, value] of formData.entries()) {
-        console.log(key, value);
       }
 
       // 5. Make API request with better error handling
       const apiUrl = `${VITE_BASE_URL}/employer/${adminData.adminid}/events?fileType=eventimage`;
-      console.log("API URL:", apiUrl); // Debug log
       
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -240,7 +236,6 @@ const AdminEvents = () => {
       let createdEvent;
       try {
         createdEvent = await response.json();
-        console.log("Created Event Response:", createdEvent);
         
         // Validate that we got the expected data back
         if (!createdEvent || !createdEvent._id) {

@@ -121,7 +121,6 @@ const UserDashboardPage = () => {
               setActivePlan(null);
             }
           } catch (planErr) {
-            console.log("No active plan found");
             setActivePlan(null);
           }
         } finally {
@@ -233,7 +232,6 @@ const UserDashboardPage = () => {
   const handleSearch = async (searchData) => {
     try {
       setSearchLoading(true);
-      console.log("Searching with data:", searchData);
 
       let filteredProfiles = [...allProfiles];
 
@@ -307,9 +305,6 @@ const UserDashboardPage = () => {
 
     const targetPlanName = targetActivePlan?.subscriptionType?.toLowerCase() || "";
 
-    console.log("My Dashboard Plan:", myCanView);
-    console.log("Target Dashboard Plan:", targetPlanName);
-
     const isTargetPlatinumOrGold =
       targetPlanName.includes("platinum") ||
       targetPlanName.includes("gold") ||
@@ -317,7 +312,6 @@ const UserDashboardPage = () => {
 
     if (!myCanView.includes("all")) {
       if (myCanView === "only basic" && targetPlanName && !targetPlanName.includes("basic")) {
-        console.log("🚫 Restricted: Basic user clicking non-Basic profile");
         toast.error("Your plan only allows viewing Basic profiles. Please upgrade to access other profiles.", {
           position: "top-center",
           autoClose: 30000,
@@ -331,7 +325,6 @@ const UserDashboardPage = () => {
       }
 
       if (myCanView === "only premium" && isTargetPlatinumOrGold) {
-        console.log("🚫 Restricted: Premium user clicking Golden/Platinum profile");
         toast.error("Upgrade your plan to view Platinum and Golden Membership profiles.", {
           position: "top-center",
           autoClose: 30000,
@@ -345,7 +338,6 @@ const UserDashboardPage = () => {
       }
     }
 
-    console.log("✅ Navigating to profile detail");
     if (e && (e.ctrlKey || e.metaKey)) {
       const newTab = window.open(`/profile-more-details/${targetUser._id}`, '_blank');
       if (newTab) newTab.focus();

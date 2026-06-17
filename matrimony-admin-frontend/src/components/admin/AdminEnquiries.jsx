@@ -187,20 +187,16 @@ const AdminEnquiries = () => {
       name: "Name",
       selector: row => row.name,
       sortable: true,
-      width: "200px",
-      minWidth: "160px",
       wrap: true,
-      cell: row => <div style={{ fontWeight: "500", wordBreak: "break-word" }}>{row.name}</div>
+      cell: row => <div style={{ fontWeight: "500", wordBreak: "normal" }}>{row.name}</div>
     },
     {
       name: "Contact Info",
       selector: row => row.phone,
       sortable: true,
-      width: "260px",
-      minWidth: "220px",
       wrap: true,
       cell: row => (
-        <div style={{ wordBreak: "break-word", padding: "8px 0" }}>
+        <div style={{ wordBreak: "normal", padding: "8px 0" }}>
           <a href={`tel:${row.phone}`} style={{ color: "#667eea", textDecoration: "none", display: "block", marginBottom: "4px" }}>
             {/* <i className="fa fa-phone me-1"></i>*/} {row.phone} 
           </a>
@@ -216,11 +212,9 @@ const AdminEnquiries = () => {
       name: "Message", 
       selector: row => row.message,
       sortable: true,
-      width: "220px",
-      minWidth: "180px",
       wrap: true,
       cell: row => (
-        <div style={{ wordBreak: "break-word" }}>
+        <div style={{ wordBreak: "normal" }}>
           {row.message}
         </div>
       )
@@ -229,13 +223,11 @@ const AdminEnquiries = () => {
       name: "Reply Content",
       selector: row => row.replyMessage,
       sortable: true,
-      width: "220px",
-      minWidth: "180px",
       wrap: true,
       cell: row => (
         <div 
           style={{ 
-            wordBreak: "break-word", 
+            wordBreak: "normal", 
             color: "#084298", 
             textAlign: row.replyMessage ? "left" : "center" 
           }}

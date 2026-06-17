@@ -200,7 +200,6 @@ const DashboardSearchComponent = ({ onSearch, loading = false }) => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log("Search Data:", formData);
     if (onSearch) {
       onSearch(formData);
     }

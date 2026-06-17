@@ -164,7 +164,6 @@ const UserInterest = () => {
 
   const handleReject = async (profileId, status) => {
     try {
-      console.log("Rejecting profile:", profileId, status);
       const response = await handleChangeInterestStatus(
         userId,
         profileId,

@@ -8,18 +8,9 @@ const ProfileCompletion = ({ userData }) => {
   // Function to calculate profile completion percentage
   const calculateProfileCompletion = (user) => {
     if (!user) {
-      console.log("ProfileCompletion: user is null or undefined");
       return 0;
     }
 
-    console.log("ProfileCompletion: Calculating for user:", {
-      _id: user._id,
-      userName: user.userName,
-      userEmail: user.userEmail,
-      totalKeys: Object.keys(user).length,
-    });
-
-    // Define all profile fields grouped by section
     const profileFields = {
       basic: [
         "profileCreatedFor",
@@ -253,17 +244,10 @@ const ProfileCompletion = ({ userData }) => {
 
   // Update completion percentage whenever userData changes
   useEffect(() => {
-    console.log("ProfileCompletion useEffect triggered with userData:", {
-      hasData: !!userData,
-      _id: userData?._id,
-      userName: userData?.userName,
-      dataLength: userData ? Object.keys(userData).length : 0,
-    });
-    
+
     // Check if userData has content
     if (userData && typeof userData === 'object' && Object.keys(userData).length > 0) {
       const percentage = calculateProfileCompletion(userData);
-      console.log("ProfileCompletion: Setting completionPercentage to:", percentage);
       setCompletionPercentage(percentage);
       
       // React-based smooth counter animation
@@ -292,7 +276,6 @@ const ProfileCompletion = ({ userData }) => {
       
       return () => clearInterval(timer);
     } else {
-      console.log("ProfileCompletion: userData is empty or invalid");
       setCompletionPercentage(0);
       setDisplayPercentage(0);
     }
