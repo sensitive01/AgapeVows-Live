@@ -6,7 +6,7 @@ const Footer = ({ paddingTop = '40px' }) => {
   return (
     <>
       <footer className="agape-vows-footer mt-auto" style={{
-        background: '#2b124c',
+        background: '#390f6fff',
         color: '#fff',
         paddingTop: paddingTop,
         paddingBottom: '8px',
@@ -179,7 +179,7 @@ const Footer = ({ paddingTop = '40px' }) => {
                 <li><Link to="/user/events-page" style={{ display: 'flex', alignItems: 'center' }}>Events </Link></li>
                 <li><Link to="/church-partner">Churches</Link></li>
                 <li><Link to="/privacy-policy">Privacy Policy</Link></li>
-                <li><Link to="/terms">Terms of use</Link></li>
+                <li><Link to="/terms-of-use">Terms of use</Link></li>
               </ul>
             </div>
 
@@ -212,8 +212,11 @@ const Footer = ({ paddingTop = '40px' }) => {
               fontSize: "14px",
             }}
           >
-            <p style={{ color: "white", marginBottom: 0 }}>
+            <p style={{ color: "white", marginBottom: "5px" }}>
               © {new Date().getFullYear()} AgapeVows Christian Matrimony. All rights reserved.
+            </p>
+            <p style={{ color: "rgba(255, 255, 255, 0.7)", marginBottom: 0, fontSize: "13px", maxWidth: "800px", margin: "0 auto" }}>
+              This platform is strictly for matrimonial purposes only and is not a dating or causal relationship platform.
             </p>
           </div>
         </div>

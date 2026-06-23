@@ -47,6 +47,8 @@ import ChurchPartner from "./pages/public/ChurchPartner";
 import MatrimonialAdvisor from "./pages/public/MatrimonialAdvisor";
 import MaritalCounseling from "./pages/public/MaritalCounseling";
 import Blogs from "./pages/public/Blogs";
+import PrivacyPolicy from "./pages/policy/PrivacyPolicy";
+import TermsOfUse from "./pages/policy/TermsOfUse";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ScrollToTop from "./ScrollTop";
@@ -254,6 +256,8 @@ function App() {
         <Route path="/contact-page" element={<ContactPage />} />
         <Route path="/faq" element={<FaqPage />} />
         <Route path="/about-us" element={<AboutPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-use" element={<TermsOfUse />} />
         <Route path="/bridal-makeup" element={<BridalMakeup />} />
         <Route path="/insurance-services" element={<InsuranceServices />} />
         <Route path="/user/events-page" element={<Events />} />

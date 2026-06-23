@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import headerLogo from "../../../../public/assets/images/Logo.jpeg";
+import headerLogo from "../../../../public/assets/images/Logo-new.png";
 import { getAdminProfile } from "../../../api/service/adminServices";
 
 const Header = () => {

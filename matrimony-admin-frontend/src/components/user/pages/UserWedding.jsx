@@ -96,7 +96,7 @@ const UserWedding = () => {
         </span>
         <div className="inn">
           <img
-            src="images/Logo.jpeg"
+            src="images/Logo-new.png"
             alt=""
             loading="lazy"
             className="logo-brand-only"
@@ -292,7 +292,7 @@ const UserWedding = () => {
                 </span>
                 <a href="index.html" className="logo-brand">
                   <img
-                    src="images/Logo.jpeg"
+                    src="images/Logo-new.png"
                     alt=""
                     loading="lazy"
                     className="ic-logo"

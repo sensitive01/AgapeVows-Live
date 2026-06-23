@@ -336,8 +336,8 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
             <li>4. Do <strong>NOT</strong> upload fake IDs. If found, your account may be suspended and banned from AgapeVows.</li>
           </ul>
           <div style={{ marginTop: "auto", textAlign: "left", width: "100%", fontSize: "0.85rem", color: "#888" }}>
-            <p className="mb-1"><i className="fa fa-envelope me-2" style={{ color: "#5c2a9d" }}></i> idproof@agapevows.com</p>
-            <p className="mb-0"><i className="fa fa-phone me-2" style={{ color: "#5c2a9d" }}></i> +91 9995777037</p>
+            <p className="mb-1"><i className="fa fa-envelope me-2" style={{ color: "#5c2a9d" }}></i> profiles@agapevows.com</p>
+            <p className="mb-0"><i className="fa fa-phone me-2" style={{ color: "#5c2a9d" }}></i> +91 96637-96699</p>
           </div>
         </div>
 

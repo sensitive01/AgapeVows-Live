@@ -2,7 +2,7 @@
 .privacy-policy-page {
   font-family: Arial, sans-serif;
   line-height: 1.6;
-  padding: 40px;
+  padding: 120px 40px 40px;
   max-width: 900px;
   margin: auto;
   background-color: #f9f9f9;
@@ -12,7 +12,7 @@
 }
 
 .privacy-policy-page h1 {
-  color: #1a73e8;
+  color: #58219f;
   border-bottom: 2px solid #ddd;
   padding-bottom: 10px;
   margin-bottom: 40px;
@@ -20,7 +20,7 @@
 }
 
 .privacy-policy-page h2 {
-  color: #1a73e8;
+  color: #58219f;
   margin-bottom: 15px;
   font-size: 18px;
 }
@@ -52,7 +52,7 @@
 }
 
 .privacy-policy-page a {
-  color: #1a73e8;
+  color: #58219f;
   text-decoration: none;
 }
 

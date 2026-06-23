@@ -12,7 +12,7 @@ import {
   X,
   User,
 } from "lucide-react";
-import logo from "../../../assets/images/Logo.jpeg";
+import logo from "../../../assets/images/Logo-new.png";
 import { getUserProfile } from "../../../api/axiosService/userAuthService";
 /* import profileImg from "../../../assets/images/profiles/1.jpg"; */ // Removed as we use generic icon now
 import PreLoader from "../../PreLoader";
@@ -31,7 +31,7 @@ export const SERVICE_CATEGORIES = [
 export const HELP_OPTIONS = [
   { title: "Contact Us", path: "/contact-page" },
   { title: "Report an Issue", path: "/report-issue" },
-  { title: "FAQ's", path: "/faq"}
+  { title: "FAQ's", path: "/faq" }
 ];
 
 // ExploreDropdown Component - Redesigned as List
@@ -162,7 +162,7 @@ const MainLayout = () => {
   const [userName, setUserName] = useState(localStorage.getItem("userName"));
   const [userImage, setUserImage] = useState(
     localStorage.getItem("userImage") || null,
-  ); 
+  );
   const [isUserActive, setIsUserActive] = useState(Boolean(userId));
   const [isHelpDropdownVisible, setIsHelpDropdownVisible] = useState(false);
 
@@ -229,8 +229,8 @@ const MainLayout = () => {
                   >
                   </div>
                 )}
-                
-              </div> 
+
+              </div>
               <button
                 onClick={() => handleNavigate("/blogs")}
                 className="cursor-pointer hover:text-purple-200"
@@ -257,7 +257,7 @@ const MainLayout = () => {
               </div>
               <div className="flex items-center space-x-2 text-white">
                 <Mail className="w-4 h-4 !text-white" />
-                <span className="!text-white font-medium uppercase">SUPPORT@AGAPEVOWS.COM</span> 
+                <span className="!text-white font-medium uppercase">SUPPORT@AGAPEVOWS.COM</span>
               </div>
               <div className="flex space-x-3 text-white">
                 <Facebook className="w-4 h-4 cursor-pointer hover:text-purple-200 !text-white" />
@@ -323,7 +323,7 @@ const MainLayout = () => {
                   src={logo}
                   alt="agapevows_logo"
                   className="h-8 w-auto sm:h-10 md:h-12 lg:h-14 object-contain"
-                  style={{ marginTop: '-10px' }}
+                  style={{ marginTop: '-10px', transform: 'scale(1.5)', transformOrigin: 'left center' }}
                 />
               </div>
             </a>
@@ -497,9 +497,9 @@ const MainLayout = () => {
                         handleNavigate("/user/user-sign-up");
                       }
                     }}
-                    className="text-gray-800 hover:text-[#4a2580] font-medium"
+                    className="bg-[#58219f] text-white px-6 py-2 rounded-full hover:bg-[#4a1b85] transition-colors font-medium shadow-md shadow-purple-100"
                   >
-                    REGISTER
+                    REGISTER FREE
                   </a>
                   <a
                     href="/user/user-login"
@@ -509,7 +509,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-login");
                       }
                     }}
-                    className="bg-[#7c3aed] text-white px-6 py-2 rounded-full hover:bg-[#6d28d9] transition-colors font-medium shadow-md shadow-purple-100"
+                    className="text-gray-800 hover:text-[#4a2580] font-medium"
                   >
                     LOGIN
                   </a>
@@ -738,9 +738,9 @@ const MainLayout = () => {
                         handleNavigate("/user/user-sign-up");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full text-center text-[#7c3aed] border border-[#7c3aed] font-medium py-2.5 rounded-lg hover:bg-purple-50 transition-colors"
+                      className="w-full bg-[#58219f] text-white py-2.5 rounded-lg font-medium hover:bg-[#4a1b85] transition-colors shadow-sm"
                     >
-                      Register
+                      Register Free
                     </button>
                     <button
                       onClick={(e) => {
@@ -748,7 +748,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-login");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full bg-[#7c3aed] text-white py-2.5 rounded-lg font-medium hover:bg-[#6d28d9] transition-colors shadow-sm"
+                      className="w-full text-center text-[#7c3aed] border border-[#7c3aed] font-medium py-2.5 rounded-lg hover:bg-purple-50 transition-colors"
                     >
                       Login
                     </button>

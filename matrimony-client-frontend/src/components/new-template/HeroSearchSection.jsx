@@ -11,7 +11,7 @@ import landingPageBg from '../../assets/images/landing-page.png';
 import landingPageBg1 from '../../assets/images/landing-page1.png';
 import landingPageBg2 from '../../assets/images/landing-page2.png';
 import landingPageBg3 from '../../assets/images/landing-page3.png';
-import landingPageBg4 from '../../assets/images/landing-pagee.png'; 
+import landingPageBg4 from '../../assets/images/landing-pagee.png';
 
 const backgroundImages = [
   landingPageBg4,
@@ -85,11 +85,11 @@ const SearchDropdown = ({
 }) => {
   // If the search term is the same as the selected value, show all options to allow changing
   const isSelectedValue = searchTerm === value;
-  const filteredOptions = isSelectedValue 
-    ? options 
+  const filteredOptions = isSelectedValue
+    ? options
     : options.filter((option) =>
-        option.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      option.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
   return (
     <div className="relative">
@@ -111,7 +111,7 @@ const SearchDropdown = ({
         <button
           type="button"
           onClick={() => {
-            if (!showDropdown) onSearchChange(""); // Clear search to show all when opening via arrow
+            if (!showDropdown) onSearchChange("");
             onToggleDropdown(!showDropdown);
           }}
           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-500 transition-colors"
@@ -277,7 +277,7 @@ export default function HeroSearchSection() {
                 <span className="hero-badge-icon">†</span> India's Trusted Christian Matrimony
               </div>
               <h1>
-                Christian Matrimony,<br/>
+                Christian Matrimony,<br />
                 <b>Built on Trust</b>
               </h1>
               <div className="hero-divider">
@@ -371,7 +371,7 @@ export default function HeroSearchSection() {
                     <label>AGE</label>
                     <div className="age-slider-wrapper">
                       <div className="slider-track" style={{
-                        background: `linear-gradient(to right, #e5e7eb ${((formData.ageFrom - 18) / (70 - 18)) * 100}%, #7c3aed ${((formData.ageFrom - 18) / (70 - 18)) * 100}%, #7c3aed ${((formData.ageTo - 18) / (70 - 18)) * 100}%, #e5e7eb ${((formData.ageTo - 18) / (70 - 18)) * 100}%)`
+                        background: `linear-gradient(to right, #e5e7eb ${((formData.ageFrom - 18) / (70 - 18)) * 100}%, #58219f ${((formData.ageFrom - 18) / (70 - 18)) * 100}%, #58219f ${((formData.ageTo - 18) / (70 - 18)) * 100}%, #e5e7eb ${((formData.ageTo - 18) / (70 - 18)) * 100}%)`
                       }}></div>
                       <input
                         type="range"

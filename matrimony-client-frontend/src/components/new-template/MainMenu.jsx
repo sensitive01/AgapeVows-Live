@@ -1,4 +1,4 @@
-import logoBImg from '../../assets/images/Logo.jpeg';
+import logoBImg from '../../assets/images/Logo-new.png';
 import profile1 from '../../assets/new-template/images/profiles/1.jpg';
 import iconSearch from '../../assets/new-template/images/icon/search.svg';
 import iconUsers from '../../assets/new-template/images/icon/users.svg';
@@ -142,7 +142,7 @@ export default function MainMenu() {
                   <i />
                 </span> */}
                 <a href="/" className="logo-brand">
-                  <img src={logoBImg} alt="" loading="lazy" className="ic-logo" style={{ marginTop: '-10px' }} />
+                  <img src={logoBImg} alt="" loading="lazy" className="ic-logo" style={{ marginTop: '-10px', transform: 'scale(1.5)', transformOrigin: 'left center' }} />
                 </a>
               </div>
               {/* EXPLORE MENU */}

@@ -6,20 +6,20 @@ const FindYourPerfectMatchNow = () => {
       <style>{`
         .fot-ban-inn {
           margin: 10px 0 0 0 !important;
-          background: linear-gradient(135deg, #f6d365 0%, #d4af37 100%) !important;
-          box-shadow: 0 10px 30px rgba(212, 175, 55, 0.25) !important;
+          background: #58219f !important;
+          box-shadow: 0 10px 30px rgba(88, 33, 159, 0.25) !important;
           border-radius: 15px !important;
         }
         .fot-ban-inn .lhs {
           padding: 25px 30px !important;
         }
         .fot-ban-inn .lhs h2 {
-          color: #2b124c !important;
+          color: #ffffff !important;
           margin-bottom: 8px !important;
           font-weight: 700 !important;
         }
         .fot-ban-inn .lhs p {
-          color: rgba(43, 18, 76, 0.9) !important;
+          color: rgba(255, 255, 255, 0.9) !important;
           padding: 0 0 5px 0 !important;
           font-weight: 500 !important;
           margin-bottom: 0 !important;

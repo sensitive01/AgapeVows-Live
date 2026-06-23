@@ -261,9 +261,9 @@
 }
 
 .gender-toggle-btn.active {
-    background: #7c3aed;
+    background: #58219f; 
     color: #fff;
-    border-color: #7c3aed;
+    border-color: #58219f;
 }
 
 .gender-icon {
@@ -342,7 +342,7 @@
     height: 20px;
     width: 20px;
     border-radius: 50%;
-    background: #6d28d9;
+    background: #58219f;
     cursor: pointer;
     pointer-events: auto;
     border: 2px solid #fff;
@@ -354,7 +354,7 @@
     height: 20px;
     width: 20px;
     border-radius: 50%;
-    background: #6d28d9;
+    background: #58219f;
     cursor: pointer;
     pointer-events: auto;
     border: 2px solid #fff;

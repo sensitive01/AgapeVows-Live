@@ -16,7 +16,7 @@ import loader2 from '../../assets/new-template/images/loder/2.png';
 import loader3 from '../../assets/new-template/images/loder/3.png';
 
 // Import logo
-import logoBImg from '../../assets/images/Logo.jpeg';
+import logoBImg from '../../assets/images/Logo-new.png';
 
 // Import profile images
 import profile1 from '../../assets/new-template/images/profiles/1.jpg';
@@ -2020,18 +2020,18 @@ export default function Index() {
     <div className="str count">
       <div className="container">
         <div className="row">
-          <div className="fot-ban-inn">
+          <div className="fot-ban-inn" style={{ background: '#58219f', boxShadow: '0 10px 30px rgba(88, 33, 159, 0.25)', borderRadius: '15px' }}>
             <div className="lhs">
-              <h2>Find your perfect Match now</h2>
-              <p>
+              <h2 style={{ color: '#ffffff' }}>Find your perfect Match now</h2>
+              <p style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
                 lacinia viverra lectus. Fusce imperdiet ullamcorper metus eu
                 fringilla.Lorem Ipsum is simply dummy text of the printing and
                 typesetting industry.
               </p>
-              <a href="/user/user-sign-up" className="cta-3">
+              <a href="/user/user-sign-up" className="cta-3" style={{ border: '2px solid #ffffff', background: '#ffffff', color: '#58219f' }}>
                 Register Now
               </a>
-              <a href="/user/user-sign-up" className="cta-4">
+              <a href="/user/user-sign-up" className="cta-4" style={{ color: '#ffffff', borderColor: '#ffffff' }}>
                 Help &amp; Support
               </a>
             </div>

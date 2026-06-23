@@ -1,12 +1,11 @@
 import React from "react";
 
 // ✅ Importing image assets
-import logoImg from "../../../assets/images/Logo.jpeg";
+import logoImg from "../../../assets/images/Logo-new.png";
 import profImg1 from "../../../assets/images/profiles/1.jpg";
 import searchImg from "../../../assets/images/icon/search.svg";
 import userImg from "../../../assets/images/icon/users.svg";
 import menuImg from "../../../assets/images/icon/menu.svg";
-
 
 const MainMenuBar = () => {
   return (
