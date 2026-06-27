@@ -38,6 +38,7 @@ const allowedOrigins = [
   "http://localhost:5175",
   "http://localhost:5176",
   "http://localhost:5177",
+  "https://demo.agapevows.com",
   "https://agape-vows-matrimony-final.vercel.app",
   "https://agape-vows-matrimony-final-2v1i.vercel.app",
   "https://matrimony-project-client.vercel.app",
@@ -49,7 +50,7 @@ const allowedOrigins = [
   "https://matrimony-final.vercel.app",
   "https://agape-vows-live.vercel.app",
   "https://agape-vows-live-z3cg.vercel.app",
-  "http://localhost:3000",
+  "http://localhost:3000", 
   "http://localhost:4000",
   "http://187.127.137.237:3000",
   "http://187.127.137.237:3001"
