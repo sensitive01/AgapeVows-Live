@@ -223,12 +223,7 @@ const UserAllProfilePage = () => {
       </div>
 
       <div style={{ paddingTop: "115px", paddingBottom: "40px" }}>
-        <div className="all-pro-head">
-          <div className="container">
-            <div className="row">
-            </div>
-          </div>
-        </div>
+
         <div className="fil-mob fil-mob-act">
           <h4>
             Profile filters{" "}

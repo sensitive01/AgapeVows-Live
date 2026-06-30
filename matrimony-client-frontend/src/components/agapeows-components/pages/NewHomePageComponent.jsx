@@ -1,5 +1,4 @@
 import React from "react";
-// Import New Template CSS (only the ones not already in main.jsx)
 import "../../../assets/new-template/css/jquery-ui.css";
 import "../../../assets/new-template/css/style.css";
 import "../../new-template/HomeMobileResponsive.css";
@@ -10,6 +9,7 @@ import HeroSearchSection from "../../new-template/HeroSearchSection";
 
 import FindYourMatchCTASection from "../../new-template/FindYourMatchCTASection";
 import HighlightedProfilesSection from "../../new-template/HighlightedProfilesSection";
+import HowItWorksSection from "../../new-template/HowItWorksSection";
 import FooterSection from "../../new-template/FooterSection";
 
 const NewHomePageComponent = () => {
@@ -28,6 +28,8 @@ const NewHomePageComponent = () => {
 
         <div className="flex flex-col gap-2 lg:gap-4 py-2 sm:py-4 overflow-visible max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
         </div>
+
+        <HowItWorksSection />
 
         <div className="flex flex-col gap-2 lg:gap-4 py-2 sm:py-4 overflow-visible max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
           <FindYourMatchCTASection />

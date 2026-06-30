@@ -6,7 +6,7 @@ const Footer = ({ paddingTop = '40px' }) => {
   return (
     <>
       <footer className="agape-vows-footer mt-auto" style={{
-        background: '#390f6fff',
+        background: '#4a2580',
         color: '#fff',
         paddingTop: paddingTop,
         paddingBottom: '8px',
@@ -194,9 +194,9 @@ const Footer = ({ paddingTop = '40px' }) => {
             }}>
               <h4 className="footer-section-title">Connect With Us</h4>
               <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '10px' }}>
-                <a href="#" className="soc-icon-wrap"><Facebook /></a>
-                <a href="#" className="soc-icon-wrap"><Instagram /></a>
-                <a href="#" className="soc-icon-wrap"><Youtube /></a>
+                <a href="https://www.facebook.com/AgapeVows/" target="_blank" rel="noopener noreferrer" className="soc-icon-wrap"><Facebook /></a>
+                <a href="https://www.instagram.com/agapevows_matrimony" target="_blank" rel="noopener noreferrer" className="soc-icon-wrap"><Instagram /></a>
+                <a href="https://www.youtube.com/@AgapeVowsMatrimony" target="_blank" rel="noopener noreferrer" className="soc-icon-wrap"><Youtube /></a>
               </div>
             </div>
 

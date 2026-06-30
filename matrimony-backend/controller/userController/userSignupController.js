@@ -365,7 +365,7 @@ const sendLoginOtp = async (req, res) => {
         });
       }
     } else {
-      return res.status(400).json({ success: false, message: "Please use Mobile OTP login option for phone numbers." });
+      return res.status(400).json({ success: false, message: "Please enter a valid email address." });
     }
 
   } catch (err) {
@@ -422,61 +422,7 @@ const verifyLoginOtp = async (req, res) => {
   }
 };
 
-const verifyFirebaseLogin = async (req, res) => {
-  try {
-    const { idToken } = req.body;
-    if (!idToken) {
-      return res.status(400).json({ success: false, message: "Firebase ID token is required" });
-    }
 
-    // Verify token
-    const decodedToken = await getAuth().verifyIdToken(idToken);
-    const phoneNumber = decodedToken.phone_number;
-
-    if (!phoneNumber) {
-      return res.status(400).json({ success: false, message: "No phone number found in Firebase token" });
-    }
-
-    const last10Digits = phoneNumber.slice(-10);
-
-    const user = await userModel.findOne({
-      $or: [
-        { userMobile: phoneNumber },
-        { userMobile: last10Digits }
-      ]
-    });
-
-    if (!user) {
-      return res.status(401).json({ success: false, message: "User not found with this mobile number" });
-    }
-
-    if (user.isDeleted) {
-      return res.status(403).json({ success: false, message: "This account has been deleted. Please contact admin" });
-    }
-
-    if (user.profileStatus === "Deactivated") {
-      return res.status(403).json({ success: false, message: "Account is deactivated. Contact admin to reactivate." });
-    }
-
-    // Successful login
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'agape_vows_secret_key_2026', { expiresIn: '7d' });
-
-    return res.status(200).json({
-      success: true,
-      message: "Login successful",
-      token,
-      userId: user._id,
-      userName: user.userName,
-      profileImage: user.profileImage,
-      gender: user.gender
-    });
-
-  } catch (error) {
-    console.error("Error verifying Firebase login:", error);
-    let detailedMsg = "Invalid or expired authentication token. Details: " + (error.message || "");
-    res.status(401).json({ success: false, message: detailedMsg });
-  }
-};
 
 module.exports = {
   saveSignUpData,
@@ -489,5 +435,4 @@ module.exports = {
   verifyRegistrationOtp,
   sendLoginOtp,
   verifyLoginOtp,
-  verifyFirebaseLogin,
 };

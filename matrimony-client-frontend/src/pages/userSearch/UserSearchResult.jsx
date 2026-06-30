@@ -24,16 +24,25 @@ const UserSearchResult = () => {
   const userId = localStorage.getItem("userId");
   const [users, setUsers] = useState([]);
   const [sortBy, setSortBy] = useState("");
+  const [filterType, setFilterType] = useState("all");
+
   const sortedUsers = useMemo(() => {
-    const list = [...users];
+    let list = [...users];
+
+    if (filterType === "verified") {
+      list = list.filter((user) => user.idVerificationStatus === 'Verified');
+    } else if (filterType === "premium") {
+      list = list.filter((user) => user.paymentDetails && user.paymentDetails.some((p) => p.subscriptionStatus === "Active" && new Date(p.subscriptionValidTo) > new Date()));
+    }
+
     if (sortBy === "newest") {
       return list.sort((a, b) => new Date(b.createdAt || b.lastLogin || 0) - new Date(a.createdAt || a.lastLogin || 0));
     }
     if (sortBy === "oldest") {
       return list.sort((a, b) => new Date(a.createdAt || a.lastLogin || 0) - new Date(b.createdAt || b.lastLogin || 0));
     }
-    return list;
-  }, [users, sortBy]);
+    return list.sort((a, b) => new Date(b.lastLogin || b.createdAt || 0) - new Date(a.lastLogin || a.createdAt || 0));
+  }, [users, sortBy, filterType]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
     gender: "",
@@ -303,17 +312,7 @@ const UserSearchResult = () => {
       </div>
 
       <div style={{ paddingTop: "115px", paddingBottom: "40px" }}>
-        <div className="all-pro-head">
-          <div className="container">
-            <div className="row">
 
-              {/* <a href="#">
-                Join now for Free{" "}
-                <i className="fa fa-handshake-o" aria-hidden="true"></i>
-              </a> */}
-            </div>
-          </div>
-        </div>
         <div className="fil-mob fil-mob-act">
           <h4>
             Profile filters{" "}
@@ -335,7 +334,30 @@ const UserSearchResult = () => {
                     {loading && <span className="ml-2">Loading...</span>}
                   </div>
                   <div className="short-rhs">
-                    <ul>
+                    <ul style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "10px", margin: 0, padding: 0, listStyle: "none" }}>
+                      <li>Filter:</li>
+                      <li style={{ marginRight: "15px" }}>
+                        <div className="form-group mb-0">
+                          <select
+                            className="form-select"
+                            style={{
+                              padding: "6px 12px",
+                              fontSize: "14px",
+                              borderRadius: "4px",
+                              border: "1px solid #ccc",
+                              outline: "none",
+                              cursor: "pointer",
+                              minWidth: "140px"
+                            }}
+                            value={filterType}
+                            onChange={(e) => setFilterType(e.target.value)}
+                          >
+                            <option value="all">All Profiles</option>
+                            <option value="verified">Verified Profiles</option>
+                            <option value="premium">Premium Profiles</option>
+                          </select>
+                        </div>
+                      </li>
                       <li>Sort by:</li>
                       <li>
                         <div className="form-group">
@@ -453,16 +475,14 @@ const UserSearchResult = () => {
                               }}
                             >
                               Last login:{" "}
-                              {user.lastLogin
-                                ? new Date(user.lastLogin).toLocaleDateString(
-                                  "en-GB",
-                                  {
-                                    day: "2-digit",
-                                    month: "short",
-                                    year: "numeric",
-                                  },
-                                )
-                                : "Recently"}
+                              {new Date(user.lastLogin || user.createdAt || Date.now()).toLocaleDateString(
+                                "en-GB",
+                                {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                }
+                              )}
                             </span>
                           </div>
 

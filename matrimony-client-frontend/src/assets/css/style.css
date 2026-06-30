@@ -5105,7 +5105,7 @@ span.mail::before {
   padding: 40px 0px 80px;
   text-align: center;
   color: rgb(255, 255, 255);
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../images/plans-bg.png') no-repeat center center;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../images/new-banner.png') no-repeat center center;
   background-size: cover;
   overflow: hidden;
   float: left;

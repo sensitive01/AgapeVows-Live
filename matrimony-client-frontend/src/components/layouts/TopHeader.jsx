@@ -9,6 +9,8 @@ import {
   Twitter,
   X,
   User,
+  Instagram,
+  Youtube,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
@@ -209,9 +211,15 @@ const TopHeader = () => {
               </div>
             </div>
             <div className="flex space-x-2">
-              <Facebook className="w-4 h-4 cursor-pointer hover:text-purple-200" />
-              <Twitter className="w-4 h-4 cursor-pointer hover:text-purple-200" />
-              <MessageCircle className="w-4 h-4 cursor-pointer hover:text-purple-200" />
+              <a href="https://www.facebook.com/AgapeVows/" target="_blank" rel="noopener noreferrer">
+                <Facebook className="w-4 h-4 cursor-pointer hover:text-purple-200" />
+              </a>
+              <a href="https://www.instagram.com/agapevows_matrimony" target="_blank" rel="noopener noreferrer">
+                <Instagram className="w-4 h-4 cursor-pointer hover:text-purple-200" />
+              </a>
+              <a href="https://www.youtube.com/@AgapeVowsMatrimony" target="_blank" rel="noopener noreferrer">
+                <Youtube className="w-4 h-4 cursor-pointer hover:text-purple-200" />
+              </a>
             </div>
           </div>
         </div>

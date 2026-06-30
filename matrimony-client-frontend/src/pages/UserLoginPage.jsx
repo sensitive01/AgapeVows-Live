@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
-import { auth } from "../firebase";
+
 
 import Footer from "../components/Footer";
 import CopyRights from "../components/CopyRights";
-import { verifyUser, sendLoginOtpRequest, verifyLoginOtpRequest, verifyFirebaseLoginRequest } from "../api/axiosService/userSignUpService";
+import { verifyUser, sendLoginOtpRequest, verifyLoginOtpRequest } from "../api/axiosService/userSignUpService";
 import { showAlert } from "../utils/alertService";
 import LayoutComponent from "../components/layouts/LayoutComponent";
 
@@ -16,9 +13,9 @@ const UserLoginPage = () => {
   const location = useLocation();
   const firstOtpInputRef = useRef(null);
 
-  // activeView can be: 'mobile_entry', 'choose_method', 'email_otp_entry', 'password_entry', 'otp_verification'
-  const [activeView, setActiveView] = useState("mobile_entry");
-  const [loginMode, setLoginMode] = useState("mobile_otp"); // internal tracking for OTP length/API
+  // activeView can be: 'choose_method', 'email_otp_entry', 'password_entry', 'otp_verification'
+  const [activeView, setActiveView] = useState("choose_method");
+  const [loginMode, setLoginMode] = useState("email_otp"); // internal tracking for OTP length/API
   
   const [formData, setFormData] = useState({
     emailOrPhone: "91",
@@ -36,7 +33,6 @@ const UserLoginPage = () => {
   const [timer, setTimer] = useState(0);
   const [canResend, setCanResend] = useState(false);
   const [userId, setUserId] = useState(null); 
-  const [confirmationResult, setConfirmationResult] = useState(null);
   
   // Timer effect
   useEffect(() => {
@@ -60,13 +56,7 @@ const UserLoginPage = () => {
     }
   }, [activeView]);
 
-  const setupRecaptcha = () => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-        size: "invisible",
-      });
-    }
-  };
+
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -78,7 +68,7 @@ const UserLoginPage = () => {
   };
 
   const handleOtpChange = (index, value) => {
-    const maxDigits = loginMode === "mobile_otp" ? 6 : 4;
+    const maxDigits = 4;
     
     if (value.length > 1 && /^\d+$/.test(value)) {
        const digits = value.split("").slice(0, maxDigits);
@@ -116,16 +106,7 @@ const UserLoginPage = () => {
   };
 
   const formatDisplayNumber = (number, mode) => {
-    if (mode !== "mobile_otp" || !number) return number;
-    // Format Indian numbers specifically like +91 95973-35840
-    if (number.length === 12 && number.startsWith("91")) {
-      const cc = number.substring(0, 2);
-      const p1 = number.substring(2, 7);
-      const p2 = number.substring(7);
-      return `+${cc} ${p1}-${p2}`;
-    }
-    // Generic fallback for other country codes
-    return `+${number}`;
+    return number;
   };
 
   const switchView = (view, mode) => {
@@ -134,18 +115,13 @@ const UserLoginPage = () => {
     setLoginError("");
     setSuccessMsg("");
     setErrors({});
-    const otpArray = mode === "mobile_otp" ? ["", "", "", "", "", ""] : ["", "", "", ""];
+    const otpArray = ["", "", "", ""];
     
     let defaultEmailOrPhone = formData.emailOrPhone;
     if (view === "email_otp_entry" || view === "password_entry") {
       // Clear it if switching to an email field and it currently holds a phone number
       if (!defaultEmailOrPhone.includes("@")) {
          defaultEmailOrPhone = "";
-      }
-    } else if (view === "mobile_entry") {
-      // Set to "91" if switching back to mobile and it's empty or an email
-      if (!defaultEmailOrPhone || defaultEmailOrPhone.includes("@")) {
-         defaultEmailOrPhone = "91";
       }
     }
 
@@ -201,43 +177,22 @@ const UserLoginPage = () => {
 
     setIsLoading(true);
 
-    if (loginMode === "mobile_otp") {
-      try {
-        setupRecaptcha();
-        const appVerifier = window.recaptchaVerifier;
-        let formattedNumber = formData.emailOrPhone;
-        if (!formattedNumber.startsWith("+")) formattedNumber = "+" + formattedNumber;
-
-        const confResult = await signInWithPhoneNumber(auth, formattedNumber, appVerifier);
-        setConfirmationResult(confResult);
+    try {
+      const response = await sendLoginOtpRequest(formData.emailOrPhone);
+      if (response.data && response.data.success) {
+        setUserId(response.data.userId);
         setActiveView("otp_verification");
         setTimer(60);
         setCanResend(false);
-        setFormData((prev) => ({ ...prev, otp: ["", "", "", "", "", ""] }));
-      } catch (error) {
-        console.error("Firebase error:", error);
-        setLoginError("Failed to send OTP via Firebase.");
-      } finally {
-        setIsLoading(false);
+        setFormData((prev) => ({ ...prev, otp: ["", "", "", ""] }));
+      } else {
+         setLoginError(response.data.message || "Failed to send OTP.");
       }
-    } else {
-      try {
-        const response = await sendLoginOtpRequest(formData.emailOrPhone);
-        if (response.data && response.data.success) {
-          setUserId(response.data.userId);
-          setActiveView("otp_verification");
-          setTimer(60);
-          setCanResend(false);
-          setFormData((prev) => ({ ...prev, otp: ["", "", "", ""] }));
-        } else {
-           setLoginError(response.data.message || "Failed to send OTP.");
-        }
-      } catch (error) {
-        console.error("Send OTP error:", error);
-        setLoginError(error.response?.data?.message || "Failed to send OTP.");
-      } finally {
-        setIsLoading(false);
-      }
+    } catch (error) {
+      console.error("Send OTP error:", error);
+      setLoginError(error.response?.data?.message || "Failed to send OTP.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -245,7 +200,7 @@ const UserLoginPage = () => {
     e.preventDefault();
     setLoginError("");
     const otpString = formData.otp.join("");
-    const requiredLength = loginMode === "mobile_otp" ? 6 : 4;
+    const requiredLength = 4;
 
     if (otpString.length !== requiredLength) {
       setLoginError(`Please enter the complete ${requiredLength}-digit OTP`);
@@ -254,32 +209,14 @@ const UserLoginPage = () => {
 
     setIsLoading(true);
 
-    if (loginMode === "mobile_otp") {
-      try {
-        const result = await confirmationResult.confirm(otpString);
-        const idToken = await result.user.getIdToken();
-        const response = await verifyFirebaseLoginRequest(idToken);
-        if (response.data && response.data.success) finishLogin(response.data);
-      } catch (error) {
-        console.error("Firebase Verify error:", error);
-        let message = "Invalid OTP or expired token. Please try again.";
-        if (error.response && error.response.data && error.response.data.message) {
-          message = error.response.data.message;
-        }
-        setLoginError(message);
-      } finally {
-        setIsLoading(false);
-      }
-    } else {
-      try {
-        const response = await verifyLoginOtpRequest({ userId, otp: otpString });
-        if (response.data && response.data.success) finishLogin(response.data);
-      } catch (error) {
-        console.error("Verify OTP error:", error);
-        setLoginError(error.response?.data?.message || "Invalid OTP. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
+    try {
+      const response = await verifyLoginOtpRequest({ userId, otp: otpString });
+      if (response.data && response.data.success) finishLogin(response.data);
+    } catch (error) {
+      console.error("Verify OTP error:", error);
+      setLoginError(error.response?.data?.message || "Invalid OTP. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -290,12 +227,7 @@ const UserLoginPage = () => {
     </svg>
   );
 
-  const SmsIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M8 10H16M8 14H12" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
+
 
   const EmailIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -515,31 +447,11 @@ const UserLoginPage = () => {
           .standard-input:focus {
             border-color: #7c3aed;
           }
-          .react-tel-input .form-control {
-            width: 100% !important;
-            height: 50px !important;
-            border-radius: 8px !important;
-            border: 1px solid #e0e0e0 !important;
-            font-size: 15px !important;
-          }
-          .react-tel-input .form-control:focus {
-            border-color: #7c3aed !important;
-            box-shadow: none !important;
-          }
-          .react-tel-input .flag-dropdown {
-            border: 1px solid #e0e0e0 !important;
-            border-radius: 8px 0 0 8px !important;
-            background: #fff !important;
-          }
-          .react-tel-input .selected-flag:hover {
-            background: #f8f9fa !important;
-            border-radius: 8px 0 0 8px !important;
-          }
+
         `}</style>
 
         <div className="login-card">
-           <div id="recaptcha-container"></div>
-           
+
            {loginError && (
               <div style={{ padding: "12px", background: "#fee2e2", color: "#dc2626", borderRadius: "8px", marginBottom: "20px", fontSize: "14px" }}>
                 {loginError}
@@ -552,53 +464,16 @@ const UserLoginPage = () => {
               </div>
             )}
 
-            {activeView === "mobile_entry" && (
-              <form onSubmit={(e) => { e.preventDefault(); handleSendOtp(); }}>
-                <h2>Login with Mobile Number</h2>
-                <p className="subtitle">Please enter the mobile number to receive OTP via SMS</p>
-                
-                <div style={{ marginBottom: "20px" }}>
-                  <PhoneInput
-                    country={'in'}
-                    value={formData.emailOrPhone}
-                    onChange={(phone) => setFormData(prev => ({ ...prev, emailOrPhone: phone }))}
-                    inputProps={{
-                      name: 'emailOrPhone',
-                      required: true,
-                      autoFocus: true
-                    }}
-                  />
-                </div>
-                
-                <button 
-                  type="submit"
-                  disabled={!formData.emailOrPhone || formData.emailOrPhone.length < 10 || isLoading}
-                  className={`btn-primary-custom ${(formData.emailOrPhone && formData.emailOrPhone.length >= 10 && !isLoading) ? 'active ready' : 'disabled'}`}
-                >
-                  {isLoading ? "SENDING..." : "GET OTP"}
-                </button>
-                
-                <div className="try-another-way">
-                  <a onClick={() => switchView('choose_method')}>TRY ANOTHER WAY</a>
-                </div>
-              </form>
-            )}
+
 
             {activeView === "choose_method" && (
               <div>
-                <button className="back-button" onClick={() => switchView('mobile_entry', 'mobile_otp')}>
-                  <BackIcon />
-                </button>
+
                 <h2>Choose Your Sign-in Method</h2>
                 <p className="subtitle">Pick the option that works best for you.</p>
                 
                 <div className="method-list">
-                  <div className="method-item" onClick={() => switchView('mobile_entry', 'mobile_otp')}>
-                    <SmsIcon />
-                    <div>
-                      <span className="title">Get OTP Via SMS</span>
-                    </div>
-                  </div>
+
                   <div className="method-item" onClick={() => switchView('email_otp_entry', 'email_otp')}>
                     <EmailIcon />
                     <div>
@@ -697,7 +572,7 @@ const UserLoginPage = () => {
 
             {activeView === "otp_verification" && (
               <form onSubmit={handleVerifyOtp}>
-                <button type="button" className="back-button" onClick={() => switchView(loginMode === 'mobile_otp' ? 'mobile_entry' : 'email_otp_entry')}>
+                <button type="button" className="back-button" onClick={() => switchView('email_otp_entry', 'email_otp')}>
                   <BackIcon />
                 </button>
                 <h2>Enter Verification Code</h2>

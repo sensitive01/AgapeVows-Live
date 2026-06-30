@@ -34,7 +34,7 @@ const InfoRow = ({ label, value }) => {
 const ProfileSection = ({ title, icon, children }) => (
   <div className="profile-section card">
     <h4 className="profile-section-title">
-      <FontAwesomeIcon icon={icon} style={{ color: "#7c3aed" }} />
+      <FontAwesomeIcon icon={icon} style={{ color: "#4a2580" }} />
       {title}
     </h4>
     <div className="profile-section-content">{children}</div>
@@ -498,7 +498,7 @@ const MoreDetails = () => {
                     width: "100%",
                     height: "45px",
                     marginBottom: "0",
-                    background: isShortlisted ? "#10b981" : "#8b5cf6",
+                    background: isShortlisted ? "#10b981" : "#4a2580",
                     color: "#ffffff",
                     border: "none",
                     padding: "0",
@@ -630,7 +630,7 @@ const MoreDetails = () => {
                   borderRadius: "12px",
                   boxShadow: "0 4px 14px rgba(0,0,0,0.05)",
                   marginBottom: "25px",
-                  borderLeft: "4px solid #7c3aed",
+                  borderLeft: "4px solid #4a2580",
                 }}
               >
                 <div
@@ -1077,14 +1077,14 @@ const MoreDetails = () => {
         .profile-card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); width: 100%; max-width: 320px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
         .profile-image-wrapper { position: relative; width: 100%; }
         .profile-image { width: 100%; border-radius: 12px; object-fit: cover; }
-        .zoom-btn { position: absolute; top: 10px; right: 10px; background: #7c3aed; color: #fff; border-radius: 50%; padding: 6px 10px; cursor: pointer; font-size: 1.1rem; }
-        .interest-btn { width: 100%; background: #7c3aed; color: #fff; border-radius: 8px; padding: 12px 0; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .zoom-btn { position: absolute; top: 10px; right: 10px; background: #4a2580; color: #fff; border-radius: 50%; padding: 6px 10px; cursor: pointer; font-size: 1.1rem; }
+        .interest-btn { width: 100%; background: #4a2580; color: #fff; border-radius: 8px; padding: 12px 0; font-weight: 600; cursor: pointer; transition: all 0.2s; }
         .interest-btn.disabled { background: #999; cursor: not-allowed; opacity: 0.6; }
-        .agv-id { text-align: center; background: rgba(124, 58, 237, 0.85); color: #fff; padding: 8px 16px; border-radius: 20px; font-weight: 600; display: inline-block; font-size: 1rem; }
+        .agv-id { text-align: center; background: rgba(74, 37, 128, 0.85); color: #fff; padding: 8px 16px; border-radius: 20px; font-weight: 600; display: inline-block; font-size: 1rem; }
         .start-chat-top-btn { background: #3b82f6; color: #fff; padding: 10px 24px; border-radius: 20px; font-weight: 600; cursor: pointer; border: none; font-size: 1rem; transition: background 0.2s; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
         .start-chat-top-btn:hover { background: #2563eb; }
         .about-me { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        .about-me h4 { color: #7c3aed; margin-bottom: 10px; }
+        .about-me h4 { color: #4a2580; margin-bottom: 10px; }
         .video-card {
   display: flex;
   align-items: center;
@@ -1147,7 +1147,7 @@ const MoreDetails = () => {
   border-radius: 12px;
   box-shadow: 0 4px 14px rgba(0,0,0,0.05);
   margin-bottom: 25px;
-  border-left: 4px solid #7c3aed;
+  border-left: 4px solid #4a2580;
 }
 
 .snippet-text {
@@ -1175,17 +1175,17 @@ const MoreDetails = () => {
         .zoom-image-wrapper { position: relative; }
         .zoom-image-wrapper img { max-width: 100vw; max-height: 90vh; border-radius: 12px; transition: transform 0.2s ease; cursor: grab; }
         .zoom-controls { position: absolute; bottom: -60px; display: flex; gap: 15px; justify-content: center; width: 100%; }
-        .zoom-controls button { padding: 10px 15px; font-size: 1.2rem; border-radius: 8px; border: none; background: #7c3aed; color: #fff; cursor: pointer; font-weight: 600; }
+        .zoom-controls button { padding: 10px 15px; font-size: 1.2rem; border-radius: 8px; border: none; background: #4a2580; color: #fff; cursor: pointer; font-weight: 600; }
         .contact-btn-wrapper { margin-bottom: 15px; }
-        .view-contact-btn { background: #7c3aed; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
-        .view-contact-btn:hover { background: #6d28d9; }
+        .view-contact-btn { background: #4a2580; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .view-contact-btn:hover { background: #381c60; }
         .upgrade-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.65); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(4px); }
         .upgrade-content { background: #fff; padding: 35px 30px; border-radius: 16px; text-align: center; width: 100%; max-width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); animation: fadeInScale 0.3s ease; }
         .upgrade-icon { font-size: 40px; margin-bottom: 10px; }
         .upgrade-content h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 10px; color: #111; }
         .upgrade-content p { font-size: 0.95rem; color: #666; margin-bottom: 25px; }
         .upgrade-buttons { display: flex; gap: 10px; justify-content: center; }
-        .upgrade-btn { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: transform 0.2s; }
+        .upgrade-btn { background: linear-gradient(135deg, #4a2580, #381c60); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: transform 0.2s; }
         .upgrade-btn:hover { transform: scale(1.05); }
         .cancel-btn { background: #f3f4f6; color: #333; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 0.9rem; }
         @keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }

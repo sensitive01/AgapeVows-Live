@@ -58,10 +58,3 @@ export const verifyLoginOtpRequest = async ({ userId, otp }) => {
   const response = await axiosInstance.post(`/user/verify-login-otp`, { userId, otp });
   return response;
 };
-
-
-export const verifyFirebaseLoginRequest = async (idToken) => {
-  const response = await axiosInstance.post(`/user/verify-firebase-login`, { idToken });
-  return response;
-};
-

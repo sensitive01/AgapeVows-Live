@@ -9,6 +9,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { showAlert } from "../../utils/alertService";
 import "../../index.css";
+import newBannerImg from "../../assets/images/new-banner.png";
+
 const UserPlanSelection = () => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -326,7 +328,7 @@ const UserPlanSelection = () => {
       <>
         <LayoutComponent />
         <section>
-          <div className="plans-ban">
+          <div className="plans-ban" style={{ background: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${newBannerImg}) no-repeat center center`, backgroundSize: 'cover' }}>
             <div className="container">
               <div className="row">
                 <h1>Loading plans...</h1>
@@ -347,7 +349,7 @@ const UserPlanSelection = () => {
       </div>
 
       <div className="pt-16">
-        <div className="plans-ban">
+        <div className="plans-ban" style={{ background: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${newBannerImg}) no-repeat center center`, backgroundSize: 'cover' }}>
           <div className="container">
             <div className="row">
               <span className="pri">Pricing</span>
