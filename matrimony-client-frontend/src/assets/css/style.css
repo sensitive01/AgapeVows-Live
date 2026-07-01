@@ -9314,8 +9314,9 @@ span.mail::before {
 .db-new-pro div .age {}
 
 h2.db-tit {
+  font-family: 'Source Sans 3', sans-serif !important;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600 !important;
   margin-bottom: 25px;
 }
 

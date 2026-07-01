@@ -37,10 +37,9 @@ const InfoRow = ({ label, value }) => {
       }}
     >
       <span
+        className="font-source font-medium text-[18px]"
         style={{
           color: "#6b7280",
-          fontSize: "0.85rem",
-          fontWeight: "500",
           textTransform: "uppercase",
           letterSpacing: "0.5px",
         }}
@@ -77,10 +76,9 @@ const InfoRow = ({ label, value }) => {
         })()
       ) : (
         <span
+          className="font-source font-normal text-[18px]"
           style={{
             color: "#1f2937",
-            fontSize: "1rem",
-            fontWeight: "600",
             wordBreak: "break-word",
           }}
         >
@@ -104,10 +102,9 @@ const ProfileSection = ({ title, icon, children }) => (
       }}
     >
       <h4
+        className="font-source font-semibold text-[32px]"
         style={{
           marginBottom: "20px",
-          fontSize: "1.25rem",
-          fontWeight: "700",
           color: "#1f2937",
           paddingBottom: "12px",
           display: "flex",
@@ -770,12 +767,11 @@ const UserProfilePage = () => {
                       </h2>
                       <Link
                         to={`/user/user-profile-edit-page/${userId}`}
-                        className="btn edit-btn"
+                        className="btn edit-btn font-source font-semibold text-[18px]"
                         style={{
                           background: "#5c2a9d",
                           color: "#fff",
                           padding: "10px 24px",
-                          fontSize: "24px",
                           borderRadius: "5px",
                           textDecoration: "none",
                           border: "none",
@@ -1040,10 +1036,9 @@ const UserProfilePage = () => {
                         }}
                       >
                         <h4
+                          className="font-source font-semibold text-[32px]"
                           style={{
                             marginBottom: "15px",
-                            fontSize: "1.3rem",
-                            fontWeight: "600",
                             color: "#333",
                             borderBottom: "2px solid #5c2a9d",
                             paddingBottom: "10px",
@@ -1059,9 +1054,9 @@ const UserProfilePage = () => {
                           About Me
                         </h4>
                         <p
+                          className="font-source font-normal text-[20px]"
                           style={{
                             color: "#666",
-                            fontSize: "1rem",
                             lineHeight: "1.6",
                             whiteSpace: "pre-line",
                             margin: 0,

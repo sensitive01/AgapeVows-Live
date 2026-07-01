@@ -25,15 +25,15 @@ const InfoRow = ({ label, value }) => {
 
   return (
     <div className="info-row">
-      <span className="info-label">{label}:</span>
-      <span className="info-value">{displayValue || "Not Specified"}</span>
+      <span className="info-label font-source font-medium text-[18px]">{label}:</span>
+      <span className="info-value font-source font-normal text-[18px]">{displayValue || "Not Specified"}</span>
     </div>
   );
 };
 
 const ProfileSection = ({ title, icon, children }) => (
   <div className="profile-section card">
-    <h4 className="profile-section-title">
+    <h4 className="profile-section-title font-source font-semibold text-[32px]">
       <FontAwesomeIcon icon={icon} style={{ color: "#4a2580" }} />
       {title}
     </h4>
@@ -49,7 +49,8 @@ const MoreDetails = () => {
     background: "#f3f4f6",
     padding: "6px 12px",
     borderRadius: "20px",
-    fontSize: "0.9rem",
+    fontSize: "16px",
+    fontFamily: "'Source Sans 3', sans-serif",
     fontWeight: "500",
     color: "#333",
     display: "flex",
@@ -461,7 +462,7 @@ const MoreDetails = () => {
 
               <div style={{ display: "flex", flexDirection: "column", gap: "6px", width: "100%" }}>
                 <button
-                  className="interest-btn"
+                  className="interest-btn font-source font-semibold text-[18px]"
                   style={{ 
                     width: "100%", 
                     height: "45px", 
@@ -470,8 +471,6 @@ const MoreDetails = () => {
                     alignItems: "center", 
                     justifyContent: "center", 
                     borderRadius: "8px",
-                    fontWeight: "600",
-                    fontSize: "0.95rem",
                     padding: "0",
                     backgroundColor: interestStatus ? "#10b981" : "" 
                   }}
@@ -493,7 +492,7 @@ const MoreDetails = () => {
 
                 <button
                   onClick={handleShortlistClick}
-                  className="shortlist-btn"
+                  className="shortlist-btn font-source font-semibold text-[18px]"
                   style={{
                     width: "100%",
                     height: "45px",
@@ -503,8 +502,6 @@ const MoreDetails = () => {
                     border: "none",
                     padding: "0",
                     borderRadius: "8px",
-                    fontSize: "0.95rem",
-                    fontWeight: "600",
                     cursor: "pointer",
                     transition: "all 0.2s ease",
                     display: "flex",
@@ -521,7 +518,7 @@ const MoreDetails = () => {
                 {!showContact && (
                   <button
                     onClick={handleContactClick}
-                    className="view-contact-btn"
+                    className="view-contact-btn font-source font-semibold text-[18px]"
                     style={{ 
                       width: "100%", 
                       height: "45px", 
@@ -530,8 +527,6 @@ const MoreDetails = () => {
                       alignItems: "center", 
                       justifyContent: "center", 
                       borderRadius: "8px",
-                      fontWeight: "600",
-                      fontSize: "0.95rem",
                       padding: "0"
                     }}
                   >
@@ -568,7 +563,7 @@ const MoreDetails = () => {
 
               <button
                 onClick={() => setShowReportModal(true)}
-                className="report-user-btn"
+                className="report-user-btn font-source font-semibold text-[18px]"
                 style={{
                   width: "100%",
                   height: "45px",
@@ -578,8 +573,6 @@ const MoreDetails = () => {
                   border: "1px solid #fecaca",
                   padding: "0",
                   borderRadius: "8px",
-                  fontSize: "0.95rem",
-                  fontWeight: "600",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -705,8 +698,8 @@ const MoreDetails = () => {
 
             {userInfo?.aboutMe && (
               <div className="about-me card">
-                <h4>About Me</h4>
-                <p>{userInfo.aboutMe}</p>
+                <h4 className="font-source font-semibold text-[32px] mb-3">About Me</h4>
+                <p className="font-source font-normal text-[20px]">{userInfo.aboutMe}</p>
               </div>
             )}
 
@@ -1080,7 +1073,7 @@ const MoreDetails = () => {
         .zoom-btn { position: absolute; top: 10px; right: 10px; background: #4a2580; color: #fff; border-radius: 50%; padding: 6px 10px; cursor: pointer; font-size: 1.1rem; }
         .interest-btn { width: 100%; background: #4a2580; color: #fff; border-radius: 8px; padding: 12px 0; font-weight: 600; cursor: pointer; transition: all 0.2s; }
         .interest-btn.disabled { background: #999; cursor: not-allowed; opacity: 0.6; }
-        .agv-id { text-align: center; background: rgba(74, 37, 128, 0.85); color: #fff; padding: 8px 16px; border-radius: 20px; font-weight: 600; display: inline-block; font-size: 1rem; }
+        .agv-id { text-align: center; background: #4a2580; color: #fff; padding: 8px 16px; border-radius: 20px; font-weight: 600; display: inline-block; font-size: 1rem; }
         .start-chat-top-btn { background: #3b82f6; color: #fff; padding: 10px 24px; border-radius: 20px; font-weight: 600; cursor: pointer; border: none; font-size: 1rem; transition: background 0.2s; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
         .start-chat-top-btn:hover { background: #2563eb; }
         .about-me { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.05); margin-bottom: 25px; }

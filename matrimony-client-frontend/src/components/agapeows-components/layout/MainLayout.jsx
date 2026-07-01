@@ -356,7 +356,7 @@ const MainLayout = () => {
                     if (newTab) newTab.focus();
                   }
                 }}
-                className={`hover-purple-shadow transition-all duration-200 font-medium py-2 ${location.pathname === "/about-us"
+                className={`hover-purple-shadow transition-all duration-200 font-source font-medium text-[18px] py-2 ${location.pathname === "/about-us"
                   ? "text-[#4a2580] font-bold border-b-2 border-[#4a2580]"
                   : "text-gray-800 hover:text-[#4a2580]"
                   }`}
@@ -376,7 +376,7 @@ const MainLayout = () => {
                     if (newTab) newTab.focus();
                   }
                 }}
-                className={`hover-purple-shadow flex items-center transition-all duration-200 font-medium py-2 ${location.pathname === "/user/find-matches"
+                className={`hover-purple-shadow flex items-center transition-all duration-200 font-source font-medium text-[18px] py-2 ${location.pathname === "/user/find-matches"
                   ? "text-[#4a2580] font-bold border-b-2 border-[#4a2580]"
                   : "text-gray-800 hover:text-[#4a2580]"
                   }`}
@@ -390,7 +390,7 @@ const MainLayout = () => {
                 onMouseLeave={() => setIsExploreDropdownVisible(false)}
               >
                 <button
-                  className={`hover-purple-shadow transition-all duration-200 font-medium flex items-center py-2 ${location.pathname.includes("/personalized-matrimony") ||
+                  className={`hover-purple-shadow transition-all duration-200 font-source font-medium text-[18px] flex items-center py-2 ${location.pathname.includes("/personalized-matrimony") ||
                     location.pathname.includes("/nri-matrimony") ||
                     location.pathname.includes("/church-partner") ||
                     location.pathname.includes("/matrimonial-advisor") ||
@@ -422,7 +422,7 @@ const MainLayout = () => {
                     if (newTab) newTab.focus();
                   }
                 }}
-                className={`nav-highlight-events transition-all duration-200 py-2 ${location.pathname === "/user/events-page"
+                className={`nav-highlight-events font-source font-medium text-[18px] transition-all duration-200 py-2 ${location.pathname === "/user/events-page"
                   ? "border-b-2 border-[#4a2580]"
                   : ""
                   }`}
@@ -442,7 +442,7 @@ const MainLayout = () => {
                     if (newTab) newTab.focus();
                   }
                 }}
-                className={`hover-purple-shadow transition-all duration-200 font-medium py-2 ${location.pathname === "/user/user-plan-selection"
+                className={`hover-purple-shadow transition-all duration-200 font-source font-medium text-[18px] py-2 ${location.pathname === "/user/user-plan-selection"
                   ? "text-[#4a2580] font-bold border-b-2 border-[#4a2580]"
                   : "text-gray-800 hover:text-[#4a2580]"
                   }`}
@@ -456,7 +456,7 @@ const MainLayout = () => {
                 onMouseLeave={() => setIsHelpDropdownVisible(false)}
               >
                 <button
-                  className={`hover-purple-shadow transition-all duration-200 font-medium flex items-center py-2 ${location.pathname === "/help-support" ||
+                  className={`hover-purple-shadow transition-all duration-200 font-source font-medium text-[18px] flex items-center py-2 ${location.pathname === "/help-support" ||
                     location.pathname === "/report-issue"
                     ? "text-[#4a2580] font-bold border-b-2 border-[#4a2580]"
                     : "text-gray-800 hover:text-[#4a2580]"

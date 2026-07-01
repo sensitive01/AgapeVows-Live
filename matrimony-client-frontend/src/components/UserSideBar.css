@@ -39,8 +39,9 @@
 }
 
 .db-tit {
+  font-family: 'Source Sans 3', sans-serif !important;
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 600 !important;
   color: #333;
   margin-bottom: 0;
 }

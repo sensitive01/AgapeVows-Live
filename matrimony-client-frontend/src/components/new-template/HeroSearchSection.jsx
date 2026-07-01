@@ -273,19 +273,19 @@ export default function HeroSearchSection() {
 
             {/* Left Side: Professional Content */}
             <div className="hero-text-block">
-              <div className="hero-badge" style={{ fontSize: "18px" }}>
+              <div className="hero-badge font-source font-medium" style={{ fontSize: "18px" }}>
                 <span className="hero-badge-icon">†</span> India's Trusted Christian Matrimony
               </div>
-              <h1>
+              <h1 className="font-cormorant font-bold">
                 Christian Matrimony,<br />
-                <b>Built on Trust</b>
+                <b className="font-cormorant font-bold">Built on Trust</b>
               </h1>
               <div className="hero-divider">
                 <span className="hero-divider-line"></span>
                 <i className="fa fa-heart hero-divider-icon"></i>
                 <span className="hero-divider-line"></span>
               </div>
-              <p>
+              <p className="font-source font-normal">
                 Connect with verified Christian singles who
                 share your faith, values, and intention for
                 a meaningful marriage.
@@ -297,7 +297,7 @@ export default function HeroSearchSection() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                   </div>
-                  <div className="hero-feature-text">
+                  <div className="hero-feature-text font-source font-medium">
                     <span>100%</span>
                     <span>Verified</span>
                     <span>Profiles</span>
@@ -309,7 +309,7 @@ export default function HeroSearchSection() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                   </div>
-                  <div className="hero-feature-text">
+                  <div className="hero-feature-text font-source font-medium">
                     <span>Safe &</span>
                     <span>Private</span>
                     <span>Platform</span>
@@ -321,7 +321,7 @@ export default function HeroSearchSection() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                   </div>
-                  <div className="hero-feature-text">
+                  <div className="hero-feature-text font-source font-medium">
                     <span>Faith-Based</span>
                     <span>Matching</span>
                     <span>System</span>
@@ -334,11 +334,11 @@ export default function HeroSearchSection() {
             <div className="hero-form-block">
               <div className="modern-search-card">
                 <div className="search-card-head">
-                  <h3>Search Verified Profiles</h3>
+                  <h3 className="font-cormorant font-semibold">Search Verified Profiles</h3>
                 </div>
                 <form className="modern-form" onSubmit={handleSearchClick}>
                   <div className="form-group">
-                    <label>I'M LOOKING FOR A</label>
+                    <label className="font-source font-medium">I'M LOOKING FOR A</label>
                     <div className="gender-toggle-wrapper">
                       <button
                         type="button"
@@ -368,7 +368,7 @@ export default function HeroSearchSection() {
                   </div>
 
                   <div className="form-group age-form-group">
-                    <label>AGE</label>
+                    <label className="font-source font-medium">AGE</label>
                     <div className="age-slider-wrapper">
                       <div className="slider-track" style={{
                         background: `linear-gradient(to right, #e5e7eb ${((formData.ageFrom - 18) / (70 - 18)) * 100}%, #58219f ${((formData.ageFrom - 18) / (70 - 18)) * 100}%, #58219f ${((formData.ageTo - 18) / (70 - 18)) * 100}%, #e5e7eb ${((formData.ageTo - 18) / (70 - 18)) * 100}%)`
@@ -414,7 +414,7 @@ export default function HeroSearchSection() {
                   </div>
 
                   <div className="form-group search-dropdown" style={{ marginBottom: "25px" }}>
-                    <label>CHRISTIAN COMMUNITY</label>
+                    <label className="font-source font-medium">CHRISTIAN COMMUNITY</label>
                     <SearchDropdown
                       placeholder="Choose your Christian Community"
                       options={communities}
@@ -427,7 +427,7 @@ export default function HeroSearchSection() {
                     />
                   </div>
 
-                  <button type="submit" className="hero-search-btn">
+                  <button type="submit" className="hero-search-btn font-source font-semibold">
                     <i className="fa fa-search"></i> Search Profiles
                   </button>
                 </form>
