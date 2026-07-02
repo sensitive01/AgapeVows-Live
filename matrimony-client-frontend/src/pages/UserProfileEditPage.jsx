@@ -1466,6 +1466,47 @@ const UserProfileEditPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // ========================
+    // Validation for Mandatory Fields
+    // ========================
+    const missingFields = [];
+    if (!formData.profileCreatedFor) missingFields.push("Profile Created By");
+    if (!formData.gender) missingFields.push("Gender");
+    if (!formData.dateOfBirth) missingFields.push("Date of Birth");
+    if (!formData.age) missingFields.push("Age");
+    if (!formData.bodyType) missingFields.push("Body Type");
+    if (!formData.physicalStatus) missingFields.push("Physical Status");
+    if (!formData.complexion) missingFields.push("Complexion");
+    if (!formData.height) missingFields.push("Height");
+    if (!formData.weight) missingFields.push("Weight");
+    if (!formData.motherTongue) missingFields.push("Mother Tongue");
+    if (!formData.caste) missingFields.push("Caste");
+    if (!formData.maritalStatus) missingFields.push("Marital Status");
+    if (!formData.eatingHabits) missingFields.push("Eating Habits");
+    if (!formData.drinkingHabits) missingFields.push("Drinking Habits");
+    if (!formData.smokingHabits) missingFields.push("Smoking Habits");
+
+    if (!formData.fathersName) missingFields.push("Father's Name");
+    if (!formData.mothersName) missingFields.push("Mother's Name");
+    if (!formData.denomination) missingFields.push("Denomination");
+    if (!formData.contactPersonName) missingFields.push("Contact Person Name");
+    if (!formData.relationship) missingFields.push("Relationship with Contact Person");
+    if (!formData.contactEmail) missingFields.push("Contact Email");
+    if (!formData.contactPhone) missingFields.push("Alternate Mobile Number");
+    if (!formData.currentDoorNo || !formData.currentLocality || !formData.currentCountry || !formData.currentState || !formData.currentDistrict) {
+      missingFields.push("Current Address (all fields)");
+    }
+
+    if (missingFields.length > 0) {
+      showAlert({ 
+        title: "Missing Required Fields", 
+        text: `Please fill in the following mandatory fields: ${missingFields.join(", ")}`, 
+        icon: "warning" 
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -1963,6 +2004,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Gender"
                         name="gender"
+                        required
                         type="select"
                         value={formData.gender}
                         onChange={handleInputChange}
@@ -1973,6 +2015,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Profile Created By"
                         name="profileCreatedFor"
+                        required
                         type="select"
                         value={formData.profileCreatedFor}
                         onChange={handleInputChange}
@@ -1996,6 +2039,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Date of Birth"
                         name="dateOfBirth"
+                        required
                         type="date"
                         value={formData.dateOfBirth}
                         onChange={handleInputChange}
@@ -2005,6 +2049,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Age"
                         name="age"
+                        required
                         type="select"
                         searchable={true}
                         value={formData.age}
@@ -2014,6 +2059,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Body Type"
                         name="bodyType"
+                        required
                         type="select"
                         value={formData.bodyType}
                         onChange={handleInputChange}
@@ -2022,6 +2068,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Physical Status"
                         name="physicalStatus"
+                        required
                         type="select"
                         value={formData.physicalStatus}
                         onChange={handleInputChange}
@@ -2030,6 +2077,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Complexion"
                         name="complexion"
+                        required
                         type="select"
                         value={formData.complexion}
                         onChange={handleInputChange}
@@ -2044,6 +2092,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Height"
                         name="height"
+                        required
                         type="select"
                         searchable={true}
                         value={formData.height}
@@ -2103,6 +2152,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Weight (kg)"
                         name="weight"
+                        required
                         type="select"
                         searchable={true}
                         value={formData.weight}
@@ -2113,6 +2163,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Mother Tongue"
                         name="motherTongue"
+                        required
                         type="select"
                         searchable={true}
                         value={formData.motherTongue}
@@ -2182,6 +2233,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Caste"
                         name="caste"
+                        required
                         type="select"
                         searchable={true}
                         value={formData.caste}
@@ -2325,6 +2377,7 @@ const UserProfileEditPage = () => {
                         <FormInput
                           label="Marital Status"
                           name="maritalStatus"
+                          required
                           type="radio"
                           value={formData.maritalStatus}
                           onChange={handleInputChange}
@@ -2404,6 +2457,7 @@ const UserProfileEditPage = () => {
                         <FormInput
                           label="Eating Habits"
                           name="eatingHabits"
+                          required
                           type="radio"
                           value={formData.eatingHabits}
                           onChange={handleInputChange}
@@ -2414,6 +2468,7 @@ const UserProfileEditPage = () => {
                         <FormInput
                           label="Drinking Habits"
                           name="drinkingHabits"
+                          required
                           type="radio"
                           value={formData.drinkingHabits}
                           onChange={handleInputChange}
@@ -2428,6 +2483,7 @@ const UserProfileEditPage = () => {
                         <FormInput
                           label="Smoking Habits"
                           name="smokingHabits"
+                          required
                           type="radio"
                           value={formData.smokingHabits}
                           onChange={handleInputChange}
@@ -2447,12 +2503,14 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Father's Name"
                         name="fathersName"
+                        required
                         value={formData.fathersName}
                         onChange={handleInputChange}
                       />
                       <FormInput
                         label="Mother's Name"
                         name="mothersName"
+                        required
                         value={formData.mothersName}
                         onChange={handleInputChange}
                       />
@@ -2686,6 +2744,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Denomination"
                         name="denomination"
+                        required
                         type="select"
                         searchable={true}
                         value={formData.denomination}
@@ -2824,12 +2883,14 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Contact Person Name"
                         name="contactPersonName"
+                        required
                         value={formData.contactPersonName}
                         onChange={handleInputChange}
                       />
                       <FormInput
                         label="Relationship"
                         name="relationship"
+                        required
                         type="select"
                         searchable={true}
                         value={formData.relationship}
@@ -2853,6 +2914,7 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Contact Email"
                         name="contactEmail"
+                        required
                         type="email"
                         value={formData.contactEmail}
                         onChange={handleInputChange}
@@ -2878,11 +2940,11 @@ const UserProfileEditPage = () => {
                         </h4>
                       </div>
 
-                      <InlineFormInput label="Door / Flat No (Name), Street" name="currentDoorNo" value={formData.currentDoorNo} onChange={handleInputChange} autoComplete="new-password" />
-                      <InlineFormInput label="Locality / Area" name="currentLocality" value={formData.currentLocality} onChange={handleInputChange} autoComplete="new-password" />
-                      <InlineFormInput label="Country" name="currentCountry" type="select" searchable={true} options={countryOptions} value={formData.currentCountry} onChange={handleInputChange} />
-                      <InlineFormInput label="State" name="currentState" type="select" searchable={true} options={currentStateOptions} value={formData.currentState} onChange={handleInputChange} />
-                      <InlineFormInput label="District" name="currentDistrict" type="select" searchable={true} options={currentDistrictOptions} value={formData.currentDistrict} onChange={handleInputChange} />
+                      <InlineFormInput required label="Door / Flat No (Name), Street" name="currentDoorNo" value={formData.currentDoorNo} onChange={handleInputChange} autoComplete="new-password" />
+                      <InlineFormInput required label="Locality / Area" name="currentLocality" value={formData.currentLocality} onChange={handleInputChange} autoComplete="new-password" />
+                      <InlineFormInput required label="Country" name="currentCountry" type="select" searchable={true} options={countryOptions} value={formData.currentCountry} onChange={handleInputChange} />
+                      <InlineFormInput required label="State" name="currentState" type="select" searchable={true} options={currentStateOptions} value={formData.currentState} onChange={handleInputChange} />
+                      <InlineFormInput required label="District" name="currentDistrict" type="select" searchable={true} options={currentDistrictOptions} value={formData.currentDistrict} onChange={handleInputChange} />
                       <InlineFormInput label="Pincode" name="currentPincode" value={formData.currentPincode} onChange={handleInputChange} />
                       <InlineFormInput label="Citizen Of" name="citizenOf" type="select" searchable={true} options={countryOptions} value={formData.citizenOf} onChange={handleCountryChange} />
 

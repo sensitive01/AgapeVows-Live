@@ -143,6 +143,7 @@
 
 
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { getAllPublishedBlogs } from "../../api/axiosService/userSignUpService";
 import LayoutComponent from "../../components/layouts/LayoutComponent";
 import Footer from "../../components/Footer";
@@ -225,29 +226,34 @@ const Blogs = () => {
                     rounded-3xl p-8 shadow-sm hover:shadow-xl 
                     transition duration-300`}
                   >
-                    <div className="w-full max-h-[400px] flex items-center justify-center bg-gray-100 rounded-2xl mb-6 overflow-hidden">
+                    <Link to={`/blog-details/${blog._id}`} className="block w-full max-h-[400px] flex items-center justify-center bg-gray-100 rounded-2xl mb-6 overflow-hidden">
                       <img
                         src={blog.coverImage}
                         alt={blog.title}
-                        className="w-full h-full object-contain"
+                        className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
                       />
-                    </div>
+                    </Link>
                     <p className="text-sm text-gray-500 mb-3">
                       <span className="font-semibold text-gray-700">
                         {blog.category}
                       </span>{" "}
                       -{" "}
-                      {new Date(blog.createdAt).toLocaleDateString("en-US", {
+                      {new Date(blog.createdAt || Date.now()).toLocaleDateString("en-US", {
                         year: "numeric",
                         month: "short",
                         day: "numeric",
                       })}
                     </p>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                      {blog.title}
-                    </h2>
+                    <Link to={`/blog-details/${blog._id}`}>
+                      <h2 className="text-2xl font-bold text-gray-900 mb-4 hover:text-blue-600 transition-colors">
+                        {blog.title}
+                      </h2>
+                    </Link>
                     <p className="text-gray-600 leading-relaxed mb-6 whitespace-pre-line">
-                      {blog.content}
+                      {blog.sections && blog.sections.length > 0
+                        ? blog.sections[0].content?.substring(0, 160) + '...'
+                        : blog.content?.substring(0, 160) + '...'
+                      }
                     </p>
                     <div className="flex items-center gap-4">
                       <img

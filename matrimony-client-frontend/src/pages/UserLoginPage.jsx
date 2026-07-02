@@ -1,62 +1,22 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-
-
-import Footer from "../components/Footer";
-import CopyRights from "../components/CopyRights";
-import { verifyUser, sendLoginOtpRequest, verifyLoginOtpRequest } from "../api/axiosService/userSignUpService";
-import { showAlert } from "../utils/alertService";
+import React, { useState } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import { verifyUser } from "../api/axiosService/userSignUpService";
 import LayoutComponent from "../components/layouts/LayoutComponent";
+import Footer from "../components/Footer";
 
 const UserLoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const firstOtpInputRef = useRef(null);
 
-  // activeView can be: 'choose_method', 'email_otp_entry', 'password_entry', 'otp_verification'
-  const [activeView, setActiveView] = useState("choose_method");
-  const [loginMode, setLoginMode] = useState("email_otp"); // internal tracking for OTP length/API
-  
   const [formData, setFormData] = useState({
-    emailOrPhone: "91",
+    emailOrPhone: "",
     password: "",
     rememberMe: false,
-    otp: ["", "", "", "", "", ""],
   });
 
-  const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
-  const [timer, setTimer] = useState(0);
-  const [canResend, setCanResend] = useState(false);
-  const [userId, setUserId] = useState(null); 
-  
-  // Timer effect
-  useEffect(() => {
-    let interval = null;
-    if (timer > 0) {
-      interval = setInterval(() => {
-        setTimer((timer) => timer - 1);
-      }, 1000);
-    } else if (timer === 0 && activeView === "otp_verification") {
-      setCanResend(true);
-    }
-    return () => clearInterval(interval);
-  }, [timer, activeView]);
-
-  // Focus first OTP input when step changes
-  useEffect(() => {
-    if (activeView === "otp_verification" && firstOtpInputRef.current) {
-      setTimeout(() => {
-        firstOtpInputRef.current.focus();
-      }, 100);
-    }
-  }, [activeView]);
-
-
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -64,68 +24,7 @@ const UserLoginPage = () => {
       ...prevState,
       [name]: type === "checkbox" ? checked : value,
     }));
-    if (errors[name]) setErrors({ ...errors, [name]: "" });
-  };
-
-  const handleOtpChange = (index, value) => {
-    const maxDigits = 4;
-    
-    if (value.length > 1 && /^\d+$/.test(value)) {
-       const digits = value.split("").slice(0, maxDigits);
-       const newOtp = [...formData.otp];
-       digits.forEach((d, i) => { if(index + i < newOtp.length) newOtp[index + i] = d; });
-       setFormData({ ...formData, otp: newOtp });
-       const nextIndex = Math.min(index + digits.length, maxDigits - 1);
-       const nextInput = document.getElementById(`otp-${nextIndex}`);
-       if (nextInput) nextInput.focus();
-       return;
-    }
-
-    if (value.length <= 1 && /^\d*$/.test(value)) {
-      const newOtp = [...formData.otp];
-      newOtp[index] = value;
-      setFormData((prevState) => ({ ...prevState, otp: newOtp }));
-      if (value && index < maxDigits - 1) {
-        const nextInput = document.getElementById(`otp-${index + 1}`);
-        if (nextInput) nextInput.focus();
-      }
-    }
-  };
-
-  const handleOtpKeyDown = (index, e) => {
-    if (e.key === "Backspace" && !formData.otp[index] && index > 0) {
-      const prevInput = document.getElementById(`otp-${index - 1}`);
-      if (prevInput) prevInput.focus();
-    }
-  };
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  const formatDisplayNumber = (number, mode) => {
-    return number;
-  };
-
-  const switchView = (view, mode) => {
-    setActiveView(view);
-    if(mode) setLoginMode(mode);
     setLoginError("");
-    setSuccessMsg("");
-    setErrors({});
-    const otpArray = ["", "", "", ""];
-    
-    let defaultEmailOrPhone = formData.emailOrPhone;
-    if (view === "email_otp_entry" || view === "password_entry") {
-      // Clear it if switching to an email field and it currently holds a phone number
-      if (!defaultEmailOrPhone.includes("@")) {
-         defaultEmailOrPhone = "";
-      }
-    }
-
-    setFormData({ ...formData, emailOrPhone: defaultEmailOrPhone, password: "", otp: otpArray });
   };
 
   const finishLogin = (userData) => {
@@ -141,11 +40,11 @@ const UserLoginPage = () => {
     navigate(redirectPath, { replace: true, state: { formData: location.state?.formData } });
   };
 
-  const handlePasswordSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoginError("");
     if (!formData.emailOrPhone || !formData.password) {
-      setLoginError("Please enter both email and password.");
+      setLoginError("Please enter both email/phone and password.");
       return;
     }
     
@@ -160,468 +59,208 @@ const UserLoginPage = () => {
       if (response.status === 200) finishLogin(response.data);
     } catch (error) {
       console.error("Login error:", error);
-      setLoginError(error.response?.data?.message || "Invalid credentials");
+      setLoginError(error.response?.data?.message || "Invalid credentials. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
-
-  const handleSendOtp = async (e) => {
-    if(e) e.preventDefault();
-    setLoginError("");
-    setSuccessMsg("");
-    if (!formData.emailOrPhone) {
-      setLoginError("Please enter your details.");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const response = await sendLoginOtpRequest(formData.emailOrPhone);
-      if (response.data && response.data.success) {
-        setUserId(response.data.userId);
-        setActiveView("otp_verification");
-        setTimer(60);
-        setCanResend(false);
-        setFormData((prev) => ({ ...prev, otp: ["", "", "", ""] }));
-      } else {
-         setLoginError(response.data.message || "Failed to send OTP.");
-      }
-    } catch (error) {
-      console.error("Send OTP error:", error);
-      setLoginError(error.response?.data?.message || "Failed to send OTP.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    setLoginError("");
-    const otpString = formData.otp.join("");
-    const requiredLength = 4;
-
-    if (otpString.length !== requiredLength) {
-      setLoginError(`Please enter the complete ${requiredLength}-digit OTP`);
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const response = await verifyLoginOtpRequest({ userId, otp: otpString });
-      if (response.data && response.data.success) finishLogin(response.data);
-    } catch (error) {
-      console.error("Verify OTP error:", error);
-      setLoginError(error.response?.data?.message || "Invalid OTP. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // --- SVGs ---
-  const BackIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M15 18L9 12L15 6" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-
-
-
-  const EmailIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M22 6L12 13L2 6" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-
-  const PasswordIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M6 21V19C6 17.9391 6.42143 16.9217 7.17157 16.1716C7.92172 15.4214 8.93913 15 10 15H14C15.0609 15 16.0783 15.4214 16.8284 16.1716C17.5786 16.9217 18 17.9391 18 19V21" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M20 12H22M18 14H20M18 10H20" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-
-  const SupportIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M8 14V11C8 8.79 9.79 7 12 7C14.21 7 16 8.79 16 11V14" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M6 14H8V17H6V14ZM16 14H18V17H16V14Z" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M12 17C10.9 17 10 17.9 10 19C10 20.1 10.9 21 12 21C13.1 21 14 20.1 14 19C14 17.9 13.1 17 12 17Z" fill="#7c3aed"/>
-    </svg>
-  );
 
   return (
-    <div className="min-h-screen" style={{ background: "#fcfcfc" }}>
-      <div className="fixed top-0 left-0 right-0 z-50">
+    <div className="min-h-screen flex flex-col font-sans bg-gray-50">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-100">
         <LayoutComponent />
       </div>
 
-      <div className="pb-12 px-4 flex justify-center" style={{ minHeight: "calc(100vh - 80px)", paddingTop: "140px" }}>
+      <div className="flex-grow flex pt-[72px]"> {/* Adjust for fixed header */}
         
-        <style>{`
-          .login-card {
-            background: #ffffff;
-            width: 100%;
-            max-width: 480px;
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-            border: 1px solid #f0f0f0;
-          }
-          .login-card h2 {
-            font-size: 24px;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom: 8px;
-            font-family: 'Inter', sans-serif;
-          }
-          .login-card p.subtitle {
-            font-size: 15px;
-            color: #666;
-            margin-bottom: 24px;
-            line-height: 1.5;
-          }
-          .input-group-custom {
-            display: flex;
-            align-items: center;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            background: #fff;
-            transition: border-color 0.2s;
-          }
-          .input-group-custom:focus-within {
-            border-color: #7c3aed;
-          }
-          .input-group-custom .prefix {
-            padding: 14px 16px;
-            background: #fff;
-            color: #333;
-            font-weight: 500;
-            border-right: 1px solid #e0e0e0;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-          }
-          .input-group-custom input {
-            flex: 1;
-            padding: 14px 16px;
-            border: none;
-            outline: none;
-            font-size: 15px;
-            color: #333;
-          }
-          .btn-primary-custom {
-            width: 100%;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-          }
-          .btn-primary-custom.disabled {
-            background: #f0f0f0;
-            color: #a0a0a0;
-            cursor: not-allowed;
-          }
-          .btn-primary-custom.active {
-            background: #f3f4f6;
-            color: #d1d5db;
-          }
-          .btn-primary-custom.active.ready {
-            background: #7c3aed;
-            color: #ffffff;
-          }
-          .btn-primary-custom.active.ready:hover {
-            background: #6d28d9;
-          }
-          .try-another-way {
-            text-align: center;
-            margin-top: 24px;
-          }
-          .try-another-way a {
-            color: #7c3aed;
-            text-transform: uppercase;
-            font-weight: 600;
-            font-size: 14px;
-            text-decoration: underline;
-            text-decoration-thickness: 1px;
-            text-underline-offset: 4px;
-            cursor: pointer;
-          }
-          .try-another-way a:hover {
-            color: #6d28d9;
-          }
+        {/* Left Side - Image & Trust Indicators */}
+        <div className="hidden lg:flex w-1/2 relative bg-gray-900">
+          <img 
+            src="https://images.unsplash.com/photo-1544592433-f72beba2c140?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80" 
+            alt="Christian Wedding" 
+            className="absolute inset-0 w-full h-full object-cover opacity-60"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-purple-900/90 via-purple-900/40 to-transparent"></div>
           
-          /* Choose Method Styles */
-          .back-button {
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            margin-bottom: 24px;
-            transition: background 0.2s;
-          }
-          .back-button:hover {
-            background: #f8f9fa;
-          }
-          .method-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-            margin-top: 10px;
-            border-top: 1px solid #f0f0f0;
-          }
-          .method-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 20px 0;
-            border-bottom: 1px solid #f0f0f0;
-            cursor: pointer;
-            transition: opacity 0.2s;
-          }
-          .method-item:hover {
-            opacity: 0.7;
-          }
-          .method-item span.title {
-            font-size: 16px;
-            color: #1a1a1a;
-            font-weight: 500;
-          }
-          .method-item p.desc {
-            font-size: 13px;
-            color: #888;
-            margin: 2px 0 0 0;
-          }
-          
-          /* OTP Styles */
-          .otp-inputs {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            margin-bottom: 24px;
-          }
-          .otp-input {
-            width: 48px;
-            height: 56px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: 600;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            background: #fff;
-            outline: none;
-            transition: all 0.2s;
-            color: #333;
-          }
-          .otp-input:focus {
-            border-color: #7c3aed;
-            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
-          }
-          
-          /* Standard Input (Email/Password) */
-          .standard-input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            outline: none;
-            font-size: 15px;
-            margin-bottom: 20px;
-            transition: border-color 0.2s;
-          }
-          .standard-input:focus {
-            border-color: #7c3aed;
-          }
-
-        `}</style>
-
-        <div className="login-card">
-
-           {loginError && (
-              <div style={{ padding: "12px", background: "#fee2e2", color: "#dc2626", borderRadius: "8px", marginBottom: "20px", fontSize: "14px" }}>
-                {loginError}
-              </div>
-            )}
+          <div className="relative z-10 p-16 flex flex-col justify-end h-full text-white">
+            <h1 className="text-5xl font-bold mb-6 font-serif leading-tight text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              Find Your Soulmate <br/> in Christ
+            </h1>
+            <p className="text-lg text-gray-200 mb-8 max-w-md leading-relaxed">
+              Join the most trusted Christian matrimony platform. Over 25 years of building Christ-centered families. Let us help you find the one God has prepared for you.
+            </p>
             
-            {successMsg && (
-              <div style={{ padding: "12px", background: "#dcfce7", color: "#16a34a", borderRadius: "8px", marginBottom: "20px", fontSize: "14px" }}>
-                {successMsg}
+            <div className="grid grid-cols-2 gap-6 pt-8 border-t border-white/20 mb-10">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm shrink-0">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                </div>
+                <div>
+                  <h4 className="font-bold text-white">100% Verified</h4>
+                  <p className="text-xs text-gray-300">Genuine Profiles</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm shrink-0">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                </div>
+                <div>
+                  <h4 className="font-bold text-white">2M+ Success</h4>
+                  <p className="text-xs text-gray-300">Happy Marriages</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm shrink-0">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <div>
+                  <h4 className="font-bold text-white">Privacy 1st</h4>
+                  <p className="text-xs text-gray-300">Secure Data</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm shrink-0">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div>
+                  <h4 className="font-bold text-white">Global Reach</h4>
+                  <p className="text-xs text-gray-300">Worldwide Matches</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-black/20 backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-xl relative overflow-hidden group hover:bg-black/30 transition-all">
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                 <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"></path></svg>
+              </div>
+              <div className="flex items-center gap-4 mb-3 relative z-10">
+                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Sarah & John" className="w-14 h-14 rounded-full border-2 border-white/30 object-cover" />
+                <div>
+                  <h4 className="font-bold text-white text-lg">Sarah & John</h4>
+                  <p className="text-xs font-semibold text-purple-200 tracking-wider uppercase">Married May 2025</p>
+                </div>
+              </div>
+              <p className="text-sm italic text-gray-100 relative z-10 leading-relaxed">
+                "We met here and instantly connected over our shared faith. God's timing is truly perfect. Highly recommended for any Christian seeking a life partner!"
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side - Form */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-white">
+          <div className="w-full max-w-md">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Welcome Back</h2>
+              <p className="text-gray-500">Sign in to your account to continue</p>
+            </div>
+
+            {loginError && (
+              <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-100 flex items-start gap-3">
+                <svg className="w-5 h-5 text-red-500 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span className="text-sm font-medium text-red-800">{loginError}</span>
               </div>
             )}
 
-
-
-            {activeView === "choose_method" && (
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-
-                <h2>Choose Your Sign-in Method</h2>
-                <p className="subtitle">Pick the option that works best for you.</p>
-                
-                <div className="method-list">
-
-                  <div className="method-item" onClick={() => switchView('email_otp_entry', 'email_otp')}>
-                    <EmailIcon />
-                    <div>
-                      <span className="title">Get OTP Via Email</span>
-                    </div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email Address or Phone Number</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path></svg>
                   </div>
-                  <div className="method-item" onClick={() => switchView('password_entry', 'email_password')}>
-                    <PasswordIcon />
-                    <div>
-                      <span className="title">Login with Password</span>
-                    </div>
-                  </div>
-                  <div className="method-item" onClick={() => navigate('/contact-page')}>
-                    <SupportIcon />
-                    <div>
-                      <span className="title">Get Support</span>
-                    </div>
-                  </div>
+                  <input
+                    type="text"
+                    name="emailOrPhone"
+                    value={formData.emailOrPhone}
+                    onChange={handleInputChange}
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-purple-500 focus:border-purple-500 sm:text-sm transition-colors"
+                    placeholder="Enter your email or phone"
+                    required
+                  />
                 </div>
               </div>
-            )}
 
-            {activeView === "email_otp_entry" && (
-              <form onSubmit={(e) => { e.preventDefault(); handleSendOtp(); }}>
-                <button type="button" className="back-button" onClick={() => switchView('choose_method')}>
-                  <BackIcon />
-                </button>
-                <h2>Login with Email</h2>
-                <p className="subtitle">Please enter your email to receive a secure OTP</p>
-                
-                <input 
-                  type="email" 
-                  className="standard-input"
-                  placeholder="Email Address" 
-                  name="emailOrPhone"
-                  value={formData.emailOrPhone}
-                  onChange={handleInputChange}
-                  autoFocus
-                />
-                
-                <button 
-                  type="submit"
-                  disabled={!formData.emailOrPhone || !formData.emailOrPhone.includes('@') || isLoading}
-                  className={`btn-primary-custom ${(formData.emailOrPhone && formData.emailOrPhone.includes('@') && !isLoading) ? 'active ready' : 'disabled'}`}
-                >
-                  {isLoading ? "SENDING..." : "GET OTP"}
-                </button>
-              </form>
-            )}
-
-            {activeView === "password_entry" && (
-              <form onSubmit={handlePasswordSubmit}>
-                <button type="button" className="back-button" onClick={() => switchView('choose_method')}>
-                  <BackIcon />
-                </button>
-                <h2>Login with Password</h2>
-                <p className="subtitle">Enter your credentials to access your account</p>
-                
-                <input 
-                  type="email" 
-                  className="standard-input"
-                  placeholder="Email Address" 
-                  name="emailOrPhone"
-                  value={formData.emailOrPhone}
-                  onChange={handleInputChange}
-                  autoFocus
-                />
-                
-                <input 
-                  type="password" 
-                  className="standard-input"
-                  placeholder="Password" 
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  style={{ marginBottom: '10px' }}
-                />
-                
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                   {/* <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#666', cursor: 'pointer' }}>
-                     <input type="checkbox" name="rememberMe" checked={formData.rememberMe} onChange={handleInputChange} style={{ accentColor: '#7c3aed' }} />
-                     Remember me
-                   </label> */}
-                   <a href="/forgot-password" style={{ fontSize: '14px', color: '#7c3aed', textDecoration: 'underline' }}>Forgot password?</a>
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-gray-700">Password</label>
+                  <Link to="/forgot-password" className="text-sm font-semibold text-purple-600 hover:text-purple-500">
+                    Forgot password?
+                  </Link>
                 </div>
-
-                <button 
-                  type="submit"
-                  disabled={!formData.emailOrPhone || !formData.password || isLoading}
-                  className={`btn-primary-custom ${(formData.emailOrPhone && formData.password && !isLoading) ? 'active ready' : 'disabled'}`}
-                >
-                  {isLoading ? "SIGNING IN..." : "SIGN IN"}
-                </button>
-              </form>
-            )}
-
-            {activeView === "otp_verification" && (
-              <form onSubmit={handleVerifyOtp}>
-                <button type="button" className="back-button" onClick={() => switchView('email_otp_entry', 'email_otp')}>
-                  <BackIcon />
-                </button>
-                <h2>Enter Verification Code</h2>
-                <p className="subtitle">
-                  We've sent a code to <br/><strong style={{color: '#333'}}>{formatDisplayNumber(formData.emailOrPhone, loginMode)}</strong>
-                </p>
-                
-                <div className="otp-inputs">
-                  {formData.otp.map((digit, index) => (
-                    <input
-                      key={index}
-                      ref={index === 0 ? firstOtpInputRef : null}
-                      id={`otp-${index}`}
-                      type="text"
-                      className="otp-input"
-                      value={digit}
-                      onChange={(e) => handleOtpChange(index, e.target.value)}
-                      onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                      maxLength="1"
-                    />
-                  ))}
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-purple-500 focus:border-purple-500 sm:text-sm transition-colors"
+                    placeholder="Enter your password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    <svg className="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      {showPassword ? (
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                      ) : (
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      )}
+                      {!showPassword && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />}
+                    </svg>
+                  </button>
                 </div>
+              </div>
 
-                <button 
-                  type="submit"
-                  disabled={isLoading}
-                  className={`btn-primary-custom ${!isLoading ? 'active ready' : 'disabled'}`}
-                  style={{ marginBottom: '20px' }}
-                >
-                  {isLoading ? "VERIFYING..." : "VERIFY CODE"}
-                </button>
-                
-                <div style={{ textAlign: "center" }}>
-                  {timer > 0 ? (
-                    <p style={{ color: "#888", fontSize: "14px" }}>
-                      Resend code in <strong style={{color: '#333'}}>{formatTime(timer)}</strong>
-                    </p>
-                  ) : (
-                    <a onClick={(e) => { e.preventDefault(); handleSendOtp(); }} style={{ color: "#7c3aed", fontWeight: "600", fontSize: "14px", cursor: "pointer", textDecoration: "underline" }}>
-                      Resend Code
-                    </a>
-                  )}
-                </div>
-              </form>
-            )}
+              <div className="flex items-center">
+                <input
+                  id="remember-me"
+                  name="rememberMe"
+                  type="checkbox"
+                  checked={formData.rememberMe}
+                  onChange={handleInputChange}
+                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                />
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                  Remember me
+                </label>
+              </div>
 
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    Signing in...
+                  </span>
+                ) : (
+                  "Sign In"
+                )}
+              </button>
+            </form>
+
+            <div className="mt-8 pt-8 border-t border-gray-100 text-center">
+              <p className="text-sm text-gray-600">
+                Don't have an account?{" "}
+                <Link to="/user/user-sign-up" className="font-bold text-purple-600 hover:text-purple-500">
+                  Register Now
+                </Link>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
-
       <Footer />
     </div>
   );

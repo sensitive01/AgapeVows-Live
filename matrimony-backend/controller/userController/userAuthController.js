@@ -2194,6 +2194,8 @@ const getAllBlogs = async (req, res) => {
     const blogs = await Blog.find({ status: "Published" }) // optional filter
       .sort({ isPinned: -1, createdAt: -1 });
 
+    console.log("Fetched Blogs from DB:", JSON.stringify(blogs, null, 2));
+
     res.status(200).json({
       success: true,
       message: "Blogs fetched successfully",

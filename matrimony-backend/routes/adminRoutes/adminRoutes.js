@@ -197,20 +197,14 @@ adminRoutes.get("/get-all-blogs", blogController.getAllBlogs);
 // Add New Blog
 adminRoutes.post(
   "/add-new-blog",
-  upload.fields([
-    { name: "coverImage", maxCount: 1 },
-    { name: "authorPhoto", maxCount: 1 },
-  ]),
+  upload.any(),
   blogController.addNewBlog
 );
 
 // Edit Blog
 adminRoutes.put(
   "/edit-blog/:id",
-  upload.fields([
-    { name: "coverImage", maxCount: 1 },
-    { name: "authorPhoto", maxCount: 1 },
-  ]),
+  upload.any(),
   blogController.editBlog
 );
 

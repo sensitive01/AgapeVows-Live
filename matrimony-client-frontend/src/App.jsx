@@ -47,6 +47,7 @@ import ChurchPartner from "./pages/public/ChurchPartner";
 import MatrimonialAdvisor from "./pages/public/MatrimonialAdvisor";
 import MaritalCounseling from "./pages/public/MaritalCounseling";
 import Blogs from "./pages/public/Blogs";
+import BlogDetailsPage from "./pages/public/Blogs/[id]";
 import PrivacyPolicy from "./pages/policy/PrivacyPolicy";
 import TermsOfUse from "./pages/policy/TermsOfUse";
 import { ToastContainer } from "react-toastify";
@@ -270,6 +271,7 @@ function App() {
         <Route path="/matrimonial-advisor" element={<MatrimonialAdvisor />} />
         <Route path="/marital-counseling" element={<MaritalCounseling />} />
         <Route path="/blogs" element={<Blogs />} />
+        <Route path="/blog-details/:id" element={<BlogDetailsPage />} />
       </Routes>
     </Router>
   );

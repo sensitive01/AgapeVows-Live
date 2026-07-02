@@ -21,7 +21,7 @@ const AdminBlogs = () => {
     id: null,
     title: "",
     category: "",
-    content: "",
+    sections: [{ heading: "", content: "", imageFile: null }],
     authorName: "",
     authorRole: "",
     coverImage: "",
@@ -62,6 +62,9 @@ const AdminBlogs = () => {
     setCurrentBlog({
       ...blog,
       id: blog._id,
+      sections: blog.sections && blog.sections.length > 0 
+        ? blog.sections.map(s => ({ ...s, imageFile: null })) 
+        : [{ heading: "", content: "", imageFile: null }]
     });
     setError("");
   };
@@ -91,11 +94,16 @@ const AdminBlogs = () => {
     if (
       !currentBlog.title.trim() ||
       !currentBlog.category.trim() ||
-      !currentBlog.content.trim() ||
       !currentBlog.authorName.trim() ||
       !currentBlog.authorRole.trim()
     ) {
-      return "Please fill all fields.";
+      return "Please fill all required fields.";
+    }
+
+    for (let i = 0; i < currentBlog.sections.length; i++) {
+      if (!currentBlog.sections[i].heading.trim() || !currentBlog.sections[i].content.trim()) {
+        return `Please fill heading and content for section ${i + 1}.`;
+      }
     }
 
     if (modalMode === "add") {
@@ -124,10 +132,22 @@ const AdminBlogs = () => {
     const formData = new FormData();
     formData.append("title", currentBlog.title);
     formData.append("category", currentBlog.category);
-    formData.append("content", currentBlog.content);
     formData.append("authorName", currentBlog.authorName);
     formData.append("authorRole", currentBlog.authorRole);
     formData.append("status", currentBlog.status);
+
+    const sectionsToSave = currentBlog.sections.map(s => ({
+      heading: s.heading,
+      content: s.content,
+      image: s.image || ""
+    }));
+    formData.append("sections", JSON.stringify(sectionsToSave));
+
+    currentBlog.sections.forEach((s, index) => {
+      if (s.imageFile) {
+        formData.append(`sectionImage_${index}`, s.imageFile);
+      }
+    });
 
     if (currentBlog.coverImageFile) {
       formData.append("coverImage", currentBlog.coverImageFile);
@@ -214,8 +234,8 @@ const AdminBlogs = () => {
             id={`contentModal${row._id}`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content p-4 rounded-4">
+            <div className="modal-dialog modal-dialog-centered modal-lg">
+              <div className="modal-content p-4 rounded-4" style={{ maxHeight: '80vh', overflowY: 'auto' }}>
                 <div
                   style={{
                     background: "#f1f5ff",
@@ -224,28 +244,27 @@ const AdminBlogs = () => {
                     position: "relative",
                   }}
                 >
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: "-10px",
-                      left: "30px",
-                      width: "20px",
-                      height: "20px",
-                      background: "#f1f5ff",
-                      transform: "rotate(45deg)",
-                    }}
-                  ></div>
-                  <h5 className="fw-bold mb-3">
+                  <h5 className="fw-bold mb-4 border-bottom pb-2">
                     {row.title}
                   </h5>
-                  <p
-                    style={{
-                      whiteSpace: "pre-line",
-                      lineHeight: "1.7",
-                    }}
-                  >
-                    {row.content}
-                  </p>
+                  
+                  {row.sections && row.sections.map((sec, idx) => (
+                    <div key={idx} className="mb-4 pb-3 border-bottom">
+                      <h6 className="fw-bold text-primary">{sec.heading}</h6>
+                      <p style={{ whiteSpace: "pre-line", lineHeight: "1.7" }}>{sec.content}</p>
+                      {sec.image && (
+                        <img 
+                          src={sec.image} 
+                          alt="" 
+                          style={{ maxWidth: '100%', borderRadius: 8, marginTop: 10, maxHeight: '300px', objectFit: 'cover' }} 
+                        />
+                      )}
+                    </div>
+                  ))}
+                  
+                  {(!row.sections || row.sections.length === 0) && (
+                    <p style={{ whiteSpace: "pre-line", lineHeight: "1.7" }}>{row.content}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -511,18 +530,69 @@ return (
                   }
                 />
 
-                <textarea
-                  rows="5"
-                  placeholder="Blog Content"
-                  className="form-control mb-3"
-                  value={currentBlog.content}
-                  onChange={(e) =>
-                    setCurrentBlog({
-                      ...currentBlog,
-                      content: e.target.value,
-                    })
-                  }
-                />
+                <div className="mb-4">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <label className="fw-bold fs-5">Blog Sections</label>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-primary"
+                      onClick={() => setCurrentBlog({...currentBlog, sections: [...currentBlog.sections, { heading: "", content: "", imageFile: null }]})}
+                    >
+                      + Add Section
+                    </button>
+                  </div>
+                  {currentBlog.sections.map((section, index) => (
+                    <div key={index} className="p-3 border rounded mb-3 bg-light position-relative">
+                      {currentBlog.sections.length > 1 && (
+                        <button
+                          type="button"
+                          className="btn-close position-absolute top-0 end-0 m-2"
+                          onClick={() => {
+                            const newSections = [...currentBlog.sections];
+                            newSections.splice(index, 1);
+                            setCurrentBlog({...currentBlog, sections: newSections});
+                          }}
+                        ></button>
+                      )}
+                      <input
+                        type="text"
+                        placeholder="Section Heading"
+                        className="form-control mb-3 fw-bold"
+                        value={section.heading}
+                        onChange={(e) => {
+                          const newSections = [...currentBlog.sections];
+                          newSections[index].heading = e.target.value;
+                          setCurrentBlog({...currentBlog, sections: newSections});
+                        }}
+                      />
+                      <textarea
+                        rows="4"
+                        placeholder="Section Content"
+                        className="form-control mb-3"
+                        value={section.content}
+                        onChange={(e) => {
+                          const newSections = [...currentBlog.sections];
+                          newSections[index].content = e.target.value;
+                          setCurrentBlog({...currentBlog, sections: newSections});
+                        }}
+                      />
+                      <label className="fw-semibold small">Section Image (Optional)</label>
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const newSections = [...currentBlog.sections];
+                          newSections[index].imageFile = e.target.files[0];
+                          setCurrentBlog({...currentBlog, sections: newSections});
+                        }}
+                      />
+                      {section.image && !section.imageFile && (
+                        <div className="mt-2 text-muted small">Current image uploaded. Upload new to replace.</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
 
                 <label className="fw-semibold">Blog Cover Image</label>
                 <input

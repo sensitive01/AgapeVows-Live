@@ -6,7 +6,16 @@ const blogSchema = new mongoose.Schema(
 
     category: { type: String, required: true },
 
-    content: { type: String, required: true },
+    sections: [
+      {
+        heading: { type: String, required: true },
+        content: { type: String, required: true },
+        image: { type: String }, // Optional image
+      }
+    ],
+
+    content: { type: String }, // For legacy blogs
+
 
     authorName: { type: String, required: true },
 

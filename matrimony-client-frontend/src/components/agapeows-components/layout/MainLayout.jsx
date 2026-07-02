@@ -219,7 +219,7 @@ const MainLayout = () => {
 
   return (
     <>
-      <div className="bg-[#4a2580] text-white text-xs py-2 px-4 border-b border-white/10">
+      <div className="bg-[#4a2580] text-white text-xs py-2 px-4 border-b border-white/10 font-source font-medium">
         <div className="max-w-7xl mx-auto">
           <div className="hidden md:flex justify-between items-center">
             <div className="flex items-center space-x-6">
@@ -316,7 +316,7 @@ const MainLayout = () => {
         </div>
       </div>
 
-      <header className="bg-white shadow-md relative">
+      <header className="bg-white shadow-md relative font-source">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4">
           <div className="flex items-center gap-4 md:gap-8">
             <a
@@ -469,7 +469,7 @@ const MainLayout = () => {
               </div>
             </nav>
 
-            <div className="hidden md:flex items-center space-x-3 justify-end">
+            <div className="hidden md:flex items-center space-x-6 justify-end">
               {isUserActive ? (
                 <div
                   className="relative"
@@ -512,7 +512,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-sign-up");
                       }
                     }}
-                    className="bg-[#58219f] text-white px-6 py-2 rounded-full hover:bg-[#4a1b85] transition-colors font-medium shadow-md shadow-purple-100"
+                    className="bg-[#58219f] text-white px-6 py-2 rounded-full hover:bg-[#4a1b85] transition-colors font-source font-medium shadow-md shadow-purple-100"
                   >
                     REGISTER FREE
                   </a>
@@ -524,7 +524,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-login");
                       }
                     }}
-                    className="text-gray-800 hover:text-[#4a2580] font-medium"
+                    className="text-gray-800 hover:text-[#4a2580] font-source font-medium"
                   >
                     LOGIN
                   </a>
@@ -753,7 +753,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-sign-up");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full bg-[#58219f] text-white py-2.5 rounded-lg font-medium hover:bg-[#4a1b85] transition-colors shadow-sm"
+                      className="w-full bg-[#58219f] text-white py-2.5 rounded-lg font-source font-medium hover:bg-[#4a1b85] transition-colors shadow-sm"
                     >
                       Register Free
                     </button>
@@ -763,7 +763,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-login");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full text-center text-[#7c3aed] border border-[#7c3aed] font-medium py-2.5 rounded-lg hover:bg-purple-50 transition-colors"
+                      className="w-full text-center text-[#7c3aed] border border-[#7c3aed] font-source font-medium py-2.5 rounded-lg hover:bg-purple-50 transition-colors"
                     >
                       Login
                     </button>

@@ -3,52 +3,30 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getAllBlogs, saveBlog } from '../../../../public/blogData';
+import { projectServices } from '../../../api/axios/axiosInstance';
 
 const BlogsPage = () => {
   const [blogPosts, setBlogPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [showAddForm, setShowAddForm] = useState(false);
   const blogsPerPage = 6;
 
-  // ===== ROLE-BASED ACCESS CONTROL =====
-  // Get user role - MODIFY THIS BASED ON YOUR AUTH SYSTEM
-  const getUserRole = () => {
-    // OPTION 1: From localStorage
-    const userRole = localStorage.getItem('userRole'); // e.g., 'admin', 'employer', 'employer_admin', 'candidate'
-    
-    // OPTION 2: From sessionStorage
-    // const userRole = sessionStorage.getItem('userRole');
-    
-    // OPTION 3: From localStorage user object
-    // const user = JSON.parse(localStorage.getItem('user'));
-    // const userRole = user?.role;
-    
-    // OPTION 4: From Context/Redux (if you're using it)
-    // const { userRole } = useContext(AuthContext);
-    
-    return userRole;
-  };
-
-  // Check if user can add blogs
-  const canAddBlog = () => {
-    const role = getUserRole();
-    
-    // Allow these roles to add blogs
-    const allowedRoles = ['admin', 'employer', 'employer_admin', 'employerAdmin'];
-    
-    // Check if user's role is in allowed roles (case-insensitive)
-    return allowedRoles.some(allowedRole => 
-      role?.toLowerCase() === allowedRole.toLowerCase()
-    );
-  };
-
   useEffect(() => {
-    setBlogPosts(getAllBlogs());
+    fetchBlogs();
   }, []);
 
+  const fetchBlogs = async () => {
+    try {
+      const response = await projectServices.get("/user-auth/get-blogs");
+      if (response.data && response.data.success) {
+        setBlogPosts(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching blogs:", error);
+    }
+  };
+
   const refreshBlogs = () => {
-    setBlogPosts(getAllBlogs());
+    fetchBlogs();
   };
 
   const indexOfLastBlog = currentPage * blogsPerPage;
@@ -85,33 +63,11 @@ const BlogsPage = () => {
         {/* Blogs Section */}
         <section className="section latest-news-block section-theme-1 pt-35 pt-md-50 pt-lg-75 pt-xl-100 pt-xxl-120 pb-35 bg-light">
           <div className="container">
-            {/* Add Blog Button - ONLY FOR ADMIN, EMPLOYER, EMPLOYER_ADMIN */}
-            {canAddBlog() && (
-              <div className="row mb-4">
-                <div className="col-12 text-end">
-                  <button 
-                    className="btn btn-primary btn-sm"
-                    onClick={() => setShowAddForm(!showAddForm)}
-                  >
-                    <i className="icon-plus me-2"></i>
-                    <span className="btn-text">{showAddForm ? 'Close Form' : 'Add New Blog'}</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Add Blog Form - ONLY SHOWS IF USER HAS PERMISSION */}
-            {showAddForm && canAddBlog() && (
-              <AddBlogForm 
-                onClose={() => setShowAddForm(false)} 
-                onBlogAdded={refreshBlogs}
-              />
-            )}
 
             {/* Blog Posts Grid - VISIBLE TO ALL USERS */}
             <div className="row">
-              {currentBlogs.map((post, index) => (
-                <div key={post.id} className="col-12 col-md-6 col-lg-4 mb-35 mb-md-55">
+              {currentBlogs.map((post) => (
+                <div key={post._id} className="col-12 col-md-6 col-lg-4 mb-35 mb-md-55">
                   <BlogPostCard {...post} />
                 </div>
               ))}
@@ -209,169 +165,37 @@ const BlogsPage = () => {
 };
 
 // Blog Post Card Component
-const BlogPostCard = ({ slug, image, title, subtitle, date, comments, authorImage, authorName, excerpt }) => {
+const BlogPostCard = ({ _id, coverImage, title, category, createdAt, authorPhoto, authorName, sections, content }) => {
+  let excerpt = '';
+  if (sections && sections.length > 0 && sections[0].content) {
+    excerpt = sections[0].content.substring(0, 100) + '...';
+  } else if (content) {
+    excerpt = content.substring(0, 100) + '...';
+  }
+  const date = new Date(createdAt || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   return (
-    <div className="news-post bg-white shadow border border-dark" style={{ borderRadius: "30px" }}>
-      <Link to={`/blog-details/${slug}`}>
+    <div className="news-post bg-white shadow border border-dark" style={{ borderRadius: "30px", height: '100%' }}>
+      <Link to={`/blog-details/${_id}`}>
         <div className="image-holder">
-          <img src={`/images/${image}`} alt={title} />
+          <img src={coverImage || "/images/image-news03.jpg"} alt={title} style={{ width: '100%', height: '250px', objectFit: 'cover', borderTopLeftRadius: "30px", borderTopRightRadius: "30px" }} />
         </div>
-        <div className="textbox p-10">
-          <strong className="subtitle text-secondary">{subtitle}</strong>
-          <h3>{title}</h3>
+        <div className="textbox p-10" style={{ padding: '20px' }}>
+          <strong className="subtitle text-secondary">{category}</strong>
+          <h3 style={{ fontSize: '1.25rem', marginTop: '10px' }}>{title}</h3>
           <p className="excerpt" style={{ fontSize: '14px', color: '#666', margin: '10px 0' }}>
             {excerpt}
           </p>
-          <ul className="post-meta">
-            <li>{date}</li>
-            <li>{comments} Comments</li>
+          <ul className="post-meta" style={{ listStyle: 'none', padding: 0, display: 'flex', gap: '15px', fontSize: '13px', color: '#888' }}>
+            <li><i className="icon-clock me-1"></i>{date}</li>
           </ul>
-          <div className="post-author">
-            <span className="author-image">
-              <img src={`/images/${authorImage}`} width="52" height="52" alt={authorName} />
+          <div className="post-author mt-3 d-flex align-items-center">
+            <span className="author-image me-2">
+              <img src={authorPhoto || "/images/avatar-03.jpg"} width="40" height="40" alt={authorName} style={{ borderRadius: '50%', objectFit: 'cover' }} />
             </span>
-            <span className="post-by">By <strong>{authorName}</strong></span>
+            <span className="post-by" style={{ fontSize: '14px' }}>By <strong className="text-dark">{authorName}</strong></span>
           </div>
         </div>
       </Link>
-    </div>
-  );
-};
-
-// Add Blog Form Component
-const AddBlogForm = ({ onClose, onBlogAdded }) => {
-  const [formData, setFormData] = useState({
-    title: '',
-    subtitle: '',
-    excerpt: '',
-    content: '',
-    image: 'image-news03.jpg',
-    tags: ''
-  });
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!formData.title || !formData.subtitle || !formData.excerpt || !formData.content) {
-      alert('Please fill all required fields');
-      return;
-    }
-
-    const newBlog = {
-      id: Date.now(),
-      slug: formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
-      title: formData.title,
-      subtitle: formData.subtitle,
-      excerpt: formData.excerpt,
-      image: formData.image || 'image-news03.jpg',
-      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-      comments: 0,
-      authorImage: 'avatar-03.jpg',
-      authorName: 'EdProfio Team',
-      tags: formData.tags.split(',').map(t => t.trim()).filter(t => t),
-      content: formData.content
-    };
-
-    if (saveBlog(newBlog)) {
-      alert('Blog added successfully!');
-      setFormData({ title: '', subtitle: '', excerpt: '', content: '', image: 'image-news03.jpg', tags: '' });
-      onBlogAdded();
-      onClose();
-    } else {
-      alert('Error saving blog');
-    }
-  };
-
-  return (
-    <div className="row mb-5">
-      <div className="col-12">
-        <div className="card shadow-sm">
-          <div className="card-body p-4">
-            <h3 className="mb-4">Add New Blog Post</h3>
-            <form onSubmit={handleSubmit}>
-              <div className="row">
-                <div className="col-md-6 mb-3">
-                  <label className="form-label">Title *</label>
-                  <input 
-                    type="text" 
-                    className="form-control" 
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    required 
-                  />
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label className="form-label">Category *</label>
-                  <input 
-                    type="text" 
-                    className="form-control" 
-                    name="subtitle"
-                    value={formData.subtitle}
-                    onChange={handleChange}
-                    placeholder="e.g., Education, Career"
-                    required 
-                  />
-                </div>
-                <div className="col-12 mb-3">
-                  <label className="form-label">Excerpt *</label>
-                  <textarea 
-                    className="form-control" 
-                    name="excerpt"
-                    value={formData.excerpt}
-                    onChange={handleChange}
-                    rows="2"
-                    placeholder="Short description..."
-                    required
-                  ></textarea>
-                </div>
-                <div className="col-12 mb-3">
-                  <label className="form-label">Content * (HTML supported)</label>
-                  <textarea 
-                    className="form-control" 
-                    name="content"
-                    value={formData.content}
-                    onChange={handleChange}
-                    rows="8"
-                    placeholder="Write your blog content here. You can use HTML tags like <h3>, <p>, <ul>, <li>, etc."
-                    required
-                  ></textarea>
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label className="form-label">Image Filename</label>
-                  <input 
-                    type="text" 
-                    className="form-control" 
-                    name="image"
-                    value={formData.image}
-                    onChange={handleChange}
-                    placeholder="image-news03.jpg"
-                  />
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label className="form-label">Tags (comma-separated)</label>
-                  <input 
-                    type="text" 
-                    className="form-control" 
-                    name="tags"
-                    value={formData.tags}
-                    onChange={handleChange}
-                    placeholder="education, teaching, careers"
-                  />
-                </div>
-                <div className="col-12">
-                  <button type="submit" className="btn btn-primary me-2">Add Blog</button>
-                  <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
