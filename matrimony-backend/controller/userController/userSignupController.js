@@ -90,7 +90,20 @@ const saveSignUpData = async (req, res) => {
 
     await newUser.save();
 
-    res.status(201).json({ message: "User registered successfully" });
+    const token = jwt.sign(
+      { userId: newUser._id }, 
+      process.env.JWT_SECRET || 'agape_vows_secret_key_2026', 
+      { expiresIn: '7d' }
+    );
+
+    res.status(201).json({ 
+      message: "User registered successfully",
+      token,
+      userId: newUser._id,
+      userName: newUser.userName,
+      gender: newUser.gender,
+      isProfileCompleted: newUser.isProfileCompleted
+    });
   } catch (err) {
     console.error("Error in saving the signup data", err);
     res.status(500).json({ message: err.message || "Error in saving the signup data" });
@@ -134,6 +147,7 @@ const verifyLogin = async (req, res) => {
       userName: user.userName,
       profileImage: user.profileImage,
       gender: user.gender,
+      isProfileCompleted: user.isProfileCompleted
     });
   } catch (err) {
     console.error("Error in verifying login", err);

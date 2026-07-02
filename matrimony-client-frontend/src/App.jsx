@@ -76,6 +76,47 @@ function ReloadHandler() {
   return null;
 }
 
+// Guard component to enforce profile completion
+import { useNavigate } from "react-router-dom";
+import { showAlert } from "./utils/alertService";
+const ProfileCompletionGuard = ({ children }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    const isProfileCompleted = localStorage.getItem("isProfileCompleted") === "true";
+    
+    // Allow public routes and the edit profile page itself
+    const publicPaths = [
+      '/', '/user/user-login', '/user/user-sign-up', 
+      '/help-support', '/show-searched-result', '/forgot-password',
+      '/contact-us', '/about-us', '/faq', '/events', '/blogs'
+    ];
+    
+    const isPublic = publicPaths.includes(location.pathname) || 
+                     location.pathname.startsWith('/reset-password') || 
+                     location.pathname.startsWith('/user/user-change-password');
+                     
+    if (userId && !isProfileCompleted && !isPublic) {
+      if (!location.pathname.includes('/user/user-profile-edit-page')) {
+        showAlert({ 
+          title: "Incomplete Profile", 
+          text: "Please fill all the mandatory details to continue.", 
+          icon: "warning" 
+        });
+        
+        // Use timeout to allow React Router to settle if called during initial mount
+        setTimeout(() => {
+          navigate(`/user/user-profile-edit-page/${userId}`, { replace: true });
+        }, 0);
+      }
+    }
+  }, [location.pathname, navigate]);
+
+  return children;
+};
+
 function App() {
   useEffect(() => {
     // Remember Me - Session Expiration Logic
@@ -89,6 +130,7 @@ function App() {
       localStorage.removeItem("userImage");
       localStorage.removeItem("gender");
       localStorage.removeItem("rememberMe");
+      localStorage.removeItem("isProfileCompleted");
     } else if (localStorage.getItem("userId")) {
       // Mark this tab as having an active session
       sessionStorage.setItem("session_active", "true");
@@ -188,6 +230,7 @@ function App() {
       <ScrollToTop />
       <ToastContainer position="top-right" autoClose={3000} />
       {/* <ReloadHandler /> */}
+      <ProfileCompletionGuard>
       <Routes>
         {/* <Route path="/" element={<UserHomePage />} /> */}
         <Route path="/" element={<NewHomePageComponent />} />
@@ -273,6 +316,7 @@ function App() {
         <Route path="/blogs" element={<Blogs />} />
         <Route path="/blog-details/:id" element={<BlogDetailsPage />} />
       </Routes>
+      </ProfileCompletionGuard>
     </Router>
   );
 }

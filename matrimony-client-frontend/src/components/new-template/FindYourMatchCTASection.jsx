@@ -20,12 +20,12 @@ export default function FindYourMatchCTASection() {
           text-align: center !important;
         }
         .fot-ban-inn .lhs h2 {
-          color: #2a1657 !important;
+          color: #58219f !important;
           margin-bottom: 8px !important;
           font-weight: 700 !important;
         }
         .fot-ban-inn .lhs p {
-          color: #2a1657 !important;
+          color: #58219f !important;
           padding: 0 0 15px 0 !important;
           font-weight: 500 !important;
         }
@@ -40,12 +40,12 @@ export default function FindYourMatchCTASection() {
             <div className="fot-ban-inn">
               <div className="lhs">
 
-                {/* 🔥 Heading → VIOLET/DARK PURPLE */}
+                {/* Heading → VIOLET/DARK PURPLE */}
                 <h2>
                   Find your perfect Match now
                 </h2>
 
-                {/* 🔥 Content → DARK PURPLE */}
+                {/* Content → DARK PURPLE */}
                 <p>
                   Join our verified community of thousands of eligible singles seeking meaningful relationships.
                   Start your journey today and find your soulmate with our advanced matching system.
@@ -57,8 +57,8 @@ export default function FindYourMatchCTASection() {
                     style={{
                       display: "inline-block",
                       padding: "10px 24px",
-                      border: "2px solid #2a1657",
-                      background: "#2a1657",
+                      border: "2px solid #58219f",
+                      background: "#58219f",
                       color: "#ffffff",
                       textDecoration: "none",
                       borderRadius: "6px",
@@ -69,10 +69,10 @@ export default function FindYourMatchCTASection() {
                     }}
                     onMouseEnter={(e) => {
                       e.target.style.background = "transparent";
-                      e.target.style.color = "#2a1657";
+                      e.target.style.color = "#58219f";
                     }}
                     onMouseLeave={(e) => {
-                      e.target.style.background = "#2a1657";
+                      e.target.style.background = "#58219f";
                       e.target.style.color = "#ffffff";
                     }}
                   >

@@ -77,9 +77,21 @@ const UserSignUp = () => {
         if (verifyResponse.status === 200) {
           const response = await sendSignUpRequest(formData);
           if (response.status === 201) {
+            const userData = response.data;
+            if (userData.userId) localStorage.setItem("userId", userData.userId);
+            if (userData.token) localStorage.setItem("authToken", userData.token);
+            if (userData.userName) localStorage.setItem("userName", userData.userName);
+            if (userData.gender) localStorage.setItem("gender", userData.gender);
+            if (userData.isProfileCompleted !== undefined) {
+              localStorage.setItem("isProfileCompleted", String(userData.isProfileCompleted));
+            } else {
+              localStorage.setItem("isProfileCompleted", "false");
+            }
+            sessionStorage.setItem("session_active", "true");
+
             showAlert({ title: "Success", text: response.data.message || "Account created successfully!", icon: "success" });
             setTimeout(() => {
-              navigate("/user/user-login");
+              navigate(`/user/user-profile-edit-page/${userData.userId}`, { replace: true });
             }, 1500);
           }
         }
@@ -109,7 +121,7 @@ const UserSignUp = () => {
               <p className="text-gray-500">Join our Christian Matrimony Community</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
                 <input
@@ -119,6 +131,7 @@ const UserSignUp = () => {
                   onChange={handleInputChange}
                   className="block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-purple-500 focus:border-purple-500 sm:text-sm transition-colors"
                   placeholder="Enter your full name"
+                  autoComplete="off"
                   required
                 />
               </div>
@@ -132,6 +145,7 @@ const UserSignUp = () => {
                   onChange={handleInputChange}
                   className="block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-purple-500 focus:border-purple-500 sm:text-sm transition-colors"
                   placeholder="Enter email"
+                  autoComplete="off"
                   required
                 />
               </div>
@@ -170,6 +184,7 @@ const UserSignUp = () => {
                     onChange={handleInputChange}
                     className="block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-purple-500 focus:border-purple-500 sm:text-sm transition-colors"
                     placeholder="Create a password"
+                    autoComplete="new-password"
                     required
                   />
                   <button

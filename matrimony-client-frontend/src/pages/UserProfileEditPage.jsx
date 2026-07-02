@@ -1597,10 +1597,11 @@ const UserProfileEditPage = () => {
         setHasUnsavedChanges(false);
         setDeleteProfileImageFlag(false);
         setDeletedAdditionalImages([]);
+        localStorage.setItem("isProfileCompleted", "true");
 
         // Optional: navigate after update
         setTimeout(() => {
-          navigate(`/user/user-profile-page`);
+          navigate(`/user/user-dashboard-page`);
         }, 500);
       } else {
         const errorMessage = response.data?.message || "Error updating profile. Please try again.";
@@ -2909,7 +2910,6 @@ const UserProfileEditPage = () => {
                           "Other",
                         ]}
                       />
-
 
                       <FormInput
                         label="Contact Email"

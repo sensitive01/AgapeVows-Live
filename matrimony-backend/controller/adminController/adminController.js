@@ -101,13 +101,7 @@ const getAllUsersData = async (req, res) => {
   try {
     const userData = await userModel
       .find(
-        {
-          isApproved: true,
-          $or: [
-            { isDeleted: false },
-            { isDeleted: { $exists: false } }
-          ],
-        },
+        {},
         {
           userEmail: 1,
           userMobile: 1,

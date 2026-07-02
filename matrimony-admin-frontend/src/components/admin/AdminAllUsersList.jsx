@@ -74,10 +74,11 @@ const AdminAllUsersList = () => {
   // Search and filter effect
   useEffect(() => {
     let filtered = users.filter((user) => {
+      const sTerm = searchTerm.toLowerCase();
       const matchesSearch =
-        user.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.userEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.userMobile?.includes(searchTerm);
+        (user.userName || "").toLowerCase().includes(sTerm) ||
+        (user.userEmail || "").toLowerCase().includes(sTerm) ||
+        (user.userMobile || "").includes(searchTerm);
 
       return matchesSearch;
     });
@@ -85,8 +86,7 @@ const AdminAllUsersList = () => {
     setFilteredUsers(filtered);
   }, [users, searchTerm]);
 
-
-
+  
   const getInitials = (name) => {
     return name
       .split(" ")

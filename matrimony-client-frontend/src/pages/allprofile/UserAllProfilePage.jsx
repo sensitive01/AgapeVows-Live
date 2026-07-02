@@ -446,7 +446,7 @@ const UserAllProfilePage = () => {
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
                           >
-                            <option value="">Most relative</option>
+                            <option value="">Most relevant</option>
                             <option value="newest">Date listed: Newest</option>
                             <option value="oldest">Date listed: Oldest</option>
                           </select>

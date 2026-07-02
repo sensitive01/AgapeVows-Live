@@ -33,10 +33,16 @@ const UserLoginPage = () => {
     if (userData.userName) localStorage.setItem("userName", userData.userName);
     if (userData.gender) localStorage.setItem("gender", userData.gender);
     if (userData.profileImage) localStorage.setItem("userImage", userData.profileImage);
+    if (userData.isProfileCompleted !== undefined) {
+      localStorage.setItem("isProfileCompleted", String(userData.isProfileCompleted));
+    }
     localStorage.setItem("rememberMe", formData.rememberMe.toString());
     sessionStorage.setItem("session_active", "true");
 
-    const redirectPath = location.state?.from || "/user/user-dashboard-page";
+    let redirectPath = location.state?.from || "/user/user-dashboard-page";
+    if (location.state?.fromSignUp) {
+      redirectPath = "/user/user-profile-edit-page";
+    }
     navigate(redirectPath, { replace: true, state: { formData: location.state?.formData } });
   };
 
