@@ -41,6 +41,23 @@ const generateAgwid = async () => {
 
 
 
+const maskEmail = (email) => {
+  if (!email) return "";
+  const parts = email.split("@");
+  if (parts.length !== 2) return email;
+  const name = parts[0];
+  const domain = parts[1];
+  if (name.length <= 2) return `${name[0]}***@${domain}`;
+  return `${name.slice(0, 2)}***${name.slice(-1)}@${domain}`;
+};
+
+const maskPhone = (phone) => {
+  if (!phone) return "";
+  if (phone.length <= 4) return phone;
+  // Assumes format like 919876543210
+  return `+${phone.slice(0, 2)} ${phone.slice(2, 4)}*****${phone.slice(-2)}`;
+};
+
 const saveSignUpData = async (req, res) => {
   try {
     const { formData } = req.body;
@@ -52,12 +69,20 @@ const saveSignUpData = async (req, res) => {
 
     const existingUser = await userModel.findOne({ userEmail: email });
     if (existingUser) {
-      return res.status(409).json({ message: "User already exists with this email" });
+      return res.status(409).json({ 
+        message: "User already exists with this email",
+        userName: existingUser.userName,
+        connectedContact: maskPhone(existingUser.userMobile)
+      });
     }
 
     const existingPhone = await userModel.findOne({ userMobile: phone });
     if (existingPhone) {
-      return res.status(409).json({ message: "Phone number already registered" });
+      return res.status(409).json({ 
+        message: "Phone number already registered",
+        userName: existingPhone.userName,
+        connectedContact: maskEmail(existingPhone.userEmail)
+      });
     }
 
     // Check if email is verified
@@ -254,15 +279,38 @@ const saveNewPassword = async (req, res) => {
 
 const sendRegistrationOtp = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, phone } = req.body;
+    console.log("SEND OTP REQUEST - EMAIL:", email, "PHONE:", phone);
 
     if (!email) {
       return res.status(400).json({ success: false, message: "Email is required" });
     }
 
     const existingUser = await userModel.findOne({ userEmail: email });
-    if (existingUser) {
-      return res.status(409).json({ success: false, message: "User already exists" });
+    const existingPhone = phone ? await userModel.findOne({ userMobile: phone }) : null;
+    console.log("EXISTING EMAIL:", !!existingUser, "EXISTING PHONE:", !!existingPhone);
+
+    if (existingUser && existingPhone) {
+      return res.status(409).json({ 
+        success: false, 
+        message: "Both email and phone number already registered",
+        userName: existingUser.userName,
+        connectedContact: ""
+      });
+    } else if (existingUser) {
+      return res.status(409).json({ 
+        success: false, 
+        message: "User already exists with this email",
+        userName: existingUser.userName,
+        connectedContact: maskPhone(existingUser.userMobile)
+      });
+    } else if (existingPhone) {
+      return res.status(409).json({ 
+        success: false, 
+        message: "Phone number already registered",
+        userName: existingPhone.userName,
+        connectedContact: maskEmail(existingPhone.userEmail)
+      });
     }
 
     const otp = Math.floor(1000 + Math.random() * 9000);

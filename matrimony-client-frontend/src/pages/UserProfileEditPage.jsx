@@ -1706,13 +1706,8 @@ const UserProfileEditPage = () => {
 
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      backgroundImage: "url('/images/bg-profile.png')",
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      backgroundAttachment: "fixed",
-      backgroundColor: "#f5f5f5"
+    <div className="min-h-screen" style={{
+      backgroundColor: "#f3f4f6"
     }}>
       <style>{`
         body { 

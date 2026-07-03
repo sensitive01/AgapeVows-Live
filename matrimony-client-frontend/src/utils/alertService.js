@@ -49,6 +49,11 @@ export const showOtpAlert = async ({
     input: 'text',
     inputLabel: 'OTP',
     inputPlaceholder: 'Enter 4-digit OTP',
+    inputAttributes: {
+      autocomplete: 'one-time-code',
+      autocorrect: 'off',
+      autocapitalize: 'off'
+    },
     showCancelButton: true,
     confirmButtonColor,
     confirmButtonText,

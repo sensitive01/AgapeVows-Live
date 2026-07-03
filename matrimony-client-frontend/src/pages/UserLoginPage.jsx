@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { verifyUser } from "../api/axiosService/userSignUpService";
 import LayoutComponent from "../components/layouts/LayoutComponent";
 import Footer from "../components/Footer";
+import LoginPageContent from "../components/new-template/LoginPageContent";
 
 const UserLoginPage = () => {
   const navigate = useNavigate();
@@ -267,6 +268,7 @@ const UserLoginPage = () => {
           </div>
         </div>
       </div>
+      <LoginPageContent />
       <Footer />
     </div>
   );

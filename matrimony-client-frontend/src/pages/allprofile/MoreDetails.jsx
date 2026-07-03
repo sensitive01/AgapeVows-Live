@@ -16,7 +16,7 @@ import profImage from "../../assets/images/blue-circle-with-white-user_78370-470
 // Helper Components
 const InfoRow = ({ label, value }) => {
   let displayValue = value;
-  
+
   if (Array.isArray(value)) {
     displayValue = value.length > 0 ? value.join(", ") : null;
   } else if (typeof value === 'string' && value.trim() === '') {
@@ -24,20 +24,63 @@ const InfoRow = ({ label, value }) => {
   }
 
   return (
-    <div className="info-row">
-      <span className="info-label font-source font-medium text-[18px]">{label}:</span>
-      <span className="info-value font-source font-normal text-[18px]">{displayValue || "Not Specified"}</span>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        padding: "10px 0",
+      }}
+    >
+      <span
+        className="font-source text-[16px]"
+        style={{
+          color: "#4b5563",
+          flex: "1 1 45%",
+          paddingRight: "10px"
+        }}
+      >
+        {label}
+      </span>
+      <span
+        className="font-source font-bold text-[16px]"
+        style={{
+          color: "#111827",
+          wordBreak: "break-word",
+          flex: "1 1 55%",
+        }}
+      >
+        {displayValue || "Not Specified"}
+      </span>
     </div>
   );
 };
 
 const ProfileSection = ({ title, icon, children }) => (
-  <div className="profile-section card">
-    <h4 className="profile-section-title font-source font-semibold text-[32px]">
-      <FontAwesomeIcon icon={icon} style={{ color: "#4a2580" }} />
-      {title}
-    </h4>
-    <div className="profile-section-content">{children}</div>
+  <div className="col-12 mb-4">
+    <div
+      style={{
+        padding: "30px",
+        background: "#ffffff",
+        borderRadius: "12px",
+        boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "15px", marginBottom: "25px" }}>
+        <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#58219f', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <FontAwesomeIcon icon={icon} style={{ color: "#fff", fontSize: "1.1rem" }} />
+        </div>
+        <div style={{ position: "relative", paddingBottom: "6px" }}>
+          <h4
+            className="font-source font-bold text-[24px]"
+            style={{ color: "#58219f", margin: 0 }}
+          >
+            {title}
+          </h4>
+          <span style={{ position: "absolute", bottom: 0, left: 0, width: "35px", height: "3px", background: "#58219f", borderRadius: "2px" }}></span>
+        </div>
+      </div>
+      <div className="profile-section-content">{children}</div>
+    </div>
   </div>
 );
 
@@ -462,17 +505,19 @@ const MoreDetails = () => {
 
               <div style={{ display: "flex", flexDirection: "column", gap: "6px", width: "100%" }}>
                 <button
-                  className="interest-btn font-source font-semibold text-[18px]"
-                  style={{ 
-                    width: "100%", 
-                    height: "45px", 
-                    marginBottom: "0", 
-                    display: "flex", 
-                    alignItems: "center", 
-                    justifyContent: "center", 
+                  className="interest-btn font-cormorant font-bold text-[20px]"
+                  style={{
+                    width: "100%",
+                    height: "45px",
+                    marginBottom: "0",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                     borderRadius: "8px",
                     padding: "0",
-                    backgroundColor: interestStatus ? "#10b981" : "" 
+                    background: interestStatus ? "#10b981" : "#58219f",
+                    color: "#fff",
+                    border: "none"
                   }}
                   onClick={(e) => {
                     if (!isPaidUser) {
@@ -487,17 +532,18 @@ const MoreDetails = () => {
                     "data-bs-target": "#sendInter",
                   })}
                 >
+                  <i className="fa fa-envelope-o me-2"></i>
                   {interestStatus ? "Already Interest Sent" : "Send Interest"}
                 </button>
 
                 <button
                   onClick={handleShortlistClick}
-                  className="shortlist-btn font-source font-semibold text-[18px]"
+                  className="shortlist-btn font-cormorant font-bold text-[20px]"
                   style={{
                     width: "100%",
                     height: "45px",
                     marginBottom: "0",
-                    background: isShortlisted ? "#10b981" : "#4a2580",
+                    background: isShortlisted ? "#10b981" : "#58219f",
                     color: "#ffffff",
                     border: "none",
                     padding: "0",
@@ -511,6 +557,7 @@ const MoreDetails = () => {
                   }}
                   disabled={isShortlisting}
                 >
+                  <i className={`fa ${isShortlisted ? 'fa-heart' : 'fa-heart-o'}`}></i>
                   {isShortlisting ? "Please wait..." : (isShortlisted ? "Profile Shortlisted" : "Shortlist")}
                 </button>
 
@@ -518,18 +565,22 @@ const MoreDetails = () => {
                 {!showContact && (
                   <button
                     onClick={handleContactClick}
-                    className="view-contact-btn font-source font-semibold text-[18px]"
-                    style={{ 
-                      width: "100%", 
-                      height: "45px", 
-                      marginBottom: "0", 
-                      display: "flex", 
-                      alignItems: "center", 
-                      justifyContent: "center", 
+                    className="view-contact-btn font-cormorant font-bold text-[20px]"
+                    style={{
+                      width: "100%",
+                      height: "45px",
+                      marginBottom: "0",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                       borderRadius: "8px",
-                      padding: "0"
+                      padding: "0",
+                      background: "#58219f",
+                      color: "#fff",
+                      border: "none"
                     }}
                   >
+                    <i className="fa fa-user-circle-o me-2"></i>
                     View Contact Information
                   </button>
                 )}
@@ -563,7 +614,7 @@ const MoreDetails = () => {
 
               <button
                 onClick={() => setShowReportModal(true)}
-                className="report-user-btn font-source font-semibold text-[18px]"
+                className="report-user-btn font-cormorant font-bold text-[20px]"
                 style={{
                   width: "100%",
                   height: "45px",
@@ -595,23 +646,36 @@ const MoreDetails = () => {
           {/* Right Column */}
           <div className="profile-right">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
-              <div className="agv-id" style={{ marginBottom: "0", display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div
+                className="font-cormorant"
+                style={{
+                  background: "#58219f",
+                  color: "#fff",
+                  padding: "6px 20px",
+                  borderRadius: "25px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  fontSize: "24px",
+                  fontWeight: "500",
+                  lineHeight: "1",
+                  fontVariantNumeric: "lining-nums",
+                }}
+              >
                 AV ID: {userInfo?.agwid || "N/A"}
-                <div className="d-flex gap-2 ms-2">
+                <div className="d-flex gap-2">
                   {userInfo?.isAnySubscriptionTaken && (
-                    <span className="badge rounded-pill bg-warning text-dark" style={{ fontSize: '12px', padding: '5px 12px' }}>
-                      <i className="fa fa-star me-1"></i>Premium
+                    <span className="badge rounded-pill text-dark font-source" style={{ backgroundColor: "#facc15", fontSize: '14px', fontWeight: '500', padding: '4px 14px', display: 'flex', alignItems: 'center', gap: '6px', height: 'fit-content' }}>
+                      <i className="fa fa-star"></i>Premium
                     </span>
                   )}
                   {userInfo?.idVerificationStatus === 'Verified' && (
-                    <span className="badge rounded-pill bg-success" style={{ fontSize: '12px', padding: '5px 12px' }}>
-                      <i className="fa fa-check-circle me-1"></i>Verified
+                    <span className="badge rounded-pill bg-success text-white font-source" style={{ fontSize: '14px', fontWeight: '500', padding: '4px 14px', display: 'flex', alignItems: 'center', gap: '6px', height: 'fit-content' }}>
+                      <i className="fa fa-check-circle"></i>Verified
                     </span>
                   )}
-
                 </div>
               </div>
-
             </div>
 
             {/* Profile Snippet at top */}
@@ -623,7 +687,7 @@ const MoreDetails = () => {
                   borderRadius: "12px",
                   boxShadow: "0 4px 14px rgba(0,0,0,0.05)",
                   marginBottom: "25px",
-                  borderLeft: "4px solid #4a2580",
+                  borderLeft: "4px solid #58219f",
                 }}
               >
                 <div
@@ -697,9 +761,39 @@ const MoreDetails = () => {
             )}
 
             {userInfo?.aboutMe && (
-              <div className="about-me card">
-                <h4 className="font-source font-semibold text-[32px] mb-3">About Me</h4>
-                <p className="font-source font-normal text-[20px]">{userInfo.aboutMe}</p>
+              <div className="col-12 mb-4">
+                <div
+                  style={{
+                    padding: "30px",
+                    background: "#ffffff",
+                    borderRadius: "12px",
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+                    borderLeft: "6px solid #58219f"
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "15px", marginBottom: "20px" }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#58219f', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <i className="fa fa-user" style={{ color: "#fff", fontSize: "1.1rem" }}></i>
+                    </div>
+                    <h4
+                      className="font-source font-bold text-[24px]"
+                      style={{ color: "#58219f", margin: 0 }}
+                    >
+                      About Me
+                    </h4>
+                  </div>
+                  <p
+                    className="font-source font-normal text-[16px]"
+                    style={{
+                      color: "#111827",
+                      lineHeight: "1.6",
+                      whiteSpace: "pre-line",
+                      margin: 0,
+                    }}
+                  >
+                    {userInfo.aboutMe}
+                  </p>
+                </div>
               </div>
             )}
 
@@ -707,7 +801,7 @@ const MoreDetails = () => {
             {[
               {
                 title: "Basic Details",
-                icon: faInfoCircle,
+                icon: faAddressCard,
                 data: [
                   { label: "Profile Created By", value: userInfo?.profileCreatedFor },
                   { label: "Age", value: userInfo?.dateOfBirth ? `${calculateAge(userInfo.dateOfBirth)} years` : null },
@@ -1070,14 +1164,14 @@ const MoreDetails = () => {
         .profile-card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); width: 100%; max-width: 320px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
         .profile-image-wrapper { position: relative; width: 100%; }
         .profile-image { width: 100%; border-radius: 12px; object-fit: cover; }
-        .zoom-btn { position: absolute; top: 10px; right: 10px; background: #4a2580; color: #fff; border-radius: 50%; padding: 6px 10px; cursor: pointer; font-size: 1.1rem; }
-        .interest-btn { width: 100%; background: #4a2580; color: #fff; border-radius: 8px; padding: 12px 0; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .zoom-btn { position: absolute; top: 10px; right: 10px; background: #58219f; color: #fff; border-radius: 50%; padding: 6px 10px; cursor: pointer; font-size: 1.1rem; }
+        .interest-btn { width: 100%; background: #58219f; color: #fff; border-radius: 8px; padding: 12px 0; font-weight: 600; cursor: pointer; transition: all 0.2s; }
         .interest-btn.disabled { background: #999; cursor: not-allowed; opacity: 0.6; }
-        .agv-id { text-align: center; background: #4a2580; color: #fff; padding: 8px 16px; border-radius: 20px; font-weight: 600; display: inline-block; font-size: 1rem; }
+        .agv-id { text-align: center; background: #58219f; color: #fff; padding: 8px 16px; border-radius: 20px; font-weight: 600; display: inline-block; font-size: 1rem; }
         .start-chat-top-btn { background: #3b82f6; color: #fff; padding: 10px 24px; border-radius: 20px; font-weight: 600; cursor: pointer; border: none; font-size: 1rem; transition: background 0.2s; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
         .start-chat-top-btn:hover { background: #2563eb; }
         .about-me { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        .about-me h4 { color: #4a2580; margin-bottom: 10px; }
+        .about-me h4 { color: #58219f; margin-bottom: 10px; }
         .video-card {
   display: flex;
   align-items: center;
@@ -1140,7 +1234,7 @@ const MoreDetails = () => {
   border-radius: 12px;
   box-shadow: 0 4px 14px rgba(0,0,0,0.05);
   margin-bottom: 25px;
-  border-left: 4px solid #4a2580;
+  border-left: 4px solid #58219f;
 }
 
 .snippet-text {
@@ -1168,9 +1262,9 @@ const MoreDetails = () => {
         .zoom-image-wrapper { position: relative; }
         .zoom-image-wrapper img { max-width: 100vw; max-height: 90vh; border-radius: 12px; transition: transform 0.2s ease; cursor: grab; }
         .zoom-controls { position: absolute; bottom: -60px; display: flex; gap: 15px; justify-content: center; width: 100%; }
-        .zoom-controls button { padding: 10px 15px; font-size: 1.2rem; border-radius: 8px; border: none; background: #4a2580; color: #fff; cursor: pointer; font-weight: 600; }
+        .zoom-controls button { padding: 10px 15px; font-size: 1.2rem; border-radius: 8px; border: none; background: #58219f; color: #fff; cursor: pointer; font-weight: 600; }
         .contact-btn-wrapper { margin-bottom: 15px; }
-        .view-contact-btn { background: #4a2580; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .view-contact-btn { background: #58219f; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
         .view-contact-btn:hover { background: #381c60; }
         .upgrade-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.65); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(4px); }
         .upgrade-content { background: #fff; padding: 35px 30px; border-radius: 16px; text-align: center; width: 100%; max-width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); animation: fadeInScale 0.3s ease; }
@@ -1178,7 +1272,7 @@ const MoreDetails = () => {
         .upgrade-content h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 10px; color: #111; }
         .upgrade-content p { font-size: 0.95rem; color: #666; margin-bottom: 25px; }
         .upgrade-buttons { display: flex; gap: 10px; justify-content: center; }
-        .upgrade-btn { background: linear-gradient(135deg, #4a2580, #381c60); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: transform 0.2s; }
+        .upgrade-btn { background: linear-gradient(135deg, #58219f, #381c60); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: transform 0.2s; }
         .upgrade-btn:hover { transform: scale(1.05); }
         .cancel-btn { background: #f3f4f6; color: #333; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 0.9rem; }
         @keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }

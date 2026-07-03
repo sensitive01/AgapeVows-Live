@@ -5,8 +5,8 @@ export const sendSignUpRequest = async (formData) => {
   return response;
 };
 
-export const sendRegistrationOtpRequest = async (email) => {
-  const response = await axiosInstance.post(`/user/send-registration-otp`, { email });
+export const sendRegistrationOtpRequest = async (email, phone) => {
+  const response = await axiosInstance.post(`/user/send-registration-otp`, { email, phone });
   return response;
 };
 

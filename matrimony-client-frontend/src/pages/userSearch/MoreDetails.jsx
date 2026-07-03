@@ -1,41 +1,151 @@
-import React, { useEffect, useState } from "react";
-import LayoutComponent from "../../components/layouts/LayoutComponent";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getTheProfieMoreDetails, getUserProfile, getChatMessages, sendChatMessage, isUserMadeTheInterest } from "../../api/axiosService/userAuthService";
-
-import { io } from "socket.io-client";
-import ChatUi from "../allprofile/ChatUi";
+import LayoutComponent from "../../components/layouts/LayoutComponent";
 import Footer from "../../components/Footer";
 import CopyRights from "../../components/CopyRights";
-import RelatedProfiles from "./RelatedProfiles";
 import ShowInterest from "./ShowInterest";
-import { showAlert } from "../../utils/alertService";
+import RelatedProfiles from "./RelatedProfiles";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { getTheProfieMoreDetails, getUserProfile, viewContactDetails, sendChatMessage, submitReport, isUserMadeTheInterest, saveTheProfileAsShortlisted, getShortListedProfileData, removeShortlistedProfile } from "../../api/axiosService/userAuthService";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { showAlert, confirmAction } from "../../utils/alertService";
+
+import { faChurch, faHeart, faBriefcase, faInfoCircle, faUsers, faAddressCard, faMusic, faVideo } from '@fortawesome/free-solid-svg-icons';
+import profImage from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
+
+// Helper Components
+const InfoRow = ({ label, value }) => {
+  let displayValue = value;
+
+  if (Array.isArray(value)) {
+    displayValue = value.length > 0 ? value.join(", ") : null;
+  } else if (typeof value === 'string' && value.trim() === '') {
+    displayValue = null;
+  }
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        padding: "10px 0",
+      }}
+    >
+      <span
+        className="font-source text-[16px]"
+        style={{
+          color: "#4b5563",
+          flex: "1 1 45%",
+          paddingRight: "10px"
+        }}
+      >
+        {label}
+      </span>
+      <span
+        className="font-source font-bold text-[16px]"
+        style={{
+          color: "#111827",
+          wordBreak: "break-word",
+          flex: "1 1 55%",
+        }}
+      >
+        {displayValue || "Not Specified"}
+      </span>
+    </div>
+  );
+};
+
+const ProfileSection = ({ title, icon, children }) => (
+  <div className="col-12 mb-4">
+    <div
+      style={{
+        padding: "30px",
+        background: "#ffffff",
+        borderRadius: "12px",
+        boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "15px", marginBottom: "25px" }}>
+        <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#58219f', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <FontAwesomeIcon icon={icon} style={{ color: "#fff", fontSize: "1.1rem" }} />
+        </div>
+        <div style={{ position: "relative", paddingBottom: "6px" }}>
+          <h4
+            className="font-source font-bold text-[24px]"
+            style={{ color: "#58219f", margin: 0 }}
+          >
+            {title}
+          </h4>
+          <span style={{ position: "absolute", bottom: 0, left: 0, width: "35px", height: "3px", background: "#58219f", borderRadius: "2px" }}></span>
+        </div>
+      </div>
+      <div className="profile-section-content">{children}</div>
+    </div>
+  </div>
+);
+
 
 
 const MoreDetails = () => {
   const { profileId } = useParams();
-  const [profileData, setProfileData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
-  const [socket, setSocket] = useState(null);
-  const [onlineUsers, setOnlineUsers] = useState([]);
-
-  const [userId, setUserId] = useState(() => localStorage.getItem("userId"));
-  const baseUrl = import.meta.env.VITE_BASE_ROUTE;
+  const chipStyle = {
+    background: "#f3f4f6",
+    padding: "6px 12px",
+    borderRadius: "20px",
+    fontSize: "16px",
+    fontFamily: "'Source Sans 3', sans-serif",
+    fontWeight: "500",
+    color: "#333",
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+  };
   const navigate = useNavigate();
+  const currentUserId = localStorage.getItem("userId");
+
+  const [userInfo, setUserInfo] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showInterestModalUser, setShowInterestModalUser] = useState(null);
   const [zoomImage, setZoomImage] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [loadingUser, setLoadingUser] = useState(true);
+  const [showContact, setShowContact] = useState(false);
+  const [showUpgradePopup, setShowUpgradePopup] = useState(false);
+  const [upgradePopupType, setUpgradePopupType] = useState('premium');
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportComments, setReportComments] = useState("");
+  const [isReporting, setIsReporting] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [interestStatus, setInterestStatus] = useState(null);
+  const [isShortlisted, setIsShortlisted] = useState(false);
+  const [isShortlisting, setIsShortlisting] = useState(false);
 
   useEffect(() => {
-    const fetchInterestStatus = async () => {
-      if (userId && profileId) {
+    setIsShortlisted(false);
+    const fetchShortlistStatus = async () => {
+      if (currentUserId && profileId) {
         try {
-          const response = await isUserMadeTheInterest(userId, profileId);
+          const response = await getShortListedProfileData(currentUserId);
+          if (response.data && response.data.success) {
+            const listed = response.data.data.some(p => p.profileId === profileId || p._id === profileId);
+            setIsShortlisted(listed);
+          }
+        } catch (error) {
+          console.error("Error fetching shortlist status", error);
+        }
+      }
+    };
+    fetchShortlistStatus();
+  }, [currentUserId, profileId]);
+
+  useEffect(() => {
+    setInterestStatus(null);
+    const fetchInterestStatus = async () => {
+      if (currentUserId && profileId) {
+        try {
+          const response = await isUserMadeTheInterest(currentUserId, profileId);
           if (response.data && response.data.success) {
             setInterestStatus(response.data.status);
           }
@@ -45,20 +155,20 @@ const MoreDetails = () => {
       }
     };
     fetchInterestStatus();
-  }, [userId, profileId]);
+  }, [currentUserId, profileId]);
 
-  const allImages = React.useMemo(() => {
-    if (!profileData) return [];
+  const allImages = useMemo(() => {
+    if (!userInfo) return [];
     const images = [];
-    if (profileData.profileImage) {
-      images.push(profileData.profileImage);
+    if (userInfo.profileImage) {
+      images.push(userInfo.profileImage);
     }
-    if (profileData.additionalImages && profileData.additionalImages.length > 0) {
-      images.push(...profileData.additionalImages);
+    if (userInfo.additionalImages && userInfo.additionalImages.length > 0) {
+      images.push(...userInfo.additionalImages);
     }
     const unique = [...new Set(images)];
-    return unique.length > 0 ? unique : ["images/profiles/profile-large.jpg"];
-  }, [profileData]);
+    return unique.length > 0 ? unique : [profImage];
+  }, [userInfo]);
 
   const nextImage = (e) => {
     if (e) {
@@ -82,738 +192,771 @@ const MoreDetails = () => {
     }
   };
 
+  const handleReportSubmit = async (e) => {
+    e.preventDefault();
+    if (!reportReason) {
+      toast.error("Please select a reason for reporting");
+      return;
+    }
 
+    setIsReporting(true);
+    try {
+      const reportData = {
+        reporterId: currentUserId,
+        reportedUserId: profileId,
+        reason: reportReason,
+        comments: reportComments,
+      };
+
+      const res = await submitReport(reportData);
+      if (res.status === 201 || res.data.success) {
+        toast.success("User reported and blocked successfully. They will appear in your Blocked section.");
+        setShowReportModal(false);
+        setReportReason("");
+        setReportComments("");
+
+        // Optionally redirect to blocked profiles page
+        setTimeout(() => {
+          navigate("/user/blocked-profiles-page");
+        }, 2000);
+      }
+    } catch (err) {
+      console.error("Error reporting user:", err);
+      toast.error("Failed to submit report. Please try again later.");
+    } finally {
+      setIsReporting(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+    };
+    window.addEventListener("contextmenu", handleContextMenu);
+    return () => {
+      window.removeEventListener("contextmenu", handleContextMenu);
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
       try {
-        setLoading(true);
-
-        const response = await getTheProfieMoreDetails(profileId, userId);
-
-        if (response.status === 200) {
-          setProfileData(response.data.data);
-          window.dispatchEvent(new Event("planUpdated"));
-        } else {
-          setError("Failed to fetch profile data");
+        const res = await getUserProfile(currentUserId);
+        if (res.status === 200) {
+          setCurrentUser(res.data.data);
         }
       } catch (err) {
-        const errorMsg = err.response?.data?.message;
-        const statusCode = err.response?.status;
-
-        if (statusCode === 403) {
-          showAlert({
-            title: "Access Restricted",
-            text: errorMsg || "Access restricted",
-            icon: "error",
-          });
-
-        } else {
-          setError(errorMsg || "Error fetching profile data");
-        }
+        console.error("Error fetching current user:", err);
       } finally {
-        setLoading(false);
+        setLoadingUser(false);
       }
     };
+    fetchCurrentUser();
+  }, [currentUserId]);
 
-    if (!profileId || !userId || userId === "undefined") return;
-    fetchData();
-  }, [profileId, userId]);
+  const isPaidUser = useMemo(() => {
+    if (!currentUser) return false;
+    if (!currentUser.isAnySubscriptionTaken) return false;
+    return currentUser.paymentDetails?.some(p => p.subscriptionStatus?.toLowerCase() === "active");
+  }, [currentUser]);
+
   useEffect(() => {
-    if (!userId || !baseUrl) return;
-    const newSocket = io(baseUrl, {
-      query: { userId },
-      transports: ["websocket", "polling"],
-    });
-
-    newSocket.on("connect", () => {
-      setSocket(newSocket);
-    });
-
-    newSocket.on("receive_message", (message) => {
-      setChatMessages((prev) => [
-        ...prev,
-        {
-          id: message.id,
-          senderId: message.senderId,
-          sender: message.senderId === userId ? "user" : "profile",
-          text: message.text,
-          message: message.text,
-          timestamp: new Date(message.timestamp).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        },
-      ]);
-    });
-
-    newSocket.on("users_online", (userIds) => {
-      setOnlineUsers(userIds);
-    });
-
-    newSocket.on("user_joined", (joinedUserId) => {
-      setOnlineUsers((prev) => [...prev, joinedUserId]);
-    });
-
-    newSocket.on("user_left", (leftUserId) => {
-      setOnlineUsers((prev) => prev.filter((id) => id !== leftUserId));
-    });
-
-    return () => {
-      newSocket.close();
+    const fetchProfile = async () => {
+      if (!profileId) return;
+      try {
+        const response = await getTheProfieMoreDetails(profileId, currentUserId);
+        if (response.status === 200) {
+          setUserInfo(response.data.data);
+          window.dispatchEvent(new Event("planUpdated"));
+        }
+      } catch (err) {
+        if (err.response && err.response.status === 403) {
+          const errMsg = err.response.data?.message || "Limit Reached";
+          showAlert({
+            title: "Limit Reached",
+            text: errMsg,
+            icon: "error",
+          });
+          setTimeout(() => navigate("/user/user-plan-selection"), 1500);
+        } else {
+          console.error("Error fetching profile details:", err);
+        }
+      }
     };
-  }, [userId, baseUrl]);
+    fetchProfile();
+  }, [profileId, currentUserId, navigate]);
 
-  // Calculate age from date of birth
-  const calculateAge = (dateOfBirth) => {
-    if (!dateOfBirth) return null;
+  const calculateAge = (dob) => {
+    if (!dob) return null;
+    const birthDate = new Date(dob);
     const today = new Date();
-    const birthDate = new Date(dateOfBirth);
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDate.getDate())
-    ) {
-      age--;
-    }
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--;
     return age;
   };
 
-  // Format date
-  const formatDate = (dateString) => {
-    if (!dateString) return null;
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+  const handleShowInterestClick = () => {
+    setShowInterestModalUser(userInfo);
   };
 
-  // Handle chat submission
-  const handleChatSubmit = async (e) => {
-    e.preventDefault();
-    if (!newMessage.trim() || !profileData?._id) return;
+  if (loadingUser) return null;
 
+  const handleContactClick = async () => {
+    if (!isPaidUser) {
+      setUpgradePopupType('premium');
+      setShowUpgradePopup(true);
+      return;
+    }
     try {
-      const messageData = {
-        id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        text: newMessage,
-        senderId: userId,
-        recipientId: profileData._id,
-        roomId: `chat_${[userId, profileData._id].sort().join("_")}`,
-        timestamp: new Date().toISOString(),
-      };
-
-      const tempMessage = {
-        id: messageData.id,
-        senderId: userId,
-        sender: "user",
-        text: newMessage,
-        message: newMessage,
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      };
-
-      setChatMessages((prev) => [...prev, tempMessage]);
-
-      if (socket) {
-        socket.emit("send_message", messageData);
+      const response = await viewContactDetails(profileId, currentUserId);
+      if (response?.data?.success) {
+        setShowContact(true);
+        window.dispatchEvent(new Event("planUpdated"));
       }
-
-      await sendChatMessage(userId, tempMessage, profileData._id);
-      setNewMessage("");
-    } catch (error) {
-      console.error("Error sending message:", error);
+    } catch (err) {
+      setUpgradePopupType('limit');
+      setShowUpgradePopup(true);
     }
   };
 
-  const handleStartChat = async () => {
-    try {
-      const response = await getUserProfile(userId);
-      const currentUser = response?.data?.data;
+  const handleShortlistClick = async () => {
+    if (isShortlisting) return;
 
-      const isPaidUser = currentUser && currentUser.isAnySubscriptionTaken && currentUser.paymentDetails?.some(p => p.subscriptionStatus?.toLowerCase() === "active");
-
-      if (isPaidUser) {
-        setIsChatOpen(true);
-        if (socket && profileData?._id) {
-          const roomId = `chat_${[userId, profileData._id].sort().join("_")}`;
-          socket.emit("join_chat_room", { roomId });
-        }
-      } else {
-        showAlert({
-          title: "Premium Feature",
-          text: "Please subscribe to a plan to start chatting.",
-          icon: "info",
-        });
-      }
-    } catch (error) {
-      showAlert({
-        title: "Error",
-        text: "Please subscribe to a plan to start chatting.",
-        icon: "error",
+    if (isShortlisted) {
+      const isConfirmed = await confirmAction({
+        title: 'Remove from Shortlist?',
+        text: 'Are you sure you want to remove this profile from your shortlist?',
+        confirmButtonText: 'Yes, Remove',
       });
+      if (!isConfirmed) return;
+
+      setIsShortlisting(true);
+      try {
+        const res = await removeShortlistedProfile(profileId, currentUserId);
+        if (res.status === 200 || res.data?.success) {
+          setIsShortlisted(false);
+          toast.success("Profile removed from shortlist!");
+        }
+      } catch (err) {
+        console.error("Error removing shortlisted profile:", err);
+        toast.error("Failed to remove profile from shortlist.");
+      } finally {
+        setIsShortlisting(false);
+      }
+    } else {
+      const isConfirmed = await confirmAction({
+        title: 'Shortlist Profile?',
+        text: 'Are you sure you want to add this profile to your shortlist?',
+        confirmButtonText: 'Yes, Shortlist',
+      });
+      if (!isConfirmed) return;
+
+      setIsShortlisting(true);
+      try {
+        const res = await saveTheProfileAsShortlisted(profileId, currentUserId);
+        if (res.status === 200 || res.data?.success) {
+          setIsShortlisted(true);
+          toast.success("Profile Shortlisted!");
+        }
+      } catch (err) {
+        console.error("Error shortlisting profile:", err);
+        toast.error("Failed to shortlist profile.");
+      } finally {
+        setIsShortlisting(false);
+      }
     }
-
   };
-
-  if (loading) {
-    return (
-      <>
-        <LayoutComponent />
-        <div className="loading-container">
-          <p>Loading profile...</p>
-        </div>
-        <Footer />
-        <CopyRights />
-      </>
-    );
-  }
-
-  if (error || !profileData) {
-    return (
-      <>
-        <LayoutComponent />
-        <div className="error-container">
-          <p>{error || "Profile not found"}</p>
-        </div>
-
-        <Footer />
-        <CopyRights />
-      </>
-    );
-  }
-
-  const calculatedAge = calculateAge(profileData.dateOfBirth);
 
   return (
-    <div className="min-h-screen">
-      <div className="fixed top-0 left-0 right-0 z-50">
+    <div className="profile-page">
+      {/* Header */}
+      <div className="fixed-header">
         <LayoutComponent />
       </div>
 
-      <div className="pt-16">
-        <div className="profi-pg-container">
-          {" "}
-          {/* Added container class */}
-          <div className="profi-pg profi-ban">
-            <div className="profile-image-sticky">
-              {" "}
-              {/* Sticky image container */}
-              <div className="profile">
-                <div className="pg-pro-big-im">
-                  <div className="s1" style={{ position: "relative" }}>
-                     <img
-                       src={allImages[currentImageIndex]}
-                       loading="lazy"
-                       className="pro"
-                       alt={profileData.userName || "Profile"}
-                       onClick={() => setZoomImage(allImages[currentImageIndex])}
-                       style={{ cursor: "pointer", objectFit: "contain", background: "#f3f4f6" }}
-                     />
+      <div className="profile-content">
+        <div className="profile-grid container-fluid">
+          {/* Left Column */}
+          <div className="profile-left">
+            <div className="profile-card">
+              <div className="profile-image-wrapper" style={{ position: "relative", width: "100%", height: "400px", overflow: "hidden", borderRadius: "8px", background: "#f3f4f6" }}>
+                <img
+                  src={allImages[currentImageIndex] || profImage}
+                  alt="Profile"
+                  className="profile-image"
+                  onClick={() => setZoomImage(allImages[currentImageIndex] || profImage)}
+                  style={{ width: "100%", height: "100%", cursor: "pointer", objectFit: "contain" }}
+                />
 
-                     {allImages.length > 1 && (
-                       <>
-                         <button
-                           onClick={prevImage}
-                           style={{
-                             position: "absolute",
-                             top: "50%",
-                             left: "10px",
-                             transform: "translateY(-50%)",
-                             background: "rgba(0, 0, 0, 0.5)",
-                             color: "white",
-                             border: "none",
-                             borderRadius: "50%",
-                             width: "35px",
-                             height: "35px",
-                             display: "flex",
-                             alignItems: "center",
-                             justifyContent: "center",
-                             cursor: "pointer",
-                             zIndex: 10,
-                             transition: "all 0.2s ease"
-                           }}
-                           onMouseEnter={(e) => e.target.style.background = "rgba(0, 0, 0, 0.8)"}
-                           onMouseLeave={(e) => e.target.style.background = "rgba(0, 0, 0, 0.5)"}
-                         >
-                           <i className="fa fa-chevron-left"></i>
-                         </button>
-                         <button
-                           onClick={nextImage}
-                           style={{
-                             position: "absolute",
-                             top: "50%",
-                             right: "10px",
-                             transform: "translateY(-50%)",
-                             background: "rgba(0, 0, 0, 0.5)",
-                             color: "white",
-                             border: "none",
-                             borderRadius: "50%",
-                             width: "35px",
-                             height: "35px",
-                             display: "flex",
-                             alignItems: "center",
-                             justifyContent: "center",
-                             cursor: "pointer",
-                             zIndex: 10,
-                             transition: "all 0.2s ease"
-                           }}
-                           onMouseEnter={(e) => e.target.style.background = "rgba(0, 0, 0, 0.8)"}
-                           onMouseLeave={(e) => e.target.style.background = "rgba(0, 0, 0, 0.5)"}
-                         >
-                           <i className="fa fa-chevron-right"></i>
-                         </button>
-                       </>
-                     )}
-                    
-                    {/* Watermark Overlay on the Right Side */}
-                    <div
+                {/* Watermark Overlay on the Right Side */}
+                <div
+                  style={{
+                    position: "absolute",
+                    right: "8px",
+                    top: 0,
+                    bottom: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    pointerEvents: "none",
+                    userSelect: "none",
+                    zIndex: 5,
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "rgba(255, 255, 255, 0.45)",
+                      fontFamily: "'Outfit', 'Inter', sans-serif",
+                      fontSize: "16px",
+                      fontWeight: "600",
+                      letterSpacing: "3px",
+                      whiteSpace: "nowrap",
+                      textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
+                      writingMode: "vertical-rl",
+                      transform: "rotate(180deg)",
+                    }}
+                  >
+                    AgapeVows.com
+                  </span>
+                </div>
+
+                {allImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevImage}
                       style={{
                         position: "absolute",
-                        right: "8px",
-                        top: 0,
-                        bottom: 0,
+                        top: "50%",
+                        left: "10px",
+                        transform: "translateY(-50%)",
+                        background: "rgba(0, 0, 0, 0.5)",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: "35px",
+                        height: "35px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        pointerEvents: "none",
-                        userSelect: "none",
-                        zIndex: 5,
+                        cursor: "pointer",
+                        zIndex: 10,
+                        transition: "all 0.2s ease"
                       }}
+                      onMouseEnter={(e) => e.target.style.background = "rgba(0, 0, 0, 0.8)"}
+                      onMouseLeave={(e) => e.target.style.background = "rgba(0, 0, 0, 0.5)"}
                     >
-                      <span
-                        style={{
-                          color: "rgba(255, 255, 255, 0.45)",
-                          fontFamily: "'Outfit', 'Inter', sans-serif",
-                          fontSize: "16px",
-                          fontWeight: "600",
-                          letterSpacing: "3px",
-                          whiteSpace: "nowrap",
-                          textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
-                          writingMode: "vertical-rl",
-                          transform: "rotate(180deg)",
-                        }}
-                      >
-                        AgapeVows.com
-                      </span>
+                      <i className="fa fa-chevron-left"></i>
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      style={{
+                        position: "absolute",
+                        top: "50%",
+                        right: "10px",
+                        transform: "translateY(-50%)",
+                        background: "rgba(0, 0, 0, 0.5)",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: "35px",
+                        height: "35px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        zIndex: 10,
+                        transition: "all 0.2s ease"
+                      }}
+                      onMouseEnter={(e) => e.target.style.background = "rgba(0, 0, 0, 0.8)"}
+                      onMouseLeave={(e) => e.target.style.background = "rgba(0, 0, 0, 0.5)"}
+                    >
+                      <i className="fa fa-chevron-right"></i>
+                    </button>
+                  </>
+                )}
+
+                <div className="zoom-btn" title="Zoom" onClick={() => setZoomImage(allImages[currentImageIndex] || profImage)}>
+                  <i className="fa fa-search-plus"></i>
+                </div>
+
+                {/* Overlays */}
+                <div style={{
+                  position: 'absolute',
+                  top: '12px',
+                  left: '12px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                  zIndex: 10
+                }}>
+                  {userInfo?.isAnySubscriptionTaken && (
+                    <div className="badge bg-warning text-dark border border-white shadow-sm" style={{ padding: '6px 12px', fontSize: '11px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <i className="fa fa-star"></i> PREMIUM
+                    </div>
+                  )}
+                  {userInfo?.idVerificationStatus === 'Verified' && (
+                    <div className="badge bg-success border border-white shadow-sm" style={{ padding: '6px 12px', fontSize: '11px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <i className="fa fa-check-circle"></i> VERIFIED
+                    </div>
+                  )}
+
+                </div>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px", width: "100%" }}>
+                <button
+                  className="interest-btn font-cormorant font-bold text-[20px]"
+                  style={{
+                    width: "100%",
+                    height: "45px",
+                    marginBottom: "0",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "8px",
+                    padding: "0",
+                    background: interestStatus ? "#10b981" : "#58219f",
+                    color: "#fff",
+                    border: "none"
+                  }}
+                  onClick={(e) => {
+                    if (!isPaidUser) {
+                      setUpgradePopupType('premium');
+                      setShowUpgradePopup(true);
+                      return;
+                    }
+                    handleShowInterestClick();
+                  }}
+                  {...(isPaidUser && {
+                    "data-bs-toggle": "modal",
+                    "data-bs-target": "#sendInter",
+                  })}
+                >
+                  <i className="fa fa-envelope-o me-2"></i>
+                  {interestStatus ? "Already Interest Sent" : "Send Interest"}
+                </button>
+
+                <button
+                  onClick={handleShortlistClick}
+                  className="shortlist-btn font-cormorant font-bold text-[20px]"
+                  style={{
+                    width: "100%",
+                    height: "45px",
+                    marginBottom: "0",
+                    background: isShortlisted ? "#10b981" : "#58219f",
+                    color: "#ffffff",
+                    border: "none",
+                    padding: "0",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px"
+                  }}
+                  disabled={isShortlisting}
+                >
+                  <i className={`fa ${isShortlisted ? 'fa-heart' : 'fa-heart-o'}`}></i>
+                  {isShortlisting ? "Please wait..." : (isShortlisted ? "Profile Shortlisted" : "Shortlist")}
+                </button>
+
+                {/* View Contact Information Button moved immediately below profile picture */}
+                {!showContact && (
+                  <button
+                    onClick={handleContactClick}
+                    className="view-contact-btn font-cormorant font-bold text-[20px]"
+                    style={{
+                      width: "100%",
+                      height: "45px",
+                      marginBottom: "0",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: "8px",
+                      padding: "0",
+                      background: "#58219f",
+                      color: "#fff",
+                      border: "none"
+                    }}
+                  >
+                    <i className="fa fa-user-circle-o me-2"></i>
+                    View Contact Information
+                  </button>
+                )}
+                {/* Contact Details in LEFT COLUMN */}
+                {showContact && (
+                  <div style={{ width: "100%", marginTop: "4px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem", marginBottom: "5px" }}>
+                      👤 User Name: {userInfo?.userName || "Not specified"}
+                    </div>
+
+                    <div style={{ height: "2px", background: "#cbd5e1", margin: "2px 0", borderRadius: "2px", width: "100%" }}></div>
+
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                      👤 Contact Person: {userInfo?.contactPersonName || "Not specified"}
+                    </div>
+
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                      🤝 Relationship: {userInfo?.relationship || "Not specified"}
+                    </div>
+
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                      📞 Phone Number: {userInfo?.contactPhone || "Not specified"}
+                    </div>
+
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                      📧 Email: {userInfo?.contactEmail || "Not specified"}
                     </div>
                   </div>
-                  <div className="s3">
+                )}
+              </div>
 
-                    <span
-                      className="cta cta-sendint"
-                      style={{ backgroundColor: interestStatus ? "#10b981" : "", borderColor: interestStatus ? "#10b981" : "", color: interestStatus ? "#fff" : "" }}
-                      data-toggle="modal"
-                      data-target="#sendInter"
-                    >
-                      {interestStatus ? "Already Interest Sent" : "Send interest"}
+              <button
+                onClick={() => setShowReportModal(true)}
+                className="report-user-btn font-cormorant font-bold text-[20px]"
+                style={{
+                  width: "100%",
+                  height: "45px",
+                  marginTop: "4px",
+                  background: "#fee2e2",
+                  color: "#dc2626",
+                  border: "1px solid #fecaca",
+                  padding: "0",
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#fecaca";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "#fee2e2";
+                }}
+              >
+                <i className="fa fa-flag"></i> Report User
+              </button>
+            </div>
+          </div>
+
+          {/* Right Column */}
+          <div className="profile-right">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+              <div
+                className="font-cormorant"
+                style={{
+                  background: "#58219f",
+                  color: "#fff",
+                  padding: "6px 20px",
+                  borderRadius: "25px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  fontSize: "24px",
+                  fontWeight: "500",
+                  lineHeight: "1",
+                  fontVariantNumeric: "lining-nums",
+                }}
+              >
+                AV ID: {userInfo?.agwid || "N/A"}
+                <div className="d-flex gap-2">
+                  {userInfo?.isAnySubscriptionTaken && (
+                    <span className="badge rounded-pill text-dark font-source" style={{ backgroundColor: "#facc15", fontSize: '14px', fontWeight: '500', padding: '4px 14px', display: 'flex', alignItems: 'center', gap: '6px', height: 'fit-content' }}>
+                      <i className="fa fa-star"></i>Premium
                     </span>
-                  </div>
+                  )}
+                  {userInfo?.idVerificationStatus === 'Verified' && (
+                    <span className="badge rounded-pill bg-success text-white font-source" style={{ fontSize: '14px', fontWeight: '500', padding: '4px 14px', display: 'flex', alignItems: 'center', gap: '6px', height: 'fit-content' }}>
+                      <i className="fa fa-check-circle"></i>Verified
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
 
-            <div className="profile-details-scrollable">
-              {" "}
-              {/* Scrollable details container */}
-              <div className="profi-pg profi-bio">
-                <div className="lhs">
-                  <div className="pro-pg-intro">
-                    <h1>{profileData.userName || "Name not available"}</h1>
-                    <div className="pro-info-status">
-                      <span className="stat-1">
-                        <b>100</b> viewers
-                      </span>
-                      <span className="stat-2">
-                        <b>Available</b> online
-                      </span>
-                    </div>
-                    <ul>
-                      <li>
-                        <div>
-                          <img
-                            src="images/icon/pro-city.png"
-                            loading="lazy"
-                            alt=""
-                          />
-                          <span>
-                            City:{" "}
-                            <strong>
-                              {profileData.city || "Not specified"}
-                            </strong>
-                          </span>
-                        </div>
-                      </li>
-                      <li>
-                        <div>
-                          <img
-                            src="images/icon/pro-age.png"
-                            loading="lazy"
-                            alt=""
-                          />
-                          <span>
-                            Age:{" "}
-                            <strong>
-                              {calculatedAge ||
-                                profileData.age ||
-                                "Not specified"}
-                            </strong>
-                          </span>
-                        </div>
-                      </li>
-                      <li>
-                        <div>
-                          <img
-                            src="images/icon/pro-city.png"
-                            loading="lazy"
-                            alt=""
-                          />
-                          <span>
-                            Height:{" "}
-                            <strong>
-                              {profileData.height
-                                ? `${profileData.height}cm`
-                                : "Not specified"}
-                            </strong>
-                          </span>
-                        </div>
-                      </li>
-                      <li>
-                        <div>
-                          <img
-                            src="images/icon/pro-city.png"
-                            loading="lazy"
-                            alt=""
-                          />
-                          <span>
-                            Job:{" "}
-                            <strong>
-                              {profileData.jobType || "Not specified"}
-                            </strong>
-                          </span>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                  {/* PROFILE ABOUT */}
-                  <div className="pr-bio-c pr-bio-abo">
-                    <h3>About</h3>
-                    <p>
-                      {profileData.aboutMe ||
-                        "No information provided about this profile."}
-                    </p>
-                  </div>
+            {/* Profile Snippet at top */}
+            {userInfo && (
+              <div
+                style={{
+                  background: "#fff",
+                  padding: "15px 20px",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 14px rgba(0,0,0,0.05)",
+                  marginBottom: "25px",
+                  borderLeft: "4px solid #58219f",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "10px",
+                  }}
+                >
+                  {calculateAge(userInfo?.dateOfBirth) && (
+                    <span style={chipStyle}>
+                      🎂 {calculateAge(userInfo.dateOfBirth)} yrs
+                    </span>
+                  )}
 
-                  <div className="pr-bio-c pr-bio-gal" id="gallery">
-                    <h3>Photo gallery</h3>
-                    <div id="image-gallery">
-                      {profileData.additionalImages &&
-                        profileData.additionalImages.length > 0 ? (
-                        profileData.additionalImages.map((image, index) => (
-                          <div key={index} className="pro-gal-imag">
-                            <div className="img-wrapper">
-                              <a href="#!">
-                                <img
-                                  src={image}
-                                  className="img-responsive"
-                                  alt={`Gallery image ${index + 1}`}
-                                />
-                              </a>
-                              <div className="img-overlay">
-                                <i
-                                  className="fa fa-arrows-alt"
-                                  aria-hidden="true"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <p>No additional images available</p>
-                      )}
-                    </div>
-                  </div>
-                  {/* END PROFILE ABOUT */}
-                  {/* PROFILE ABOUT */}
-                  <div className="pr-bio-c pr-bio-conta">
-                    <h3>Contact info</h3>
-                    <ul>
-                      <li>
-                        <span>
-                          <i className="fa fa-mobile" aria-hidden="true" />
-                          <b>Phone:</b>
-                          {profileData.userMobile || "Not provided"}
-                        </span>
-                      </li>
-                      <li>
-                        <span>
-                          <i className="fa fa-envelope-o" aria-hidden="true" />
-                          <b>Email:</b>
-                          {profileData.userEmail || "Not provided"}
-                        </span>
-                      </li>
-                      <li>
-                        <span>
-                          <i
-                            className="fa fa fa-map-marker"
-                            aria-hidden="true"
-                          />
-                          <b>Address: </b>
-                          {profileData.address || "Not provided"}
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
-                  {/* END PROFILE ABOUT */}
-                  {/* PROFILE ABOUT */}
-                  <div className="pr-bio-c pr-bio-info">
-                    <h3>Personal information</h3>
-                    <ul>
-                      <li>
-                        <b>Name:</b> {profileData.userName || "Not provided"}
-                      </li>
-                      <li>
-                        <b>Father's name:</b>{" "}
-                        {profileData.fathersName || "Not provided"}
-                      </li>
-                      <li>
-                        <b>Mother's name:</b>{" "}
-                        {profileData.mothersName || "Not provided"}
-                      </li>
-                      <li>
-                        <b>Father's Occupation:</b>{" "}
-                        {profileData.fathersOccupation || "Not provided"}
-                      </li>
-                      <li>
-                        <b>Mother's Occupation:</b>{" "}
-                        {profileData.mothersOccupation || "Not provided"}
-                      </li>
-                      <li>
-                        <b>Father's Profession:</b>{" "}
-                        {profileData.fathersProfession || "Not provided"}
-                      </li>
-                      <li>
-                        <b>Mother's Profession:</b>{" "}
-                        {profileData.mothersProfession || "Not provided"}
-                      </li>
-                      <li>
-                        <b>Age:</b>{" "}
-                        {calculatedAge || profileData.age || "Not provided"}
-                      </li>
-                      <li>
-                        <b>Date of birth:</b>{" "}
-                        {formatDate(profileData.dateOfBirth) || "Not provided"}
-                      </li>
-                      <li>
-                        <b>Height:</b>{" "}
-                        {profileData.height
-                          ? `${profileData.height}cm`
-                          : "Not provided"}
-                      </li>
-                      <li>
-                        <b>Weight:</b>{" "}
-                        {profileData.weight
-                          ? `${profileData.weight}kg`
-                          : "Not provided"}
-                      </li>
-                      <li>
-                        <b>Degree:</b> {profileData.degree || "Not provided"}
-                      </li>
-                      <li>
-                        <b>Gender:</b> {profileData.gender || "Not provided"}
-                      </li>
-                      <li>
-                        <b>College:</b> {profileData.college || "Not provided"}
-                      </li>
-                      <li>
-                        <b>School:</b> {profileData.school || "Not provided"}
-                      </li>
-                      <li>
-                        <b>Job Type:</b> {profileData.jobType || "Not provided"}
-                      </li>
-                      <li>
-                        <b>Company:</b>{" "}
-                        {profileData.companyName || "Not provided"}
-                      </li>
-                      <li>
-                        <b>Job Experience:</b>{" "}
-                        {profileData.jobExperience
-                          ? `${profileData.jobExperience} years`
-                          : "Not provided"}
-                      </li>
-                      <li>
-                        <b>Salary:</b>{" "}
-                        {profileData.salary
-                          ? `₹${profileData.salary}`
-                          : "Not provided"}
-                      </li>
-                    </ul>
-                  </div>
-                  {/* END PROFILE ABOUT */}
-                  {/* PROFILE ABOUT */}
-                  <div className="pr-bio-c pr-bio-hob">
-                    <h3>Hobbies</h3>
-                    <ul>
-                      {profileData.hobbies && profileData.hobbies.length > 0 ? (
-                        profileData.hobbies.map((hobby, index) => (
-                          <li key={index}>
-                            <span>{hobby}</span>
-                          </li>
-                        ))
-                      ) : (
-                        <li>
-                          <span>No hobbies listed</span>
-                        </li>
-                      )}
-                    </ul>
-                  </div>
-                  {/* END PROFILE ABOUT */}
-                  {/* PROFILE ABOUT */}
-                  <div className="pr-bio-c menu-pop-soci pr-bio-soc">
-                    <h3>Social media</h3>
-                    <ul>
-                      {profileData.facebook && (
-                        <li>
-                          <a
-                            href={profileData.facebook}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <i className="fa fa-facebook" aria-hidden="true" />
-                          </a>
-                        </li>
-                      )}
-                      {profileData.x && (
-                        <li>
-                          <a
-                            href={profileData.x}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <i className="fa fa-twitter" aria-hidden="true" />
-                          </a>
-                        </li>
-                      )}
-                      {profileData.whatsapp && (
-                        <li>
-                          <a
-                            href={`https://wa.me/${profileData.whatsapp}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <i className="fa fa-whatsapp" aria-hidden="true" />
-                          </a>
-                        </li>
-                      )}
-                      {profileData.linkedin && (
-                        <li>
-                          <a
-                            href={profileData.linkedin}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <i className="fa fa-linkedin" aria-hidden="true" />
-                          </a>
-                        </li>
-                      )}
-                      {profileData.youtube && (
-                        <li>
-                          <a
-                            href={profileData.youtube}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <i
-                              className="fa fa-youtube-play"
-                              aria-hidden="true"
-                            />
-                          </a>
-                        </li>
-                      )}
-                      {profileData.instagram && (
-                        <li>
-                          <a
-                            href={profileData.instagram}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <i className="fa fa-instagram" aria-hidden="true" />
-                          </a>
-                        </li>
-                      )}
-                    </ul>
-                    {!profileData.facebook &&
-                      !profileData.x &&
-                      !profileData.whatsapp &&
-                      !profileData.linkedin &&
-                      !profileData.youtube &&
-                      !profileData.instagram && (
-                        <p>No social media links provided</p>
-                      )}
-                  </div>
-                  {/* END PROFILE ABOUT */}
-                </div>
-                {/* PROFILE lHS */}
-                <div className="rhs">
-                  {/* HELP BOX */}
-                  <div className="prof-rhs-help">
-                    <div className="inn">
-                      <h3>Tell us your Needs</h3>
-                      <p>
-                        Tell us what kind of service or experts you are looking.
-                      </p>
-                      <a href="sign-up.html">Register for free</a>
-                    </div>
-                  </div>
-                  <RelatedProfiles />
+                  {userInfo?.height && (
+                    <span style={chipStyle}>
+                      📏 {userInfo.height}
+                    </span>
+                  )}
+
+                  {userInfo?.motherTongue && (
+                    <span style={chipStyle}>
+                      🗣 {userInfo.motherTongue}
+                    </span>
+                  )}
+
+                  {userInfo?.occupation && (
+                    <span style={chipStyle}>
+                      💼 {userInfo.occupation}
+                    </span>
+                  )}
+
+                  {userInfo?.annualIncome && (
+                    <span style={chipStyle}>
+                      💰 {userInfo.annualIncome}
+                    </span>
+                  )}
+
+                  {userInfo?.caste && (
+                    <span style={chipStyle}>
+                      🧬 {userInfo.caste}
+                    </span>
+                  )}
+
+                  {userInfo?.fathersNative && (
+                    <span style={chipStyle}>
+                      📍 {userInfo.fathersNative}
+                    </span>
+                  )}
+
+                  {userInfo?.maritalStatus && (
+                    <span style={chipStyle}>
+                      💍 {userInfo.maritalStatus}
+                    </span>
+                  )}
+
+                  {userInfo?.education && (
+                    <span style={chipStyle}>
+                      🎓 {userInfo.education}
+                    </span>
+                  )}
+
+                  {userInfo?.religion && (
+                    <span style={chipStyle}>
+                      ⛪ {userInfo.religion}
+                    </span>
+                  )}
                 </div>
               </div>
-            </div>
+            )}
+
+            {userInfo?.aboutMe && (
+              <div className="col-12 mb-4">
+                <div
+                  style={{
+                    padding: "30px",
+                    background: "#ffffff",
+                    borderRadius: "12px",
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+                    borderLeft: "6px solid #58219f"
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "15px", marginBottom: "20px" }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#58219f', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <i className="fa fa-user" style={{ color: "#fff", fontSize: "1.1rem" }}></i>
+                    </div>
+                    <h4
+                      className="font-source font-bold text-[24px]"
+                      style={{ color: "#58219f", margin: 0 }}
+                    >
+                      About Me
+                    </h4>
+                  </div>
+                  <p
+                    className="font-source font-normal text-[16px]"
+                    style={{
+                      color: "#111827",
+                      lineHeight: "1.6",
+                      whiteSpace: "pre-line",
+                      margin: 0,
+                    }}
+                  >
+                    {userInfo.aboutMe}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Profile Sections */}
+            {[
+              {
+                title: "Basic Details",
+                icon: faAddressCard,
+                data: [
+                  { label: "Profile Created By", value: userInfo?.profileCreatedFor },
+                  { label: "Age", value: userInfo?.dateOfBirth ? `${calculateAge(userInfo.dateOfBirth)} years` : null },
+                  { label: "Body Type", value: userInfo?.bodyType },
+                  { label: "Physical Status", value: userInfo?.physicalStatus },
+                  { label: "Complexion", value: userInfo?.complexion },
+                  { label: "Height", value: userInfo?.height },
+                  { label: "Weight", value: userInfo?.weight },
+                  { label: "Marital Status", value: userInfo?.maritalStatus },
+                  { label: "Eating Habits", value: userInfo?.eatingHabits },
+                  { label: "Drinking Habits", value: userInfo?.drinkingHabits },
+                  { label: "Smoking Habits", value: userInfo?.smokingHabits },
+                  { label: "Mother Tongue", value: userInfo?.motherTongue },
+                  { label: "Caste", value: userInfo?.caste },
+                ],
+              },
+              {
+                title: "Family Details",
+                icon: faUsers,
+                data: [
+                  { label: "Father's Name", value: userInfo?.fathersName },
+                  { label: "Mother's Name", value: userInfo?.mothersName },
+                  { label: "Father's Occupation", value: userInfo?.fathersOccupation },
+                  { label: "Mother's Occupation", value: userInfo?.mothersOccupation },
+                  { label: "Father's Profession", value: userInfo?.fathersProfession },
+                  { label: "Mother's Profession", value: userInfo?.mothersProfession },
+                  { label: "Father's Native ", value: userInfo?.fathersNative },
+                  { label: "Mother's Native ", value: userInfo?.mothersNative },
+                  { label: "Family Value", value: userInfo?.familyValue },
+                  { label: "Family Type", value: userInfo?.familyType },
+                  { label: "No. of Brothers", value: userInfo?.numberOfBrothers },
+                  { label: "No. of Sisters", value: userInfo?.numberOfSisters },
+                  { label: "Residence Type", value: userInfo?.residenceType },
+                  { label: "Family Status", value: userInfo?.familyStatus },
+                ],
+              },
+              {
+                title: "Religious Information",
+                icon: faChurch,
+                data: [
+                  { label: "Religion", value: userInfo?.religion },
+                  { label: "Denomination", value: userInfo?.denomination },
+                  { label: "Church", value: userInfo?.church },
+                  { label: "Church Activity", value: userInfo?.churchActivity },
+                  { label: "Pastor's Name", value: userInfo?.pastorsName },
+                  { label: "Spirituality", value: userInfo?.spirituality },
+                  { label: "Religious Detail", value: userInfo?.religiousDetail },
+                ],
+              },
+              {
+                title: "Professional Information",
+                icon: faBriefcase,
+                data: [
+                  { label: "Education", value: userInfo?.education },
+                  { label: "Additional Education", value: userInfo?.additionalEducation },
+                  { label: "College/Institution", value: userInfo?.college },
+                  { label: "Education in Detail", value: userInfo?.educationDetail },
+                  { label: "Employment Type", value: userInfo?.employmentType },
+                  { label: "Occupation", value: userInfo?.occupation },
+                  { label: "Position", value: userInfo?.position },
+                  { label: "Company Name", value: userInfo?.companyName },
+                  { label: "Annual Income", value: userInfo?.annualIncome },
+                ],
+              },
+
+              {
+                title: "Lifestyle & Hobbies",
+                icon: faMusic,
+                data: [
+                  { label: "Hobbies", value: Array.isArray(userInfo?.hobbies) ? userInfo.hobbies.join(", ") : userInfo?.hobbies },
+                  { label: "Interests", value: userInfo?.interests },
+                  { label: "Music", value: userInfo?.music },
+                  { label: "Favourite Reads", value: userInfo?.favouriteReads },
+                  { label: "Favourite Cuisines", value: userInfo?.favouriteCuisines },
+                  { label: "Sports/Activities", value: userInfo?.sportsActivities },
+                  { label: "Dress Styles", value: userInfo?.dressStyles },
+                ],
+              },
+              {
+                title: "Partner Preferences",
+                icon: faHeart,
+                data: [
+                  { label: "Age Range", value: userInfo?.partnerAgeFrom && userInfo?.partnerAgeTo ? `${userInfo.partnerAgeFrom} - ${userInfo.partnerAgeTo} Years` : null },
+                  { label: "Height", value: userInfo?.partnerHeight ? `${userInfo.partnerHeight} cm` : null },
+                  { label: "Marital Status", value: userInfo?.partnerMaritalStatus },
+                  { label: "Mother Tongue", value: userInfo?.partnerMotherTongue },
+                  { label: "Caste", value: userInfo?.partnerCaste },
+                  { label: "Physical Status", value: userInfo?.partnerPhysicalStatus },
+                  { label: "Eating Habits", value: userInfo?.partnerEatingHabits },
+                  { label: "Drinking Habits", value: userInfo?.partnerDrinkingHabits },
+                  { label: "Smoking Habits", value: userInfo?.partnerSmokingHabits },
+                  { label: "Denomination", value: userInfo?.partnerDenomination },
+                  { label: "Spirituality", value: userInfo?.partnerSpirituality },
+                  { label: "Education", value: userInfo?.partnerEducation },
+                  { label: "Employment Type", value: userInfo?.partnerEmploymentType },
+                  { label: "Occupation", value: userInfo?.partnerOccupation },
+                  { label: "Annual Income", value: userInfo?.partnerAnnualIncomeFrom && userInfo?.partnerAnnualIncomeTo ? `${userInfo.partnerAnnualIncomeFrom} to ${userInfo.partnerAnnualIncomeTo}` : userInfo?.partnerAnnualIncomeFrom || userInfo?.partnerAnnualIncomeTo },
+                  { label: "Country", value: userInfo?.partnerCountry },
+                  { label: "State", value: userInfo?.partnerState },
+                  { label: "District", value: userInfo?.partnerDistrict },
+                ],
+              },
+            ].map((section, idx) => {
+              const half = Math.ceil(section.data.length / 2);
+              return (
+                <React.Fragment key={idx}>
+                  <ProfileSection title={section.title} icon={section.icon}>
+                    <div className="profile-section-grid">
+                      <div>
+                        {section.data.slice(0, half).map((item, i) => (
+                          <InfoRow key={i} {...item} />
+                        ))}
+                      </div>
+
+                      <div>
+                        {section.data.slice(half).map((item, i) => (
+                          <InfoRow key={i} {...item} />
+                        ))}
+                      </div>
+                    </div>
+                  </ProfileSection>
+                </React.Fragment>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      <ShowInterest selectedUser={profileData} userId={userId} onSuccess={() => setInterestStatus("pending")} />
+      {/* Show Interest Modal */}
+      {showInterestModalUser && (
+        <ShowInterest
+          selectedUser={showInterestModalUser}
+          userId={currentUserId}
+          onSuccess={() => {
+            setInterestStatus("pending");
+            window.dispatchEvent(new Event("planUpdated"));
+          }}
+        />
+      )}
 
       {/* Zoom Image Modal */}
       {zoomImage && (
-        <div
-          onClick={() => { setZoomImage(null); setZoomLevel(1); }}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.9)",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 10000,
-            cursor: "zoom-out"
-          }}
-        >
-          <div
-            style={{ position: 'relative' }}
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="zoom-overlay" onClick={() => { setZoomImage(null); setZoomLevel(1); }} style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="zoom-image-wrapper" style={{ position: 'relative', width: '80vw', height: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <img
-              src={allImages[currentImageIndex]}
+              src={allImages[currentImageIndex] || profImage}
               alt="Zoomed"
               style={{
                 transform: `scale(${zoomLevel})`,
-                maxWidth: "90vw",
-                maxHeight: "80vh",
+                maxWidth: "100%",
+                maxHeight: "100%",
                 objectFit: "contain",
                 cursor: allImages.length > 1 ? "pointer" : "default",
-                transition: "transform 0.2s ease",
-                borderRadius: "12px"
+                transition: "transform 0.2s ease"
               }}
               onClick={(e) => {
                 e.stopPropagation();
@@ -822,7 +965,7 @@ const MoreDetails = () => {
                 }
               }}
             />
-            
+
             {allImages.length > 1 && (
               <>
                 <button
@@ -871,73 +1014,275 @@ const MoreDetails = () => {
                 </button>
               </>
             )}
-            
-            <div
-              style={{
-                position: "absolute",
-                bottom: "-60px",
-                display: "flex",
-                gap: "15px",
-                justifyContent: "center",
-                width: "100%"
-              }}
-            >
-              <button
-                onClick={() => setZoomLevel((z) => Math.max(0.5, z - 0.2))}
-                style={{
-                  padding: "10px 15px",
-                  fontSize: "1.2rem",
-                  borderRadius: "8px",
-                  border: "none",
-                  backgroundColor: "#7c3aed",
-                  color: "#fff",
-                  cursor: "pointer",
-                  fontWeight: "600"
-                }}
-              >
-                -
-              </button>
-              <button
-                onClick={() => setZoomLevel(1)}
-                style={{
-                  padding: "10px 15px",
-                  fontSize: "1.2rem",
-                  borderRadius: "8px",
-                  border: "none",
-                  backgroundColor: "#7c3aed",
-                  color: "#fff",
-                  cursor: "pointer",
-                  fontWeight: "600"
-                }}
-              >
-                Reset
-              </button>
-              <button
-                onClick={() => setZoomLevel((z) => Math.min(3, z + 0.2))}
-                style={{
-                  padding: "10px 15px",
-                  fontSize: "1.2rem",
-                  borderRadius: "8px",
-                  border: "none",
-                  backgroundColor: "#7c3aed",
-                  color: "#fff",
-                  cursor: "pointer",
-                  fontWeight: "600"
-                }}
-              >
-                +
-              </button>
+
+            <div className="zoom-controls" onClick={(e) => e.stopPropagation()}>
+              <button onClick={() => setZoomLevel((z) => Math.max(0.5, z - 0.2))}>-</button>
+              <button onClick={() => setZoomLevel(1)}>Reset</button>
+              <button onClick={() => setZoomLevel((z) => Math.min(3, z + 0.2))}>+</button>
             </div>
           </div>
         </div>
       )}
 
+      {/* Upgrade Popup */}
+      {showUpgradePopup && (
+        <div className="upgrade-popup">
+          <div className="upgrade-content">
+            <div className="upgrade-icon">{upgradePopupType === 'limit' ? '⚠️' : '🔒'}</div>
+            <h3>{upgradePopupType === 'limit' ? 'Limit Reached' : 'Premium Feature'}</h3>
+            <p>
+              {upgradePopupType === 'limit'
+                ? 'You have reached your limit. Please upgrade your plan to continue.'
+                : 'Upgrade your plan to unlock premium features and connect directly with your matches.'}
+            </p>
+            <div className="upgrade-buttons">
+              <button onClick={() => navigate("/user/user-plan-selection")} className="upgrade-btn">Upgrade Now</button>
+              <button onClick={() => setShowUpgradePopup(false)} className="cancel-btn">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="upgrade-popup">
+          <div className="upgrade-content" style={{ maxWidth: "450px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+              <h3 style={{ margin: 0, color: "#dc2626" }}>Report User</h3>
+              <button
+                onClick={() => setShowReportModal(false)}
+                style={{ background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer", color: "#666" }}
+              >
+                &times;
+              </button>
+            </div>
 
+            <form onSubmit={handleReportSubmit} style={{ textAlign: "left" }}>
+              <div style={{ marginBottom: "20px" }}>
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", color: "#374151" }}>
+                  Reason for Reporting
+                </label>
+                <select
+                  value={reportReason}
+                  onChange={(e) => setReportReason(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "1px solid #d1d5db",
+                    fontSize: "0.95rem"
+                  }}
+                  required
+                >
+                  <option value="">Select a reason</option>
+                  <option value="Inappropriate profile picture">Inappropriate profile picture</option>
+                  <option value="Fake profile">Fake profile</option>
+                  <option value="Misleading information">Misleading information</option>
+                  <option value="Abusive behavior">Abusive behavior</option>
+                  <option value="Spam/Promotional content">Spam/Promotional content</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: "20px" }}>
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", color: "#374151" }}>
+                  Additional Comments (Optional)
+                </label>
+                <textarea
+                  value={reportComments}
+                  onChange={(e) => setReportComments(e.target.value)}
+                  placeholder="Provide more details about why you are reporting this user..."
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "1px solid #d1d5db",
+                    fontSize: "0.95rem",
+                    minHeight: "100px",
+                    resize: "vertical"
+                  }}
+                />
+              </div>
+
+              <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "20px" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowReportModal(false)}
+                  style={{
+                    padding: "10px 20px",
+                    borderRadius: "8px",
+                    border: "1px solid #d1d5db",
+                    background: "#fff",
+                    color: "#374151",
+                    fontWeight: "600",
+                    cursor: "pointer"
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isReporting}
+                  style={{
+                    padding: "10px 20px",
+                    borderRadius: "8px",
+                    border: "none",
+                    background: "#dc2626",
+                    color: "#fff",
+                    fontWeight: "600",
+                    cursor: isReporting ? "not-allowed" : "pointer",
+                    opacity: isReporting ? 0.7 : 1
+                  }}
+                >
+                  {isReporting ? "Submitting..." : "Submit Report"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      <RelatedProfiles />
       <Footer />
-      <CopyRights />
+      {/* <CopyRights /> */}
+      <ToastContainer />
+
+
+
+      {/* Styles */}
+      <style>{`
+        .profile-page { min-height: 100vh; background: #f9fafb; font-family: 'Inter', sans-serif; }
+        .fixed-header { top: 0; left: 0; right: 0; z-index: 50; position: fixed; }
+        .profile-content { padding-top: 200px; padding-bottom: 100px; }
+        .profile-grid { display: flex; gap: 30px; }
+        .profile-left {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  height: auto; /* let it shrink to fit content */
+}
+        .profile-right { flex: 2.5; }
+        .profile-card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); width: 100%; max-width: 320px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .profile-image-wrapper { position: relative; width: 100%; }
+        .profile-image { width: 100%; border-radius: 12px; object-fit: cover; }
+        .zoom-btn { position: absolute; top: 10px; right: 10px; background: #58219f; color: #fff; border-radius: 50%; padding: 6px 10px; cursor: pointer; font-size: 1.1rem; }
+        .interest-btn { width: 100%; background: #58219f; color: #fff; border-radius: 8px; padding: 12px 0; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .interest-btn.disabled { background: #999; cursor: not-allowed; opacity: 0.6; }
+        .agv-id { text-align: center; background: #58219f; color: #fff; padding: 8px 16px; border-radius: 20px; font-weight: 600; display: inline-block; font-size: 1rem; }
+        .start-chat-top-btn { background: #3b82f6; color: #fff; padding: 10px 24px; border-radius: 20px; font-weight: 600; cursor: pointer; border: none; font-size: 1rem; transition: background 0.2s; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
+        .start-chat-top-btn:hover { background: #2563eb; }
+        .about-me { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .about-me h4 { color: #58219f; margin-bottom: 10px; }
+        .video-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #f9fafb;
+  width: 240px;
+}
+
+.video-thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.video-label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.video-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.video-modal-content {
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  width: 320px;
+  height: 500px;
+}
+
+.video-full {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+        .info-row { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+        .info-label { color: #666; font-weight: 500; min-width: 180px; }
+        .info-value { color: #333; font-weight: 600; flex: 1; word-break: break-word; }
+        .profile-section.card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .profile-section-title { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: 600; color: #333; }
+.profile-snippet-card {
+  background: #fff;
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  margin-bottom: 25px;
+  border-left: 4px solid #58219f;
+}
+
+.snippet-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+        .profile-section-grid {
+  display: flex;
+  gap: 50px;
+}
+
+.profile-section-grid > div {
+  flex: 1;
+}
+
+@media (max-width: 992px) {
+  .profile-section-grid {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+        .zoom-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 10000; cursor: zoom-out; }
+        .zoom-image-wrapper { position: relative; }
+        .zoom-image-wrapper img { max-width: 100vw; max-height: 90vh; border-radius: 12px; transition: transform 0.2s ease; cursor: grab; }
+        .zoom-controls { position: absolute; bottom: -60px; display: flex; gap: 15px; justify-content: center; width: 100%; }
+        .zoom-controls button { padding: 10px 15px; font-size: 1.2rem; border-radius: 8px; border: none; background: #58219f; color: #fff; cursor: pointer; font-weight: 600; }
+        .contact-btn-wrapper { margin-bottom: 15px; }
+        .view-contact-btn { background: #58219f; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .view-contact-btn:hover { background: #381c60; }
+        .upgrade-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.65); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(4px); }
+        .upgrade-content { background: #fff; padding: 35px 30px; border-radius: 16px; text-align: center; width: 100%; max-width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); animation: fadeInScale 0.3s ease; }
+        .upgrade-icon { font-size: 40px; margin-bottom: 10px; }
+        .upgrade-content h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 10px; color: #111; }
+        .upgrade-content p { font-size: 0.95rem; color: #666; margin-bottom: 25px; }
+        .upgrade-buttons { display: flex; gap: 10px; justify-content: center; }
+        .upgrade-btn { background: linear-gradient(135deg, #58219f, #381c60); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: transform 0.2s; }
+        .upgrade-btn:hover { transform: scale(1.05); }
+        .cancel-btn { background: #f3f4f6; color: #333; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 0.9rem; }
+        @keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+      `}</style>
     </div>
   );
 };
 
 export default MoreDetails;
+
+

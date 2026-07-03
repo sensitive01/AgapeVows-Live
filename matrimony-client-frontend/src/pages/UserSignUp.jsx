@@ -6,6 +6,8 @@ import { showAlert, showOtpAlert } from "../utils/alertService";
 import LayoutComponent from "../components/layouts/LayoutComponent";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import ExistingUserWarning from "../components/new-template/ExistingUserWarning";
+import RegisterPageContent from "../components/new-template/RegisterPageContent";
 
 const UserSignUp = () => {
   const navigate = useNavigate();
@@ -19,8 +21,9 @@ const UserSignUp = () => {
     agree: false,
   });
 
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [existingUserWarning, setExistingUserWarning] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -64,7 +67,7 @@ const UserSignUp = () => {
 
     try {
       setLoading(true);
-      const otpResponse = await sendRegistrationOtpRequest(formData.email);
+      const otpResponse = await sendRegistrationOtpRequest(formData.email, formData.phone);
 
       if (otpResponse.status === 200) {
         setLoading(false);
@@ -99,6 +102,25 @@ const UserSignUp = () => {
     } catch (err) {
       console.error("Signup error:", err);
       const errorMessage = err.response?.data?.message || "Registration failed. Please try again.";
+      
+      if (errorMessage.toLowerCase().includes("already registered") || errorMessage.toLowerCase().includes("exists")) {
+        const isMobile = errorMessage.toLowerCase().includes("mobile") || errorMessage.toLowerCase().includes("phone");
+        const isEmail = errorMessage.toLowerCase().includes("email");
+        let type = "email";
+        if (isMobile && isEmail) type = "both";
+        else if (isMobile) type = "mobile";
+        
+        const responseData = err.response?.data || {};
+
+        setExistingUserWarning({
+          type: type,
+          name: responseData.userName || formData.name || "User",
+          connectedContact: responseData.connectedContact || "",
+          loginId: type === "mobile" ? formData.phone : formData.email
+        });
+        return;
+      }
+      
       showAlert({ title: "Error", text: errorMessage, icon: "error" });
     } finally {
       setLoading(false);
@@ -114,14 +136,25 @@ const UserSignUp = () => {
       <div className="flex-grow flex flex-col lg:flex-row-reverse pt-[72px]">
         
         {/* Form Section (Now on the Right) */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-white relative z-10 shadow-xl">
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-white relative z-10 shadow-xl overflow-y-auto">
           <div className="w-full max-w-md">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Create Account</h2>
-              <p className="text-gray-500">Join our Christian Matrimony Community</p>
-            </div>
+            
+            {existingUserWarning ? (
+              <ExistingUserWarning 
+                type={existingUserWarning.type}
+                name={existingUserWarning.name}
+                connectedContact={existingUserWarning.connectedContact}
+                loginId={existingUserWarning.loginId}
+                onTryAnotherWay={() => setExistingUserWarning(null)}
+              />
+            ) : (
+              <>
+                <div className="text-center mb-10">
+                  <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Create Account</h2>
+                  <p className="text-gray-500">Join our Christian Matrimony Community</p>
+                </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
+                <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
                 <input
@@ -242,6 +275,8 @@ const UserSignUp = () => {
                 </Link>
               </p>
             </div>
+            </>
+            )}
           </div>
         </div>
 
@@ -320,6 +355,7 @@ const UserSignUp = () => {
         </div>
 
       </div>
+      <RegisterPageContent />
       <Footer />
     </div>
   );

@@ -6,7 +6,9 @@ const Footer = ({ paddingTop = '40px' }) => {
   return (
     <>
       <footer className="agape-vows-footer mt-auto" style={{
-        background: '#4a2580',
+        backgroundColor: '#4a2580',
+        backgroundImage: 'none',
+        opacity: 1,
         color: '#fff',
         paddingTop: paddingTop,
         paddingBottom: '8px',

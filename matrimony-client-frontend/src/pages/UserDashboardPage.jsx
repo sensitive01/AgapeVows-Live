@@ -473,6 +473,16 @@ const UserDashboardPage = () => {
                 className="col-md-9 col-lg-10"
                 style={{ paddingLeft: "20px", paddingRight: "15px" }}
               >
+                
+                {userInfo && userInfo.idVerificationStatus !== 'Verified' && (
+                  <div className="alert alert-warning d-flex align-items-center mb-4" role="alert" style={{ backgroundColor: '#fff3cd', color: '#856404', border: '1px solid #ffeeba', borderRadius: '8px', padding: '15px' }}>
+                    <i className="fa fa-exclamation-triangle" style={{ fontSize: '24px', marginRight: '15px' }}></i>
+                    <div>
+                      <strong>Action Required:</strong> Help us keep AgapeVows safe and trusted for everyone. Please submit your Government ID proof to verify your profile. Accounts that remain unverified beyond the grace period may be temporarily suspended.
+                    </div>
+                  </div>
+                )}
+
                 {/* Search Component */}
                 {/* Search Component Removed as per request (replaced by Global Search in Header) */}
                 {/* <div className="row">

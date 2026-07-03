@@ -14,13 +14,13 @@ import MaskedIdGuide from "../assets/images/Masked_ID_Guide.pdf";
 // Helper Components
 const InfoRow = ({ label, value }) => {
   let normalizedValue = value;
-  
+
   if (Array.isArray(value)) {
     normalizedValue = value.length > 0 ? value.join(", ") : "";
   }
 
-  const displayValue = (normalizedValue === null || normalizedValue === undefined || normalizedValue === "") 
-    ? "Not Specified" 
+  const displayValue = (normalizedValue === null || normalizedValue === undefined || normalizedValue === "")
+    ? "Not Specified"
     : normalizedValue;
 
   const isSerializedAddress =
@@ -30,18 +30,16 @@ const InfoRow = ({ label, value }) => {
     <div
       style={{
         display: "flex",
-        flexDirection: "column",
-        gap: "6px",
+        alignItems: "flex-start",
         padding: "10px 0",
-        borderBottom: "1px solid #f3f4f6",
       }}
     >
       <span
-        className="font-source font-medium text-[18px]"
+        className="font-source text-[16px]"
         style={{
-          color: "#6b7280",
-          textTransform: "uppercase",
-          letterSpacing: "0.5px",
+          color: "#4b5563",
+          flex: "1 1 45%",
+          paddingRight: "10px"
         }}
       >
         {label}
@@ -54,20 +52,19 @@ const InfoRow = ({ label, value }) => {
             .map((p) => p && p.trim())
             .filter(Boolean);
 
-          // parts expected: [doorNo, locality, country, state, district, pincode]
           const lines = [];
-          if (parts[0]) lines.push(parts[0]); // door / flat
-          if (parts[1]) lines.push(parts[1]); // locality
+          if (parts[0]) lines.push(parts[0]);
+          if (parts[1]) lines.push(parts[1]);
 
           const cityStatePincode = [parts[4], parts[3], parts[5]]
             .filter(Boolean)
             .join(", ");
           if (cityStatePincode) lines.push(cityStatePincode);
 
-          if (parts[2] && !lines.includes(parts[2])) lines.push(parts[2]); // country
+          if (parts[2] && !lines.includes(parts[2])) lines.push(parts[2]);
 
           return (
-            <div style={{ color: "#1f2937", fontSize: "1rem", fontWeight: 600 }}>
+            <div style={{ color: "#111827", fontSize: "16px", fontWeight: 700, flex: "1 1 55%" }}>
               {lines.map((ln, idx) => (
                 <div key={idx} style={{ marginBottom: 2 }}>{ln}</div>
               ))}
@@ -76,10 +73,11 @@ const InfoRow = ({ label, value }) => {
         })()
       ) : (
         <span
-          className="font-source font-normal text-[18px]"
+          className="font-source font-bold text-[16px]"
           style={{
-            color: "#1f2937",
+            color: "#111827",
             wordBreak: "break-word",
+            flex: "1 1 55%",
           }}
         >
           {displayValue}
@@ -89,45 +87,50 @@ const InfoRow = ({ label, value }) => {
   );
 };
 
-const ProfileSection = ({ title, icon, children }) => (
-  <div className="col-12 mb-3">
+const ProfileSection = ({ title, icon, children, footerAlert }) => (
+  <div className="col-12 mb-4">
     <div
       style={{
-        padding: "20px",
-        background: "rgba(255, 255, 255, 0.85)",
-        backdropFilter: "blur(8px)",
+        padding: "30px",
+        background: "#ffffff",
         borderRadius: "12px",
-        boxShadow: "0 4px 15px rgba(0,0,0,0.05)",
-        border: "1px solid rgba(255, 255, 255, 0.3)",
+        boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
       }}
     >
-      <h4
-        className="font-source font-semibold text-[32px]"
-        style={{
-          marginBottom: "20px",
-          color: "#1f2937",
-          paddingBottom: "12px",
-          display: "flex",
-          alignItems: "center",
-          gap: "12px",
-          position: "relative"
-        }}
-      >
-        <i className={`fa ${icon}`} style={{ color: "#5c2a9d", fontSize: "1.1rem" }}></i>
-        {title}
-        <span style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          width: "60px",
-          height: "4px",
-          background: "#5c2a9d",
-          borderRadius: "2px"
-        }}></span>
-      </h4>
+      <div style={{ display: "flex", alignItems: "center", gap: "15px", marginBottom: "25px" }}>
+        <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#58219f', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <i className={`fa ${icon}`} style={{ color: "#fff", fontSize: "1.1rem" }}></i>
+        </div>
+        <div style={{ position: "relative", paddingBottom: "6px" }}>
+          <h4
+            className="font-source font-bold text-[24px]"
+            style={{ color: "#58219f", margin: 0 }}
+          >
+            {title}
+          </h4>
+          <span style={{ position: "absolute", bottom: 0, left: 0, width: "35px", height: "3px", background: "#58219f", borderRadius: "2px" }}></span>
+        </div>
+      </div>
       <div className="profile-section-grid">
         {children}
       </div>
+      {footerAlert && (
+        <div style={{
+          marginTop: "25px",
+          padding: "14px 20px",
+          background: "#f8f5fd",
+          borderRadius: "8px",
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+          color: "#58219f",
+          fontSize: "14px",
+          fontWeight: "500"
+        }}>
+          <i className="fa fa-shield" style={{ fontSize: "18px" }}></i>
+          {footerAlert}
+        </div>
+      )}
     </div>
   </div>
 );
@@ -713,10 +716,6 @@ const UserProfilePage = () => {
 
   return (
     <div className="min-h-screen" style={{
-      backgroundImage: "url('/images/bg-profile.png')",
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      backgroundAttachment: "fixed",
       backgroundColor: "#f3f4f6"
     }}>
       {/* Fixed Header */}
@@ -1026,37 +1025,31 @@ const UserProfilePage = () => {
                   />
                   {/* About Me Section */}
                   {userInfo?.aboutMe && (
-                    <div className="col-12 mb-3">
+                    <div className="col-12 mb-4">
                       <div
                         style={{
-                          padding: "20px",
-                          background: "#fff",
-                          borderRadius: "10px",
-                          boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+                          padding: "30px",
+                          background: "#ffffff",
+                          borderRadius: "12px",
+                          boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+                          borderLeft: "6px solid #58219f"
                         }}
                       >
-                        <h4
-                          className="font-source font-semibold text-[32px]"
-                          style={{
-                            marginBottom: "15px",
-                            color: "#333",
-                            borderBottom: "2px solid #5c2a9d",
-                            paddingBottom: "10px",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                          }}
-                        >
-                          <i
-                            className="fa fa-user-circle"
-                            style={{ color: "#5c2a9d" }}
-                          ></i>
-                          About Me
-                        </h4>
+                        <div style={{ display: "flex", alignItems: "center", gap: "15px", marginBottom: "20px" }}>
+                          <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#58219f', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <i className="fa fa-user" style={{ color: "#fff", fontSize: "1.1rem" }}></i>
+                          </div>
+                          <h4
+                            className="font-source font-bold text-[24px]"
+                            style={{ color: "#58219f", margin: 0 }}
+                          >
+                            About Me
+                          </h4>
+                        </div>
                         <p
-                          className="font-source font-normal text-[20px]"
+                          className="font-source font-normal text-[16px]"
                           style={{
-                            color: "#666",
+                            color: "#111827",
                             lineHeight: "1.6",
                             whiteSpace: "pre-line",
                             margin: 0,
@@ -1069,7 +1062,11 @@ const UserProfilePage = () => {
                   )}
 
                   {/* Basic Details Section */}
-                  <ProfileSection title="Basic Details" icon="fa-info-circle">
+                  <ProfileSection
+                    title="Basic Details"
+                    icon="fa-address-card"
+                  // footerAlert="All details are provided by the member and are visible as per your privacy settings."
+                  >
                     <InfoRow
                       label="Profile Created By"
                       value={userInfo?.profileCreatedFor}
@@ -1081,8 +1078,8 @@ const UserProfilePage = () => {
                         userInfo?.age
                           ? `${userInfo.age} years`
                           : userInfo?.dateOfBirth
-                          ? `${calculateAge(userInfo.dateOfBirth)} years`
-                          : null
+                            ? `${calculateAge(userInfo.dateOfBirth)} years`
+                            : null
                       }
                     />
                     <InfoRow
@@ -1090,10 +1087,10 @@ const UserProfilePage = () => {
                       value={
                         userInfo?.dateOfBirth
                           ? new Date(userInfo.dateOfBirth).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })
                           : null
                       }
                     />
@@ -1398,8 +1395,8 @@ const UserProfilePage = () => {
                         userInfo?.partnerHeight && userInfo?.partnerHeightTo
                           ? `${userInfo.partnerHeight} to ${userInfo.partnerHeightTo}`
                           : userInfo?.partnerHeight
-                          ? `${userInfo.partnerHeight}`
-                          : null
+                            ? `${userInfo.partnerHeight}`
+                            : null
                       }
                     />
                     <InfoRow
