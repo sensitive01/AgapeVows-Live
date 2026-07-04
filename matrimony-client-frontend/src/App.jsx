@@ -53,6 +53,27 @@ import TermsOfUse from "./pages/policy/TermsOfUse";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ScrollToTop from "./ScrollTop";
+import { HelmetProvider } from "react-helmet-async";
+import NotFoundPage from "./components/common/NotFoundPage";
+import SEOHelmet from "./components/common/SEOHelmet";
+
+// Component to handle dynamic SEO tags globally
+function SEOManager() {
+  const location = useLocation();
+  const privatePaths = [
+    '/user/user-dashboard-page',
+    '/user/user-profile-page',
+    '/user/user-settings-page',
+    '/user/user-plan-page',
+    '/user/who-viewed-you-page',
+    '/user/blocked-profiles-page',
+    '/user/ignored-profiles-page',
+    '/profile-more-details'
+  ];
+  const isPrivate = privatePaths.some(path => location.pathname.startsWith(path));
+
+  return <SEOHelmet canonicalUrl={location.pathname} noindex={isPrivate} />;
+}
 
 // Component to handle page reloads
 function ReloadHandler() {
@@ -226,9 +247,11 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <ScrollToTop />
-      <ToastContainer position="top-right" autoClose={3000} />
+    <HelmetProvider>
+      <Router>
+        <SEOManager />
+        <ScrollToTop />
+        <ToastContainer position="top-right" autoClose={3000} />
       {/* <ReloadHandler /> */}
       <ProfileCompletionGuard>
       <Routes>
@@ -315,9 +338,11 @@ function App() {
         <Route path="/marital-counseling" element={<MaritalCounseling />} />
         <Route path="/blogs" element={<Blogs />} />
         <Route path="/blog-details/:id" element={<BlogDetailsPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
       </ProfileCompletionGuard>
-    </Router>
+      </Router>
+    </HelmetProvider>
   );
 }
 
