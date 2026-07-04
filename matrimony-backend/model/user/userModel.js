@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema(
 
       profileVisibility: {
          type: String,
-         enum: ["Public", "Private"],
+         enum: ["Public", "Private", "Hidden"],
          default: "Private",
       },
 
