@@ -56,7 +56,7 @@ const userSchema = new mongoose.Schema(
 
       gender: { type: String, enum: ["Male", "Female", "Other"] },
       dateOfBirth: { type: Date },
-      age: { type: Number }, // (can be derived later)
+      age: { type: Number },
 
       bodyType: { type: String },
       physicalStatus: { type: String },
