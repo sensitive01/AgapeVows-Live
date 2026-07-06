@@ -219,8 +219,8 @@ const MainLayout = () => {
 
   return (
     <>
-      <div className="bg-[#4a2580] text-white text-xs py-2 px-4 border-b border-white/10 font-cormorant font-bold">
-        <div className="max-w-[1400px] mx-auto">
+      <div className="bg-[#4a2580] text-white text-xs py-2 border-b border-white/10 font-cormorant font-bold">
+        <div className="w-[92%] xl:w-[88%] max-w-[1350px] mx-auto">
           <div className="hidden md:flex justify-between items-center">
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-1 cursor-pointer hover:text-purple-200">
@@ -317,7 +317,7 @@ const MainLayout = () => {
       </div>
 
       <header className="bg-white shadow-md relative font-cormorant">
-        <div className="max-w-[1400px] mx-auto px-2 sm:px-4 py-4">
+        <div className="w-[92%] xl:w-[88%] max-w-[1350px] mx-auto py-4">
           <div className="flex items-center gap-4 md:gap-8">
             <a
               href="/"
