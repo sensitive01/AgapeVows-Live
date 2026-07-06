@@ -9,7 +9,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { showAlert } from "../../utils/alertService";
 import "../../index.css";
-import planBg from "../../assets/images/plan-bg.png";
+import planBg from "../../assets/images/Plan-bg.png";
 
 const UserPlanSelection = () => {
   const [plans, setPlans] = useState([]);
