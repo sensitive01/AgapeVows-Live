@@ -730,7 +730,7 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
       height: "140px",
       borderRadius: "50%",
       objectFit: "cover",
-      border: "4px solid #b8860b",
+      border: "4px solid #58219f",
       cursor: "pointer",
     },
 

@@ -1,9 +1,6 @@
-// index.jsx - BlogsPage with Role-Based Access Control
-// Place this file in: src/pages/public/Blogs/index.jsx
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { projectServices } from '../../../api/axios/axiosInstance';
+import { axiosInstance } from '../../../api/axiosInstance/commonInstance';
 
 const BlogsPage = () => {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -16,17 +13,13 @@ const BlogsPage = () => {
 
   const fetchBlogs = async () => {
     try {
-      const response = await projectServices.get("/user-auth/get-blogs");
+      const response = await axiosInstance.get("/user-auth/get-blogs");
       if (response.data && response.data.success) {
         setBlogPosts(response.data.data);
       }
     } catch (error) {
       console.error("Error fetching blogs:", error);
     }
-  };
-
-  const refreshBlogs = () => {
-    fetchBlogs();
   };
 
   const indexOfLastBlog = currentPage * blogsPerPage;
@@ -40,163 +33,117 @@ const BlogsPage = () => {
   };
 
   return (
-    <>
-      {/* Sub Visual Block */}
-      <div className="subvisual-block subvisual-theme-1 bg-dark-blue d-flex pt-60 pt-md-90 pt-lg-150 pb-30 text-white">
-        <div className="pattern-image">
-          <img src="/images/bg-pattern-overlay.jpg" width="1920" height="570" alt="Pattern" />
-        </div>
-        <div className="container position-relative text-center">
-          <div className="row">
-            <div className="col-12">
-              <div className="subvisual-textbox">
-                <h1 className="text-primary mb-0">EdProfio Blogs</h1>
-                <p>Feel free to get in touch with us. Need Help?</p>
-              </div>
-            </div>
-          </div>
+    <div className="bg-white min-h-screen">
+      {/* Header Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 text-center">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-[#111827] font-cormorant tracking-tight mb-4">
+          Explore Our Blogs
+        </h1>
+        <p className="text-gray-500 max-w-2xl mx-auto text-lg leading-relaxed">
+          Thoughtful insights, practical relationship advice, and inspiring stories for every step of your marriage journey.
+        </p>
+      </div>
+
+      {/* Divider */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+        <div className="flex items-center justify-center">
+          <div className="h-px bg-[#dfa52b] w-16 md:w-24"></div>
+          <h2 className="text-2xl font-bold font-cormorant text-[#111827] mx-6">All Blog Posts</h2>
+          <div className="h-px bg-[#dfa52b] w-16 md:w-24"></div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <main className="main">
-        {/* Blogs Section */}
-        <section className="section latest-news-block section-theme-1 pt-35 pt-md-50 pt-lg-75 pt-xl-100 pt-xxl-120 pb-35 bg-light">
-          <div className="container">
-
-            {/* Blog Posts Grid - VISIBLE TO ALL USERS */}
-            <div className="row">
-              {currentBlogs.map((post) => (
-                <div key={post._id} className="col-12 col-md-6 col-lg-4 mb-35 mb-md-55">
-                  <BlogPostCard {...post} />
-                </div>
-              ))}
-            </div>
+      {/* Blog Posts Grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        {currentBlogs.length > 0 ? (
+          <div className="grid md:grid-cols-2 gap-x-8 gap-y-12">
+            {currentBlogs.map((post) => (
+              <BlogPostCard key={post._id} {...post} />
+            ))}
           </div>
-        </section>
-
-        {/* Pagination Block */}
-        {totalPages > 1 && (
-          <div className="pagination-block section-theme-1 pb-50 pb-md-50 bg-light">
-            <div className="container d-flex align-items-center justify-content-center">
-              <ul className="pagination">
-                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                  <button 
-                    className="page-link" 
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    <i className="icon-arrow-left1"></i>
-                  </button>
-                </li>
-                
-                {[...Array(totalPages)].map((_, index) => (
-                  <li 
-                    key={index + 1} 
-                    className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}
-                  >
-                    <button 
-                      className="page-link" 
-                      onClick={() => handlePageChange(index + 1)}
-                    >
-                      {index + 1}
-                    </button>
-                  </li>
-                ))}
-                
-                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                  <button 
-                    className="page-link" 
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    <i className="icon-arrow-right"></i>
-                  </button>
-                </li>
-              </ul>
-            </div>
-          </div>
+        ) : (
+          <div className="text-center text-gray-500 py-20">Loading blogs...</div>
         )}
+      </div>
 
-        {/* Apps Block */}
-        <section className="section section-theme-4 apps-block pt-0 pt-md-30 pt-lg-65 pb-35 pb-md-50 pb-lg-65">
-          <div className="container">
-            <div className="row align-items-center">
-              <div className="col-12 col-md-6">
-                <div className="text">
-                  <h2 className="text-secondary">Download the App</h2>
-                  <p>Aliquam lorem ante, dapibus in, viverra quis, feu Aliquam lorem ante, dapibus orem ante, dapibus in, viverra.</p>
-                  <ul className="list-unstyled list">
-                    <li>Duis aute irure dolor in reprehenderit</li>
-                    <li>Voluptate velit esse cillum dolore</li>
-                    <li>Fugiat nulla pariatur. Excepteur sint occaecat</li>
-                  </ul>
-                  <div className="download-btns">
-                    <a className="btn-app btn-play-store" href="#">
-                      <div className="store-icon">
-                        <img src="/images/icon-play-store.png" width="28" height="30" alt="Google Play" />
-                      </div>
-                      <div className="btn-text">
-                        Download From <span>Google Play</span>
-                      </div>
-                    </a>
-                    <a className="btn-app btn-app-store" href="#">
-                      <div className="store-icon">
-                        <img src="/images/icon-app-store.png" width="32" height="38" alt="App Store" />
-                      </div>
-                      <div className="btn-text">
-                        Download From <span>App Store</span>
-                      </div>
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <div className="col-12 col-md-6">
-                <div className="image-holder">
-                  <img src="/images/apps-image1.png" alt="App Screenshot" />
-                </div>
-              </div>
-            </div>
+      {/* Pagination Block */}
+      {totalPages > 1 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+          <div className="flex items-center justify-center gap-2">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className={`w-10 h-10 rounded-full flex items-center justify-center border transition-colors ${
+                currentPage === 1
+                  ? 'border-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'border-gray-300 text-gray-700 hover:border-[#58219f] hover:text-[#58219f]'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+
+            {[...Array(totalPages)].map((_, index) => (
+              <button
+                key={index + 1}
+                onClick={() => handlePageChange(index + 1)}
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-medium transition-colors ${
+                  currentPage === index + 1
+                    ? 'bg-[#58219f] text-white'
+                    : 'border border-gray-300 text-gray-700 hover:border-[#58219f] hover:text-[#58219f]'
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className={`w-10 h-10 rounded-full flex items-center justify-center border transition-colors ${
+                currentPage === totalPages
+                  ? 'border-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'border-gray-300 text-gray-700 hover:border-[#58219f] hover:text-[#58219f]'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
           </div>
-        </section>
-      </main>
-    </>
+        </div>
+      )}
+    </div>
   );
 };
 
 // Blog Post Card Component
-const BlogPostCard = ({ _id, coverImage, title, category, createdAt, authorPhoto, authorName, sections, content }) => {
+const BlogPostCard = ({ _id, coverImage, title, category, createdAt, sections, content }) => {
   let excerpt = '';
   if (sections && sections.length > 0 && sections[0].content) {
-    excerpt = sections[0].content.substring(0, 100) + '...';
+    excerpt = sections[0].content.substring(0, 120) + '...';
   } else if (content) {
-    excerpt = content.substring(0, 100) + '...';
+    excerpt = content.substring(0, 120) + '...';
   }
-  const date = new Date(createdAt || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const date = new Date(createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
   return (
-    <div className="news-post bg-white shadow border border-dark" style={{ borderRadius: "30px", height: '100%' }}>
-      <Link to={`/blog-details/${_id}`}>
-        <div className="image-holder">
-          <img src={coverImage || "/images/image-news03.jpg"} alt={title} style={{ width: '100%', height: '250px', objectFit: 'cover', borderTopLeftRadius: "30px", borderTopRightRadius: "30px" }} />
+    <Link to={`/blog-details/${_id}`} className="group bg-white rounded-3xl overflow-hidden border border-gray-100 flex flex-col h-full hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+      <div className="h-64 sm:h-[300px] overflow-hidden bg-gray-100 relative">
+        <img src={coverImage || "/images/image-news03.jpg"} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+      </div>
+      <div className="p-8 flex flex-col flex-grow">
+        <div className="flex items-center gap-2 mb-3 text-sm font-bold text-[#58219f]">
+          <span>{category}</span>
+          <span className="text-gray-400">•</span>
+          <span className="text-gray-500 font-medium">{date}</span>
         </div>
-        <div className="textbox p-10" style={{ padding: '20px' }}>
-          <strong className="subtitle text-secondary">{category}</strong>
-          <h3 style={{ fontSize: '1.25rem', marginTop: '10px' }}>{title}</h3>
-          <p className="excerpt" style={{ fontSize: '14px', color: '#666', margin: '10px 0' }}>
-            {excerpt}
-          </p>
-          <ul className="post-meta" style={{ listStyle: 'none', padding: 0, display: 'flex', gap: '15px', fontSize: '13px', color: '#888' }}>
-            <li><i className="icon-clock me-1"></i>{date}</li>
-          </ul>
-          <div className="post-author mt-3 d-flex align-items-center">
-            <span className="author-image me-2">
-              <img src={authorPhoto || "/images/avatar-03.jpg"} width="40" height="40" alt={authorName} style={{ borderRadius: '50%', objectFit: 'cover' }} />
-            </span>
-            <span className="post-by" style={{ fontSize: '14px' }}>By <strong className="text-dark">{authorName}</strong></span>
-          </div>
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 group-hover:text-[#58219f] transition-colors font-cormorant leading-tight">{title}</h3>
+        <p className="text-gray-500 text-sm sm:text-base line-clamp-3 mb-6 leading-relaxed flex-grow">
+          {excerpt}
+        </p>
+        <div className="mt-auto pt-2 flex items-center font-bold text-[#58219f]">
+          Read More <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
         </div>
-      </Link>
-    </div>
+      </div>
+    </Link>
   );
 };
 

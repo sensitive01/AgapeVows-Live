@@ -63,7 +63,7 @@ const ExploreDropdown = ({ isVisible }) => {
               if (newTab) newTab.focus();
             }
           }}
-          className="w-full text-left block px-4 py-2 text-[18px] font-cormorant font-bold text-gray-700 hover:bg-purple-50 hover:text-[#4a2580] transition-colors border-b border-gray-50 last:border-0"
+          className="w-full text-left block px-4 py-2 text-[20px] font-cormorant font-bold text-gray-700 hover:bg-purple-50 hover:text-[#4a2580] transition-colors border-b border-gray-50 last:border-0"
         >
           {category.title}
         </a>
@@ -141,7 +141,7 @@ const HelpDropdown = ({ isVisible }) => {
         <button
           key={index}
           onClick={() => handleNavigate(item.path)}
-          className="w-full text-left px-4 py-2 text-[18px] font-cormorant font-bold text-gray-700 hover:bg-purple-50 hover:text-[#4a2580] transition-colors border-b border-gray-50 last:border-0"
+          className="w-full text-left px-4 py-2 text-[20px] font-cormorant font-bold text-gray-700 hover:bg-purple-50 hover:text-[#4a2580] transition-colors border-b border-gray-50 last:border-0"
         >
           {item.title}
         </button>
@@ -220,7 +220,7 @@ const MainLayout = () => {
   return (
     <>
       <div className="bg-[#4a2580] text-white text-xs py-2 px-4 border-b border-white/10 font-cormorant font-bold">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[1400px] mx-auto">
           <div className="hidden md:flex justify-between items-center">
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-1 cursor-pointer hover:text-purple-200">
@@ -317,7 +317,7 @@ const MainLayout = () => {
       </div>
 
       <header className="bg-white shadow-md relative font-cormorant">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4">
+        <div className="max-w-[1400px] mx-auto px-2 sm:px-4 py-4">
           <div className="flex items-center gap-4 md:gap-8">
             <a
               href="/"
@@ -343,7 +343,7 @@ const MainLayout = () => {
               </div>
             </a>
 
-            <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
+            <nav className="hidden md:flex items-center space-x-6 lg:space-x-8 ml-auto mr-4 lg:mr-12">
               <a
                 href="/about-us"
                 onClick={(e) => {
@@ -356,7 +356,7 @@ const MainLayout = () => {
                     if (newTab) newTab.focus();
                   }
                 }}
-                className={`hover-purple-shadow transition-all duration-200 font-cormorant font-bold text-[20px] py-2 ${location.pathname === "/about-us"
+                className={`hover-purple-shadow transition-all duration-200 font-cormorant font-bold text-[22px] py-2 ${location.pathname === "/about-us"
                   ? "text-[#4a2580] font-bold border-b-2 border-[#4a2580]"
                   : "text-gray-800 hover:text-[#4a2580]"
                   }`}
@@ -376,7 +376,7 @@ const MainLayout = () => {
                     if (newTab) newTab.focus();
                   }
                 }}
-                className={`hover-purple-shadow flex items-center transition-all duration-200 font-cormorant font-bold text-[20px] py-2 ${location.pathname === "/user/find-matches"
+                className={`hover-purple-shadow flex items-center transition-all duration-200 font-cormorant font-bold text-[22px] py-2 ${location.pathname === "/user/find-matches"
                   ? "text-[#4a2580] font-bold border-b-2 border-[#4a2580]"
                   : "text-gray-800 hover:text-[#4a2580]"
                   }`}
@@ -390,7 +390,7 @@ const MainLayout = () => {
                 onMouseLeave={() => setIsExploreDropdownVisible(false)}
               >
                 <button
-                  className={`hover-purple-shadow transition-all duration-200 font-cormorant font-bold text-[20px] flex items-center py-2 ${location.pathname.includes("/personalized-matrimony") ||
+                  className={`hover-purple-shadow transition-all duration-200 font-cormorant font-bold text-[22px] flex items-center py-2 ${location.pathname.includes("/personalized-matrimony") ||
                     location.pathname.includes("/nri-matrimony") ||
                     location.pathname.includes("/church-partner") ||
                     location.pathname.includes("/matrimonial-advisor") ||
@@ -422,7 +422,7 @@ const MainLayout = () => {
                     if (newTab) newTab.focus();
                   }
                 }}
-                className={`nav-highlight-events font-cormorant font-bold text-[20px] transition-all duration-200 py-2 ${location.pathname === "/user/events-page"
+                className={`nav-highlight-events font-cormorant font-bold text-[22px] transition-all duration-200 py-2 ${location.pathname === "/user/events-page"
                   ? "border-b-2 border-[#4a2580]"
                   : ""
                   }`}
@@ -442,7 +442,7 @@ const MainLayout = () => {
                     if (newTab) newTab.focus();
                   }
                 }}
-                className={`hover-purple-shadow transition-all duration-200 font-cormorant font-bold text-[20px] py-2 ${location.pathname === "/user/user-plan-selection"
+                className={`hover-purple-shadow transition-all duration-200 font-cormorant font-bold text-[22px] py-2 ${location.pathname === "/user/user-plan-selection"
                   ? "text-[#4a2580] font-bold border-b-2 border-[#4a2580]"
                   : "text-gray-800 hover:text-[#4a2580]"
                   }`}
@@ -456,7 +456,7 @@ const MainLayout = () => {
                 onMouseLeave={() => setIsHelpDropdownVisible(false)}
               >
                 <button
-                  className={`hover-purple-shadow transition-all duration-200 font-cormorant font-bold text-[20px] flex items-center py-2 ${location.pathname === "/help-support" ||
+                  className={`hover-purple-shadow transition-all duration-200 font-cormorant font-bold text-[22px] flex items-center py-2 ${location.pathname === "/help-support" ||
                     location.pathname === "/report-issue"
                     ? "text-[#4a2580] font-bold border-b-2 border-[#4a2580]"
                     : "text-gray-800 hover:text-[#4a2580]"
@@ -469,7 +469,7 @@ const MainLayout = () => {
               </div>
             </nav>
 
-            <div className="hidden md:flex items-center space-x-6 justify-end ml-auto">
+            <div className="hidden md:flex items-center space-x-6 justify-end">
               {isUserActive ? (
                 <div
                   className="relative"
@@ -512,7 +512,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-sign-up");
                       }
                     }}
-                    className="bg-[#58219f] text-white px-6 py-2 rounded-full hover:bg-[#4a1b85] transition-colors font-cormorant font-bold text-[20px] shadow-md shadow-purple-100"
+                    className="bg-[#58219f] text-white px-6 py-2 rounded-full hover:bg-[#4a1b85] transition-colors font-cormorant font-bold text-[22px] shadow-md shadow-purple-100"
                   >
                     Register Free
                   </a>
@@ -524,7 +524,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-login");
                       }
                     }}
-                    className="text-gray-800 hover:text-[#4a2580] font-cormorant font-bold text-[20px]"
+                    className="text-gray-800 hover:text-[#4a2580] font-cormorant font-bold text-[22px]"
                   >
                     Login
                   </a>
@@ -598,7 +598,7 @@ const MainLayout = () => {
                               setIsMobileMenuOpen(false);
                             }
                           }}
-                          className="w-full text-left block px-4 py-1.5 text-[18px] font-cormorant font-bold text-gray-700 hover:text-[#4a2580] hover:bg-purple-50 rounded-md transition-colors"
+                          className="w-full text-left block px-4 py-1.5 text-[20px] font-cormorant font-bold text-gray-700 hover:text-[#4a2580] hover:bg-purple-50 rounded-md transition-colors"
                         >
                           {category.title}
                         </a>
@@ -663,7 +663,7 @@ const MainLayout = () => {
                               setIsMobileMenuOpen(false);
                             }
                           }}
-                          className="w-full text-left block px-4 py-1.5 text-[18px] font-cormorant font-bold text-gray-700 hover:text-[#4a2580] hover:bg-purple-50 rounded-md transition-colors"
+                          className="w-full text-left block px-4 py-1.5 text-[20px] font-cormorant font-bold text-gray-700 hover:text-[#4a2580] hover:bg-purple-50 rounded-md transition-colors"
                         >
                           {item.title}
                         </a>
@@ -753,7 +753,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-sign-up");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full bg-[#58219f] text-white py-2.5 rounded-lg font-cormorant font-bold text-[20px] hover:bg-[#4a1b85] transition-colors shadow-sm"
+                      className="w-full bg-[#58219f] text-white py-2.5 rounded-lg font-cormorant font-bold text-[22px] hover:bg-[#4a1b85] transition-colors shadow-sm"
                     >
                       Register Free
                     </button>
@@ -763,7 +763,7 @@ const MainLayout = () => {
                         handleNavigate("/user/user-login");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full text-center text-[#7c3aed] border border-[#7c3aed] font-cormorant font-bold text-[20px] py-2.5 rounded-lg hover:bg-purple-50 transition-colors"
+                      className="w-full text-center text-[#7c3aed] border border-[#7c3aed] font-cormorant font-bold text-[22px] py-2.5 rounded-lg hover:bg-purple-50 transition-colors"
                     >
                       Login
                     </button>

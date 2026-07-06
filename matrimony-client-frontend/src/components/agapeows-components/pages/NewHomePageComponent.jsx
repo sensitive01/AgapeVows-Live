@@ -10,6 +10,7 @@ import HeroSearchSection from "../../new-template/HeroSearchSection";
 import FindYourMatchCTASection from "../../new-template/FindYourMatchCTASection";
 import HighlightedProfilesSection from "../../new-template/HighlightedProfilesSection";
 import HowItWorksSection from "../../new-template/HowItWorksSection";
+import BlogSection from "../../new-template/BlogSection";
 import FooterSection from "../../new-template/FooterSection";
 
 const NewHomePageComponent = () => {
@@ -30,6 +31,7 @@ const NewHomePageComponent = () => {
         </div>
 
         <HowItWorksSection />
+        <BlogSection />
 
         <div className="flex flex-col gap-2 lg:gap-4 py-2 sm:py-4 overflow-visible max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
           <FindYourMatchCTASection />

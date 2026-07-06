@@ -376,7 +376,7 @@ const MoreDetails = () => {
       </div>
 
       <div className="profile-content">
-        <div className="profile-grid container-fluid">
+        <div className="profile-grid" style={{ paddingLeft: '4%', paddingRight: '4%' }}>
           {/* Left Column */}
           <div className="profile-left">
             <div className="profile-card">
@@ -504,12 +504,12 @@ const MoreDetails = () => {
                 </div>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px", width: "100%" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%" }}>
                 <button
                   className="interest-btn font-cormorant font-bold text-[20px]"
                   style={{
                     width: "100%",
-                    height: "45px",
+                    height: "40px",
                     marginBottom: "0",
                     display: "flex",
                     alignItems: "center",
@@ -542,7 +542,7 @@ const MoreDetails = () => {
                   className="shortlist-btn font-cormorant font-bold text-[20px]"
                   style={{
                     width: "100%",
-                    height: "45px",
+                    height: "40px",
                     marginBottom: "0",
                     background: isShortlisted ? "#10b981" : "#58219f",
                     color: "#ffffff",
@@ -569,7 +569,7 @@ const MoreDetails = () => {
                     className="view-contact-btn font-cormorant font-bold text-[20px]"
                     style={{
                       width: "100%",
-                      height: "45px",
+                      height: "40px",
                       marginBottom: "0",
                       display: "flex",
                       alignItems: "center",
@@ -618,8 +618,8 @@ const MoreDetails = () => {
                 className="report-user-btn font-cormorant font-bold text-[20px]"
                 style={{
                   width: "100%",
-                  height: "45px",
-                  marginTop: "4px",
+                  height: "40px",
+                  marginTop: "0px",
                   background: "#fee2e2",
                   color: "#dc2626",
                   border: "1px solid #fecaca",
@@ -652,12 +652,12 @@ const MoreDetails = () => {
                 style={{
                   background: "#58219f",
                   color: "#fff",
-                  padding: "6px 20px",
-                  borderRadius: "25px",
+                  padding: "4px 16px",
+                  borderRadius: "18px",
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "12px",
-                  fontSize: "24px",
+                  fontSize: "18px",
                   fontWeight: "500",
                   lineHeight: "1",
                   fontVariantNumeric: "lining-nums",
@@ -666,12 +666,12 @@ const MoreDetails = () => {
                 AV ID: {userInfo?.agwid || "N/A"}
                 <div className="d-flex gap-2">
                   {userInfo?.isAnySubscriptionTaken && (
-                    <span className="badge rounded-pill text-dark font-source" style={{ backgroundColor: "#facc15", fontSize: '14px', fontWeight: '500', padding: '4px 14px', display: 'flex', alignItems: 'center', gap: '6px', height: 'fit-content' }}>
+                    <span className="badge rounded-pill text-dark font-source" style={{ backgroundColor: "#facc15", fontSize: '13px', fontWeight: '500', padding: '3px 10px', display: 'flex', alignItems: 'center', gap: '4px', height: 'fit-content' }}>
                       <i className="fa fa-star"></i>Premium
                     </span>
                   )}
                   {userInfo?.idVerificationStatus === 'Verified' && (
-                    <span className="badge rounded-pill bg-success text-white font-source" style={{ fontSize: '14px', fontWeight: '500', padding: '4px 14px', display: 'flex', alignItems: 'center', gap: '6px', height: 'fit-content' }}>
+                    <span className="badge rounded-pill bg-success text-white font-source" style={{ fontSize: '13px', fontWeight: '500', padding: '3px 10px', display: 'flex', alignItems: 'center', gap: '4px', height: 'fit-content' }}>
                       <i className="fa fa-check-circle"></i>Verified
                     </span>
                   )}
@@ -932,16 +932,14 @@ const MoreDetails = () => {
       </div>
 
       {/* Show Interest Modal */}
-      {showInterestModalUser && (
-        <ShowInterest
-          selectedUser={showInterestModalUser}
-          userId={currentUserId}
-          onSuccess={() => {
-            setInterestStatus("pending");
-            window.dispatchEvent(new Event("planUpdated"));
-          }}
-        />
-      )}
+      <ShowInterest
+        selectedUser={showInterestModalUser || userInfo || {}}
+        userId={currentUserId}
+        onSuccess={() => {
+          setInterestStatus("pending");
+          window.dispatchEvent(new Event("planUpdated"));
+        }}
+      />
 
       {/* Zoom Image Modal */}
       {zoomImage && (
@@ -1154,15 +1152,15 @@ const MoreDetails = () => {
         .profile-page { min-height: 100vh; background: #f9fafb; font-family: 'Inter', sans-serif; }
         .fixed-header { top: 0; left: 0; right: 0; z-index: 50; position: fixed; }
         .profile-content { padding-top: 200px; padding-bottom: 100px; }
-        .profile-grid { display: flex; gap: 30px; }
+        .profile-grid { display: flex; gap: 40px; justify-content: flex-start; }
         .profile-left {
-  flex: 1;
+  flex: 0 0 320px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
-  height: auto; /* let it shrink to fit content */
+  height: auto;
 }
-        .profile-right { flex: 2.5; }
+        .profile-right { flex: 1; max-width: 1000px; }
         .profile-card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); width: 100%; max-width: 320px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
         .profile-image-wrapper { position: relative; width: 100%; }
         .profile-image { width: 100%; border-radius: 12px; object-fit: cover; }

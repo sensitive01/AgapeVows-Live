@@ -408,18 +408,7 @@ const FormSection = ({ title, subtitle, children, zIndex = 1 }) => (
       zIndex: zIndex,
     }}
   >
-    <div
-      style={{
-        marginBottom: "8px",
-        fontSize: "11px",
-        fontWeight: "700",
-        color: "#6b7280",
-        textTransform: "uppercase",
-        letterSpacing: "1px",
-      }}
-    >
-      SECTION
-    </div>
+
     <h2
       style={{
         fontSize: "28px",
@@ -2866,11 +2855,11 @@ const UserProfileEditPage = () => {
                   <FormSection title="Contact Information" zIndex={17}>
                     <div style={{ marginBottom: "30px", marginTop: "10px" }}>
                       <p style={{ fontWeight: "700", color: "#5c2a9d", fontSize: "1.2rem", marginBottom: "16px" }}>
-                        Prefer communication through a family member or a trusted representative?
+                        Prefer communication through a family member or representative?
                       </p>
                       <ul style={{ paddingLeft: "20px", margin: "0", fontSize: "1.05rem", lineHeight: "1.7", display: "flex", flexDirection: "column", gap: "10px", fontWeight: "500" }}>
-                        <li style={{ color: "#5c2a9d" }}>To help protect your privacy and avoid unwanted spam or fraudulent calls, AgapeVows recommends providing an alternate contact number for communication with interested matches. This number should be different from the primary phone number used to create your profile (if the profile was created by the Bride or Groom).</li>
-                        <li style={{ color: "#5c2a9d" }}>You may share the contact details of a parent, family member, guardian, or trusted representative who can communicate on your behalf. Only users who express interest in connecting with you will be able to view these details.</li>
+                        <li style={{ color: "#5c2a9d" }}>To help protect your privacy and avoid unwanted spam or fraudulent calls, AgapeVows recommends providing an alternate contact number for communication with interested matches. This number should be different from the primary phone number you have used to create your profile (if the profile was created using Bride or Groom’s phone number).</li>
+                        <li style={{ color: "#5c2a9d" }}>You may update the contact details of a parent, family member, guardian, or trusted representative who can communicate on behalf of you. Only users who express interest in connecting with you will be able to view these details.</li>
                         <li style={{ color: "#5c2a9d" }}>If you prefer to communicate directly with interested matches, you may enter your own phone number in the Alternate Mobile Number field.</li>
                       </ul>
                     </div>

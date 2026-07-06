@@ -810,7 +810,7 @@ const UserProfilePage = () => {
                           height: "130px",
                           minWidth: "130px",
                           minHeight: "130px",
-                          border: "5px solid #b8860b",
+                          border: "5px solid #58219f",
                           borderRadius: "50%",
                         }}
                       >

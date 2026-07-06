@@ -9,7 +9,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { showAlert } from "../../utils/alertService";
 import "../../index.css";
-import newBannerImg from "../../assets/images/new-banner.png";
+import planBg from "../../assets/images/plan-bg.png";
 
 const UserPlanSelection = () => {
   const [plans, setPlans] = useState([]);
@@ -328,10 +328,10 @@ const UserPlanSelection = () => {
       <>
         <LayoutComponent />
         <section>
-          <div className="plans-ban" style={{ background: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${newBannerImg}) no-repeat center center`, backgroundSize: 'cover' }}>
+          <div className="w-full bg-cover bg-center bg-no-repeat flex items-center justify-center" style={{ backgroundImage: `url(${planBg})`, minHeight: '45vh' }}>
             <div className="container">
               <div className="row">
-                <h1>Loading plans...</h1>
+                <h1 className="text-white text-3xl font-bold text-center">Loading plans...</h1>
               </div>
             </div>
           </div>
@@ -348,25 +348,19 @@ const UserPlanSelection = () => {
         <LayoutComponent />
       </div>
 
-      <div className="pt-16">
-        <div className="plans-ban" style={{ 
-          marginTop: '0',
-          backgroundImage: `url(${newBannerImg})`, 
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center center',
-          backgroundSize: 'cover',
-          minHeight: '80vh',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0'
+      <div className="pt-[125px]"> 
+        <div className="w-full bg-cover bg-center bg-no-repeat flex items-center" style={{
+          backgroundImage: `url(${planBg})`,
+          minHeight: '45vh',
+          padding: '40px 0'
         }}>
-          <div className="container">
+          <div className="container mx-auto px-4">
             <div className="row">
-              <div className="col-md-8 col-lg-6" style={{ textAlign: "center", paddingLeft: "5%" }}>
-                <span style={{ 
-                  color: "#d4af37", 
-                  fontWeight: "600", 
-                  letterSpacing: "3px", 
+              <div className="col-md-8 col-lg-6" style={{ textAlign: "left", paddingLeft: "5%" }}>
+                <span style={{
+                  color: "#d4af37",
+                  fontWeight: "600",
+                  letterSpacing: "3px",
                   textTransform: "uppercase",
                   fontSize: "13px",
                   display: "block",
@@ -374,18 +368,18 @@ const UserPlanSelection = () => {
                 }}>
                   MEMBERSHIP PLANS
                 </span>
-                
+
                 {/* Heart with lines */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "25px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", marginBottom: "25px" }}>
                   <div style={{ height: "1px", background: "#d4af37", width: "30px", opacity: 0.5 }}></div>
                   <i className="fa fa-heart" style={{ color: "#d4af37", fontSize: "10px", margin: "0 8px" }}></i>
                   <div style={{ height: "1px", background: "#d4af37", width: "30px", opacity: 0.5 }}></div>
                 </div>
 
-                <h1 style={{ 
-                  color: "#fff", 
-                  fontFamily: "'Playfair Display', serif", 
-                  fontSize: "3.8rem",
+                <h1 style={{
+                  color: "#fff",
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "3.2rem",
                   lineHeight: "1.2",
                   fontWeight: "500",
                   textTransform: "none",
@@ -401,39 +395,39 @@ const UserPlanSelection = () => {
 
       {/* PRICING PLANS WITH CAROUSEL */}
       <section>
-        <div className="plans-main">
+        <div className="plans-main" style={{ marginTop: '-30px' }}>
           <div className="container">
             <div className="row" style={{ position: "relative" }}>
               {!userId ? (
-                <div style={{ 
-                  textAlign: "center", 
-                  padding: "50px 40px", 
-                  background: "#fff", 
-                  borderRadius: "16px", 
-                  boxShadow: "0 10px 40px rgba(0,0,0,0.1)", 
-                  width: "100%", 
-                  maxWidth: "700px", 
-                  margin: "-80px auto 40px auto", 
+                <div style={{
+                  textAlign: "center",
+                  padding: "35px 30px",
+                  background: "#fff",
+                  borderRadius: "16px",
+                  boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                  width: "100%",
+                  maxWidth: "500px",
+                  margin: "20px auto 40px auto",
                   position: "relative",
                   zIndex: 10
                 }}>
                   {/* Top Circle Icon */}
                   <div style={{
-                    width: "80px",
-                    height: "80px",
+                    width: "60px",
+                    height: "60px",
                     background: "#fcf8ef",
                     borderRadius: "50%",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    margin: "0 auto 20px auto"
+                    margin: "0 auto 15px auto"
                   }}>
-                    <i className="fa fa-users" style={{ color: "#d4af37", fontSize: "24px", position: "relative" }}>
-                      <i className="fa fa-lock" style={{ 
-                        position: "absolute", 
-                        bottom: "-5px", 
-                        right: "-5px", 
-                        fontSize: "14px", 
+                    <i className="fa fa-users" style={{ color: "#d4af37", fontSize: "20px", position: "relative" }}>
+                      <i className="fa fa-lock" style={{
+                        position: "absolute",
+                        bottom: "-4px",
+                        right: "-4px",
+                        fontSize: "12px",
                         background: "#fcf8ef",
                         borderRadius: "50%",
                         padding: "2px"
@@ -441,45 +435,45 @@ const UserPlanSelection = () => {
                     </i>
                   </div>
 
-                  <h2 style={{ 
-                    fontSize: "2.2rem", 
-                    color: "#4a2580", 
-                    marginBottom: "15px",
+                  <h2 style={{
+                    fontSize: "1.8rem",
+                    color: "#4a2580",
+                    marginBottom: "10px",
                     fontFamily: "'Playfair Display', serif",
                     fontWeight: "500"
                   }}>
                     Login to View Membership Plans
                   </h2>
-                  
+
                   {/* Separator with Heart */}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", margin: "20px 0" }}>
-                    <div style={{ height: "1px", background: "#e5e7eb", width: "40px" }}></div>
-                    <i className="fa fa-heart" style={{ color: "#d4af37", fontSize: "12px", margin: "0 10px" }}></i>
-                    <div style={{ height: "1px", background: "#e5e7eb", width: "40px" }}></div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", margin: "15px 0" }}>
+                    <div style={{ height: "1px", background: "#e5e7eb", width: "30px" }}></div>
+                    <i className="fa fa-heart" style={{ color: "#d4af37", fontSize: "10px", margin: "0 8px" }}></i>
+                    <div style={{ height: "1px", background: "#e5e7eb", width: "30px" }}></div>
                   </div>
 
-                  <p style={{ 
-                    fontSize: "1.05rem", 
-                    color: "#4b5563", 
-                    marginBottom: "40px",
-                    maxWidth: "500px",
-                    margin: "0 auto 40px auto",
-                    lineHeight: "1.6"
+                  <p style={{
+                    fontSize: "0.95rem",
+                    color: "#4b5563",
+                    marginBottom: "25px",
+                    maxWidth: "450px",
+                    margin: "0 auto 25px auto",
+                    lineHeight: "1.5"
                   }}>
                     Sign in to explore our membership plans and choose the option that best suits your needs.
                   </p>
 
-                  <div style={{ display: "flex", gap: "20px", justifyContent: "center", flexWrap: "wrap" }}>
-                    <button 
-                      onClick={() => navigate('/user/user-login')} 
-                      style={{ 
-                        padding: "12px 40px", 
-                        fontSize: "1rem", 
-                        borderRadius: "50px", 
-                        border: "2px solid #4a2580", 
-                        background: "transparent", 
-                        color: "#4a2580", 
-                        cursor: "pointer", 
+                  <div style={{ display: "flex", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+                    <button
+                      onClick={() => navigate('/user/user-login')}
+                      style={{
+                        padding: "12px 40px",
+                        fontSize: "1rem",
+                        borderRadius: "50px",
+                        border: "2px solid #4a2580",
+                        background: "transparent",
+                        color: "#4a2580",
+                        cursor: "pointer",
                         fontWeight: "600",
                         display: "flex",
                         alignItems: "center",
@@ -492,16 +486,16 @@ const UserPlanSelection = () => {
                       <i className="fa fa-lock"></i> LOGIN
                     </button>
 
-                    <button 
-                      onClick={() => navigate('/user/user-sign-up')} 
-                      style={{ 
-                        padding: "12px 40px", 
-                        fontSize: "1rem", 
-                        borderRadius: "50px", 
-                        background: "#4a2580", 
-                        color: "#fff", 
-                        border: "2px solid #4a2580", 
-                        cursor: "pointer", 
+                    <button
+                      onClick={() => navigate('/user/user-sign-up')}
+                      style={{
+                        padding: "12px 40px",
+                        fontSize: "1rem",
+                        borderRadius: "50px",
+                        background: "#4a2580",
+                        color: "#fff",
+                        border: "2px solid #4a2580",
+                        cursor: "pointer",
                         fontWeight: "600",
                         display: "flex",
                         alignItems: "center",
