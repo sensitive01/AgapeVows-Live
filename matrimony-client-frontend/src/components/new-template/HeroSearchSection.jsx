@@ -268,7 +268,7 @@ export default function HeroSearchSection() {
         className="hero-search-container"
         style={{ marginBottom: '-34px' }}
       >
-        <div className="container">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="hero-content-wrapper">
 
             {/* Left Side: Professional Content */}
