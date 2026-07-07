@@ -9,16 +9,27 @@ import {
   FaTrash,
   FaSearch,
   FaBriefcase,
-  FaHeart,
+  FiHeart,
   FaCog,
   FaClock,
   FaTimes,
   FaCalendarAlt,
   FaFileAlt,
+  FaCheckSquare,
+  FaEllipsisH,
+  FaChevronRight,
+  FaCrown,
+  FaWallet,
+  FaGem,
+  FaUsers,
+  FaCheck,
+  FaCalendarCheck,
 } from "react-icons/fa";
+import { FiEye, FiUsers, FiHeart, FiCalendar, FiPhone } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { getEmployeeDetails } from "../../api/services/projectServices";
 import axios from "axios";
+import "./dashboard.css";
 
 const UserDashboard = () => {
   const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -193,85 +204,7 @@ const UserDashboard = () => {
     return Math.round((completedFields / fieldsToCheck.length) * 100);
   };
 
-  const WelcomeMessage = () => (
-    <div className="jobplugin__dashboard-block" style={{ marginBottom: "40px" }}>
-      <div
-        className="alert alert-info border border-dark shadow"
-        style={{
-          borderRadius: "10px",
-          padding: "20px",
-          marginBottom: "20px",
-          borderWidth: "2px",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        <h4 className="text-primary mb-3">
-          <FaHeart className="me-2" />
-          Welcome to EdProfio, {employerData?.userName}!
-        </h4>
-        <p className="mb-3">
-          Great to have you on board! Your profile is {calculateProfileCompletion(employerData)}% complete. Here's how you can get started:
-        </p>
-        <div className="row align-items-stretch">
-          <div className="col-md-4 mb-3 d-flex">
-            <div className="card border-primary w-100 d-flex flex-column" style={{ borderWidth: "2px" }}>
-              <div className="card-body text-center d-flex flex-column">
-                <FaEdit className="text-primary mb-2" size={30} />
-                <h6>Complete Your Profile</h6>
-                <div className="mb-2">
-                  <h4 className="text-primary fw-bold">{calculateProfileCompletion(employerData)}%</h4>
-                  <small className="text-muted">Profile Completion</small>
-                </div>
-                <p className="small flex-grow-1">Add more details to attract employers</p>
-                <div className="mt-auto">
-                  <Link to={`/employee/edit/${employerData?._id}`} className="btn btn-primary btn-sm w-100">
-                    Update Profile
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-4 mb-3 d-flex">
-            <div className="card border-success w-100 d-flex flex-column" style={{ borderWidth: "2px" }}>
-              <div className="card-body text-center d-flex flex-column">
-                <FaSearch className="text-success mb-2" size={30} />
-                <h6>Browse Jobs</h6>
-                <div className="mb-2">
-                  <h4 className="text-success fw-bold">{stats.matchingJobs}</h4>
-                  <small className="text-muted">Available Jobs</small>
-                </div>
-                <p className="small flex-grow-1">Explore available opportunities</p>
-                <div className="mt-auto">
-                  <Link to="/job-vacancies" className="btn btn-success btn-sm w-100">
-                    View Jobs
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-4 mb-3 d-flex">
-            <div className="card border-warning w-100 d-flex flex-column" style={{ borderWidth: "2px" }}>
-              <div className="card-body text-center d-flex flex-column">
-                <FaCalendarAlt className="text-warning mb-2" size={30} />
-                <h6>Browse Events</h6>
-                <div className="mb-2">
-                  <h4 className="text-warning fw-bold">{stats.upcomingEvents || 0}</h4>
-                  <small className="text-muted">Upcoming Events</small>
-                </div>
-                <p className="small flex-grow-1">Discover networking and career events</p>
-                <div className="mt-auto">
-                  <Link to="/events" className="btn btn-warning btn-sm w-100">
-                    View Events
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+
 
   if (loading) {
     return (
@@ -437,203 +370,261 @@ const UserDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Welcome message */}
-                  <WelcomeMessage />
-
-                  {/* Stats Dashboard */}
-                  <div className="jobplugin__dashboard-block" style={{ marginTop: "30px", paddingTop: "20px" }}>
-                    <div className="container-fluid">
-                      <div className="row g-4 m-6">
-                        {/* Applied Jobs Card */}
-                        <div className="col-lg-3 col-md-6">
-                          <div
-                            className="card bg-white border-2 h-100 shadow-sm"
-                            style={{ borderRadius: "16px", borderColor: "grey", transition: "all 0.3s ease", cursor: "pointer", position: "relative", zIndex: 10 }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.transform = "translateY(-4px)";
-                              e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.12)";
-                              e.currentTarget.style.zIndex = "20";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.transform = "translateY(0)";
-                              e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
-                              e.currentTarget.style.zIndex = "10";
-                            }}
-                          >
-                            <div className="card-body p-4 text-center">
-                              <div className="d-flex justify-content-between align-items-center mb-3">
-                                <h6 className="text-muted fw-semibold mb-0" style={{ fontSize: "13px" }}>
-                                  Applied Jobs
-                                </h6>
-                                <div className="bg-light rounded-circle d-flex align-items-center justify-content-center" style={{ width: "26px", height: "26px" }}>
-                                  <FaBriefcase className="text-info" style={{ fontSize: "16px" }} />
-                                </div>
+                  {/* Dashboard Cards Grid */}
+                  <div className="jobplugin__dashboard-block mt-4">
+                    <div className="row g-4 mb-4">
+                      {/* Profile Completion Card */}
+                      <div className="col-md-6 mb-4 d-flex">
+                        <div className="profile-completion-card d-flex flex-column w-100">
+                          <div className="profile-completion-header">
+                            <h3 className="profile-completion-title"><FaCheckSquare style={{ color: '#7c3aed' }} /> Profile Completion</h3>
+                            <FaEllipsisH style={{ color: '#9ca3af', cursor: 'pointer' }} />
+                          </div>
+                          <div className="d-flex flex-column align-items-center justify-content-center flex-grow-1" style={{ padding: '0px' }}>
+                            <div className="position-relative mb-2" style={{ width: '80px', height: '80px' }}>
+                              <svg viewBox="0 0 36 36" style={{ width: '100%', height: '100%' }}>
+                                <defs>
+                                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stopColor="#ec4899" />
+                                    <stop offset="100%" stopColor="#7c3aed" />
+                                  </linearGradient>
+                                </defs>
+                                <path
+                                  className="circle-bg"
+                                  d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                  fill="none"
+                                  stroke="#f3f4f6"
+                                  strokeWidth="3"
+                                />
+                                <path
+                                  className="circle"
+                                  strokeDasharray={`${calculateProfileCompletion(employerData)}, 100`}
+                                  d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                  fill="none"
+                                  stroke="url(#gradient)"
+                                  strokeWidth="3"
+                                  strokeLinecap="round"
+                                />
+                              </svg>
+                              <div className="position-absolute top-50 start-50 translate-middle text-center">
+                                <h2 className="mb-0 fw-bold" style={{ color: '#7c3aed', fontSize: '1.4rem', lineHeight: '1', letterSpacing: '-1px', fontFamily: "'Outfit', 'Poppins', 'Inter', sans-serif" }}>
+                                  {calculateProfileCompletion(employerData)}<span style={{ fontSize: '0.8rem', marginLeft: '2px', letterSpacing: '0' }}>%</span>
+                                </h2>
+                                <span className="text-muted" style={{ fontSize: '0.65rem' }}>Completed</span>
                               </div>
-                              <div className="mb-3">
-                                <h1 className="text-info fw-bold mb-1" style={{ fontSize: "2.8rem", lineHeight: "1" }}>
-                                  {stats.appliedJobs}
-                                </h1>
-                                <p className="text-muted mb-0" style={{ fontSize: "12px" }}>
-                                  Total applied
-                                </p>
-                              </div>
-                              <Link to="/applied-jobs" className="btn btn-info fw-semibold px-4 py-2" style={{ borderRadius: "12px", fontSize: "13px", minHeight: "38px" }}>
-                                View Applied
-                              </Link>
                             </div>
+                            <p className="text-center text-muted mb-4" style={{ fontSize: '0.9rem' }}>Complete your profile to get better matches</p>
+                          </div>
+                          <div className="mt-auto">
+                            <Link to={`/employee/edit/${employerData?._id}`} className="dash-btn-outline">
+                              Complete Your Profile <FaChevronRight size={12} />
+                            </Link>
                           </div>
                         </div>
+                      </div>
 
-                        {/* Shortlisted Jobs Card */}
-                        <div className="col-lg-3 col-md-6">
-                          <div
-                            className="card bg-white border-2 h-100 shadow-sm"
-                            style={{ borderRadius: "16px", borderColor: "grey", transition: "all 0.3s ease", cursor: "pointer", position: "relative", zIndex: 10 }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.transform = "translateY(-4px)";
-                              e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.12)";
-                              e.currentTarget.style.zIndex = "20";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.transform = "translateY(0)";
-                              e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
-                              e.currentTarget.style.zIndex = "10";
-                            }}
-                          >
-                            <div className="card-body p-4 text-center">
-                              <div className="d-flex justify-content-between align-items-center mb-3">
-                                <h6 className="text-muted fw-semibold mb-0" style={{ fontSize: "13px" }}>
-                                  Shortlisted
-                                </h6>
-                                <div className="bg-light rounded-circle d-flex align-items-center justify-content-center" style={{ width: "26px", height: "26px" }}>
-                                  <FaHeart className="text-danger" style={{ fontSize: "16px" }} />
+                      {/* Your Plan Card */}
+                      <div className="col-lg-3 col-md-6 mb-4 d-flex">
+                        <div className="plan-details-card d-flex flex-column w-100">
+                                <div className="plan-details-header d-flex justify-content-between align-items-center mb-4">
+                                  <div className="d-flex align-items-center">
+                                    <FaCrown style={{ color: '#f59e0b', fontSize: '18px', marginRight: '8px' }} />
+                                    <h3 className="plan-details-title m-0 fw-bold text-dark" style={{ fontSize: '15px' }}>Your Plan</h3>
+                                  </div>
+                                  <FaEllipsisH style={{ color: '#9ca3af', cursor: 'pointer', fontSize: '14px' }} />
+                                </div>
+                                <div className="d-flex flex-column align-items-center justify-content-center mb-4 w-100">
+                                  <img src={planIcon} alt="Plan Icon" className="img-fluid mb-2" style={{ height: '90px' }} />
+                                  <span className="dash-badge dash-badge-premium d-inline-flex align-items-center justify-content-center px-3 py-1 fw-bold mt-2" style={{ backgroundColor: '#fef3c7', color: '#b45309', borderRadius: '4px', fontSize: '11px' }}>
+                                    PREMIUM PLAN
+                                  </span>
+                                </div>
+                                <div className="d-flex justify-content-center w-100 mb-3">
+                                  <ul className="plan-details-list list-unstyled" style={{ fontSize: '13px', margin: '0' }}>
+                                    <li className="d-flex align-items-center mb-2"><FiCreditCard size={15} style={{ color: '#9ca3af', marginRight: '10px' }} /> <span className="text-muted" style={{ display: 'inline-block', width: '75px' }}>Amount:</span> <strong className="text-dark">₹499</strong></li>
+                                    <li className="d-flex align-items-center mb-2"><FiClock size={15} style={{ color: '#9ca3af', marginRight: '10px' }} /> <span className="text-muted" style={{ display: 'inline-block', width: '75px' }}>Validity:</span> <strong className="text-dark">1 Month</strong></li>
+                                    <li className="d-flex align-items-center mb-2"><FiClock size={15} style={{ color: '#9ca3af', marginRight: '10px' }} /> <span className="text-muted" style={{ display: 'inline-block', width: '75px' }}>Valid from:</span> <strong className="text-dark">28 Jun 2026</strong></li>
+                                    <li className="d-flex align-items-center mb-2"><FiClock size={15} style={{ color: '#9ca3af', marginRight: '10px' }} /> <span className="text-muted" style={{ display: 'inline-block', width: '75px' }}>Valid till:</span> <strong className="text-dark">12 Aug 2026</strong></li>
+                                  </ul>
+                                </div>
+                                <div className="remaining-days-box d-flex align-items-center justify-content-center p-2 mb-3" style={{ backgroundColor: '#fffbeb', borderRadius: '6px', color: '#b45309', fontSize: '12px', fontWeight: 'bold' }}>
+                                  <FiCalendar style={{ marginRight: '6px' }} /> Remaining Days: 40 days
+                                </div>
+                                <div className="mt-auto w-100">
+                                  <button className="dash-btn-primary w-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: '#6d28d9', border: 'none', borderRadius: '8px', padding: '12px 0', color: 'white', fontWeight: 'bold', fontSize: '14px' }}>
+                                    <FaCrown style={{ marginRight: '8px' }} /> Upgrade Now
+                                  </button>
+                                </div>     </div>
+                      </div>
+
+                      {/* Active Plan Benefits Card */}
+                      <div className="col-lg-6 col-md-12 mb-4 d-flex">
+                        <div className="active-plan-card d-flex flex-column w-100">
+                          <div className="active-plan-header mb-2">
+                            <h3 className="active-plan-title"><FaGem style={{ color: '#8b5cf6' }} /> Active Plan Benefits</h3>
+                            <span className="dash-badge dash-badge-active">Active</span>
+                          </div>
+                          
+                          <div className="active-plan-benefits-grid mt-2 flex-grow-1">
+                            <div className="row g-3">
+                              {/* Total Profile Views */}
+                              <div className="col-xl-4 col-6">
+                                <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+                                  <div className="d-flex align-items-center mb-3">
+                                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
+                                      <FiEye size={16} color="#3b82f6" />
+                                    </div>
+                                    <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Total Profile Views</span>
+                                  </div>
+                                  <div className="mt-auto">
+                                    <div className="d-flex justify-content-between align-items-end mb-2">
+                                      <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>8</span>
+                                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of 50</span>
+                                    </div>
+                                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
+                                      <div className="progress-bar" style={{ width: '16%', backgroundColor: '#3b82f6', borderRadius: '2px' }}></div>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
-                              <div className="mb-3">
-                                <h1 className="text-danger fw-bold mb-1" style={{ fontSize: "2.8rem", lineHeight: "1" }}>
-                                  {stats.shortlistedJobs}
-                                </h1>
-                                <p className="text-muted mb-0" style={{ fontSize: "12px" }}>
-                                  Saved jobs
-                                </p>
+
+                              {/* Daily Profile View Limit */}
+                              <div className="col-xl-4 col-6">
+                                <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+                                  <div className="d-flex align-items-center mb-3">
+                                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
+                                      <FiEye size={16} color="#22c55e" />
+                                    </div>
+                                    <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Daily Profile Views</span>
+                                  </div>
+                                  <div className="mt-auto">
+                                    <div className="d-flex justify-content-between align-items-end mb-2">
+                                      <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>3</span>
+                                      <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 'bold' }}>Unlimited</span>
+                                    </div>
+                                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#d1fae5' }}>
+                                      <div className="progress-bar" style={{ width: '100%', backgroundColor: '#10b981', borderRadius: '2px' }}></div>
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
-                              <Link to="/shortlisted" className="btn btn-danger fw-semibold px-4 py-2" style={{ borderRadius: "12px", fontSize: "13px", minHeight: "38px" }}>
-                                View Shotlisted
-                              </Link>
+
+                              {/* Interest Requests Total */}
+                              <div className="col-xl-4 col-6">
+                                <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+                                  <div className="d-flex align-items-center mb-3">
+                                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
+                                      <FiHeart size={16} color="#ef4444" />
+                                    </div>
+                                    <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Total Interests</span>
+                                  </div>
+                                  <div className="mt-auto">
+                                    <div className="d-flex justify-content-between align-items-end mb-2">
+                                      <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>0</span>
+                                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of 5</span>
+                                    </div>
+                                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
+                                      <div className="progress-bar" style={{ width: '0%', backgroundColor: '#ef4444', borderRadius: '2px' }}></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Interest Requests Daily */}
+                              <div className="col-xl-4 col-6">
+                                <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+                                  <div className="d-flex align-items-center mb-3">
+                                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
+                                      <FaCalendarAlt size={16} color="#ef4444" />
+                                    </div>
+                                    <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Daily Interests</span>
+                                  </div>
+                                  <div className="mt-auto">
+                                    <div className="d-flex justify-content-between align-items-end mb-2">
+                                      <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>0</span>
+                                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of 1</span>
+                                    </div>
+                                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
+                                      <div className="progress-bar" style={{ width: '0%', backgroundColor: '#ef4444', borderRadius: '2px' }}></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Contact Details Total */}
+                              <div className="col-xl-4 col-6">
+                                <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+                                  <div className="d-flex align-items-center mb-3">
+                                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#f3e8ff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
+                                      <FiPhone size={16} color="#8b5cf6" />
+                                    </div>
+                                    <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Total Contacts</span>
+                                  </div>
+                                  <div className="mt-auto">
+                                    <div className="d-flex justify-content-between align-items-end mb-2">
+                                      <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>0</span>
+                                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of 5</span>
+                                    </div>
+                                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
+                                      <div className="progress-bar" style={{ width: '0%', backgroundColor: '#8b5cf6', borderRadius: '2px' }}></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Contact Details Daily */}
+                              <div className="col-xl-4 col-6">
+                                <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+                                  <div className="d-flex align-items-center mb-3">
+                                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#f3e8ff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
+                                      <FaCalendarAlt size={16} color="#8b5cf6" />
+                                    </div>
+                                    <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Daily Contacts</span>
+                                  </div>
+                                  <div className="mt-auto">
+                                    <div className="d-flex justify-content-between align-items-end mb-2">
+                                      <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>0</span>
+                                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of 1</span>
+                                    </div>
+                                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
+                                      <div className="progress-bar" style={{ width: '0%', backgroundColor: '#8b5cf6', borderRadius: '2px' }}></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        {/* Pending Jobs Card */}
-                        <div className="col-lg-3 col-md-6">
-                          <div
-                            className="card bg-white border-2 h-100 shadow-sm"
-                            style={{ borderRadius: "16px", borderColor: "grey", transition: "all 0.3s ease", cursor: "pointer", position: "relative", zIndex: 10 }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.transform = "translateY(-4px)";
-                              e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.12)";
-                              e.currentTarget.style.zIndex = "20";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.transform = "translateY(0)";
-                              e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
-                              e.currentTarget.style.zIndex = "10";
-                            }}
-                          >
-                            <div className="card-body p-4 text-center">
-                              <div className="d-flex justify-content-between align-items-center mb-3">
-                                <h6 className="text-muted fw-semibold mb-0" style={{ fontSize: "13px" }}>
-                                  Pending
-                                </h6>
-                                <div className="bg-light rounded-circle d-flex align-items-center justify-content-center" style={{ width: "26px", height: "26px" }}>
-                                  <FaClock className="text-warning" style={{ fontSize: "16px" }} />
-                                </div>
+                          <div className="active-plan-bottom mt-4">
+                            <div className="p-3" style={{ backgroundColor: '#faf5ff', borderRadius: '8px', border: '1px solid #f3e8ff' }}>
+                              <div className="row g-2" style={{ fontSize: '13px', fontWeight: '500', color: '#4b5563' }}>
+                                <div className="col-12 col-md-4 d-flex align-items-center mb-1"><FaCheck style={{ color: '#8b5cf6', marginRight: '8px' }} /> <span>Can view all profiles</span></div>
+                                <div className="col-12 col-md-4 d-flex align-items-center mb-1"><FaCheck style={{ color: '#8b5cf6', marginRight: '8px' }} /> <span>Send interest (Total): <strong className="text-dark">8</strong></span></div>
+                                <div className="col-12 col-md-4 d-flex align-items-center mb-1"><FaCheck style={{ color: '#8b5cf6', marginRight: '8px' }} /> <span>Contact View (Total): <strong className="text-dark">8</strong></span></div>
+                                
+                                <div className="col-12 col-md-4 d-flex align-items-center mb-1"><FaCheck style={{ color: '#8b5cf6', marginRight: '8px' }} /> <span>Contact details access</span></div>
+                                <div className="col-12 col-md-4 d-flex align-items-center mb-1"><FaCheck style={{ color: '#8b5cf6', marginRight: '8px' }} /> <span>Send interest (Daily): <strong className="text-dark">1</strong></span></div>
+                                <div className="col-12 col-md-4 d-flex align-items-center mb-1"><FaCheck style={{ color: '#8b5cf6', marginRight: '8px' }} /> <span>Contact View (Daily): <strong className="text-dark">1</strong></span></div>
+                                
+                                <div className="col-12 col-md-4 d-flex align-items-center mb-1"><FaCheck style={{ color: '#8b5cf6', marginRight: '8px' }} /> <span>Can send interest request</span></div>
                               </div>
-                              <div className="mb-3">
-                                <h1 className="text-warning fw-bold mb-1" style={{ fontSize: "2.8rem", lineHeight: "1" }}>
-                                  {stats.pendingJob || 0}
-                                </h1>
-                                <p className="text-muted mb-0" style={{ fontSize: "12px" }}>
-                                  Under review
-                                </p>
-                              </div>
-                              <Link to="/pending-applications" className="btn btn-warning fw-semibold px-4 py-2" style={{ borderRadius: "12px", fontSize: "13px", minHeight: "38px" }}>
-                                View Pending
-                              </Link>
                             </div>
                           </div>
-                        </div>
-
-                        {/* Rejected Jobs Card */}
-                        <div className="col-lg-3 col-md-6">
-                          <div
-                            className="card bg-white border-2 h-100 shadow-sm"
-                            style={{ borderRadius: "16px", borderColor: "grey", transition: "all 0.3s ease", cursor: "pointer", position: "relative", zIndex: 10 }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.transform = "translateY(-4px)";
-                              e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.12)";
-                              e.currentTarget.style.zIndex = "20";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.transform = "translateY(0)";
-                              e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
-                              e.currentTarget.style.zIndex = "10";
-                            }}
-                          >
-                            <div className="card-body p-4 text-center">
-                              <div className="d-flex justify-content-between align-items-center mb-3">
-                                <h6 className="text-muted fw-semibold mb-0" style={{ fontSize: "13px" }}>
-                                  Rejected
-                                </h6>
-                                <div className="bg-light rounded-circle d-flex align-items-center justify-content-center" style={{ width: "26px", height: "26px" }}>
-                                  <FaTimes className="text-secondary" style={{ fontSize: "16px" }} />
-                                </div>
-                              </div>
-                              <div className="mb-3">
-                                <h1 className="text-secondary fw-bold mb-1" style={{ fontSize: "2.8rem", lineHeight: "1" }}>
-                                  {stats.rejectedJob || 0}
-                                </h1>
-                                <p className="text-muted mb-0" style={{ fontSize: "12px" }}>
-                                  Not selected
-                                </p>
-                              </div>
-                              <Link to="/rejected-applications" className="btn btn-secondary fw-semibold px-4 py-2" style={{ borderRadius: "12px", fontSize: "13px", minHeight: "38px" }}>
-                                View Rejected
-                              </Link>
+                          
+                          <div className="d-flex justify-content-center text-muted small mt-3" style={{ fontSize: '12px' }}>
+                            <div className="d-flex align-items-center">
+                              <FaCalendarAlt size={13} style={{ color: '#9ca3af', marginRight: '6px', marginBottom: '2px' }} /> 
+                              <span>Valid till: <strong className="text-dark">12 Aug 2026, 3:52:53 pm</strong></span>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-
-                  {isNewUser && (
-                    <div className="jobplugin__dashboard-block">
-                      <div className="card border-info" style={{ borderWidth: "2px" }}>
-                        <div className="card-header bg-info text-white">
-                          <h5 className="mb-0">💡 Quick Tips to Get Started</h5>
-                        </div>
-                        <div className="card-body">
-                          <div className="row">
-                            <div className="col-md-6">
-                              <ul className="list-unstyled">
-                                <li className="mb-2">✅ Complete your profile to attract employers</li>
-                                <li className="mb-2">🔍 Use filters to find relevant job opportunities</li>
-                                <li className="mb-2">💾 Shortlist jobs you're interested in</li>
-                              </ul>
-                            </div>
-                            <div className="col-md-6">
-                              <ul className="list-unstyled">
-                                <li className="mb-2">📝 Customize your applications for each job</li>
-                                <li className="mb-2">🔔 Set up job alerts for new opportunities</li>
-                                <li className="mb-2">📊 Track your application status here</li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>

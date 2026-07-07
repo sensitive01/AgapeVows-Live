@@ -12,6 +12,7 @@ import {
 } from "../api/axiosService/userAuthService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "./public/dashboard.css";
 import PlanDetails from "./userdashboard/PlanDetails";
 import ProfileCompletion from "./userdashboard/ProfileCompletion";
 
@@ -550,6 +551,19 @@ const UserDashboardPage = () => {
                                 .slider .slick-prev, .slider .slick-next {
                                   z-index: 10 !important;
                                 }
+                                .slider:not(.slick-initialized) {
+                                  display: flex;
+                                  overflow: hidden;
+                                }
+                                .slider:not(.slick-initialized) li {
+                                  flex: 0 0 20%;
+                                  max-width: 20%;
+                                  padding: 0 5px;
+                                  list-style: none;
+                                }
+                                @media (max-width: 992px) { .slider:not(.slick-initialized) li { flex: 0 0 33.33%; max-width: 33.33%; } }
+                                @media (max-width: 768px) { .slider:not(.slick-initialized) li { flex: 0 0 50%; max-width: 50%; } }
+                                @media (max-width: 576px) { .slider:not(.slick-initialized) li { flex: 0 0 100%; max-width: 100%; } }
                               `}
                             </style>
                             <ul className="slider" ref={sliderRef} key={profileMatches.map((p, i) => p._id || i).join('-')} style={{ margin: 0, padding: 0 }}>

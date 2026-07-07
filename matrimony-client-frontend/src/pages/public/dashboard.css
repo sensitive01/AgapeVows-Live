@@ -27,3 +27,309 @@
   opacity: 1;
   visibility: visible;
 }
+
+/* Custom Dashboard Styles */
+.dash-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  padding: 8px;
+  height: 100%;
+  border: 1px solid #eaeaea;
+}
+
+.dash-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.dash-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+  margin: 0;
+}
+
+.dash-badge-premium {
+  background: #fff4e5;
+  color: #f2994a;
+  border: 1px solid #ffe5c2;
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dash-badge-active {
+  background: #dcfce7; /* light green */
+  color: #15803d; /* dark green text */
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.dash-btn-outline {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #7c3aed;
+  color: #7c3aed;
+  background: transparent;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.dash-btn-outline:hover {
+  background: #7c3aed;
+  color: white;
+}
+
+.dash-btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+}
+
+.dash-btn-primary:hover {
+  background: #6d28d9;
+  color: white;
+}
+
+.plan-details-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+}
+
+.plan-details-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: #4b5563;
+  font-size: 12px;
+}
+
+.plan-details-list li svg {
+  color: #9ca3af;
+  width: 14px;
+  height: 14px;
+}
+
+.remaining-days-box {
+  background: #fff8eb;
+  border-radius: 4px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #925c11;
+  font-weight: 600;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.icon-box {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-box svg {
+  width: 16px;
+  height: 16px;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.dash-progress {
+  height: 3px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  width: 100%;
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.dash-progress-bar {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.dash-permissions-box {
+  margin-top: 12px;
+  background: #fdf4ff; /* light purple */
+  border-radius: 8px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.dash-permissions-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+
+.dash-permissions-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.dash-permissions-list li svg {
+  color: #a855f7; /* purple check */
+  font-size: 12px;
+}
+
+.valid-till-text {
+  text-align: center;
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 16px;
+}
+/* --- Individual Card CSS --- */
+/* 1. Profile Completion Card */
+.profile-completion-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  padding: 16px;
+  border: 1px solid #eaeaea;
+}
+.profile-completion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.profile-completion-title {
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+  margin: 0;
+}
+
+/* 2. Plan Details Card */
+.plan-details-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  padding: 16px;
+  border: 1px solid #eaeaea;
+}
+.plan-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.plan-details-title {
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+  margin: 0;
+}
+
+/* 3. Active Plan Benefits Card */
+.active-plan-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  padding: 16px;
+  border: 1px solid #eaeaea;
+}
+.active-plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.active-plan-title {
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+  margin: 0;
+}
+
+
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 2px;
+}
+.benefits-table th {
+  padding: 2px 4px;
+  font-weight: 600;
+  font-size: 11px;
+  color: #6b7280;
+  border-bottom: 2px solid #f3f4f6;
+}
+.benefits-table td {
+  padding: 2px 4px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+  font-size: 11px;
+}
+.dash-table th {
+  color: #333;
+  font-weight: 700;
+  font-size: 10px;
+  padding: 2px 0;
+  text-align: left;
+  border-bottom: 1px solid #eaeaea;
+}
+.dash-table td {
+  padding: 2px 0;
+  font-size: 10px;
+  color: #333;
+  border-bottom: 1px solid #eaeaea;
+  vertical-align: middle;
+}
+.dash-table tr:last-child td {
+  border-bottom: none;
+}

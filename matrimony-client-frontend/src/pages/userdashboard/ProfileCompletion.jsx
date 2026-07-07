@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaCheckSquare, FaEllipsisH, FaChevronRight } from "react-icons/fa";
 
 const ProfileCompletion = ({ userData }) => {
   const navigate = useNavigate();
@@ -282,88 +283,60 @@ const ProfileCompletion = ({ userData }) => {
   }, [userData]);
 
   return (
-    <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com h-100">
-      <h2 className="db-tit">Profiles status</h2>
-      <div className="db-pro-stat h-100" style={{ minHeight: "450px", display: "flex", flexDirection: "column" }}>
-        <h6>Profile completion</h6>
-        <div className="dropdown">
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            data-bs-toggle="dropdown"
-          >
-            <i className="fa fa-ellipsis-h" aria-hidden="true"></i>
+    <div className="col-lg-3 col-md-6 mb-4 d-flex">
+      <div className="profile-completion-card d-flex flex-column w-100">
+        <div className="profile-completion-header d-flex justify-content-between align-items-center mb-4">
+          <div className="d-flex align-items-center">
+            <div style={{ width: '28px', height: '28px', backgroundColor: '#f3e8ff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '8px' }}>
+              <FaCheckSquare style={{ color: '#7c3aed', fontSize: '14px' }} />
+            </div>
+            <h3 className="profile-completion-title m-0 fw-bold text-dark" style={{ fontSize: '15px' }}>Profile Completion</h3>
+          </div>
+          <FaEllipsisH style={{ color: '#9ca3af', cursor: 'pointer', fontSize: '14px' }} onClick={() => navigate(`/user/user-profile-edit-page/${userData?._id}`)} />
+        </div>
+        <div className="d-flex flex-column align-items-center justify-content-center flex-grow-1" style={{ padding: '10px 0 20px 0' }}>
+          <div className="position-relative mb-4 flex-shrink-0" style={{ width: '160px', height: '160px', minHeight: '160px', minWidth: '160px' }}>
+            {/* Sparkles */}
+            <div style={{ position: 'absolute', top: '-5px', right: '-5px', fontSize: '20px' }}>✨</div>
+            <svg viewBox="0 0 36 36" style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible' }}>
+              <defs>
+                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#ec4899" />
+                  <stop offset="100%" stopColor="#7c3aed" />
+                </linearGradient>
+              </defs>
+              <path
+                className="circle-bg-dotted"
+                d="M18 1.0 a 17 17 0 0 1 0 34 a 17 17 0 0 1 0 -34"
+                fill="none" stroke="#e0c7ff" strokeWidth="0.3" strokeDasharray="0.5, 1"
+              />
+              <path
+                className="circle-bg"
+                d="M18 4.0 a 14 14 0 0 1 0 28 a 14 14 0 0 1 0 -28"
+                fill="none" stroke="#f3f4f6" strokeWidth="2.5"
+              />
+              <path
+                className="circle"
+                strokeDasharray={`${displayPercentage * 0.88}, 100`}
+                d="M18 4.0 a 14 14 0 0 1 0 28 a 14 14 0 0 1 0 -28"
+                fill="none" stroke="url(#gradient)" strokeWidth="2.5" strokeLinecap="round"
+              />
+            </svg>
+            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100%', textAlign: 'center' }}>
+              <h2 className="mb-0 fw-bold" style={{ color: '#6d28d9', fontSize: '2.8rem', lineHeight: '1', letterSpacing: '-1.5px', fontFamily: "'Outfit', 'Poppins', 'Inter', sans-serif" }}>
+                {displayPercentage}<span style={{ fontSize: '1.2rem', marginLeft: '2px', letterSpacing: '0' }}>%</span>
+              </h2>
+              <span className="text-muted" style={{ fontSize: '0.85rem' }}>Completed</span>
+            </div>
+          </div>
+          <p className="text-center text-muted mb-0" style={{ fontSize: '13px' }}>Complete your profile to get better matches</p>
+        </div>
+        <div className="mt-auto w-100">
+          <button onClick={() => navigate(`/user/user-profile-edit-page/${userData?._id}`)} className="dash-btn-outline w-100 d-flex justify-content-between align-items-center" style={{ borderColor: '#d8b4fe', color: '#6d28d9', borderRadius: '8px', padding: '12px 16px', background: 'transparent' }}>
+            <span className="mx-auto fw-bold" style={{ fontSize: '14px' }}>Complete Your Profile</span>
+            <FaChevronRight size={12} style={{ color: '#a855f7' }} />
           </button>
-          <ul className="dropdown-menu">
-            <li>
-              <a
-                className="dropdown-item"
-                href="#!"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate(`/user/user-profile-edit-page/${userData?._id}`);
-                }}
-              >
-                Edit profile
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                href="#!"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate(`/user/user-profile-page`);
-                }}
-              >
-                View profile
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                href="#!"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate(`/user/user-settings-page`);
-                }}
-              >
-                Profile visibility settings
-              </a>
-            </li>
-          </ul>
         </div>
-        <div className="db-pro-pgog">
-          <span>
-            <b className="profile-count">{displayPercentage}</b>%
-          </span>
-        </div>
-        <ul className="pro-stat-ic">
-          {/* <li>
-            <span>
-              <i className="fa fa-heart-o like" aria-hidden="true"></i>
-              <b>12</b>Likes
-            </span>
-          </li> */}
-          <li>
-            <span>
-              <i className="fa fa-eye view" aria-hidden="true"></i>
-              <b>{userData?.viewsCount || 0}</b>Views
-            </span>
-          </li>
-          <li>
-            <span>
-              <i className="fa fa-handshake-o inte" aria-hidden="true"></i>
-              <b>{userData?.interestsCount || 0}</b>Interests
-            </span>
-          </li>
-          {/* <li>
-            <span>
-              <i className="fa fa-hand-pointer-o clic" aria-hidden="true"></i>
-              <b>12</b>Clicks
-            </span>
-          </li> */}
-        </ul>
       </div>
     </div>
   );

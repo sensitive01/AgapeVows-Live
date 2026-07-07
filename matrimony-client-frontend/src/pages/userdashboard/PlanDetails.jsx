@@ -1,229 +1,9 @@
-// import React, { useEffect, useState } from "react";
-// import planIcon from "../../assets/images/icon/plan.png";
-// import { getMyActivePlanData } from "../../api/axiosService/userAuthService";
-// import { useNavigate } from "react-router-dom";
-
-// const PlanDetails = () => {
-//   const navigate = useNavigate()
-//   const [planData, setPlanData] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-
-//   const userId = localStorage.getItem("userId");
-
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         setLoading(true);
-//         const response = await getMyActivePlanData(userId);
-
-//         if (response.status===200) {
-//           setPlanData(response?.data?.activePlan);
-//         } else {
-//           setError("No active plan found");
-//         }
-//       } catch (err) {
-//         setError(err?.response?.data?.message);
-//         console.error("Error fetching plan data:", err);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     if (userId) {
-//       fetchData();
-//     }
-//   }, [userId]);
-
-//   // Function to calculate validity period
-//   const getValidityPeriod = (validFrom, validTo) => {
-//     const fromDate = new Date(validFrom);
-//     const toDate = new Date(validTo);
-//     const diffTime = Math.abs(toDate - fromDate);
-//     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-//     if (diffDays >= 365) {
-//       const years = Math.floor(diffDays / 365);
-//       return `${years} Year${years > 1 ? "s" : ""}`;
-//     } else if (diffDays >= 30) {
-//       const months = Math.floor(diffDays / 30);
-//       return `${months} Month${months > 1 ? "s" : ""}`;
-//     } else {
-//       return `${diffDays} Day${diffDays > 1 ? "s" : ""}`;
-//     }
-//   };
-
-//   // Function to format date
-//   const formatDate = (dateString) => {
-//     const date = new Date(dateString);
-//     return date.toLocaleDateString("en-GB", {
-//       day: "2-digit",
-//       month: "short",
-//       year: "numeric",
-//     });
-//   };
-
-//   if (loading) {
-//     return (
-//       <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com">
-//         <h2 className="db-tit">Plan details</h2>
-//         <div className="db-pro-stat">
-//           <div className="text-center p-4">
-//             <div className="spinner-border" role="status">
-//               <span className="visually-hidden">Loading...</span>
-//             </div>
-//             <p className="mt-2">Loading plan details...</p>
-//           </div>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   if (error) {
-//     return (
-//       <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com">
-//         <h2 className="db-tit">Plan details</h2>
-//         <div className="db-pro-stat">
-//           <div className="text-center p-4">
-//             <p className="text-danger">{error}</p>
-//             <button
-//               className="btn btn-primary btn-sm"
-//               onClick={() => navigate("/user/user-plan-selection")}
-//             >
-//               Upgrade plan
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com">
-//       <h2 className="db-tit">Plan details</h2>
-//       <div className="db-pro-stat">
-//         <h6 className="tit-top-curv">
-//           {planData?.subscriptionType || "Standard"} plan
-//         </h6>
-//         <div className="dropdown">
-//           <button
-//             type="button"
-//             className="btn btn-outline-secondary"
-//             data-bs-toggle="dropdown"
-//           >
-//             <i className="fa fa-ellipsis-h" aria-hidden="true"></i>
-//           </button>
-//           <ul className="dropdown-menu">
-//             <li>
-//               <a
-//                 className="dropdown-item"
-//                 href="#!"
-//                 onClick={(e) => {
-//                   e.preventDefault();
-//                   navigate(`/user/user-profile-edit-page/${userId}`);
-//                 }}
-//               >
-//                 Edit profile
-//               </a>
-//             </li>
-//             <li>
-//               <a
-//                 className="dropdown-item"
-//                 href="#!"
-//                 onClick={(e) => {
-//                   e.preventDefault();
-//                   navigate(`/user/user-profile-page`);
-//                 }}
-//               >
-//                 View profile
-//               </a>
-//             </li>
-//             <li>
-//               <a
-//                 className="dropdown-item"
-//                 href="#!"
-//                 onClick={(e) => {
-//                   e.preventDefault();
-//                   navigate(`/user/user-plan-page`);
-//                 }}
-//               >
-//                 Change Plan
-//               </a>
-//             </li>
-//             <li>
-//               <a className="dropdown-item" href="#!">
-//                 Download invoice now
-//               </a>
-//             </li>
-//           </ul>
-//         </div>
-//         <div className="db-plan-card">
-//           <img src={planIcon} alt="Plan" />
-//         </div>
-//         <div className="db-plan-detil">
-//           <ul>
-//             <li>
-//               Plan name: <strong>{planData?.subscriptionType || "N/A"}</strong>
-//             </li>
-//             <li>
-//               Amount: <strong>₹{planData?.subscriptionAmount || "0"}</strong>
-//             </li>
-//             <li>
-//               Validity:{" "}
-//               <strong>
-//                 {planData?.subscriptionValidFrom &&
-//                 planData?.subscriptionValidTo
-//                   ? getValidityPeriod(
-//                       planData.subscriptionValidFrom,
-//                       planData.subscriptionValidTo
-//                     )
-//                   : "N/A"}
-//               </strong>
-//             </li>
-//             <li>
-//               Valid from:{" "}
-//               <strong>
-//                 {planData?.subscriptionValidFrom
-//                   ? formatDate(planData.subscriptionValidFrom)
-//                   : "N/A"}
-//               </strong>
-//             </li>
-//             <li>
-//               Valid till:{" "}
-//               <strong>
-//                 {planData?.subscriptionValidTo
-//                   ? formatDate(planData.subscriptionValidTo)
-//                   : "N/A"}
-//               </strong>
-//             </li>
-//             <li>
-//               Transaction date:{" "}
-//               <strong>
-//                 {planData?.subscriptionTransactionDate
-//                   ? formatDate(planData.subscriptionTransactionDate)
-//                   : "N/A"}
-//               </strong>
-//             </li>
-//             <li>
-//               <a href="/user/user-plan-selection" className="cta-3">
-//                 Upgrade now
-//               </a>
-//             </li>
-//           </ul>
-//         </div>
-//       </div>
-//     </div>
-//   );
-
-// };
-
-// export default PlanDetails;
-
-
 import React, { useEffect, useState } from "react";
 import planIcon from "../../assets/images/icon/plan.png";
 import { getMyActivePlanData } from "../../api/axiosService/userAuthService";
 import { useNavigate } from "react-router-dom";
+import { FaCrown, FaEllipsisH } from "react-icons/fa";
+import { FiCreditCard, FiClock, FiCalendar } from "react-icons/fi";
 
 const PlanDetails = ({ externalPlanData }) => {
   const navigate = useNavigate();
@@ -320,15 +100,12 @@ const PlanDetails = ({ externalPlanData }) => {
 
   if (loading) {
     return (
-      <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com h-100">
-        <h2 className="db-tit">Plan details</h2>
-        <div className="db-pro-stat h-100" style={{ minHeight: "450px", display: "flex", flexDirection: "column" }}>
-          <div className="text-center p-4 d-flex flex-column justify-content-center align-items-center flex-grow-1">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <p className="mt-2">Loading plan details...</p>
+      <div className="col-xl-3 col-lg-6 mb-4 d-flex">
+        <div className="dash-card d-flex flex-column w-100 justify-content-center align-items-center">
+          <div className="spinner-border" role="status">
+            <span className="visually-hidden">Loading...</span>
           </div>
+          <p className="mt-2">Loading plan details...</p>
         </div>
       </div>
     );
@@ -336,125 +113,52 @@ const PlanDetails = ({ externalPlanData }) => {
 
   if (error || !planData) {
     return (
-      <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com h-100">
-        <h2 className="db-tit">Plan details</h2>
-        <div className="db-pro-stat h-100" style={{ minHeight: "450px", display: "flex", flexDirection: "column" }}>
-          <div className="text-center p-4 d-flex flex-column justify-content-center align-items-center flex-grow-1">
-            <h6 className="text-danger fw-bold mb-3">{error || "No Subscription Found"}</h6>
-            <button
-              className="btn btn-primary btn-sm"
-              onClick={() => navigate("/user/user-plan-selection")}
-            >
-              Upgrade Plan
-            </button>
-          </div>
+      <div className="col-xl-3 col-lg-6 mb-4 d-flex">
+        <div className="dash-card d-flex flex-column w-100 justify-content-center align-items-center">
+          <h6 className="text-danger fw-bold mb-3">{error || "No Subscription Found"}</h6>
+          <button
+            className="dash-btn-primary"
+            onClick={() => navigate("/user/user-plan-selection")}
+          >
+            Upgrade Plan
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com h-100">
-      <h2 className="db-tit">Plan details</h2>
-      <div className="db-pro-stat h-100" style={{ minHeight: "450px", display: "flex", flexDirection: "column" }}>
-        <h6 className="tit-top-curv">
-          {planData?.subscriptionType || "Standard"} plan
-        </h6>
-
-        {/* Dropdown options */}
-        <div className="dropdown">
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            data-bs-toggle="dropdown"
-          >
-            <i className="fa fa-ellipsis-h" aria-hidden="true"></i>
+    <div className="col-lg-3 col-md-6 mb-4 d-flex">
+      <div className="plan-details-card d-flex flex-column w-100">
+        <div className="plan-details-header d-flex justify-content-between align-items-center mb-4">
+          <div className="d-flex align-items-center">
+            <FaCrown style={{ color: '#f59e0b', fontSize: '18px', marginRight: '8px' }} />
+            <h3 className="plan-details-title m-0 fw-bold text-dark" style={{ fontSize: '15px' }}>Your Plan</h3>
+          </div>
+          <FaEllipsisH style={{ color: '#9ca3af', cursor: 'pointer', fontSize: '14px' }} onClick={() => navigate(`/user/user-plan-page`)} />
+        </div>
+        
+        <div className="d-flex flex-column align-items-center justify-content-center mb-4 w-100">
+          <img src={planIcon} alt="Plan Icon" className="img-fluid mb-2" style={{ height: '90px' }} />
+          <span className="dash-badge dash-badge-premium d-inline-flex align-items-center justify-content-center px-3 py-1 fw-bold mt-2" style={{ backgroundColor: '#fef3c7', color: '#b45309', borderRadius: '4px', fontSize: '11px' }}>
+            {planData.subscriptionType ? planData.subscriptionType.toUpperCase() : "PREMIUM PLAN"}
+          </span>
+        </div>
+        <div className="d-flex justify-content-center w-100 mb-3">
+          <ul className="plan-details-list list-unstyled" style={{ fontSize: '13px', margin: '0' }}>
+            <li className="d-flex align-items-center mb-2"><FiCreditCard size={15} style={{ color: '#9ca3af', marginRight: '10px' }} /> <span className="text-muted" style={{ display: 'inline-block', width: '75px' }}>Amount:</span> <strong className="text-dark">₹{planData.subscriptionAmount || "0"}</strong></li>
+            <li className="d-flex align-items-center mb-2"><FiClock size={15} style={{ color: '#9ca3af', marginRight: '10px' }} /> <span className="text-muted" style={{ display: 'inline-block', width: '75px' }}>Validity:</span> <strong className="text-dark">{getValidityPeriod(planData.subscriptionValidFrom, planData.subscriptionValidTo)}</strong></li>
+            <li className="d-flex align-items-center mb-2"><FiClock size={15} style={{ color: '#9ca3af', marginRight: '10px' }} /> <span className="text-muted" style={{ display: 'inline-block', width: '75px' }}>Valid from:</span> <strong className="text-dark">{formatDate(planData.subscriptionValidFrom)}</strong></li>
+            <li className="d-flex align-items-center mb-2"><FiClock size={15} style={{ color: '#9ca3af', marginRight: '10px' }} /> <span className="text-muted" style={{ display: 'inline-block', width: '75px' }}>Valid till:</span> <strong className="text-dark">{formatDate(planData.subscriptionValidTo)}</strong></li>
+          </ul>
+        </div>
+        <div className="remaining-days-box d-flex align-items-center justify-content-center p-2 mb-3" style={{ backgroundColor: '#fffbeb', borderRadius: '6px', color: '#b45309', fontSize: '12px', fontWeight: 'bold' }}>
+          <FiCalendar style={{ marginRight: '6px' }} /> Remaining Days: {getRemainingDays(planData.subscriptionValidFrom, planData.subscriptionValidTo)} days
+        </div>
+        <div className="mt-auto w-100">
+          <button onClick={() => navigate("/user/user-plan-selection")} className="dash-btn-primary w-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: '#6d28d9', border: 'none', borderRadius: '8px', padding: '12px 0', color: 'white', fontWeight: 'bold', fontSize: '14px' }}>
+            <FaCrown style={{ marginRight: '8px' }} /> Upgrade Now
           </button>
-          <ul className="dropdown-menu">
-            <li>
-              <a
-                className="dropdown-item"
-                href="#!"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate(`/user/user-profile-edit-page/${userId}`);
-                }}
-              >
-                Edit profile
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                href="#!"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate(`/user/user-profile-page`);
-                }}
-              >
-                View profile
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                href="#!"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate(`/user/user-plan-page`);
-                }}
-              >
-                Change Plan
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        <div className="db-plan-card d-flex justify-content-center w-100">
-          <img src={planIcon} alt="Plan" style={{ margin: "0 auto", display: "block" }} />
-        </div>
-
-        {/* Plan details */}
-        <div className="db-plan-detil">
-          <ul>
-            <li>
-              Plan name: <strong>{planData.subscriptionType || "N/A"}</strong>
-            </li>
-            <li>
-              Amount: <strong>₹{planData.subscriptionAmount || "0"}</strong>
-            </li>
-            <li>
-              Validity:{" "}
-              <strong>
-                {getValidityPeriod(
-                  planData.subscriptionValidFrom,
-                  planData.subscriptionValidTo
-                )}
-              </strong>
-            </li>
-            <li>
-              Valid from:{" "}
-              <strong>{formatDate(planData.subscriptionValidFrom)}</strong>
-            </li>
-            <li>
-              Valid till:{" "}
-              <strong>{formatDate(planData.subscriptionValidTo)}</strong>
-            </li>
-            <li>
-              Remaining Days:{" "}
-              <strong>
-                {getRemainingDays(
-                  planData.subscriptionValidFrom,
-                  planData.subscriptionValidTo
-                )} days
-              </strong>
-            </li>
-            <li>
-              <a href="/user/user-plan-selection" className="cta-3">
-                Upgrade now
-              </a>
-            </li>
-          </ul>
         </div>
       </div>
     </div>
@@ -462,4 +166,3 @@ const PlanDetails = ({ externalPlanData }) => {
 };
 
 export default PlanDetails;
-

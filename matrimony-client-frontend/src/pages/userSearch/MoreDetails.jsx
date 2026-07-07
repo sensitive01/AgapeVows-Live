@@ -110,6 +110,7 @@ const MoreDetails = () => {
   const [zoomImage, setZoomImage] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [loadingUser, setLoadingUser] = useState(true);
+  const [isContactLoading, setIsContactLoading] = useState(false);
   const [showContact, setShowContact] = useState(false);
   const [showUpgradePopup, setShowUpgradePopup] = useState(false);
   const [upgradePopupType, setUpgradePopupType] = useState('premium');
@@ -298,6 +299,13 @@ const MoreDetails = () => {
 
   const handleShowInterestClick = () => {
     setShowInterestModalUser(userInfo);
+    setTimeout(() => {
+      const modalElement = document.getElementById("sendInter");
+      if (modalElement && window.bootstrap) {
+        const modal = new window.bootstrap.Modal(modalElement);
+        modal.show();
+      }
+    }, 50);
   };
 
   if (loadingUser) return null;
@@ -308,6 +316,7 @@ const MoreDetails = () => {
       setShowUpgradePopup(true);
       return;
     }
+    setIsContactLoading(true);
     try {
       const response = await viewContactDetails(profileId, currentUserId);
       if (response?.data?.success) {
@@ -317,6 +326,8 @@ const MoreDetails = () => {
     } catch (err) {
       setUpgradePopupType('limit');
       setShowUpgradePopup(true);
+    } finally {
+      setIsContactLoading(false);
     }
   };
 
@@ -528,10 +539,6 @@ const MoreDetails = () => {
                     }
                     handleShowInterestClick();
                   }}
-                  {...(isPaidUser && {
-                    "data-bs-toggle": "modal",
-                    "data-bs-target": "#sendInter",
-                  })}
                 >
                   <i className="fa fa-envelope-o me-2"></i>
                   {interestStatus ? "Already Interest Sent" : "Send Interest"}
@@ -566,6 +573,7 @@ const MoreDetails = () => {
                 {!showContact && (
                   <button
                     onClick={handleContactClick}
+                    disabled={isContactLoading}
                     className="view-contact-btn font-cormorant font-bold text-[20px]"
                     style={{
                       width: "100%",
@@ -578,11 +586,16 @@ const MoreDetails = () => {
                       padding: "0",
                       background: "#58219f",
                       color: "#fff",
-                      border: "none"
+                      border: "none",
+                      opacity: isContactLoading ? 0.7 : 1,
+                      cursor: isContactLoading ? "not-allowed" : "pointer"
                     }}
                   >
-                    <i className="fa fa-user-circle-o me-2"></i>
-                    View Contact Information
+                    {isContactLoading ? (
+                      <><span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Loading...</>
+                    ) : (
+                      <><i className="fa fa-user-circle-o me-2"></i> View Contact Information</>
+                    )}
                   </button>
                 )}
                 {/* Contact Details in LEFT COLUMN */}
