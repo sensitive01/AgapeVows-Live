@@ -60,9 +60,12 @@ const ActivePlanCard = ({ externalPlanData }) => {
 
   if (loading) {
     return (
-      <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com">
-        <div className="card p-4 text-center shadow-sm">
-          <p>Loading Active Plan...</p>
+      <div className="col-lg-6 col-md-12 mb-4 d-flex">
+        <div className="active-plan-card d-flex flex-column w-100 p-4 justify-content-center align-items-center" style={{ minHeight: '300px' }}>
+          <div className="spinner-border" role="status" style={{ color: '#8b5cf6' }}>
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-3 text-muted fw-bold">Loading benefits...</p>
         </div>
       </div>
     );
@@ -70,17 +73,31 @@ const ActivePlanCard = ({ externalPlanData }) => {
 
   if (!planData) {
     return (
-      <div className="col-md-12 col-lg-6 col-xl-4 db-sec-com">
-        <h2 className="db-tit">Active plan benefits</h2>
-        <div className="db-pro-stat">
-          <div className="text-center p-4 d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '280px' }}>
-            <h6 className="text-danger fw-bold mb-3">No Active Plan Found</h6>
-            <button
-              className="btn btn-primary btn-sm"
-              onClick={() => navigate("/user/user-plan-selection")}
-            >
-              Upgrade Plan
-            </button>
+      <div className="col-lg-6 col-md-12 mb-4 d-flex">
+        <div className="active-plan-card d-flex flex-column w-100 p-4">
+          <div className="active-plan-header d-flex justify-content-between align-items-center mb-4">
+            <div className="d-flex align-items-center">
+              <FaGem style={{ color: '#9ca3af', fontSize: '20px', marginRight: '10px' }} />
+              <h3 className="active-plan-title m-0 fw-bold text-dark" style={{ fontSize: '16px' }}>Active Plan Benefits</h3>
+            </div>
+          </div>
+          <div className="d-flex flex-column align-items-center justify-content-center flex-grow-1" style={{ minHeight: '220px' }}>
+            <div style={{
+              width: '80px', 
+              height: '80px', 
+              borderRadius: '50%', 
+              backgroundColor: '#f3f4f6', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              marginBottom: '15px'
+            }}>
+              <i className="fa fa-lock" style={{ fontSize: '32px', color: '#9ca3af' }}></i>
+            </div>
+            <h5 className="fw-bold text-dark mb-2" style={{ fontSize: '16px' }}>Benefits Locked</h5>
+            <p className="text-muted text-center" style={{ fontSize: '13px', maxWidth: '350px' }}>
+              You currently don't have an active premium plan. Upgrade your plan to view contact details and send unlimited interests.
+            </p>
           </div>
         </div>
       </div>

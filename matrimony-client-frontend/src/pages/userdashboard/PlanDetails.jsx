@@ -100,12 +100,12 @@ const PlanDetails = ({ externalPlanData }) => {
 
   if (loading) {
     return (
-      <div className="col-xl-3 col-lg-6 mb-4 d-flex">
-        <div className="dash-card d-flex flex-column w-100 justify-content-center align-items-center">
-          <div className="spinner-border" role="status">
+      <div className="col-lg-3 col-md-6 mb-4 d-flex">
+        <div className="plan-details-card d-flex flex-column w-100 justify-content-center align-items-center" style={{ minHeight: '300px' }}>
+          <div className="spinner-border" role="status" style={{ color: '#6d28d9' }}>
             <span className="visually-hidden">Loading...</span>
           </div>
-          <p className="mt-2">Loading plan details...</p>
+          <p className="mt-3 text-muted fw-bold">Loading plan details...</p>
         </div>
       </div>
     );
@@ -113,15 +113,40 @@ const PlanDetails = ({ externalPlanData }) => {
 
   if (error || !planData) {
     return (
-      <div className="col-xl-3 col-lg-6 mb-4 d-flex">
-        <div className="dash-card d-flex flex-column w-100 justify-content-center align-items-center">
-          <h6 className="text-danger fw-bold mb-3">{error || "No Subscription Found"}</h6>
-          <button
-            className="dash-btn-primary"
-            onClick={() => navigate("/user/user-plan-selection")}
-          >
-            Upgrade Plan
-          </button>
+      <div className="col-lg-3 col-md-6 mb-4 d-flex">
+        <div className="plan-details-card d-flex flex-column w-100">
+          <div className="plan-details-header d-flex justify-content-between align-items-center mb-4">
+            <div className="d-flex align-items-center">
+              <FaCrown style={{ color: '#9ca3af', fontSize: '18px', marginRight: '8px' }} />
+              <h3 className="plan-details-title m-0 fw-bold text-dark" style={{ fontSize: '15px' }}>Your Plan</h3>
+            </div>
+            <FaEllipsisH style={{ color: '#9ca3af', cursor: 'pointer', fontSize: '14px' }} onClick={() => navigate(`/user/user-plan-page`)} />
+          </div>
+          
+          <div className="d-flex flex-column align-items-center justify-content-center mb-4 w-100 flex-grow-1">
+            <div style={{
+              width: '80px', 
+              height: '80px', 
+              borderRadius: '50%', 
+              backgroundColor: '#f3f4f6', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              marginBottom: '15px'
+            }}>
+              <FiCreditCard size={32} style={{ color: '#9ca3af' }} />
+            </div>
+            <h5 className="fw-bold text-dark mb-2" style={{ fontSize: '16px' }}>Free Member</h5>
+            <p className="text-muted text-center" style={{ fontSize: '13px', padding: '0 10px', margin: '0' }}>
+              Upgrade to a premium plan to unlock contact details and send unlimited interests.
+            </p>
+          </div>
+          
+          <div className="mt-auto w-100">
+            <button onClick={() => navigate("/user/user-plan-selection")} className="dash-btn-primary w-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: '#6d28d9', border: 'none', borderRadius: '8px', padding: '12px 0', color: 'white', fontWeight: 'bold', fontSize: '14px' }}>
+              <FaCrown style={{ marginRight: '8px' }} /> Upgrade Now
+            </button>
+          </div>
         </div>
       </div>
     );

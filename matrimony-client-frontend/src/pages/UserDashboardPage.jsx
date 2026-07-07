@@ -704,7 +704,7 @@ const UserDashboardPage = () => {
                   {!planLoading && (
                     <>
                       <PlanDetails externalPlanData={activePlan} />
-                      {activePlan && <ActivePlanCard externalPlanData={activePlan} />}
+                      <ActivePlanCard externalPlanData={activePlan} />
                     </>
                   )}
 
