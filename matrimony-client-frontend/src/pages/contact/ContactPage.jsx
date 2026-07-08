@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import LayoutComponent from "../../components/layouts/LayoutComponent";
 import Footer from "../../components/Footer";
 import { submitEnquiry } from "../../api/axiosService/userAuthService";
+import SEOHelmet from "../../components/common/SEOHelmet";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" });
@@ -32,6 +33,10 @@ const ContactPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
+      <SEOHelmet 
+        title="Contact Us | AgapeVows Christian Matrimony" 
+        description="Get in touch with AgapeVows support team. We're here to help you find your perfect match." 
+      />
       <div className="fixed top-0 left-0 right-0 z-50">
         <LayoutComponent />
       </div>

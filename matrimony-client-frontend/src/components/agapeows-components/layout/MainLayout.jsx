@@ -276,39 +276,37 @@ const MainLayout = () => {
           </div>
 
           <div className="md:hidden flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              {isUserActive && (
-                <div
-                  onClick={() => handleNavigate("/user/find-matches")}
-                  className="cursor-pointer"
-                >
-                  <Search className="w-4 h-4" />
-                </div>
-              )}
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => handleNavigate("/blogs")}
-                className="text-xs hover:text-purple-200"
+                className="text-xs hover:text-purple-200 uppercase p-0 m-0"
               >
                 BLOGS
               </button>
               <button
                 onClick={() => handleNavigate("/faq")}
-                className="text-xs hover:text-purple-200"
+                className="text-xs hover:text-purple-200 uppercase p-0 m-0"
               >
                 FAQ
               </button>
+              <button
+                onClick={() => handleNavigate("/contact-page")}
+                className="text-xs hover:text-purple-200 uppercase p-0 m-0"
+              >
+                CONTACT
+              </button>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center gap-3">
               <Phone className="w-4 h-4" />
               <div className="flex space-x-2">
                 <a href="https://www.facebook.com/AgapeVows/" target="_blank" rel="noopener noreferrer">
-                  <Facebook className="w-3 h-3" />
+                  <Facebook className="w-4 h-4" />
                 </a>
                 <a href="https://www.instagram.com/agapevows_matrimony" target="_blank" rel="noopener noreferrer">
-                  <Instagram className="w-3 h-3" />
+                  <Instagram className="w-4 h-4" />
                 </a>
                 <a href="https://www.youtube.com/@AgapeVowsMatrimony" target="_blank" rel="noopener noreferrer">
-                  <Youtube className="w-3 h-3" />
+                  <Youtube className="w-4 h-4" />
                 </a>
               </div>
             </div>
@@ -316,7 +314,7 @@ const MainLayout = () => {
         </div>
       </div>
 
-      <header className="bg-white shadow-md relative font-cormorant">
+      <header className="bg-white shadow-md relative font-cormorant z-[1000]">
         <div className="w-[92%] xl:w-[88%] max-w-[1350px] mx-auto py-4">
           <div className="flex items-center gap-4 md:gap-8">
             <a
@@ -533,7 +531,7 @@ const MainLayout = () => {
             </div>
 
             <button
-              className="md:hidden"
+              className="md:hidden ml-auto"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? (

@@ -12,11 +12,15 @@ import HighlightedProfilesSection from "../../new-template/HighlightedProfilesSe
 import HowItWorksSection from "../../new-template/HowItWorksSection";
 import BlogSection from "../../new-template/BlogSection";
 import FooterSection from "../../new-template/FooterSection";
+import SEOHelmet from "../../common/SEOHelmet";
 
 const NewHomePageComponent = () => {
   return (
     <div className="min-h-screen relative" id="new-homepage-wrapper">
-
+      <SEOHelmet 
+        title="AgapeVows - India's Trusted Christian Matrimony" 
+        description="Find your God-given match on AgapeVows, the trusted Christian matrimony platform with verified profiles and secure matchmaking." 
+      />
       <div className="fixed top-0 left-0 right-0 z-[101]">
         <MainLayout />
       </div>

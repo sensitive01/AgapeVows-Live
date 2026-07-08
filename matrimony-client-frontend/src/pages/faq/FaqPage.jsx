@@ -2,6 +2,7 @@ import React from "react";
 import LayoutComponent from "../../components/layouts/LayoutComponent";
 import Footer from "../../components/Footer";
 import faqHero from "../../assets/images/ban-bg.jpg";
+import SEOHelmet from "../../components/common/SEOHelmet";
 
 const FaqPage = () => {
   const faqs = [
@@ -49,6 +50,10 @@ const FaqPage = () => {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
+      <SEOHelmet 
+        title="FAQ | AgapeVows Christian Matrimony" 
+        description="Find answers to frequently asked questions about AgapeVows, matchmaking, safety, and membership." 
+      />
       <div className="fixed top-0 left-0 right-0 z-[100]">
         <LayoutComponent />
       </div>

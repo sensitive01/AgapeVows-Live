@@ -1,10 +1,15 @@
 import React from 'react';
 import Footer from '../../components/Footer';
 import LayoutComponent from '../../components/layouts/LayoutComponent';
+import SEOHelmet from '../../components/common/SEOHelmet';
 
 const TermsOfUse = () => {
   return (
     <div className="min-h-screen">
+      <SEOHelmet 
+        title="Terms of Use | AgapeVows Christian Matrimony" 
+        description="Read the Terms and Conditions of AgapeVows to understand your rights, responsibilities, and guidelines for using our matchmaking platform." 
+      />
       <div className="fixed top-0 left-0 right-0 z-50">
         <LayoutComponent />
       </div>

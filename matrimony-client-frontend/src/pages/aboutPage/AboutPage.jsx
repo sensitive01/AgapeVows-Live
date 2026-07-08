@@ -2,10 +2,15 @@ import React from "react";
 import LayoutComponent from "../../components/layouts/LayoutComponent";
 import Footer from "../../components/Footer";
 import landingPageBg from '../../assets/images/landing-page1.png'; 
+import SEOHelmet from "../../components/common/SEOHelmet";
 
 const AboutPage = () => {
   return (
     <div className="min-h-screen bg-[#f8f9fa] font-cormorant font-normal">
+      <SEOHelmet 
+        title="About Us | AgapeVows Christian Matrimony" 
+        description="Learn about our mission to help you find your God-given match through trusted and verified profiles on AgapeVows." 
+      />
       <div className="fixed top-0 left-0 right-0 z-[100]">
         <LayoutComponent />
       </div>

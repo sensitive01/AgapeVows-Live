@@ -2,10 +2,15 @@ import React from 'react';
 import Footer from '../../components/Footer';
 import LayoutComponent from '../../components/layouts/LayoutComponent';
 import './privacypolicy.css';
+import SEOHelmet from '../../components/common/SEOHelmet';
 
 const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen">
+      <SEOHelmet 
+        title="Privacy Policy | AgapeVows Christian Matrimony" 
+        description="Learn how AgapeVows protects your personal information and maintains a secure, private environment for Christian matchmaking." 
+      />
       <div className="fixed top-0 left-0 right-0 z-50">
         <LayoutComponent />
       </div>

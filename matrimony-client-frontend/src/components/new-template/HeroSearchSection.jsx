@@ -370,24 +370,47 @@ export default function HeroSearchSection() {
                   <div className="form-group age-form-group">
                     <label className="font-source font-medium">AGE</label>
                     <div className="age-slider-wrapper">
-                      <div className="slider-track" style={{
-                        background: `linear-gradient(to right, #e5e7eb ${((formData.ageFrom - 18) / (70 - 18)) * 100}%, #58219f ${((formData.ageFrom - 18) / (70 - 18)) * 100}%, #58219f ${((formData.ageTo - 18) / (70 - 18)) * 100}%, #e5e7eb ${((formData.ageTo - 18) / (70 - 18)) * 100}%)`
+                      <div className="slider-track-base" style={{
+                        position: 'absolute', top: '50%', left: 0, transform: 'translateY(-50%)', width: '100%', height: '6px', background: '#e5e7eb', borderRadius: '10px', zIndex: 1
                       }}></div>
+                      <div className="track-active-container" style={{
+                        position: 'absolute', top: '50%', left: '10px', right: '10px', transform: 'translateY(-50%)', height: '6px', zIndex: 1
+                      }}>
+                        <div className="slider-track-active" style={{
+                          position: 'absolute', top: 0, bottom: 0, background: '#58219f', borderRadius: '10px',
+                          left: `${((formData.ageFrom - 18) / 52) * 100}%`,
+                          width: `${((formData.ageTo - formData.ageFrom) / 52) * 100}%`
+                        }}></div>
+                        <div className="custom-thumb" style={{
+                          position: 'absolute', top: '50%', transform: 'translate(-50%, -50%)',
+                          width: '20px', height: '20px', borderRadius: '50%', background: '#58219f',
+                          boxShadow: '0 0 0 2px #fff, 0 2px 4px rgba(0,0,0,0.2)',
+                          left: `${((formData.ageFrom - 18) / 52) * 100}%`, zIndex: 2
+                        }}></div>
+                        <div className="custom-thumb" style={{
+                          position: 'absolute', top: '50%', transform: 'translate(-50%, -50%)',
+                          width: '20px', height: '20px', borderRadius: '50%', background: '#58219f',
+                          boxShadow: '0 0 0 2px #fff, 0 2px 4px rgba(0,0,0,0.2)',
+                          left: `${((formData.ageTo - 18) / 52) * 100}%`, zIndex: 2
+                        }}></div>
+                      </div>
                       <input
                         type="range"
-                        min="18"
-                        max="70"
+                        min={18}
+                        max={70}
                         value={formData.ageFrom}
                         onChange={(e) => handleAgeFromChange(e.target.value)}
                         className="age-range min-age"
+                        style={{ opacity: 0, zIndex: 3 }}
                       />
                       <input
                         type="range"
-                        min="18"
-                        max="70"
+                        min={18}
+                        max={70}
                         value={formData.ageTo}
                         onChange={(e) => handleAgeToChange(e.target.value)}
                         className="age-range max-age"
+                        style={{ opacity: 0, zIndex: 4 }}
                       />
                     </div>
                     <div className="age-dropdown-row">
