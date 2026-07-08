@@ -12,7 +12,8 @@ const SEOHelmet = ({
   title = "AgapeVows - India's Trusted Christian Matrimony", 
   description = "Find your God-given match on AgapeVows, the trusted Christian matrimony platform with verified profiles and secure matchmaking.", 
   canonicalUrl, 
-  noindex = false 
+  noindex = false,
+  schemaData = []
 }) => {
   return (
     <Helmet>
@@ -35,6 +36,13 @@ const SEOHelmet = ({
       <meta property="og:type" content="website" />
       {canonicalUrl && <meta property="og:url" content={`https://agapevows.com${canonicalUrl}`} />}
       <meta property="og:site_name" content="AgapeVows" />
+      
+      {/* Structured Data (JSON-LD) */}
+      {schemaData && schemaData.map((schema, index) => (
+        <script key={index} type="application/ld+json">
+          {JSON.stringify(schema)}
+        </script>
+      ))}
     </Helmet>
   );
 };

@@ -23,3 +23,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Unused Assets & Test Results
+_quarantine_assets/
+unused_assets_results.json

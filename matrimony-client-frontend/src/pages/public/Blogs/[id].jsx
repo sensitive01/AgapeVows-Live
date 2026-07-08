@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { getAllPublishedBlogs } from '../../../api/axiosService/userSignUpService';
 import LayoutComponent from '../../../components/layouts/LayoutComponent';
 import Footer from '../../../components/Footer';
+import SEOHelmet from '../../../components/common/SEOHelmet';
 
 const BlogDetailsPage = () => {
   const { id } = useParams();
@@ -60,14 +61,14 @@ const BlogDetailsPage = () => {
           <LayoutComponent />
         </div>
         <div className="flex-grow flex flex-col justify-center items-center pt-24 px-4 text-center">
-          <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Blog not found</h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-md">We couldn't find the blog post you're looking for. It might have been removed or the link is incorrect.</p>
-          <div className="bg-white p-6 shadow-md rounded-xl text-left w-full max-w-2xl mb-8 overflow-auto border border-gray-100 hidden">
-            <pre className="text-sm text-gray-500">{JSON.stringify(debugInfo, null, 2)}</pre>
+          <div className="text-center p-8 bg-white rounded-xl shadow-sm border border-gray-100 max-w-md mx-4">
+            <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Blog Not Found</h2>
+            <p className="text-gray-600 mb-6">We couldn't find the blog post you're looking for. It may have been removed or the link might be incorrect.</p>
+            <Link to="/blogs" className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#58219f] hover:bg-[#4a1c85] transition-colors duration-200">
+              Browse All Blogs
+            </Link>
           </div>
-          <Link to="/blogs" className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-            Browse All Blogs
-          </Link>
         </div>
         <Footer />
       </div>
@@ -77,8 +78,59 @@ const BlogDetailsPage = () => {
   const recentBlogs = allBlogs.filter(b => b._id !== blog._id).slice(0, 3);
   const date = new Date(blog.createdAt || Date.now()).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [{
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://agapevows.com"
+    },{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blogs",
+      "item": "https://agapevows.com/blogs"
+    },{
+      "@type": "ListItem",
+      "position": 3,
+      "name": blog.title,
+      "item": `https://agapevows.com/blog-details/${blog._id}`
+    }]
+  };
+
+  const blogPostingSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://agapevows.com/blog-details/${blog._id}`
+    },
+    "headline": blog.title,
+    "image": blog.coverImage || "https://agapevows.com/images/image-news03.jpg",  
+    "author": {
+      "@type": "Person",
+      "name": blog.authorName || "AgapeVows Editor"
+    },  
+    "publisher": {
+      "@type": "Organization",
+      "name": "AgapeVows",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://agapevows.com/logo.png"
+      }
+    },
+    "datePublished": blog.createdAt || new Date().toISOString()
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col blog-container">
+      <SEOHelmet 
+        title={`${blog.title} | AgapeVows Blogs`}
+        description={blog.metaDescription || `Read ${blog.title} on AgapeVows. Insightful Christian relationship advice and matchmaking tips.`}
+        canonicalUrl={`/blog-details/${blog._id}`}
+        schemaData={[breadcrumbSchema, blogPostingSchema]}
+      />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Source+Sans+3:ital,wght@0,300..900;1,300..900&display=swap');
         

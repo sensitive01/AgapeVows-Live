@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { axiosInstance } from '../../../api/axiosInstance/commonInstance';
+import SEOHelmet from '../../../components/common/SEOHelmet';
 
 const BlogsPage = () => {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -32,8 +33,30 @@ const BlogsPage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [{
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://agapevows.com"
+    },{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blogs",
+      "item": "https://agapevows.com/blogs"
+    }]
+  };
+
   return (
     <div className="bg-white min-h-screen">
+      <SEOHelmet 
+        title="Christian Matrimony Blogs & Relationship Advice | AgapeVows"
+        description="Explore thoughtful insights, practical relationship advice, and inspiring stories for every step of your Christian marriage journey with AgapeVows."
+        canonicalUrl="/blogs"
+        schemaData={[breadcrumbSchema]}
+      />
       {/* Header Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold text-[#111827] font-cormorant tracking-tight mb-4">

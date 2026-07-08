@@ -48,18 +48,32 @@ const FaqPage = () => {
     }
   ];
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map((faq) => ({
+      "@type": "Question",
+      "name": faq.q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.a
+      }
+    }))
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
       <SEOHelmet 
         title="FAQ | AgapeVows Christian Matrimony" 
         description="Find answers to frequently asked questions about AgapeVows, matchmaking, safety, and membership." 
+        schemaData={[faqSchema]}
       />
       <div className="fixed top-0 left-0 right-0 z-[100]">
         <LayoutComponent />
       </div>
 
       {/* --- PAGE HEADER --- */}
-      <div className="pt-[160px] pb-12">
+      <div className="pt-[90px] md:pt-[127px] pb-12">
         <div className="relative overflow-hidden rounded-b-[40px] shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
           <div
             className="absolute inset-0 bg-cover bg-center"
