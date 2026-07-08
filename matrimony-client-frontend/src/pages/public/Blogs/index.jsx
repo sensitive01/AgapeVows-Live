@@ -150,7 +150,7 @@ const BlogPostCard = ({ _id, coverImage, title, category, createdAt, sections, c
   return (
     <Link to={`/blog-details/${_id}`} className="group bg-white rounded-3xl overflow-hidden border border-gray-100 flex flex-col h-full hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
       <div className="h-64 sm:h-[300px] overflow-hidden bg-gray-100 relative">
-        <img src={coverImage || "/images/image-news03.jpg"} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        <img src={coverImage || "/images/image-news03.jpg"} alt={title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
       </div>
       <div className="p-8 flex flex-col flex-grow">
         <div className="flex items-center gap-2 mb-3 text-sm font-bold text-[#58219f]">

@@ -17,6 +17,7 @@ import FindYourPerfectMatchNow from "../components/FindYourPerfectMatchNow";
 import Footer from "../components/Footer";
 import CopyRights from "../components/CopyRights";
 import SEOHelmet from "../components/common/SEOHelmet";
+import bannerBg from "../assets/images/ban-bg.jpg";
 
 const UserHomePage = () => {
   const orgSchema = {
@@ -53,6 +54,7 @@ const UserHomePage = () => {
         description="Find your God-given match on AgapeVows, the trusted Christian matrimony platform with verified profiles and secure matchmaking." 
         canonicalUrl="/"
         schemaData={[orgSchema, websiteSchema]}
+        preloadImage={bannerBg}
       />
       <LayoutComponent />
       <BannerAndSearch />

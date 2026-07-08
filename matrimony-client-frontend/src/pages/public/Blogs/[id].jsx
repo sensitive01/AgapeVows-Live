@@ -183,7 +183,7 @@ const BlogDetailsPage = () => {
         {/* Cover Image */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
           <div className="w-full h-[500px] overflow-hidden rounded-2xl shadow-lg ring-1 ring-gray-900/5">
-            <img src={blog.coverImage || "/images/image-news03.jpg"} alt={blog.title} className="w-full h-full object-cover" />
+            <img src={blog.coverImage || "/images/image-news03.jpg"} alt={blog.title} loading="lazy" className="w-full h-full object-cover" />
           </div>
         </div>
 
@@ -198,7 +198,7 @@ const BlogDetailsPage = () => {
                   {section.image && (
                     <div className="my-8 flex justify-center">
                       <div className="rounded-xl overflow-hidden shadow-md ring-1 ring-gray-900/5 max-w-lg w-full">
-                        <img src={section.image} alt={section.heading} className="w-full h-auto object-cover max-h-[400px]" />
+                        <img src={section.image} alt={section.heading} loading="lazy" className="w-full h-auto object-cover max-h-[400px]" />
                       </div>
                     </div>
                   )}

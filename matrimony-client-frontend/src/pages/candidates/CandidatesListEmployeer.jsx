@@ -160,14 +160,14 @@ const CandidateCard = ({ candidate }) => {
     <div className="card h-100 shadow-sm">
       <div className="card-body text-center">
         <img
-          src={candidate.profileurl || "/images/default-profile.png"}
-          alt={candidate.firstName}
+          src={candidate.profileurl || "/images/img-profile.jpg"}
+          alt={candidate.firstName || "Candidate"}
           className="rounded-circle mb-3"
           width="100"
           height="100"
           onError={(e) => {
             e.target.onerror = null;
-            e.target.src = "/images/default-profile.png";
+            e.target.src = "/images/img-profile.jpg";
           }}
         />
         <h5 className="card-title">{candidate.firstName}</h5>

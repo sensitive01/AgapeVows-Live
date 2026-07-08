@@ -360,7 +360,7 @@ const HighlightedProfilesSection = () => {
                   >
                     <div className="relative h-[280px] overflow-hidden">
                       <img
-                        src={profile.profileImage || "https://res.cloudinary.com/dl92xeqq8/image/upload/v1711440000/default-profile.png"}
+                        src={profile.profileImage || "/images/img-profile.jpg"}
                         alt={profile.userName}
                         className={`w-full h-full object-cover ${!localStorage.getItem("userId") ? "blur-[8px]" : "blur-none"} scale-110 group-hover:scale-105 transition-transform duration-500`}
                       />

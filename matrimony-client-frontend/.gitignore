@@ -24,6 +24,5 @@ dist-ssr
 *.sln
 *.sw?
 
-# Unused Assets & Test Results
+# Unused Assets
 _quarantine_assets/
-unused_assets_results.json

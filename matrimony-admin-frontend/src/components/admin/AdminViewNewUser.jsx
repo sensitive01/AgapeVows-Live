@@ -312,7 +312,7 @@ export default function AdminViewNewUser() {
                 {/* ================= PROFILE HEADER ================= */}
                 <div className="text-center mb-4">
                     <img
-                        src={user.profileImage || "/default-profile.png"}
+                        src={user.profileImage || "https://ui-avatars.com/api/?name=User&background=e5e7eb&color=374151"}
                         alt="Profile"
                         style={{
                             width: "160px",

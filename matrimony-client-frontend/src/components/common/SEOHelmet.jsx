@@ -13,7 +13,8 @@ const SEOHelmet = ({
   description = "Find your God-given match on AgapeVows, the trusted Christian matrimony platform with verified profiles and secure matchmaking.", 
   canonicalUrl, 
   noindex = false,
-  schemaData = []
+  schemaData = [],
+  preloadImage
 }) => {
   return (
     <Helmet>
@@ -22,6 +23,9 @@ const SEOHelmet = ({
       
       {/* Canonical URL */}
       {canonicalUrl && <link rel="canonical" href={`https://agapevows.com${canonicalUrl}`} />}
+
+      {/* Preload Critical Hero Images for Core Web Vitals (LCP) */}
+      {preloadImage && <link rel="preload" as="image" href={preloadImage} />}
 
       {/* Crawling Rules */}
       {noindex ? (
