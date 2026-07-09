@@ -12,7 +12,7 @@ const MenuPopUp2 = () => {
         <div className="menu-pop-help">
           <h4>Support Teamz</h4>
           <div className="user-pro">
-            <img src={profImg1} alt="" loading="lazy" />
+            <img src={profImg1} loading="lazy" alt="AgapeVows Image" />
           </div>
           <div className="user-bio">
             <h5>Ashley emyy</h5>
@@ -61,7 +61,7 @@ const MenuPopUp2 = () => {
           <ul>
             <li>
               <div className="rel-pro-img">
-                <img src={couplesImg1} alt="" loading="lazy" />
+                <img src={couplesImg1} loading="lazy" alt="AgapeVows Image" />
               </div>
               <div className="rel-pro-con">
                 <h5>Long established fact that a reader distracted</h5>
@@ -71,7 +71,7 @@ const MenuPopUp2 = () => {
             </li>
             <li>
               <div className="rel-pro-img">
-                <img src={couplesImg1} alt="" loading="lazy" />
+                <img src={couplesImg1} loading="lazy" alt="AgapeVows Image" />
               </div>
               <div className="rel-pro-con">
                 <h5>Long established fact that a reader distracted</h5>
@@ -81,7 +81,7 @@ const MenuPopUp2 = () => {
             </li>
             <li>
               <div className="rel-pro-img">
-                <img src={couplesImg1} alt="" loading="lazy" />
+                <img src={couplesImg1} loading="lazy" alt="AgapeVows Image" />
               </div>
               <div className="rel-pro-con">
                 <h5>Long established fact that a reader distracted</h5>

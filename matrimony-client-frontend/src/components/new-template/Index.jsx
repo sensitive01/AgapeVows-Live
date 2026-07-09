@@ -121,13 +121,13 @@ export default function Index() {
       <div id="preloader">
         <div className="plod">
           <span className="lod1">
-            <img src={loader1} alt="" loading="lazy" />
+            <img src={loader1} loading="lazy" alt="AgapeVows Image" />
           </span>
           <span className="lod2">
-            <img src={loader2} alt="" loading="lazy" />
+            <img src={loader2} loading="lazy" alt="AgapeVows Image" />
           </span>
           <span className="lod3">
-            <img src={loader3} alt="" loading="lazy" />
+            <img src={loader3} loading="lazy" alt="AgapeVows Image" />
           </span>
         </div>
       </div>
@@ -219,7 +219,7 @@ export default function Index() {
       <div className="menu-pop-help">
         <h4>Support Team</h4>
         <div className="user-pro">
-          <img src={profile1} alt="" loading="lazy" />
+          <img src={profile1} loading="lazy" alt="AgapeVows Image" />
         </div>
         <div className="user-bio">
           <h5>Ashley emyy</h5>
@@ -268,7 +268,7 @@ export default function Index() {
         <ul>
           <li>
             <div className="rel-pro-img">
-              <img src={couple1} alt="" loading="lazy" />
+              <img src={couple1} loading="lazy" alt="AgapeVows Image" />
             </div>
             <div className="rel-pro-con">
               <h5>Long established fact that a reader distracted</h5>
@@ -278,7 +278,7 @@ export default function Index() {
           </li>
           <li>
             <div className="rel-pro-img">
-              <img src={couple3} alt="" loading="lazy" />
+              <img src={couple3} loading="lazy" alt="AgapeVows Image" />
             </div>
             <div className="rel-pro-con">
               <h5>Long established fact that a reader distracted</h5>
@@ -288,7 +288,7 @@ export default function Index() {
           </li>
           <li>
             <div className="rel-pro-img">
-              <img src={couple4} alt="" loading="lazy" />
+              <img src={couple4} loading="lazy" alt="AgapeVows Image" />
             </div>
             <div className="rel-pro-con">
               <h5>Long established fact that a reader distracted</h5>
@@ -323,12 +323,9 @@ export default function Index() {
               <i />
             </span>
             <a href="/" className="logo-brand">
-              <img
-                src={logoBImg}
-                alt=""
+              <img src={logoBImg}
                 loading="lazy"
-                className="ic-logo"
-              />
+                className="ic-logo" alt="AgapeVows Image" />
             </a>
           </div>
           {/* EXPLORE MENU */}
@@ -599,7 +596,7 @@ export default function Index() {
           {/* USER PROFILE */}
           <div className="al">
             <div className="head-pro">
-              <img src={profile1} alt="" loading="lazy" />
+              <img src={profile1} loading="lazy" alt="AgapeVows Image" />
               <b>Advisor</b>
               <br />
               <h4>Ashley emyy</h4>
@@ -610,13 +607,13 @@ export default function Index() {
           <div className="mob-menu">
             <div className="mob-me-ic">
               <span className="ser-open mobile-ser">
-                <img src={iconSearch} alt="" />
+                <img src={iconSearch} alt="AgapeVows Image" />
               </span>
               <span className="mobile-exprt" data-mob="dashbord">
-                <img src={iconUsers} alt="" />
+                <img src={iconUsers} alt="AgapeVows Image" />
               </span>
               <span className="mobile-menu" data-mob="mobile">
-                <img src={iconMenu} alt="" />
+                <img src={iconMenu} alt="AgapeVows Image" />
               </span>
             </div>
           </div>
@@ -629,7 +626,7 @@ export default function Index() {
   {/* EXPLORE MENU POPUP */}
   <div className="mob-me-all mobile_menu">
     <div className="mob-me-clo">
-      <img src={iconClose} alt="" />
+      <img src={iconClose} alt="AgapeVows Image" />
     </div>
     <div className="mv-bus">
       <h4>
@@ -716,7 +713,7 @@ export default function Index() {
       <div className="menu-pop-help">
         <h4>Support Team</h4>
         <div className="user-pro">
-          <img src={profile1} alt="" loading="lazy" />
+          <img src={profile1} loading="lazy" alt="AgapeVows Image" />
         </div>
         <div className="user-bio">
           <h5>Ashley emyy</h5>
@@ -765,7 +762,7 @@ export default function Index() {
         <ul>
           <li>
             <div className="rel-pro-img">
-              <img src={couple1} alt="" loading="lazy" />
+              <img src={couple1} loading="lazy" alt="AgapeVows Image" />
             </div>
             <div className="rel-pro-con">
               <h5>Long established fact that a reader distracted</h5>
@@ -775,7 +772,7 @@ export default function Index() {
           </li>
           <li>
             <div className="rel-pro-img">
-              <img src={couple3} alt="" loading="lazy" />
+              <img src={couple3} loading="lazy" alt="AgapeVows Image" />
             </div>
             <div className="rel-pro-con">
               <h5>Long established fact that a reader distracted</h5>
@@ -785,7 +782,7 @@ export default function Index() {
           </li>
           <li>
             <div className="rel-pro-img">
-              <img src={couple4} alt="" loading="lazy" />
+              <img src={couple4} loading="lazy" alt="AgapeVows Image" />
             </div>
             <div className="rel-pro-con">
               <h5>Long established fact that a reader distracted</h5>
@@ -808,11 +805,11 @@ export default function Index() {
   {/* MOBILE USER PROFILE MENU POPUP */}
   <div className="mob-me-all dashbord_menu">
     <div className="mob-me-clo">
-      <img src={iconClose} alt="" />
+      <img src={iconClose} alt="AgapeVows Image" />
     </div>
     <div className="mv-bus">
       <div className="head-pro">
-        <img src={profile1} alt="" loading="lazy" />
+        <img src={profile1} loading="lazy" alt="AgapeVows Image" />
         <b>user profile</b>
         <br />
         <h4>Ashley emyy</h4>
@@ -927,12 +924,12 @@ export default function Index() {
         <ul className="ban-sli">
           <li>
             <div className="image">
-              <img src={bannerBg} alt="" loading="lazy" />
+              <img src={bannerBg} loading="lazy" alt="AgapeVows Image" />
             </div>
           </li>
           <li>
             <div className="image">
-              <img src={bannerImg} alt="" loading="lazy" />
+              <img src={bannerImg} loading="lazy" alt="AgapeVows Image" />
             </div>
           </li>
         </ul>
@@ -964,7 +961,7 @@ export default function Index() {
               <li>
                 <div className="wow fadeInUp hacc hacc1" data-wow-delay="0.1s">
                   <div className="con">
-                    <img src={iconUser} alt="" loading="lazy" />
+                    <img src={iconUser} loading="lazy" alt="AgapeVows Image" />
                     <h4>Browse Profiles</h4>
                     <p>1200+ Profiles</p>
                     <a href="all-profiles.html">View more</a>
@@ -974,7 +971,7 @@ export default function Index() {
               <li>
                 <div className="wow fadeInUp hacc hacc2" data-wow-delay="0.2s">
                   <div className="con">
-                    <img src={iconGate} alt="" loading="lazy" />
+                    <img src={iconGate} loading="lazy" alt="AgapeVows Image" />
                     <h4>Wedding</h4>
                     <p>1200+ Profiles</p>
                     <a href="wedding-video.html">View more</a>
@@ -984,7 +981,7 @@ export default function Index() {
               <li>
                 <div className="wow fadeInUp hacc hacc3" data-wow-delay="0.3s">
                   <div className="con">
-                    <img src={iconCouple} alt="" loading="lazy" />
+                    <img src={iconCouple} loading="lazy" alt="AgapeVows Image" />
                     <h4>All Services</h4>
                     <p>1200+ Profiles</p>
                     <a href="services.html">View more</a>
@@ -994,7 +991,7 @@ export default function Index() {
               <li>
                 <div className="wow fadeInUp hacc hacc4" data-wow-delay="0.4s">
                   <div className="con">
-                    <img src={iconHall} alt="" loading="lazy" />
+                    <img src={iconHall} loading="lazy" alt="AgapeVows Image" />
                     <h4>Join Now</h4>
                     <p>Start for free</p>
                     <a href="plans.html">Get started</a>
@@ -1004,11 +1001,8 @@ export default function Index() {
               <li>
                 <div className="wow fadeInUp hacc hacc3" data-wow-delay="0.3s">
                   <div className="con">
-                    <img
-                      src={iconPhotoCamera}
-                      alt=""
-                      loading="lazy"
-                    />
+                    <img src={iconPhotoCamera}
+                      loading="lazy" alt="AgapeVows Image" />
                     <h4>Photo gallery</h4>
                     <p>1200+ Profiles</p>
                     <a href="photo-gallery.html">View more</a>
@@ -1018,7 +1012,7 @@ export default function Index() {
               <li>
                 <div className="wow fadeInUp hacc hacc4" data-wow-delay="0.4s">
                   <div className="con">
-                    <img src={iconCake} alt="" loading="lazy" />
+                    <img src={iconCake} loading="lazy" alt="AgapeVows Image" />
                     <h4>Blog &amp; Articles</h4>
                     <p>Start for free</p>
                     <a href="blog.html">Get started</a>
@@ -1052,7 +1046,7 @@ export default function Index() {
               <li>
                 <div className="cus-revi-box">
                   <div className="revi-im">
-                    <img src={user1} alt="" loading="lazy" />
+                    <img src={user1} loading="lazy" alt="AgapeVows Image" />
                     <i className="cir-com cir-1" />
                     <i className="cir-com cir-2" />
                     <i className="cir-com cir-3" />
@@ -1069,7 +1063,7 @@ export default function Index() {
               <li>
                 <div className="cus-revi-box">
                   <div className="revi-im">
-                    <img src={user2} alt="" loading="lazy" />
+                    <img src={user2} loading="lazy" alt="AgapeVows Image" />
                     <i className="cir-com cir-1" />
                     <i className="cir-com cir-2" />
                     <i className="cir-com cir-3" />
@@ -1086,7 +1080,7 @@ export default function Index() {
               <li>
                 <div className="cus-revi-box">
                   <div className="revi-im">
-                    <img src={user3} alt="" loading="lazy" />
+                    <img src={user3} loading="lazy" alt="AgapeVows Image" />
                     <i className="cir-com cir-1" />
                     <i className="cir-com cir-2" />
                     <i className="cir-com cir-3" />
@@ -1103,7 +1097,7 @@ export default function Index() {
               <li>
                 <div className="cus-revi-box">
                   <div className="revi-im">
-                    <img src={user5} alt="" loading="lazy" />
+                    <img src={user5} loading="lazy" alt="AgapeVows Image" />
                     <i className="cir-com cir-1" />
                     <i className="cir-com cir-2" />
                     <i className="cir-com cir-3" />
@@ -1162,7 +1156,7 @@ export default function Index() {
                 data-ani="animate__flipInX"
                 data-dely="0.1"
               >
-                <img src={iconPrize} alt="" loading="lazy" />
+                <img src={iconPrize} loading="lazy" alt="AgapeVows Image" />
                 <h4>Genuine profiles</h4>
                 <p>Contact genuine profiles with 100% verified mobile</p>
               </div>
@@ -1173,7 +1167,7 @@ export default function Index() {
                 data-ani="animate__flipInX"
                 data-dely="0.3"
               >
-                <img src={iconTrust} alt="" loading="lazy" />
+                <img src={iconTrust} loading="lazy" alt="AgapeVows Image" />
                 <h4>Most trusted</h4>
                 <p>The most trusted wedding matrimony brand lorem</p>
               </div>
@@ -1184,7 +1178,7 @@ export default function Index() {
                 data-ani="animate__flipInX"
                 data-dely="0.6"
               >
-                <img src={iconRings} alt="" loading="lazy" />
+                <img src={iconRings} loading="lazy" alt="AgapeVows Image" />
                 <h4>2000+ weddings</h4>
                 <p>Lakhs of peoples have found their life partner</p>
               </div>
@@ -1203,18 +1197,12 @@ export default function Index() {
           <div className="col-lg-6">
             <div className="ab-wel-lhs">
               <span className="ab-wel-3" />
-              <img
-                src={about1}
-                alt=""
+              <img src={about1}
                 loading="lazy"
-                className="ab-wel-1"
-              />
-              <img
-                src={couple20}
-                alt=""
+                className="ab-wel-1" alt="AgapeVows Image" />
+              <img src={couple20}
                 loading="lazy"
-                className="ab-wel-2"
-              />
+                className="ab-wel-2" alt="AgapeVows Image" />
               <span className="ab-wel-4" />
             </div>
           </div>
@@ -1339,7 +1327,7 @@ export default function Index() {
                     className="tline-im animate animate__animated animate__slower"
                     data-ani="animate__fadeInUp"
                   >
-                    <img src={iconRings} alt="" loading="lazy" />
+                    <img src={iconRings} loading="lazy" alt="AgapeVows Image" />
                   </div>
                   <div
                     className="tline-con animate animate__animated animate__slow"
@@ -1373,11 +1361,8 @@ export default function Index() {
                     className="tline-im animate animate__animated animate__slow"
                     data-ani="animate__fadeInUp"
                   >
-                    <img
-                      src={iconWedding2}
-                      alt=""
-                      loading="lazy"
-                    />
+                    <img src={iconWedding2}
+                      loading="lazy" alt="AgapeVows Image" />
                   </div>
                 </div>
               </li>
@@ -1387,11 +1372,8 @@ export default function Index() {
                     className="tline-im animate animate__animated animate__slower"
                     data-ani="animate__fadeInUp"
                   >
-                    <img
-                      src={iconLoveBirds}
-                      alt=""
-                      loading="lazy"
-                    />
+                    <img src={iconLoveBirds}
+                      loading="lazy" alt="AgapeVows Image" />
                   </div>
                   <div
                     className="tline-con animate animate__animated animate__slow"
@@ -1425,7 +1407,7 @@ export default function Index() {
                     className="tline-im animate animate__animated animate__slow"
                     data-ani="animate__fadeInUp"
                   >
-                    <img src={iconNetwork} alt="" loading="lazy" />
+                    <img src={iconNetwork} loading="lazy" alt="AgapeVows Image" />
                   </div>
                 </div>
               </li>
@@ -1435,7 +1417,7 @@ export default function Index() {
                     className="tline-im animate animate__animated animate__slower"
                     data-ani="animate__fadeInUp"
                   >
-                    <img src={iconChat} alt="" loading="lazy" />
+                    <img src={iconChat} loading="lazy" alt="AgapeVows Image" />
                   </div>
                   <div
                     className="tline-con animate animate__animated animate__slow"
@@ -1469,11 +1451,8 @@ export default function Index() {
                     className="tline-im animate animate__animated animate__slow"
                     data-ani="animate__fadeInUp"
                   >
-                    <img
-                      src={iconWeddingCouple}
-                      alt=""
-                      loading="lazy"
-                    />
+                    <img src={iconWeddingCouple}
+                      loading="lazy" alt="AgapeVows Image" />
                   </div>
                 </div>
               </li>
@@ -1504,7 +1483,7 @@ export default function Index() {
           <li>
             <div className="hom-coup-box">
               <span className="leaf" />
-              <img src={couple6} alt="" loading="lazy" />
+              <img src={couple6} loading="lazy" alt="AgapeVows Image" />
               <div className="bx">
                 <h4>
                   Dany &amp; July <span>New York</span>
@@ -1518,7 +1497,7 @@ export default function Index() {
           <li>
             <div className="hom-coup-box">
               <span className="leaf" />
-              <img src={couple7} alt="" loading="lazy" />
+              <img src={couple7} loading="lazy" alt="AgapeVows Image" />
               <div className="bx">
                 <h4>
                   Dany &amp; July <span>New York</span>
@@ -1532,7 +1511,7 @@ export default function Index() {
           <li>
             <div className="hom-coup-box">
               <span className="leaf" />
-              <img src={couple8} alt="" loading="lazy" />
+              <img src={couple8} loading="lazy" alt="AgapeVows Image" />
               <div className="bx">
                 <h4>
                   Dany &amp; July <span>New York</span>
@@ -1546,7 +1525,7 @@ export default function Index() {
           <li>
             <div className="hom-coup-box">
               <span className="leaf" />
-              <img src={couple9} alt="" loading="lazy" />
+              <img src={couple9} loading="lazy" alt="AgapeVows Image" />
               <div className="bx">
                 <h4>
                   Dany &amp; July <span>New York</span>
@@ -1560,7 +1539,7 @@ export default function Index() {
           <li>
             <div className="hom-coup-box">
               <span className="leaf" />
-              <img src={couple10} alt="" loading="lazy" />
+              <img src={couple10} loading="lazy" alt="AgapeVows Image" />
               <div className="bx">
                 <h4>
                   Dany &amp; July <span>New York</span>
@@ -1574,7 +1553,7 @@ export default function Index() {
           <li>
             <div className="hom-coup-box">
               <span className="leaf" />
-              <img src={couple3} alt="" loading="lazy" />
+              <img src={couple3} loading="lazy" alt="AgapeVows Image" />
               <div className="bx">
                 <h4>
                   Dany &amp; July <span>New York</span>
@@ -1588,7 +1567,7 @@ export default function Index() {
           <li>
             <div className="hom-coup-box">
               <span className="leaf" />
-              <img src={couple4} alt="" loading="lazy" />
+              <img src={couple4} loading="lazy" alt="AgapeVows Image" />
               <div className="bx">
                 <h4>
                   Dany &amp; July <span>New York</span>
@@ -1602,7 +1581,7 @@ export default function Index() {
           <li>
             <div className="hom-coup-box">
               <span className="leaf" />
-              <img src={couple5} alt="" loading="lazy" />
+              <img src={couple5} loading="lazy" alt="AgapeVows Image" />
               <div className="bx">
                 <h4>
                   Dany &amp; July <span>New York</span>
@@ -1633,7 +1612,7 @@ export default function Index() {
           <ul>
             <li>
               <div>
-                <img src={profile6} alt="" loading="lazy" />
+                <img src={profile6} loading="lazy" alt="AgapeVows Image" />
                 <h4>Ashley Jen</h4>
                 <p>Marketing Manager</p>
                 <ul className="social-light">
@@ -1667,7 +1646,7 @@ export default function Index() {
             </li>
             <li>
               <div>
-                <img src={profile7} alt="" loading="lazy" />
+                <img src={profile7} loading="lazy" alt="AgapeVows Image" />
                 <h4>Ashley Jen</h4>
                 <p>Marketing Manager</p>
                 <ul className="social-light">
@@ -1701,7 +1680,7 @@ export default function Index() {
             </li>
             <li>
               <div>
-                <img src={profile8} alt="" loading="lazy" />
+                <img src={profile8} loading="lazy" alt="AgapeVows Image" />
                 <h4>Emily Arrov</h4>
                 <p>Creative Manager</p>
                 <ul className="social-light">
@@ -1735,7 +1714,7 @@ export default function Index() {
             </li>
             <li>
               <div>
-                <img src={profile9} alt="" loading="lazy" />
+                <img src={profile9} loading="lazy" alt="AgapeVows Image" />
                 <h4>Julia sear</h4>
                 <p>Client Coordinator</p>
                 <ul className="social-light">
@@ -1791,12 +1770,9 @@ export default function Index() {
               className="gal-im animate animate__animated animate__slow"
               data-ani="animate__flipInX"
             >
-              <img
-                src={gallery1}
+              <img src={gallery1}
                 className="gal-siz-1"
-                alt=""
-                loading="lazy"
-              />
+                loading="lazy" alt="AgapeVows Image" />
               <div className="txt">
                 <span>Wedding</span>
                 <h4>Bride &amp; Groom</h4>
@@ -1806,12 +1782,9 @@ export default function Index() {
               className="gal-im animate animate__animated animate__slower"
               data-ani="animate__flipInX"
             >
-              <img
-                src={gallery9}
+              <img src={gallery9}
                 className="gal-siz-2"
-                alt=""
-                loading="lazy"
-              />
+                loading="lazy" alt="AgapeVows Image" />
               <div className="txt">
                 <span>Wedding</span>
                 <h4>Bride &amp; Groom</h4>
@@ -1823,12 +1796,9 @@ export default function Index() {
               className="gal-im animate animate__animated animate__slower"
               data-ani="animate__flipInX"
             >
-              <img
-                src={gallery3}
+              <img src={gallery3}
                 className="gal-siz-2"
-                alt=""
-                loading="lazy"
-              />
+                loading="lazy" alt="AgapeVows Image" />
               <div className="txt">
                 <span>Wedding</span>
                 <h4>Bride &amp; Groom</h4>
@@ -1838,12 +1808,9 @@ export default function Index() {
               className="gal-im animate animate__animated animate__slower"
               data-ani="animate__flipInX"
             >
-              <img
-                src={gallery4}
+              <img src={gallery4}
                 className="gal-siz-1"
-                alt=""
-                loading="lazy"
-              />
+                loading="lazy" alt="AgapeVows Image" />
               <div className="txt">
                 <span>Wedding</span>
                 <h4>Bride &amp; Groom</h4>
@@ -1855,12 +1822,9 @@ export default function Index() {
               className="gal-im animate animate__animated animate__slower"
               data-ani="animate__flipInX"
             >
-              <img
-                src={gallery5}
+              <img src={gallery5}
                 className="gal-siz-1"
-                alt=""
-                loading="lazy"
-              />
+                loading="lazy" alt="AgapeVows Image" />
               <div className="txt">
                 <span>Wedding</span>
                 <h4>Bride &amp; Groom</h4>
@@ -1870,12 +1834,9 @@ export default function Index() {
               className="gal-im animate animate__animated animate__slower"
               data-ani="animate__flipInX"
             >
-              <img
-                src={gallery6}
+              <img src={gallery6}
                 className="gal-siz-2"
-                alt=""
-                loading="lazy"
-              />
+                loading="lazy" alt="AgapeVows Image" />
               <div className="txt">
                 <span>Wedding</span>
                 <h4>Bride &amp; Groom</h4>
@@ -1887,12 +1848,9 @@ export default function Index() {
               className="gal-im animate animate__animated animate__slower"
               data-ani="animate__flipInX"
             >
-              <img
-                src={gallery7}
+              <img src={gallery7}
                 className="gal-siz-2"
-                alt=""
-                loading="lazy"
-              />
+                loading="lazy" alt="AgapeVows Image" />
               <div className="txt">
                 <span>Wedding</span>
                 <h4>Bride &amp; Groom</h4>
@@ -1902,12 +1860,9 @@ export default function Index() {
               className="gal-im animate animate__animated animate__slower"
               data-ani="animate__flipInX"
             >
-              <img
-                src={gallery8}
+              <img src={gallery8}
                 className="gal-siz-1"
-                alt=""
-                loading="lazy"
-              />
+                loading="lazy" alt="AgapeVows Image" />
               <div className="txt">
                 <span>Wedding</span>
                 <h4>Bride &amp; Groom</h4>
@@ -1919,12 +1874,9 @@ export default function Index() {
               className="gal-im animate animate__animated animate__slower"
               data-ani="animate__flipInX"
             >
-              <img
-                src={couple9}
+              <img src={couple9}
                 className="gal-siz-2"
-                alt=""
-                loading="lazy"
-              />
+                loading="lazy" alt="AgapeVows Image" />
               <div className="txt">
                 <span>Wedding</span>
                 <h4>Bride &amp; Groom</h4>
@@ -1934,12 +1886,9 @@ export default function Index() {
               className="gal-im animate animate__animated animate__slower"
               data-ani="animate__flipInX"
             >
-              <img
-                src={couple11}
+              <img src={couple11}
                 className="gal-siz-1"
-                alt=""
-                loading="lazy"
-              />
+                loading="lazy" alt="AgapeVows Image" />
               <div className="txt">
                 <span>Wedding</span>
                 <h4>Bride &amp; Groom</h4>
@@ -1968,7 +1917,7 @@ export default function Index() {
             <ul>
               <li>
                 <div className="blog-box">
-                  <img src={blog1} alt="" loading="lazy" />
+                  <img src={blog1} loading="lazy" alt="AgapeVows Image" />
                   <span>Wedding - Johnny</span>
                   <h2>Wedding arrangements</h2>
                   <p>
@@ -1982,7 +1931,7 @@ export default function Index() {
               </li>
               <li>
                 <div className="blog-box">
-                  <img src={blog2} alt="" loading="lazy" />
+                  <img src={blog2} loading="lazy" alt="AgapeVows Image" />
                   <span>Wedding - Johnny</span>
                   <h2>Wedding arrangements</h2>
                   <p>
@@ -1996,7 +1945,7 @@ export default function Index() {
               </li>
               <li>
                 <div className="blog-box">
-                  <img src={blog3} alt="" loading="lazy" />
+                  <img src={blog3} loading="lazy" alt="AgapeVows Image" />
                   <span>Wedding - Johnny</span>
                   <h2>Invitation cards</h2>
                   <p>
@@ -2085,22 +2034,22 @@ export default function Index() {
           <ul>
             <li>
               <a href="#!">
-                <img src={social1} alt="" loading="lazy" />
+                <img src={social1} loading="lazy" alt="AgapeVows Image" />
               </a>
             </li>
             <li>
               <a href="#!">
-                <img src={social2} alt="" loading="lazy" />
+                <img src={social2} loading="lazy" alt="AgapeVows Image" />
               </a>
             </li>
             <li>
               <a href="#!">
-                <img src={social3} alt="" loading="lazy" />
+                <img src={social3} loading="lazy" alt="AgapeVows Image" />
               </a>
             </li>
             <li>
               <a href="#!">
-                <img src={social5} alt="" loading="lazy" />
+                <img src={social5} loading="lazy" alt="AgapeVows Image" />
               </a>
             </li>
           </ul>

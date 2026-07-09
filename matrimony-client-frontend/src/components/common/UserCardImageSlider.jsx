@@ -198,8 +198,7 @@ const UserCardImageSlider = ({ user, height = "220px", blur = false, onImageClic
           <div
             style={{ position: "relative", width: "80vw", height: "80vh", display: "flex", alignItems: "center", justifyContent: "center" }}
           >
-            <img
-              src={allImages[currentImageIndex]}
+            <img src={allImages[currentImageIndex]}
               style={{
                 maxWidth: "100%",
                 maxHeight: "100%",

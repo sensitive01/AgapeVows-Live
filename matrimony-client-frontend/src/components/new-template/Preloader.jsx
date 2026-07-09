@@ -9,13 +9,13 @@ export default function Preloader() {
       <div id="preloader">
         <div className="plod">
           <span className="lod1">
-            <img src={loader1} alt="" loading="lazy" />
+            <img src={loader1} loading="lazy" alt="AgapeVows Image" />
           </span>
           <span className="lod2">
-            <img src={loader2} alt="" loading="lazy" />
+            <img src={loader2} loading="lazy" alt="AgapeVows Image" />
           </span>
           <span className="lod3">
-            <img src={loader3} alt="" loading="lazy" />
+            <img src={loader3} loading="lazy" alt="AgapeVows Image" />
           </span>
         </div>
       </div>

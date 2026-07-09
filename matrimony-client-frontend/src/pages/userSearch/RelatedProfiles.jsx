@@ -8,7 +8,7 @@ const RelatedProfiles = () => {
         <li>
           <div className="wedd-rel-box">
             <div className="wedd-rel-img">
-              <img src="images/profiles/1.jpg" alt="" />
+              <img src="images/profiles/1.jpg" alt="AgapeVows Matrimony 1" />
               <span className="badge badge-success">21 Years old</span>
             </div>
             <div className="wedd-rel-con">
@@ -23,7 +23,7 @@ const RelatedProfiles = () => {
         <li>
           <div className="wedd-rel-box">
             <div className="wedd-rel-img">
-              <img src="images/profiles/2.jpg" alt="" />
+              <img src="images/profiles/2.jpg" alt="AgapeVows Matrimony 2" />
               <span className="badge badge-success">21 Years old</span>
             </div>
             <div className="wedd-rel-con">
@@ -38,7 +38,7 @@ const RelatedProfiles = () => {
         <li>
           <div className="wedd-rel-box">
             <div className="wedd-rel-img">
-              <img src="images/profiles/3.jpg" alt="" />
+              <img src="images/profiles/3.jpg" alt="AgapeVows Matrimony 3" />
               <span className="badge badge-success">21 Years old</span>
             </div>
             <div className="wedd-rel-con">
@@ -53,7 +53,7 @@ const RelatedProfiles = () => {
         <li>
           <div className="wedd-rel-box">
             <div className="wedd-rel-img">
-              <img src="images/profiles/4.jpg" alt="" />
+              <img src="images/profiles/4.jpg" alt="AgapeVows Matrimony 4" />
               <span className="badge badge-success">21 Years old</span>
             </div>
             <div className="wedd-rel-con">
@@ -68,7 +68,7 @@ const RelatedProfiles = () => {
         <li>
           <div className="wedd-rel-box">
             <div className="wedd-rel-img">
-              <img src="images/profiles/6.jpg" alt="" />
+              <img src="images/profiles/6.jpg" alt="AgapeVows Matrimony 6" />
               <span className="badge badge-success">21 Years old</span>
             </div>
             <div className="wedd-rel-con">

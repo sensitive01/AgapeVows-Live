@@ -10,7 +10,7 @@ const ContactTeams = () => {
         <div className="menu-pop-help">
           <h4>Support Teams</h4>
           <div className="user-pro">
-            <img src="images/profiles/1.jpg" alt="" loading="lazy" />
+            <img src="images/profiles/1.jpg" loading="lazy" alt="AgapeVows Matrimony 1" />
           </div>
           <div className="user-bio">
             <h5>Ashley emyy</h5>
@@ -60,7 +60,7 @@ const ContactTeams = () => {
           <ul>
             <li>
               <div className="rel-pro-img">
-                <img src="images/couples/1.jpg" alt="" loading="lazy" />
+                <img src="images/couples/1.jpg" loading="lazy" alt="AgapeVows Matrimony 1" />
               </div>
               <div className="rel-pro-con">
                 <h5>Long established fact that a reader distracted</h5>
@@ -70,7 +70,7 @@ const ContactTeams = () => {
             </li>
             <li>
               <div className="rel-pro-img">
-                <img src="images/couples/3.jpg" alt="" loading="lazy" />
+                <img src="images/couples/3.jpg" loading="lazy" alt="AgapeVows Matrimony 3" />
               </div>
               <div className="rel-pro-con">
                 <h5>Long established fact that a reader distracted</h5>
@@ -80,7 +80,7 @@ const ContactTeams = () => {
             </li>
             <li>
               <div className="rel-pro-img">
-                <img src="images/couples/4.jpg" alt="" loading="lazy" />
+                <img src="images/couples/4.jpg" loading="lazy" alt="AgapeVows Matrimony 4" />
               </div>
               <div className="rel-pro-con">
                 <h5>Long established fact that a reader distracted</h5>

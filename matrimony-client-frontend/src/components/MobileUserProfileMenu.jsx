@@ -4,15 +4,12 @@ const MobileUserProfileMenu = () => {
   return (
     <div className="mob-me-all dashbord_menu">
       <div className="mob-me-clo">
-        <img src="../../../assets/images/icon/close.svg" alt="" />
+        <img src="../../../assets/images/icon/close.svg" alt="Close" />
       </div>
       <div className="mv-bus">
         <div className="head-pro">
-          <img
-            src="../../../assets/images/profiles/1.jpg"
-            alt=""
-            loading="lazy"
-          />
+          <img src="../../../assets/images/profiles/1.jpg"
+            loading="lazy" alt="AgapeVows Matrimony 1" />
           <b>user profile</b>
           <br />
           <h4>Ashley emyy</h4>

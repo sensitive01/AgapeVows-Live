@@ -39,7 +39,7 @@ const DisPlayProfileDetails = ({
               <ul>
                 <li>
                   <div>
-                    <img src="images/icon/pro-city.png" loading="lazy" alt="" />
+                    <img src="images/icon/pro-city.png" loading="lazy" alt="Pro City" />
                     <span>
                       City:{" "}
                       <strong>{profileData.city || "Not specified"}</strong>
@@ -48,7 +48,7 @@ const DisPlayProfileDetails = ({
                 </li>
                 <li>
                   <div>
-                    <img src="images/icon/pro-age.png" loading="lazy" alt="" />
+                    <img src="images/icon/pro-age.png" loading="lazy" alt="Pro Age" />
                     <span>
                       Age:{" "}
                       <strong>
@@ -59,7 +59,7 @@ const DisPlayProfileDetails = ({
                 </li>
                 <li>
                   <div>
-                    <img src="images/icon/pro-city.png" loading="lazy" alt="" />
+                    <img src="images/icon/pro-city.png" loading="lazy" alt="Pro City" />
                     <span>
                       Height:{" "}
                       <strong>
@@ -72,7 +72,7 @@ const DisPlayProfileDetails = ({
                 </li>
                 <li>
                   <div>
-                    <img src="images/icon/pro-city.png" loading="lazy" alt="" />
+                    <img src="images/icon/pro-city.png" loading="lazy" alt="Pro City" />
                     <span>
                       Job:{" "}
                       <strong>{profileData.jobType || "Not specified"}</strong>

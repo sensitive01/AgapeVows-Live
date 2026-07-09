@@ -243,8 +243,7 @@ const Events = () => {
                   >
                     {/* Image Container - Responsive sizing */}
                     <div className="md:w-2/5 lg:w-1/3 relative h-auto flex-shrink-0">
-                      <img
-                        src={event.image && event.image.trim().length > 5 && event.image !== "null" ? event.image : "https://placehold.co/600x400/f8f5fd/5c2a9d?text=Event"}
+                      <img src={event.image && event.image.trim().length > 5 && event.image !== "null" ? event.image : "https://placehold.co/600x400/f8f5fd/5c2a9d?text=Event"}
                         alt={event.name}
                         onError={(e) => {
                           e.target.onerror = null;
@@ -407,8 +406,7 @@ const Events = () => {
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div className="sm:flex sm:items-start flex-col">
                     <div className="w-full mb-4 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
-                      <img
-                        src={selectedEvent.image && selectedEvent.image.trim().length > 5 && selectedEvent.image !== "null" ? selectedEvent.image : "https://placehold.co/600x400/f8f5fd/5c2a9d?text=Event"}
+                      <img src={selectedEvent.image && selectedEvent.image.trim().length > 5 && selectedEvent.image !== "null" ? selectedEvent.image : "https://placehold.co/600x400/f8f5fd/5c2a9d?text=Event"}
                         alt={selectedEvent.name}
                         onError={(e) => {
                           e.target.onerror = null;

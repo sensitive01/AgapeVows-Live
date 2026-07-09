@@ -9,7 +9,7 @@
 
     // Lightbox
     var $overlay = $('<div id="overlay"></div>');
-    var $image = $("<img>");
+    var $image = $("<img  alt="AgapeVows Image">");
     var $prevButton = $('<div id="prevButton"><i class="fa fa-angle-left" aria-hidden="true"></i></div>');
     var $nextButton = $('<div id="nextButton"><i class="fa fa-angle-right" aria-hidden="true"></i></div>');
     var $exitButton = $('<div id="exitButton"><i class="fa fa-times" aria-hidden="true"></i></div>');

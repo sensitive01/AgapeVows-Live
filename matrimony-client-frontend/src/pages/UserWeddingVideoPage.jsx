@@ -37,7 +37,7 @@ const UserWeddingVideoPage = () => {
                   </ul>
                 </div>
                 <div className="wedd-vid">
-                  <img src="images/couples/20.jpg" alt="" />
+                  <img src="images/couples/20.jpg" alt="AgapeVows Matrimony 20" />
                   <iframe
                     src="https://www.youtube.com/embed/P9iKATG9BW4"
                     title="Wedding marriage: Wedding marriage"
@@ -74,21 +74,21 @@ const UserWeddingVideoPage = () => {
               <div className="col-md-9">
                 <div className="save-im">
                   <div className="inn">
-                    <img src="images/couples/9.jpg" alt="" />
+                    <img src="images/couples/9.jpg" alt="AgapeVows Matrimony 9" />
                     <div className="desc">
                       <span>24, June 2023</span>
                       <h4>The day we meet</h4>
                     </div>
                   </div>
                   <div className="inn">
-                    <img src="images/couples/7.jpg" alt="" />
+                    <img src="images/couples/7.jpg" alt="AgapeVows Matrimony 7" />
                     <div className="desc">
                       <span>24, June 2023</span>
                       <h4>The day we meet</h4>
                     </div>
                   </div>
                   <div className="inn">
-                    <img src="images/couples/6.jpg" alt="" />
+                    <img src="images/couples/6.jpg" alt="AgapeVows Matrimony 6" />
                     <div className="desc">
                       <span>24, June 2023</span>
                       <h4>The day we meet</h4>
@@ -161,7 +161,7 @@ const UserWeddingVideoPage = () => {
                         className="tline-im animate animate__animated animate__slower"
                         data-ani="animate__fadeInUp"
                       >
-                        <img src="images/icon/wedding-1.png" alt="" />
+                        <img src="images/icon/wedding-1.png" alt="Wedding 1" />
                       </div>
                       <div
                         className="tline-con animate animate__animated animate__slow"
@@ -195,7 +195,7 @@ const UserWeddingVideoPage = () => {
                         className="tline-im animate animate__animated animate__slow"
                         data-ani="animate__fadeInUp"
                       >
-                        <img src="images/icon/wedding-2.png" alt="" />
+                        <img src="images/icon/wedding-2.png" alt="Wedding 2" />
                       </div>
                     </div>
                   </li>
@@ -205,7 +205,7 @@ const UserWeddingVideoPage = () => {
                         className="tline-im animate animate__animated animate__slower"
                         data-ani="animate__fadeInUp"
                       >
-                        <img src="images/icon/wedding-4.png" alt="" />
+                        <img src="images/icon/wedding-4.png" alt="Wedding 4" />
                       </div>
                       <div
                         className="tline-con animate animate__animated animate__slow"
@@ -239,7 +239,7 @@ const UserWeddingVideoPage = () => {
                         className="tline-im animate animate__animated animate__slow"
                         data-ani="animate__fadeInUp"
                       >
-                        <img src="images/icon/wedding-5.png" alt="" />
+                        <img src="images/icon/wedding-5.png" alt="Wedding 5" />
                       </div>
                     </div>
                   </li>
@@ -249,7 +249,7 @@ const UserWeddingVideoPage = () => {
                         className="tline-im animate animate__animated animate__slower"
                         data-ani="animate__fadeInUp"
                       >
-                        <img src="images/icon/wedding-6.png" alt="" />
+                        <img src="images/icon/wedding-6.png" alt="Wedding 6" />
                       </div>
                       <div
                         className="tline-con animate animate__animated animate__slow"
@@ -283,7 +283,7 @@ const UserWeddingVideoPage = () => {
                         className="tline-im animate animate__animated animate__slow"
                         data-ani="animate__fadeInUp"
                       >
-                        <img src="images/icon/wedding-7.png" alt="" />
+                        <img src="images/icon/wedding-7.png" alt="Wedding 7" />
                       </div>
                     </div>
                   </li>
@@ -293,7 +293,7 @@ const UserWeddingVideoPage = () => {
                         className="tline-im animate animate__animated animate__slower"
                         data-ani="animate__fadeInUp"
                       >
-                        <img src="images/icon/wedding-8.png" alt="" />
+                        <img src="images/icon/wedding-8.png" alt="Wedding 8" />
                       </div>
                       <div
                         className="tline-con animate animate__animated animate__slow"
@@ -333,11 +333,8 @@ const UserWeddingVideoPage = () => {
                   className="gal-im animate animate__animated animate__slow"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/gallery/1.jpg"
-                    className="gal-siz-1"
-                    alt=""
-                  />
+                  <img src="images/gallery/1.jpg"
+                    className="gal-siz-1" alt="AgapeVows Matrimony 1" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -347,11 +344,8 @@ const UserWeddingVideoPage = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/gallery/9.jpg"
-                    className="gal-siz-2"
-                    alt=""
-                  />
+                  <img src="images/gallery/9.jpg"
+                    className="gal-siz-2" alt="AgapeVows Matrimony 9" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -363,11 +357,8 @@ const UserWeddingVideoPage = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/gallery/3.jpg"
-                    className="gal-siz-2"
-                    alt=""
-                  />
+                  <img src="images/gallery/3.jpg"
+                    className="gal-siz-2" alt="AgapeVows Matrimony 3" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -377,11 +368,8 @@ const UserWeddingVideoPage = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/gallery/4.jpg"
-                    className="gal-siz-1"
-                    alt=""
-                  />
+                  <img src="images/gallery/4.jpg"
+                    className="gal-siz-1" alt="AgapeVows Matrimony 4" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -393,11 +381,8 @@ const UserWeddingVideoPage = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/gallery/5.jpg"
-                    className="gal-siz-1"
-                    alt=""
-                  />
+                  <img src="images/gallery/5.jpg"
+                    className="gal-siz-1" alt="AgapeVows Matrimony 5" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -407,11 +392,8 @@ const UserWeddingVideoPage = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/gallery/6.jpg"
-                    className="gal-siz-2"
-                    alt=""
-                  />
+                  <img src="images/gallery/6.jpg"
+                    className="gal-siz-2" alt="AgapeVows Matrimony 6" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -423,11 +405,8 @@ const UserWeddingVideoPage = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/gallery/7.jpg"
-                    className="gal-siz-2"
-                    alt=""
-                  />
+                  <img src="images/gallery/7.jpg"
+                    className="gal-siz-2" alt="AgapeVows Matrimony 7" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -437,11 +416,8 @@ const UserWeddingVideoPage = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/gallery/8.jpg"
-                    className="gal-siz-1"
-                    alt=""
-                  />
+                  <img src="images/gallery/8.jpg"
+                    className="gal-siz-1" alt="AgapeVows Matrimony 8" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -453,11 +429,8 @@ const UserWeddingVideoPage = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/couples/9.jpg"
-                    className="gal-siz-2"
-                    alt=""
-                  />
+                  <img src="images/couples/9.jpg"
+                    className="gal-siz-2" alt="AgapeVows Matrimony 9" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -467,11 +440,8 @@ const UserWeddingVideoPage = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/couples/11.jpg"
-                    className="gal-siz-1"
-                    alt=""
-                  />
+                  <img src="images/couples/11.jpg"
+                    className="gal-siz-1" alt="AgapeVows Matrimony 11" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -526,22 +496,22 @@ const UserWeddingVideoPage = () => {
               <ul>
                 <li>
                   <a href="#!">
-                    <img src="images/social/1.png" alt="" />
+                    <img src="images/social/1.png" alt="AgapeVows Matrimony 1" />
                   </a>
                 </li>
                 <li>
                   <a href="#!">
-                    <img src="images/social/2.png" alt="" />
+                    <img src="images/social/2.png" alt="AgapeVows Matrimony 2" />
                   </a>
                 </li>
                 <li>
                   <a href="#!">
-                    <img src="images/social/3.png" alt="" />
+                    <img src="images/social/3.png" alt="AgapeVows Matrimony 3" />
                   </a>
                 </li>
                 <li>
                   <a href="#!">
-                    <img src="images/social/5.png" alt="" />
+                    <img src="images/social/5.png" alt="AgapeVows Matrimony 5" />
                   </a>
                 </li>
               </ul>

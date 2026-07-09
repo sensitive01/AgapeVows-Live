@@ -162,7 +162,7 @@
 //                     </h2>
 //                   </div>
 //                   <div className="im">
-//                     <img src="images/login-couple.png" alt="" />
+//                     <img src="images/login-couple.png" alt="Login Couple" />
 //                   </div>
 //                   <div className="log-bg">&nbsp;</div>
 //                 </div>

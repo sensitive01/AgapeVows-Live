@@ -4,7 +4,7 @@ const ExploreMenuPopUp = () => {
   return (
     <div className="mob-me-all mobile_menu">
       <div className="mob-me-clo">
-        <img src="../../../assets/images/icon/close.svg" alt="" />
+        <img src="../../../assets/images/icon/close.svg" alt="Close" />
       </div>
       <div className="mv-bus">
         <h4>
@@ -91,11 +91,8 @@ const ExploreMenuPopUp = () => {
         <div className="menu-pop-help">
           <h4>Support Team</h4>
           <div className="user-pro">
-            <img
-              src="../../../assets/images/profiles/1.jpg"
-              alt=""
-              loading="lazy"
-            />
+            <img src="../../../assets/images/profiles/1.jpg"
+              loading="lazy" alt="AgapeVows Matrimony 1" />
           </div>
           <div className="user-bio">
             <h5>Ashley emyy</h5>
@@ -144,11 +141,8 @@ const ExploreMenuPopUp = () => {
           <ul>
             <li>
               <div className="rel-pro-img">
-                <img
-                  src="../../../assets/images/couples/1.jpg"
-                  alt=""
-                  loading="lazy"
-                />
+                <img src="../../../assets/images/couples/1.jpg"
+                  loading="lazy" alt="AgapeVows Matrimony 1" />
               </div>
               <div className="rel-pro-con">
                 <h5>Long established fact that a reader distracted</h5>
@@ -158,11 +152,8 @@ const ExploreMenuPopUp = () => {
             </li>
             <li>
               <div className="rel-pro-img">
-                <img
-                  src="../../../assets/images/couples/3.jpg"
-                  alt=""
-                  loading="lazy"
-                />
+                <img src="../../../assets/images/couples/3.jpg"
+                  loading="lazy" alt="AgapeVows Matrimony 3" />
               </div>
               <div className="rel-pro-con">
                 <h5>Long established fact that a reader distracted</h5>
@@ -172,11 +163,8 @@ const ExploreMenuPopUp = () => {
             </li>
             <li>
               <div className="rel-pro-img">
-                <img
-                  src="../../../assets/images/couples/3.jpg"
-                  alt=""
-                  loading="lazy"
-                />
+                <img src="../../../assets/images/couples/3.jpg"
+                  loading="lazy" alt="AgapeVows Matrimony 3" />
               </div>
               <div className="rel-pro-con">
                 <h5>Long established fact that a reader distracted</h5>

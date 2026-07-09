@@ -11,18 +11,12 @@ const AboutStartHome = () => {
             <div className="col-lg-6">
               <div className="ab-wel-lhs">
                 <span className="ab-wel-3"></span>
-                <img
-                  src={about1}
-                  alt=""
+                <img src={about1}
                   loading="lazy"
-                  className="ab-wel-1"
-                />
-                <img
-                  src={about2}
-                  alt=""
+                  className="ab-wel-1" alt="AgapeVows Image" />
+                <img src={about2}
                   loading="lazy"
-                  className="ab-wel-2"
-                />
+                  className="ab-wel-2" alt="AgapeVows Image" />
                 <span className="ab-wel-4"></span>
               </div>
             </div>

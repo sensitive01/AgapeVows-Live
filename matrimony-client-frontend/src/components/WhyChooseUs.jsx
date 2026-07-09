@@ -42,11 +42,8 @@ const WhyChooseUs = () => {
                       data-ani="animate__flipInX"
                       data-dely="0.1"
                     >
-                      <img
-                        src={prizeIcon}
-                        alt=""
-                        loading="lazy"
-                      />
+                      <img src={prizeIcon}
+                        loading="lazy" alt="AgapeVows Image" />
                       <h4 style={{ color: "#af1684" }}>Genuine profiles</h4>
                       <p>Contact genuine profiles with 100% verified mobile</p>
                     </div>
@@ -57,11 +54,8 @@ const WhyChooseUs = () => {
                       data-ani="animate__flipInX"
                       data-dely="0.3"
                     >
-                      <img
-                        src={trustIcon}
-                        alt=""
-                        loading="lazy"
-                      />
+                      <img src={trustIcon}
+                        loading="lazy" alt="AgapeVows Image" />
                       <h4 style={{ color: "#af1684" }}>Most trusted</h4>
                       <p>The most trusted wedding matrimony brand lorem</p>
                     </div>
@@ -72,11 +66,8 @@ const WhyChooseUs = () => {
                       data-ani="animate__flipInX"
                       data-dely="0.6"
                     >
-                      <img
-                        src={ringsIcon}
-                        alt=""
-                        loading="lazy"
-                      />
+                      <img src={ringsIcon}
+                        loading="lazy" alt="AgapeVows Image" />
                       <h4 style={{ color: "#af1684" }}>2000+ weddings</h4>
                       <p>Lakhs of peoples have found their life partner</p>
                     </div>

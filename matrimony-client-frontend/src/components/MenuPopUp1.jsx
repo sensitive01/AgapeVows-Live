@@ -12,7 +12,7 @@ const MenuPopUp1 = () => {
         <i className="fa fa-times" aria-hidden="true" />
       </span>
       <div className="inn">
-        <img src={logoImg} alt="" loading="lazy" className="logo-brand-only" />
+        <img src={logoImg} loading="lazy" className="logo-brand-only" alt="AgapeVows Image" />
         <p>
           <strong>Best Wedding Matrimony</strong> lacinia viverra lectus. Fusce
           imperdiet ullamcorper metus eu fringilla.Lorem Ipsum is simply dummy
@@ -47,7 +47,7 @@ const MenuPopUp1 = () => {
         <div className="menu-pop-help">
           <h4>Support Team</h4>
           <div className="user-pro">
-            <img src={profImg1} alt="" loading="lazy" />
+            <img src={profImg1} loading="lazy" alt="AgapeVows Image" />
           </div>
           <div className="user-bio">
             <h5>Ashley emyy</h5>

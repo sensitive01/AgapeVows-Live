@@ -19,12 +19,9 @@ const FindYourMatch = () => {
                   className="gal-im animate animate__animated animate__slow"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/gallery/1.jpg"
+                  <img src="images/gallery/1.jpg"
                     className="gal-siz-1"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Matrimony 1" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -34,12 +31,9 @@ const FindYourMatch = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/gallery/9.jpg"
+                  <img src="images/gallery/9.jpg"
                     className="gal-siz-2"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Matrimony 9" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -51,12 +45,9 @@ const FindYourMatch = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/gallery/3.jpg"
+                  <img src="images/gallery/3.jpg"
                     className="gal-siz-2"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Matrimony 3" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -66,12 +57,9 @@ const FindYourMatch = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/gallery/4.jpg"
+                  <img src="images/gallery/4.jpg"
                     className="gal-siz-1"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Matrimony 4" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -83,12 +71,9 @@ const FindYourMatch = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/gallery/5.jpg"
+                  <img src="images/gallery/5.jpg"
                     className="gal-siz-1"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Matrimony 5" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -98,12 +83,9 @@ const FindYourMatch = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/gallery/6.jpg"
+                  <img src="images/gallery/6.jpg"
                     className="gal-siz-2"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Matrimony 6" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -115,12 +97,9 @@ const FindYourMatch = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/gallery/7.jpg"
+                  <img src="images/gallery/7.jpg"
                     className="gal-siz-2"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Matrimony 7" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -130,12 +109,9 @@ const FindYourMatch = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/gallery/8.jpg"
+                  <img src="images/gallery/8.jpg"
                     className="gal-siz-1"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Matrimony 8" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -147,12 +123,9 @@ const FindYourMatch = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/couples/9.jpg"
+                  <img src="images/couples/9.jpg"
                     className="gal-siz-2"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Matrimony 9" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>
@@ -162,12 +135,9 @@ const FindYourMatch = () => {
                   className="gal-im animate animate__animated animate__slower"
                   data-ani="animate__flipInX"
                 >
-                  <img
-                    src="images/couples/11.jpg"
+                  <img src="images/couples/11.jpg"
                     className="gal-siz-1"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Matrimony 11" />
                   <div className="txt">
                     <span>Wedding</span>
                     <h4>Bride & Groom</h4>

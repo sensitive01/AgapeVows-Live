@@ -236,7 +236,7 @@ const QuickAccess = () => {
   //                             data-wow-delay={service.delay}
   //                           >
   //                             <div className="con">
-  //                               <img src={service.icon} alt="" loading="lazy" />
+  //                               <img src={service.icon} loading="lazy" alt="AgapeVows Image" />
   //                               <h4>{service.title}</h4>
   //                               <p>{service.subtitle}</p>
   //                               <a href={service.link}>{service.linkText}</a>

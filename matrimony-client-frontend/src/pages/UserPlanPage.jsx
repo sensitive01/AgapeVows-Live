@@ -223,7 +223,7 @@ const getRemainingDays = (validFrom, validTo) => {
                       <h6 className="tit-top-curv">Current Plan</h6>
 
                       <div className="db-plan-card d-flex justify-content-center w-100">
-                        <img src={planIcon} alt="" style={{ margin: "0 auto", display: "block" }} />
+                        <img src={planIcon} style={{ margin: "0 auto", display: "block" }} alt="AgapeVows Image" />
                       </div>
 
                       <div className="db-plan-detil">

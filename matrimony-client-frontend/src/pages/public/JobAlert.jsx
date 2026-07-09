@@ -1225,11 +1225,8 @@ const JobAlert = () => {
                               }}
                             >
                               {category.iconBlue && (
-                                <img
-                                  src={category.iconBlue}
-                                  alt=""
-                                  style={{ width: "20px", height: "20px" }}
-                                />
+                                <img src={category.iconBlue}
+                                  style={{ width: "20px", height: "20px" }} alt="AgapeVows Image" />
                               )}
                               {category.lucideIcon && (
                                 <category.lucideIcon
@@ -1686,11 +1683,8 @@ const JobAlert = () => {
                               }}
                             >
                               {category.iconBlue && (
-                                <img
-                                  src={category.iconBlue}
-                                  alt=""
-                                  style={{ width: "20px", height: "20px" }}
-                                />
+                                <img src={category.iconBlue}
+                                  style={{ width: "20px", height: "20px" }} alt="AgapeVows Image" />
                               )}
                               {category.lucideIcon && (
                                 <category.lucideIcon

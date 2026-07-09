@@ -9,18 +9,12 @@ const CountStartHome = () => {
             <div className="col-lg-6">
               <div className="ab-wel-lhs">
                 <span className="ab-wel-3"></span>
-                <img
-                  src="images/about/1.jpg"
-                  alt=""
+                <img src="images/about/1.jpg"
                   loading="lazy"
-                  className="ab-wel-1"
-                />
-                <img
-                  src="images/couples/20.jpg"
-                  alt=""
+                  className="ab-wel-1" alt="AgapeVows Matrimony 1" />
+                <img src="images/couples/20.jpg"
                   loading="lazy"
-                  className="ab-wel-2"
-                />
+                  className="ab-wel-2" alt="AgapeVows Matrimony 20" />
                 <span className="ab-wel-4"></span>
               </div>
             </div>

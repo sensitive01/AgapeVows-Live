@@ -23,12 +23,9 @@ const UserServicePage = () => {
             <ul>
               <li>
                 <div className="gal-im">
-                  <img
-                    src={Image1}
+                  <img src={Image1}
                     className="gal-siz-2"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Image" />
                   <div className="txt">
                     <span>Wedding Matrimony</span>
                     <h4>Matrimony Wedding Services</h4>
@@ -41,12 +38,9 @@ const UserServicePage = () => {
               </li>
               <li>
                 <div className="gal-im">
-                  <img
-                    src={Image2}
+                  <img src={Image2}
                     className="gal-siz-2"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Image" />
                   <div className="txt">
                     <span>Wedding Matrimony</span>
                     <h4>The Ceremony</h4>
@@ -59,12 +53,9 @@ const UserServicePage = () => {
               </li>
               <li>
                 <div className="gal-im">
-                  <img
-                    src={Image3}
+                  <img src={Image3}
                     className="gal-siz-2"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Image" />
                   <div className="txt">
                     <span>Wedding Matrimony</span>
                     <h4>Photography & Video</h4>
@@ -77,12 +68,9 @@ const UserServicePage = () => {
               </li>
               <li>
                 <div className="gal-im">
-                  <img
-                    src={Image4}
+                  <img src={Image4}
                     className="gal-siz-2"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Image" />
                   <div className="txt">
                     <span>Wedding Matrimony</span>
                     <h4>Food Catering</h4>
@@ -95,12 +83,9 @@ const UserServicePage = () => {
               </li>
               <li>
                 <div className="gal-im">
-                  <img
-                    src={Image5}
+                  <img src={Image5}
                     className="gal-siz-2"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Image" />
                   <div className="txt">
                     <span>Wedding Matrimony</span>
                     <h4>Decorations</h4>
@@ -113,12 +98,9 @@ const UserServicePage = () => {
               </li>
               <li>
                 <div className="gal-im">
-                  <img
-                    src={Image6}
+                  <img src={Image6}
                     className="gal-siz-2"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Image" />
                   <div className="txt">
                     <span>Wedding Matrimony</span>
                     <h4>Wedding Halls</h4>
@@ -131,12 +113,9 @@ const UserServicePage = () => {
               </li>
               <li>
                 <div className="gal-im">
-                  <img
-                    src={Image7}
+                  <img src={Image7}
                     className="gal-siz-2"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Image" />
                   <div className="txt">
                     <span>Wedding Matrimony</span>
                     <h4>Wedding Registry</h4>
@@ -149,12 +128,9 @@ const UserServicePage = () => {
               </li>
               <li>
                 <div className="gal-im">
-                  <img
-                    src={Image8}
+                  <img src={Image8}
                     className="gal-siz-2"
-                    alt=""
-                    loading="lazy"
-                  />
+                    loading="lazy" alt="AgapeVows Image" />
                   <div className="txt">
                     <span>Wedding Matrimony</span>
                     <h4>The Perfect Cake</h4>
@@ -206,22 +182,22 @@ const UserServicePage = () => {
               <ul>
                 <li>
                   <a href="#!">
-                    <img src="images/social/1.png" alt="" />
+                    <img src="images/social/1.png" alt="AgapeVows Matrimony 1" />
                   </a>
                 </li>
                 <li>
                   <a href="#!">
-                    <img src="images/social/2.png" alt="" />
+                    <img src="images/social/2.png" alt="AgapeVows Matrimony 2" />
                   </a>
                 </li>
                 <li>
                   <a href="#!">
-                    <img src="images/social/3.png" alt="" />
+                    <img src="images/social/3.png" alt="AgapeVows Matrimony 3" />
                   </a>
                 </li>
                 <li>
                   <a href="#!">
-                    <img src="images/social/5.png" alt="" />
+                    <img src="images/social/5.png" alt="AgapeVows Matrimony 5" />
                   </a>
                 </li>
               </ul>

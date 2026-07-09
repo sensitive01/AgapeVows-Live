@@ -11,12 +11,12 @@ const BannerSlider = () => {
           <ul className="ban-sli">
             <li>
               <div className="image">
-                <img src={bannerSlider1} alt="" loading="lazy" />
+                <img src={bannerSlider1} loading="lazy" alt="AgapeVows Image" />
               </div>
             </li>
             <li>
               <div className="image">
-                <img src={bannerSlider2} alt="" loading="lazy" />
+                <img src={bannerSlider2} loading="lazy" alt="AgapeVows Image" />
               </div>
             </li>
           </ul>

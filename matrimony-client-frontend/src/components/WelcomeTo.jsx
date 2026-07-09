@@ -12,7 +12,7 @@ const WelcomeTo = () => {
               <div className="col-lg-6">
                 <div className="ab-wel-lhs">
                   <span className="ab-wel-3" />
-                  <img src={about1} alt="" loading="lazy" className="ab-wel-1" />
+                  <img src={about1} loading="lazy" className="ab-wel-1" alt="AgapeVows Image" />
                   <span className="ab-wel-4" />
                 </div>
               </div>

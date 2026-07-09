@@ -40,7 +40,7 @@ export default function MainMenu() {
           <div className="menu-pop-help">
             <h4>Support Team</h4>
             <div className="user-pro">
-              <img src={profile1} alt="" loading="lazy" />
+              <img src={profile1} loading="lazy" alt="AgapeVows Image" />
             </div>
             <div className="user-bio">
               <h5>Ashley emyy</h5>
@@ -89,7 +89,7 @@ export default function MainMenu() {
             <ul>
               <li>
                 <div className="rel-pro-img">
-                  <img src={couple1} alt="" loading="lazy" />
+                  <img src={couple1} loading="lazy" alt="AgapeVows Image" />
                 </div>
                 <div className="rel-pro-con">
                   <h5>Long established fact that a reader distracted</h5>
@@ -99,7 +99,7 @@ export default function MainMenu() {
               </li>
               <li>
                 <div className="rel-pro-img">
-                  <img src={couple3} alt="" loading="lazy" />
+                  <img src={couple3} loading="lazy" alt="AgapeVows Image" />
                 </div>
                 <div className="rel-pro-con">
                   <h5>Long established fact that a reader distracted</h5>
@@ -109,7 +109,7 @@ export default function MainMenu() {
               </li>
               <li>
                 <div className="rel-pro-img">
-                  <img src={couple4} alt="" loading="lazy" />
+                  <img src={couple4} loading="lazy" alt="AgapeVows Image" />
                 </div>
                 <div className="rel-pro-con">
                   <h5>Long established fact that a reader distracted</h5>
@@ -142,7 +142,7 @@ export default function MainMenu() {
                   <i />
                 </span> */}
                 <a href="/" className="logo-brand">
-                  <img src={logoBImg} alt="" loading="lazy" className="ic-logo" style={{ marginTop: '-10px', transform: 'scale(1.5)', transformOrigin: 'left center' }} />
+                  <img src={logoBImg} loading="lazy" className="ic-logo" style={{ marginTop: '-10px', transform: 'scale(1.5)', transformOrigin: 'left center' }} alt="AgapeVows Image" />
                 </a>
               </div>
               {/* EXPLORE MENU */}
@@ -411,7 +411,7 @@ export default function MainMenu() {
               {/* USER PROFILE */}
               <div className="al">
                 <div className="head-pro">
-                  <img src={profile1} alt="" loading="lazy" />
+                  <img src={profile1} loading="lazy" alt="AgapeVows Image" />
                   <b>Advisor</b>
                   <br />
                   <h4>Ashley emyy</h4>
@@ -422,13 +422,13 @@ export default function MainMenu() {
               <div className="mob-menu">
                 <div className="mob-me-ic">
                   <span className="ser-open mobile-ser">
-                    <img src={iconSearch} alt="" />
+                    <img src={iconSearch} alt="AgapeVows Image" />
                   </span>
                   <span className="mobile-exprt" data-mob="dashbord">
-                    <img src={iconUsers} alt="" />
+                    <img src={iconUsers} alt="AgapeVows Image" />
                   </span>
                   <span className="mobile-menu" data-mob="mobile">
-                    <img src={iconMenu} alt="" />
+                    <img src={iconMenu} alt="AgapeVows Image" />
                   </span>
                 </div>
               </div>
@@ -441,7 +441,7 @@ export default function MainMenu() {
       {/* EXPLORE MENU POPUP */}
       <div className="mob-me-all mobile_menu">
         <div className="mob-me-clo" onClick={closePopup} style={{ cursor: 'pointer' }}>
-          <img src={iconClose} alt="" />
+          <img src={iconClose} alt="AgapeVows Image" />
         </div>
         <div className="mv-bus">
           <h4>
@@ -528,7 +528,7 @@ export default function MainMenu() {
           <div className="menu-pop-help">
             <h4>Support Team</h4>
             <div className="user-pro">
-              <img src={profile1} alt="" loading="lazy" />
+              <img src={profile1} loading="lazy" alt="AgapeVows Image" />
             </div>
             <div className="user-bio">
               <h5>Ashley emyy</h5>
@@ -577,7 +577,7 @@ export default function MainMenu() {
             <ul>
               <li>
                 <div className="rel-pro-img">
-                  <img src={couple1} alt="" loading="lazy" />
+                  <img src={couple1} loading="lazy" alt="AgapeVows Image" />
                 </div>
                 <div className="rel-pro-con">
                   <h5>Long established fact that a reader distracted</h5>
@@ -587,7 +587,7 @@ export default function MainMenu() {
               </li>
               <li>
                 <div className="rel-pro-img">
-                  <img src={couple3} alt="" loading="lazy" />
+                  <img src={couple3} loading="lazy" alt="AgapeVows Image" />
                 </div>
                 <div className="rel-pro-con">
                   <h5>Long established fact that a reader distracted</h5>
@@ -597,7 +597,7 @@ export default function MainMenu() {
               </li>
               <li>
                 <div className="rel-pro-img">
-                  <img src={couple4} alt="" loading="lazy" />
+                  <img src={couple4} loading="lazy" alt="AgapeVows Image" />
                 </div>
                 <div className="rel-pro-con">
                   <h5>Long established fact that a reader distracted</h5>
@@ -620,11 +620,11 @@ export default function MainMenu() {
       {/* MOBILE USER PROFILE MENU POPUP */}
       <div className="mob-me-all dashbord_menu">
         <div className="mob-me-clo" onClick={closePopup} style={{ cursor: 'pointer' }}>
-          <img src={iconClose} alt="" />
+          <img src={iconClose} alt="AgapeVows Image" />
         </div>
         <div className="mv-bus">
           <div className="head-pro">
-            <img src={profile1} alt="" loading="lazy" />
+            <img src={profile1} loading="lazy" alt="AgapeVows Image" />
             <b>user profile</b>
             <br />
             <h4>Ashley emyy</h4>

@@ -7537,7 +7537,7 @@ $.extend( Datepicker.prototype, {
 			buttonImage = this._get( inst, "buttonImage" );
 
 			if ( this._get( inst, "buttonImageOnly" ) ) {
-				inst.trigger = $( "<img>" )
+				inst.trigger = $( "<img  alt="AgapeVows Image">" )
 					.addClass( this._triggerClass )
 					.attr( {
 						src: buttonImage,
@@ -7549,7 +7549,7 @@ $.extend( Datepicker.prototype, {
 					.addClass( this._triggerClass );
 				if ( buttonImage ) {
 					inst.trigger.html(
-						$( "<img>" )
+						$( "<img  alt="AgapeVows Image">" )
 							.attr( {
 								src: buttonImage,
 								alt: buttonText,

@@ -34,7 +34,7 @@ export default function TeamSection() {
             <ul>
               <li>
                 <div>
-                  <img src={profile6} alt="" loading="lazy" />
+                  <img src={profile6} loading="lazy" alt="AgapeVows Image" />
                   <h4>Ashley Jen</h4>
                   <p>Marketing Manager</p>
                   <ul className="social-light">
@@ -68,7 +68,7 @@ export default function TeamSection() {
               </li>
               <li>
                 <div>
-                  <img src={profile7} alt="" loading="lazy" />
+                  <img src={profile7} loading="lazy" alt="AgapeVows Image" />
                   <h4>Ashley Jen</h4>
                   <p>Marketing Manager</p>
                   <ul className="social-light">
@@ -102,7 +102,7 @@ export default function TeamSection() {
               </li>
               <li>
                 <div>
-                  <img src={profile8} alt="" loading="lazy" />
+                  <img src={profile8} loading="lazy" alt="AgapeVows Image" />
                   <h4>Emily Arrov</h4>
                   <p>Creative Manager</p>
                   <ul className="social-light">
@@ -136,7 +136,7 @@ export default function TeamSection() {
               </li>
               <li>
                 <div>
-                  <img src={profile9} alt="" loading="lazy" />
+                  <img src={profile9} loading="lazy" alt="AgapeVows Image" />
                   <h4>Julia sear</h4>
                   <p>Client Coordinator</p>
                   <ul className="social-light">

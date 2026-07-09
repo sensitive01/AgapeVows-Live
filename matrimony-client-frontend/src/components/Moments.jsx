@@ -66,11 +66,8 @@ const Moments = () => {
                         className="tline-im animate animate__animated animate__slow"
                         data-ani="animate__fadeInUp"
                       >
-                        <img
-                          src={wedding1}
-                          alt=""
-                          loading="lazy"
-                        />
+                        <img src={wedding1}
+                          loading="lazy" alt="AgapeVows Image" />
                       </div>
                     </div>
                   </li>
@@ -80,11 +77,8 @@ const Moments = () => {
                         className="tline-im animate animate__animated animate__slower"
                         data-ani="animate__fadeInUp"
                       >
-                        <img
-                          src={birdsIcon}
-                          alt=""
-                          loading="lazy"
-                        />
+                        <img src={birdsIcon}
+                          loading="lazy" alt="AgapeVows Image" />
                       </div>
                       <div
                         className="tline-con animate animate__animated animate__slow"
@@ -120,11 +114,8 @@ const Moments = () => {
                         className="tline-im animate animate__animated animate__slow"
                         data-ani="animate__fadeInUp"
                       >
-                        <img
-                          src={networkIcon}
-                          alt=""
-                          loading="lazy"
-                        />
+                        <img src={networkIcon}
+                          loading="lazy" alt="AgapeVows Image" />
                       </div>
                     </div>
                   </li>
@@ -134,11 +125,8 @@ const Moments = () => {
                         className="tline-im animate animate__animated animate__slower"
                         data-ani="animate__fadeInUp"
                       >
-                        <img
-                          src={chatIcon}
-                          alt=""
-                          loading="lazy"
-                        />
+                        <img src={chatIcon}
+                          loading="lazy" alt="AgapeVows Image" />
                       </div>
                       <div
                         className="tline-con animate animate__animated animate__slow"
@@ -172,11 +160,8 @@ const Moments = () => {
                         className="tline-im animate animate__animated animate__slow"
                         data-ani="animate__fadeInUp"
                       >
-                        <img
-                          src={weddingCoupleIcon}
-                          alt=""
-                          loading="lazy"
-                        />
+                        <img src={weddingCoupleIcon}
+                          loading="lazy" alt="AgapeVows Image" />
                       </div>
                     </div>
                   </li>

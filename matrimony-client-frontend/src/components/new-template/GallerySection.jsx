@@ -34,14 +34,14 @@ export default function GallerySection() {
             </div>
             <div className="col-sm-6 col-md-2">
               <div className="gal-im animate animate__animated animate__slow" data-ani="animate__flipInX">
-                <img src={gallery1} className="gal-siz-1" alt="" loading="lazy" />
+                <img src={gallery1} className="gal-siz-1" loading="lazy" alt="AgapeVows Image" />
                 <div className="txt">
                   <span>Wedding</span>
                   <h4>Bride &amp; Groom</h4>
                 </div>
               </div>
               <div className="gal-im animate animate__animated animate__slower" data-ani="animate__flipInX">
-                <img src={gallery9} className="gal-siz-2" alt="" loading="lazy" />
+                <img src={gallery9} className="gal-siz-2" loading="lazy" alt="AgapeVows Image" />
                 <div className="txt">
                   <span>Wedding</span>
                   <h4>Bride &amp; Groom</h4>
@@ -50,14 +50,14 @@ export default function GallerySection() {
             </div>
             <div className="col-sm-6 col-md-3">
               <div className="gal-im animate animate__animated animate__slower" data-ani="animate__flipInX">
-                <img src={gallery3} className="gal-siz-2" alt="" loading="lazy" />
+                <img src={gallery3} className="gal-siz-2" loading="lazy" alt="AgapeVows Image" />
                 <div className="txt">
                   <span>Wedding</span>
                   <h4>Bride &amp; Groom</h4>
                 </div>
               </div>
               <div className="gal-im animate animate__animated animate__slower" data-ani="animate__flipInX">
-                <img src={gallery4} className="gal-siz-1" alt="" loading="lazy" />
+                <img src={gallery4} className="gal-siz-1" loading="lazy" alt="AgapeVows Image" />
                 <div className="txt">
                   <span>Wedding</span>
                   <h4>Bride &amp; Groom</h4>
@@ -66,14 +66,14 @@ export default function GallerySection() {
             </div>
             <div className="col-sm-6 col-md-2">
               <div className="gal-im animate animate__animated animate__slower" data-ani="animate__flipInX">
-                <img src={gallery5} className="gal-siz-1" alt="" loading="lazy" />
+                <img src={gallery5} className="gal-siz-1" loading="lazy" alt="AgapeVows Image" />
                 <div className="txt">
                   <span>Wedding</span>
                   <h4>Bride &amp; Groom</h4>
                 </div>
               </div>
               <div className="gal-im animate animate__animated animate__slower" data-ani="animate__flipInX">
-                <img src={gallery6} className="gal-siz-2" alt="" loading="lazy" />
+                <img src={gallery6} className="gal-siz-2" loading="lazy" alt="AgapeVows Image" />
                 <div className="txt">
                   <span>Wedding</span>
                   <h4>Bride &amp; Groom</h4>
@@ -82,14 +82,14 @@ export default function GallerySection() {
             </div>
             <div className="col-sm-6 col-md-3">
               <div className="gal-im animate animate__animated animate__slower" data-ani="animate__flipInX">
-                <img src={gallery7} className="gal-siz-2" alt="" loading="lazy" />
+                <img src={gallery7} className="gal-siz-2" loading="lazy" alt="AgapeVows Image" />
                 <div className="txt">
                   <span>Wedding</span>
                   <h4>Bride &amp; Groom</h4>
                 </div>
               </div>
               <div className="gal-im animate animate__animated animate__slower" data-ani="animate__flipInX">
-                <img src={gallery8} className="gal-siz-1" alt="" loading="lazy" />
+                <img src={gallery8} className="gal-siz-1" loading="lazy" alt="AgapeVows Image" />
                 <div className="txt">
                   <span>Wedding</span>
                   <h4>Bride &amp; Groom</h4>
@@ -98,14 +98,14 @@ export default function GallerySection() {
             </div>
             <div className="col-md-2">
               <div className="gal-im animate animate__animated animate__slower" data-ani="animate__flipInX">
-                <img src={couple9} className="gal-siz-2" alt="" loading="lazy" />
+                <img src={couple9} className="gal-siz-2" loading="lazy" alt="AgapeVows Image" />
                 <div className="txt">
                   <span>Wedding</span>
                   <h4>Bride &amp; Groom</h4>
                 </div>
               </div>
               <div className="gal-im animate animate__animated animate__slower" data-ani="animate__flipInX">
-                <img src={couple11} className="gal-siz-1" alt="" loading="lazy" />
+                <img src={couple11} className="gal-siz-1" loading="lazy" alt="AgapeVows Image" />
                 <div className="txt">
                   <span>Wedding</span>
                   <h4>Bride &amp; Groom</h4>

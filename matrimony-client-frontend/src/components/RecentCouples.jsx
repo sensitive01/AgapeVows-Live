@@ -187,7 +187,7 @@ const RecentCouples = () => {
   //                     }}>
   //                       <div className="hom-coup-box">
   //                         <span className="leaf" />
-  //                         <img src={couple.image} alt="" loading="lazy" />
+  //                         <img src={couple.image} loading="lazy" alt="AgapeVows Image" />
   //                         <div className="bx">
   //                           <h4>
   //                             {couple.names} <span>{couple.location}</span>

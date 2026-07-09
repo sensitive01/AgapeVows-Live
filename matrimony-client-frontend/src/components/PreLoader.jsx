@@ -10,13 +10,13 @@ const PreLoader = () => {
       <div id="preloader">
         <div className="plod">
           <span className="lod1">
-            <img src={image1} alt="" loading="lazy" />
+            <img src={image1} loading="lazy" alt="AgapeVows Image" />
           </span>
           <span className="lod2">
-            <img src={image2} alt="" loading="lazy" />
+            <img src={image2} loading="lazy" alt="AgapeVows Image" />
           </span>
           <span className="lod3">
-            <img src={image3} alt="" loading="lazy" />
+            <img src={image3} loading="lazy" alt="AgapeVows Image" />
           </span>
         </div>
       </div>

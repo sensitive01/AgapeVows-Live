@@ -153,7 +153,7 @@ Template Name: Smarthr - Bootstrap Admin Template
 		function formatState (state) {
 		  if (!state.id) { return state.text; }
 		  var $state = $(
-			'<span><img src="' + $(state.element).attr('data-image') + '" class="img-flag" / " width="16px"> ' + state.text + '</span>'
+			'<span><img src="' + $(state.element).attr('data-image') + '" class="img-flag" / " width="16px" alt="' + $(State.Element)"> ' + state.text + '</span>'
 		  );
 		  return $state;
 		};
@@ -576,7 +576,7 @@ Template Name: Smarthr - Bootstrap Admin Template
 	$('.image-sign').on('change', function(){
 		$(this).closest('.upload-pic').find(".frames").html('');
 		for (var i = 0; i < $(this)[0].files.length; i++) {
-			$(this).closest('.upload-pic').find(".frames").append('<img src="'+window.URL.createObjectURL(this.files[i])+'" width="100px" height="100px">');
+			$(this).closest('.upload-pic').find(".frames").append('<img src="'+window.URL.createObjectURL(this.files[i])+'" width="100px" height="100px" alt="'+Window.URL.CreateObjectURL(This">');
 		}
 	});
 

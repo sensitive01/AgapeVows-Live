@@ -28,12 +28,11 @@ const GallaryStart = () => {
   //               className="gal-im animate animate__animated animate__slow"
   //               data-ani="animate__flipInX"
   //             >
-  //               <img
-  //                 src={gallary1}
+  //               <img //                 src={gallary1}
   //                 className="gal-siz-1"
-  //                 alt=""
+  //
   //                 loading="lazy"
-  //               />
+  // alt="AgapeVows Image" />
   //               <div className="txt">
   //                 <span>Wedding</span>
   //                 <h4>Bride &amp; Groom</h4>
@@ -43,12 +42,11 @@ const GallaryStart = () => {
   //               className="gal-im animate animate__animated animate__slower"
   //               data-ani="animate__flipInX"
   //             >
-  //               <img
-  //                 src={gallary2}
+  //               <img //                 src={gallary2}
   //                 className="gal-siz-2"
-  //                 alt=""
+  //
   //                 loading="lazy"
-  //               />
+  // alt="AgapeVows Image" />
   //               <div className="txt">
   //                 <span>Wedding</span>
   //                 <h4>Bride &amp; Groom</h4>
@@ -60,12 +58,11 @@ const GallaryStart = () => {
   //               className="gal-im animate animate__animated animate__slower"
   //               data-ani="animate__flipInX"
   //             >
-  //               <img
-  //                 src={gallary3}
+  //               <img //                 src={gallary3}
   //                 className="gal-siz-2"
-  //                 alt=""
+  //
   //                 loading="lazy"
-  //               />
+  // alt="AgapeVows Image" />
   //               <div className="txt">
   //                 <span>Wedding</span>
   //                 <h4>Bride &amp; Groom</h4>
@@ -75,12 +72,11 @@ const GallaryStart = () => {
   //               className="gal-im animate animate__animated animate__slower"
   //               data-ani="animate__flipInX"
   //             >
-  //               <img
-  //                 src={gallary4}
+  //               <img //                 src={gallary4}
   //                 className="gal-siz-1"
-  //                 alt=""
+  //
   //                 loading="lazy"
-  //               />
+  // alt="AgapeVows Image" />
   //               <div className="txt">
   //                 <span>Wedding</span>
   //                 <h4>Bride &amp; Groom</h4>
@@ -92,12 +88,11 @@ const GallaryStart = () => {
   //               className="gal-im animate animate__animated animate__slower"
   //               data-ani="animate__flipInX"
   //             >
-  //               <img
-  //                 src={gallary5}
+  //               <img //                 src={gallary5}
   //                 className="gal-siz-1"
-  //                 alt=""
+  //
   //                 loading="lazy"
-  //               />
+  // alt="AgapeVows Image" />
   //               <div className="txt">
   //                 <span>Wedding</span>
   //                 <h4>Bride &amp; Groom</h4>
@@ -107,12 +102,11 @@ const GallaryStart = () => {
   //               className="gal-im animate animate__animated animate__slower"
   //               data-ani="animate__flipInX"
   //             >
-  //               <img
-  //                 src={gallary6}
+  //               <img //                 src={gallary6}
   //                 className="gal-siz-2"
-  //                 alt=""
+  //
   //                 loading="lazy"
-  //               />
+  // alt="AgapeVows Image" />
   //               <div className="txt">
   //                 <span>Wedding</span>
   //                 <h4>Bride &amp; Groom</h4>
@@ -124,12 +118,11 @@ const GallaryStart = () => {
   //               className="gal-im animate animate__animated animate__slower"
   //               data-ani="animate__flipInX"
   //             >
-  //               <img
-  //                 src={gallary6}
+  //               <img //                 src={gallary6}
   //                 className="gal-siz-2"
-  //                 alt=""
+  //
   //                 loading="lazy"
-  //               />
+  // alt="AgapeVows Image" />
   //               <div className="txt">
   //                 <span>Wedding</span>
   //                 <h4>Bride &amp; Groom</h4>
@@ -139,12 +132,11 @@ const GallaryStart = () => {
   //               className="gal-im animate animate__animated animate__slower"
   //               data-ani="animate__flipInX"
   //             >
-  //               <img
-  //                 src={gallary1}
+  //               <img //                 src={gallary1}
   //                 className="gal-siz-1"
-  //                 alt=""
+  //
   //                 loading="lazy"
-  //               />
+  // alt="AgapeVows Image" />
   //               <div className="txt">
   //                 <span>Wedding</span>
   //                 <h4>Bride &amp; Groom</h4>
@@ -156,12 +148,11 @@ const GallaryStart = () => {
   //               className="gal-im animate animate__animated animate__slower"
   //               data-ani="animate__flipInX"
   //             >
-  //               <img
-  //                 src={couple9}
+  //               <img //                 src={couple9}
   //                 className="gal-siz-2"
-  //                 alt=""
+  //
   //                 loading="lazy"
-  //               />
+  // alt="AgapeVows Image" />
   //               <div className="txt">
   //                 <span>Wedding</span>
   //                 <h4>Bride &amp; Groom</h4>
@@ -171,12 +162,11 @@ const GallaryStart = () => {
   //               className="gal-im animate animate__animated animate__slower"
   //               data-ani="animate__flipInX"
   //             >
-  //               <img
-  //                 src={couple10}
+  //               <img //                 src={couple10}
   //                 className="gal-siz-1"
-  //                 alt=""
+  //
   //                 loading="lazy"
-  //               />
+  // alt="AgapeVows Image" />
   //               <div className="txt">
   //                 <span>Wedding</span>
   //                 <h4>Bride &amp; Groom</h4>

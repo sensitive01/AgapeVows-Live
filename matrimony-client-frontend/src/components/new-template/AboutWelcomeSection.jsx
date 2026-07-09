@@ -9,8 +9,8 @@
 //             <div className="col-lg-6">
 //               <div className="ab-wel-lhs">
 //                 <span className="ab-wel-3" />
-//                 <img src={about1} alt="" loading="lazy" className="ab-wel-1" />
-//                 <img src={couple20} alt="" loading="lazy" className="ab-wel-2" />
+//                 <img src={about1} loading="lazy" className="ab-wel-1" alt="AgapeVows Image" />
+//                 <img src={couple20} loading="lazy" className="ab-wel-2" alt="AgapeVows Image" />
 //                 <span className="ab-wel-4" />
 //               </div>
 //             </div>
@@ -108,8 +108,8 @@ export default function AboutWelcomeSection() {
             <div className="col-lg-6">
               <div className="temp-ab-wel-lhs">
                 <span className="ab-wel-3" />
-                <img src={about1} alt="" loading="lazy" className="temp-ab-wel-1" />
-                <img src={couple20} alt="" loading="lazy" className="temp-ab-wel-2" />
+                <img src={about1} loading="lazy" className="temp-ab-wel-1" alt="AgapeVows Image" />
+                <img src={couple20} loading="lazy" className="temp-ab-wel-2" alt="AgapeVows Image" />
                 <span className="ab-wel-4" />
               </div>
             </div>

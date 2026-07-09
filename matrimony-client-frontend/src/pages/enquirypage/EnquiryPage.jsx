@@ -24,7 +24,7 @@ const EnquiryPage = () => {
                     </h2>
                   </div>
                   <div className="im">
-                    <img src="images/login-couple.png" alt="" />
+                    <img src="images/login-couple.png" alt="Login Couple" />
                   </div>
                   <div className="log-bg">&nbsp;</div>
                 </div>
@@ -151,22 +151,22 @@ const EnquiryPage = () => {
               <ul>
                 <li>
                   <a href="#!">
-                    <img src="images/social/1.png" alt="" />
+                    <img src="images/social/1.png" alt="AgapeVows Matrimony 1" />
                   </a>
                 </li>
                 <li>
                   <a href="#!">
-                    <img src="images/social/2.png" alt="" />
+                    <img src="images/social/2.png" alt="AgapeVows Matrimony 2" />
                   </a>
                 </li>
                 <li>
                   <a href="#!">
-                    <img src="images/social/3.png" alt="" />
+                    <img src="images/social/3.png" alt="AgapeVows Matrimony 3" />
                   </a>
                 </li>
                 <li>
                   <a href="#!">
-                    <img src="images/social/5.png" alt="" />
+                    <img src="images/social/5.png" alt="AgapeVows Matrimony 5" />
                   </a>
                 </li>
               </ul>
