@@ -27,6 +27,7 @@ const UserSignUp = () => {
   const [loading, setLoading] = useState(false);
   const [existingUserWarning, setExistingUserWarning] = useState(null);
   const [passwordErrorMsg, setPasswordErrorMsg] = useState("");
+  const [agreeError, setAgreeError] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -37,6 +38,9 @@ const UserSignUp = () => {
 
     if (name === "password") {
       setPasswordErrorMsg(validatePassword(value));
+    }
+    if (name === "agree") {
+      setAgreeError(false);
     }
   };
 
@@ -83,7 +87,7 @@ const UserSignUp = () => {
     }
 
     if (!formData.agree) {
-      showAlert({ title: "Validation Error", text: "Please accept the terms and conditions", icon: "warning" });
+      setAgreeError(true);
       setLoading(false);
       return;
     }
@@ -324,7 +328,7 @@ const UserSignUp = () => {
                   </div>
 
                   {/* Agree Checkbox */}
-                  <div className="flex items-start mt-4 bg-gray-50/50 p-2.5 rounded-lg">
+                  <div className={`flex items-start mt-4 bg-gray-50/50 p-2.5 rounded-lg ${agreeError ? 'border border-red-300' : ''}`}>
                     <input
                       id="agree"
                       name="agree"
@@ -337,6 +341,11 @@ const UserSignUp = () => {
                       By creating an account with AgapeVows, you agree to our <a href="#!" className="text-[#58219f] font-bold hover:underline">Terms of Service</a>, and <a href="#!" className="text-[#58219f] font-bold hover:underline">Privacy Policy</a>. AgapeVows is intended strictly for Christian matrimonial purposes only and is not a dating platform.
                     </label>
                   </div>
+                  {agreeError && (
+                    <p className="text-red-500 text-[11px] mt-1 font-semibold pl-2">
+                      Please accept the terms of service and privacy policy to continue.
+                    </p>
+                  )}
 
                   {/* Submit Button */}
                   <button
