@@ -38,7 +38,7 @@ const AboutPage = () => {
             </div>
             <div className="w-full lg:w-1/2 px-6">
               <div className="lg:pl-10">
-                <h1 className="text-5xl lg:text-7xl font-cormorant font-semibold text-[#4a2580] mb-4 tracking-wide break-words">Built on Faith.<br/>Bound by Love.</h1>
+                <h2 className="text-5xl lg:text-7xl font-cormorant font-semibold text-[#4a2580] mb-4 tracking-wide break-words">Built on Faith.<br/>Bound by Love.</h2>
                 <h3 className="text-4xl font-cormorant font-semibold text-[#4a2580] tracking-wide mb-6">Our Sacred Covenant</h3>
                 <p className="text-[22px] text-gray-700 font-source font-normal leading-relaxed mb-6">
                   At <strong className="text-[#4a2580]">AgapeVows</strong>, we believe that marriage is more than a legal contract, it is a sacred covenant. Our name is derived from the Greek word Agape, representing the highest, most selfless form of love: the love God has for us, and the love we are called to show one another.

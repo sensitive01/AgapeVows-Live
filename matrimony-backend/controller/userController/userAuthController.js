@@ -1617,6 +1617,20 @@ const getMyActivePlanDetails = async (req, res) => {
         timeZone: "Asia/Kolkata",
       });
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const isToday = (dateStr) => {
+      if (!dateStr) return false;
+      const date = new Date(dateStr);
+      date.setHours(0, 0, 0, 0);
+      return date.getTime() === today.getTime();
+    };
+
+    const dailyInterestSentCount = isToday(latestPlan.lastInterestSentDate) ? (latestPlan.dailyInterestSentCount || 0) : 0;
+    const dailyContactViewCount = isToday(latestPlan.lastContactViewDate) ? (latestPlan.dailyContactViewCount || 0) : 0;
+    const dailyViewedCount = isToday(latestPlan.lastProfileViewDate) ? (latestPlan.dailyViewedCount || 0) : 0;
+
     const response = {
       subscriptionType: latestPlan.subscriptionType,
       subscriptionStatus: latestPlan.subscriptionStatus || "Active",
@@ -1633,7 +1647,7 @@ const getMyActivePlanDetails = async (req, res) => {
       maxProfiles: latestPlan.maxProfiles || 0,
       profilesViewedCount: latestPlan.profilesViewedCount || 0,
       dailyLimit: latestPlan.dailyLimit || 0,
-      dailyViewedCount: latestPlan.dailyViewedCount || 0,
+      dailyViewedCount: dailyViewedCount,
 
       canViewProfiles: latestPlan.canViewProfiles?.toString()?.trim() || "All Profiles",
       viewContactDetails: latestPlan.viewContactDetails?.toString()?.trim() || "No",
@@ -1641,11 +1655,11 @@ const getMyActivePlanDetails = async (req, res) => {
       maxSendInterest: latestPlan.maxSendInterest || "0",
       dailyLimitSendInterest: latestPlan.dailyLimitSendInterest || "0",
       interestSentCount: latestPlan.interestSentCount || 0,
-      dailyInterestSentCount: latestPlan.dailyInterestSentCount || 0,
+      dailyInterestSentCount: dailyInterestSentCount,
       maxViewContact: latestPlan.maxViewContact || "0",
       dailyLimitViewContact: latestPlan.dailyLimitViewContact || "0",
       contactViewCount: latestPlan.contactViewCount || 0,
-      dailyContactViewCount: latestPlan.dailyContactViewCount || 0,
+      dailyContactViewCount: dailyContactViewCount,
     };
 
 

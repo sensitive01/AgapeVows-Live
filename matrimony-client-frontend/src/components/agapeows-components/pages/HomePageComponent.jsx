@@ -5,7 +5,7 @@ import QuickAccess from "../../QuickAccess";
 import TrustBrands from "../../TrustBrands";
 import WhyChooseUs from "../../WhyChooseUs";
 import WelcomeTo from "../../WelcomeTo";
-import CountModal from "../../CountModal";
+
 import RecentCouples from "../../RecentCouples";
 import GallaryStart from "../../GallaryStart";
 import BlogPostStart from "../../BlogPostStart";
@@ -664,7 +664,7 @@ const HomePageComponent = () => {
         <TrustBrands />
         <WhyChooseUs />
         <WelcomeTo />
-        <CountModal />
+
         <RecentCouples />
         <GallaryStart />
         <BlogPostStart />

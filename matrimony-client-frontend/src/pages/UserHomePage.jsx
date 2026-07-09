@@ -7,7 +7,7 @@ import QuickAccess from "../components/QuickAccess";
 import TrustBrands from "../components/TrustBrands";
 import WhyChooseUs from "../components/WhyChooseUs";
 import WelcomeTo from "../components/WelcomeTo";
-import CountModal from "../components/CountModal";
+
 import Moments from "../components/Moments";
 import RecentCouples from "../components/RecentCouples";
 import OurProfessionals from "../components/OurProfessionals";
@@ -63,7 +63,7 @@ const UserHomePage = () => {
       <TrustBrands />
       <WhyChooseUs />
       <WelcomeTo />
-      <CountModal />
+
       <Moments />
       <RecentCouples />
       <OurProfessionals />
