@@ -230,12 +230,12 @@ const BlogDetailsPage = () => {
         <div className="bg-gray-50 py-24 border-t border-gray-100 mt-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-12">
-              <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">More Articles You Might Like</h2>
+              <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Explore Our Blogs</h2>
               <Link to="/blogs" className="hidden sm:inline-flex items-center font-semibold text-blue-600 hover:text-blue-800 transition-colors">
                 View All <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
               </Link>
             </div>
-            
+           
             <div className="grid md:grid-cols-3 gap-8">
               {recentBlogs.map((recentBlog) => (
                 <Link to={`/blog-details/${recentBlog._id}`} key={recentBlog._id} className="group bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col h-full transform hover:-translate-y-1">

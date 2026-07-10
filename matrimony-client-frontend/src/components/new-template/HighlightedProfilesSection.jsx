@@ -351,7 +351,7 @@ const HighlightedProfilesSection = () => {
                 }} className="mt-4 font-bold underline" style={{ color: 'var(--primary-purple)' }}>Reset Filter</button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
                 {filteredProfiles.map((profile) => (
                   <div
                     key={profile._id}

@@ -242,9 +242,10 @@ const UserDashboard = () => {
 
   return (
     <>
+      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
       <div className="subvisual-block subvisual-theme-1 bg-secondary d-flex pt-60 pt-md-90 text-white"></div>
 
-      <main className="jobplugin__main">
+      <main className="jobplugin__main" style={{ paddingTop: '120px' }}>
         <div className="jobplugin__main-holder">
           <div className="jobplugin__container">
             <div className="jobplugin__settings">
@@ -260,14 +261,12 @@ const UserDashboard = () => {
                 <FaCog className="rj-icon rj-settings" />
               </a>
 
-              <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
-
               <div className="jobplugin__settings-content">
                 <div className="jobplugin__dashboard">
                   {/* Profile Block */}
                   <div className="jobplugin__profile">
                     <div className="jobplugin__profile-intro border border-dark shadow" style={{ borderWidth: "2px" }}>
-                      <div 
+                      <div
                         className="jobplugin__profile-intro__left"
                         style={{
                           display: "flex",
@@ -430,35 +429,35 @@ const UserDashboard = () => {
                       {/* Your Plan Card */}
                       <div className="col-lg-3 col-md-6 mb-4 d-flex">
                         <div className="plan-details-card d-flex flex-column w-100">
-                                <div className="plan-details-header d-flex justify-content-between align-items-center mb-4">
-                                  <div className="d-flex align-items-center">
-                                    <FaCrown style={{ color: '#f59e0b', fontSize: '18px', marginRight: '8px' }} />
-                                    <h3 className="plan-details-title m-0 fw-bold text-dark" style={{ fontSize: '15px' }}>Your Plan</h3>
-                                  </div>
-                                  <FaEllipsisH style={{ color: '#9ca3af', cursor: 'pointer', fontSize: '14px' }} />
-                                </div>
-                                <div className="d-flex flex-column align-items-center justify-content-center mb-4 w-100">
-                                  <img src={planIcon} alt="Plan Icon" className="img-fluid mb-2" style={{ height: '90px' }} />
-                                  <span className="dash-badge dash-badge-premium d-inline-flex align-items-center justify-content-center px-3 py-1 fw-bold mt-2" style={{ backgroundColor: '#fef3c7', color: '#b45309', borderRadius: '4px', fontSize: '11px' }}>
-                                    PREMIUM PLAN
-                                  </span>
-                                </div>
-                                <div className="d-flex justify-content-center w-100 mb-3">
-                                  <ul className="plan-details-list list-unstyled" style={{ fontSize: '13px', margin: '0' }}>
-                                    <li className="d-flex align-items-center mb-2"><FiCreditCard size={15} style={{ color: '#9ca3af', marginRight: '10px' }} /> <span className="text-muted" style={{ display: 'inline-block', width: '75px' }}>Amount:</span> <strong className="text-dark">₹499</strong></li>
-                                    <li className="d-flex align-items-center mb-2"><FiClock size={15} style={{ color: '#9ca3af', marginRight: '10px' }} /> <span className="text-muted" style={{ display: 'inline-block', width: '75px' }}>Validity:</span> <strong className="text-dark">1 Month</strong></li>
-                                    <li className="d-flex align-items-center mb-2"><FiClock size={15} style={{ color: '#9ca3af', marginRight: '10px' }} /> <span className="text-muted" style={{ display: 'inline-block', width: '75px' }}>Valid from:</span> <strong className="text-dark">28 Jun 2026</strong></li>
-                                    <li className="d-flex align-items-center mb-2"><FiClock size={15} style={{ color: '#9ca3af', marginRight: '10px' }} /> <span className="text-muted" style={{ display: 'inline-block', width: '75px' }}>Valid till:</span> <strong className="text-dark">12 Aug 2026</strong></li>
-                                  </ul>
-                                </div>
-                                <div className="remaining-days-box d-flex align-items-center justify-content-center p-2 mb-3" style={{ backgroundColor: '#fffbeb', borderRadius: '6px', color: '#b45309', fontSize: '12px', fontWeight: 'bold' }}>
-                                  <FiCalendar style={{ marginRight: '6px' }} /> Remaining Days: 40 days
-                                </div>
-                                <div className="mt-auto w-100">
-                                  <button className="dash-btn-primary w-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: '#6d28d9', border: 'none', borderRadius: '8px', padding: '12px 0', color: 'white', fontWeight: 'bold', fontSize: '14px' }}>
-                                    <FaCrown style={{ marginRight: '8px' }} /> Upgrade Now
-                                  </button>
-                                </div>     </div>
+                          <div className="plan-details-header d-flex justify-content-between align-items-center mb-4">
+                            <div className="d-flex align-items-center">
+                              <FaCrown style={{ color: '#f59e0b', fontSize: '18px', marginRight: '8px' }} />
+                              <h3 className="plan-details-title m-0 fw-bold text-dark" style={{ fontSize: '15px' }}>Your Plan</h3>
+                            </div>
+                            <FaEllipsisH style={{ color: '#9ca3af', cursor: 'pointer', fontSize: '14px' }} />
+                          </div>
+                          <div className="d-flex flex-column align-items-center justify-content-center mb-4 w-100">
+                            <img src={planIcon} alt="Plan Icon" className="img-fluid mb-2" style={{ height: '90px' }} />
+                            <span className="dash-badge dash-badge-premium d-inline-flex align-items-center justify-content-center px-3 py-1 fw-bold mt-2" style={{ backgroundColor: '#fef3c7', color: '#b45309', borderRadius: '4px', fontSize: '11px' }}>
+                              PREMIUM PLAN
+                            </span>
+                          </div>
+                          <div className="d-flex justify-content-center w-100 mb-3">
+                            <ul className="plan-details-list list-unstyled" style={{ fontSize: '13px', margin: '0' }}>
+                              <li className="d-flex align-items-center mb-2"><FiCreditCard size={15} style={{ color: '#9ca3af', marginRight: '10px' }} /> <span className="text-muted" style={{ display: 'inline-block', width: '75px' }}>Amount:</span> <strong className="text-dark">₹499</strong></li>
+                              <li className="d-flex align-items-center mb-2"><FiClock size={15} style={{ color: '#9ca3af', marginRight: '10px' }} /> <span className="text-muted" style={{ display: 'inline-block', width: '75px' }}>Validity:</span> <strong className="text-dark">1 Month</strong></li>
+                              <li className="d-flex align-items-center mb-2"><FiClock size={15} style={{ color: '#9ca3af', marginRight: '10px' }} /> <span className="text-muted" style={{ display: 'inline-block', width: '75px' }}>Valid from:</span> <strong className="text-dark">28 Jun 2026</strong></li>
+                              <li className="d-flex align-items-center mb-2"><FiClock size={15} style={{ color: '#9ca3af', marginRight: '10px' }} /> <span className="text-muted" style={{ display: 'inline-block', width: '75px' }}>Valid till:</span> <strong className="text-dark">12 Aug 2026</strong></li>
+                            </ul>
+                          </div>
+                          <div className="remaining-days-box d-flex align-items-center justify-content-center p-2 mb-3" style={{ backgroundColor: '#fffbeb', borderRadius: '6px', color: '#b45309', fontSize: '12px', fontWeight: 'bold' }}>
+                            <FiCalendar style={{ marginRight: '6px' }} /> Remaining Days: 40 days
+                          </div>
+                          <div className="mt-auto w-100">
+                            <button className="dash-btn-primary w-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: '#6d28d9', border: 'none', borderRadius: '8px', padding: '12px 0', color: 'white', fontWeight: 'bold', fontSize: '14px' }}>
+                              <FaCrown style={{ marginRight: '8px' }} /> Upgrade Now
+                            </button>
+                          </div>     </div>
                       </div>
 
                       {/* Active Plan Benefits Card */}
@@ -468,30 +467,9 @@ const UserDashboard = () => {
                             <h3 className="active-plan-title"><FaGem style={{ color: '#8b5cf6' }} /> Active Plan Benefits</h3>
                             <span className="dash-badge dash-badge-active">Active</span>
                           </div>
-                          
+
                           <div className="active-plan-benefits-grid mt-2 flex-grow-1">
                             <div className="row g-3">
-                              {/* Total Profile Views */}
-                              <div className="col-xl-4 col-6">
-                                <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
-                                  <div className="d-flex align-items-center mb-3">
-                                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
-                                      <FiEye size={16} color="#3b82f6" />
-                                    </div>
-                                    <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Total Profile Views</span>
-                                  </div>
-                                  <div className="mt-auto">
-                                    <div className="d-flex justify-content-between align-items-end mb-2">
-                                      <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>8</span>
-                                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of 50</span>
-                                    </div>
-                                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
-                                      <div className="progress-bar" style={{ width: '16%', backgroundColor: '#3b82f6', borderRadius: '2px' }}></div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-
                               {/* Daily Profile View Limit */}
                               <div className="col-xl-4 col-6">
                                 <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
@@ -513,27 +491,6 @@ const UserDashboard = () => {
                                 </div>
                               </div>
 
-                              {/* Interest Requests Total */}
-                              <div className="col-xl-4 col-6">
-                                <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
-                                  <div className="d-flex align-items-center mb-3">
-                                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
-                                      <FiHeart size={16} color="#ef4444" />
-                                    </div>
-                                    <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Total Interests</span>
-                                  </div>
-                                  <div className="mt-auto">
-                                    <div className="d-flex justify-content-between align-items-end mb-2">
-                                      <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>0</span>
-                                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of 5</span>
-                                    </div>
-                                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
-                                      <div className="progress-bar" style={{ width: '0%', backgroundColor: '#ef4444', borderRadius: '2px' }}></div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-
                               {/* Interest Requests Daily */}
                               <div className="col-xl-4 col-6">
                                 <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
@@ -547,6 +504,69 @@ const UserDashboard = () => {
                                     <div className="d-flex justify-content-between align-items-end mb-2">
                                       <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>0</span>
                                       <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of 1</span>
+                                    </div>
+                                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
+                                      <div className="progress-bar" style={{ width: '0%', backgroundColor: '#ef4444', borderRadius: '2px' }}></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Contact Details Daily */}
+                              <div className="col-xl-4 col-6">
+                                <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+                                  <div className="d-flex align-items-center mb-3">
+                                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#f3e8ff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
+                                      <FaCalendarAlt size={16} color="#8b5cf6" />
+                                    </div>
+                                    <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Daily Contacts</span>
+                                  </div>
+                                  <div className="mt-auto">
+                                    <div className="d-flex justify-content-between align-items-end mb-2">
+                                      <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>0</span>
+                                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of 1</span>
+                                    </div>
+                                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
+                                      <div className="progress-bar" style={{ width: '0%', backgroundColor: '#8b5cf6', borderRadius: '2px' }}></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Total Profile Views */}
+                              <div className="col-xl-4 col-6">
+                                <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+                                  <div className="d-flex align-items-center mb-3">
+                                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
+                                      <FiEye size={16} color="#3b82f6" />
+                                    </div>
+                                    <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Total Profile Views</span>
+                                  </div>
+                                  <div className="mt-auto">
+                                    <div className="d-flex justify-content-between align-items-end mb-2">
+                                      <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>8</span>
+                                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of 50</span>
+                                    </div>
+                                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
+                                      <div className="progress-bar" style={{ width: '16%', backgroundColor: '#3b82f6', borderRadius: '2px' }}></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Interest Requests Total */}
+                              <div className="col-xl-4 col-6">
+                                <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+                                  <div className="d-flex align-items-center mb-3">
+                                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
+                                      <FiHeart size={16} color="#ef4444" />
+                                    </div>
+                                    <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Total Interests</span>
+                                  </div>
+                                  <div className="mt-auto">
+                                    <div className="d-flex justify-content-between align-items-end mb-2">
+                                      <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>0</span>
+                                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of 5</span>
                                     </div>
                                     <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
                                       <div className="progress-bar" style={{ width: '0%', backgroundColor: '#ef4444', borderRadius: '2px' }}></div>
@@ -575,49 +595,26 @@ const UserDashboard = () => {
                                   </div>
                                 </div>
                               </div>
-
-                              {/* Contact Details Daily */}
-                              <div className="col-xl-4 col-6">
-                                <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
-                                  <div className="d-flex align-items-center mb-3">
-                                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#f3e8ff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
-                                      <FaCalendarAlt size={16} color="#8b5cf6" />
-                                    </div>
-                                    <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Daily Contacts</span>
-                                  </div>
-                                  <div className="mt-auto">
-                                    <div className="d-flex justify-content-between align-items-end mb-2">
-                                      <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>0</span>
-                                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of 1</span>
-                                    </div>
-                                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
-                                      <div className="progress-bar" style={{ width: '0%', backgroundColor: '#8b5cf6', borderRadius: '2px' }}></div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
                             </div>
                           </div>
 
                           <div className="active-plan-bottom mt-4">
                             <div className="p-3" style={{ backgroundColor: '#faf5ff', borderRadius: '8px', border: '1px solid #f3e8ff' }}>
                               <div className="row g-2" style={{ fontSize: '13px', fontWeight: '500', color: '#4b5563' }}>
-                                <div className="col-12 col-md-4 d-flex align-items-center mb-1"><FaCheck style={{ color: '#8b5cf6', marginRight: '8px' }} /> <span>Can view all profiles</span></div>
+                                <div className="col-12 col-md-4 d-flex align-items-center mb-1"><FaCheck style={{ color: '#8b5cf6', marginRight: '8px' }} /> <span>Profile view (Total): <strong className="text-dark">8</strong></span></div>
                                 <div className="col-12 col-md-4 d-flex align-items-center mb-1"><FaCheck style={{ color: '#8b5cf6', marginRight: '8px' }} /> <span>Send interest (Total): <strong className="text-dark">8</strong></span></div>
                                 <div className="col-12 col-md-4 d-flex align-items-center mb-1"><FaCheck style={{ color: '#8b5cf6', marginRight: '8px' }} /> <span>Contact View (Total): <strong className="text-dark">8</strong></span></div>
-                                
-                                <div className="col-12 col-md-4 d-flex align-items-center mb-1"><FaCheck style={{ color: '#8b5cf6', marginRight: '8px' }} /> <span>Contact details access</span></div>
+
+                                <div className="col-12 col-md-4 d-flex align-items-center mb-1"><FaCheck style={{ color: '#8b5cf6', marginRight: '8px' }} /> <span>Profile view (Today): <strong className="text-dark">3</strong></span></div>
                                 <div className="col-12 col-md-4 d-flex align-items-center mb-1"><FaCheck style={{ color: '#8b5cf6', marginRight: '8px' }} /> <span>Send interest (Daily): <strong className="text-dark">1</strong></span></div>
                                 <div className="col-12 col-md-4 d-flex align-items-center mb-1"><FaCheck style={{ color: '#8b5cf6', marginRight: '8px' }} /> <span>Contact View (Daily): <strong className="text-dark">1</strong></span></div>
-                                
-                                <div className="col-12 col-md-4 d-flex align-items-center mb-1"><FaCheck style={{ color: '#8b5cf6', marginRight: '8px' }} /> <span>Can send interest request</span></div>
                               </div>
                             </div>
                           </div>
-                          
+
                           <div className="d-flex justify-content-center text-muted small mt-3" style={{ fontSize: '12px' }}>
                             <div className="d-flex align-items-center">
-                              <FaCalendarAlt size={13} style={{ color: '#9ca3af', marginRight: '6px', marginBottom: '2px' }} /> 
+                              <FaCalendarAlt size={13} style={{ color: '#9ca3af', marginRight: '6px', marginBottom: '2px' }} />
                               <span>Valid till: <strong className="text-dark">12 Aug 2026, 3:52:53 pm</strong></span>
                             </div>
                           </div>

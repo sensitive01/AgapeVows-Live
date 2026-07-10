@@ -130,7 +130,8 @@ const MoreDetails = () => {
         try {
           const response = await getShortListedProfileData(currentUserId);
           if (response.data && response.data.success) {
-            const listed = response.data.data.some(p => p.profileId === profileId || p._id === profileId);
+            const shortlistData = Array.isArray(response.data.data) ? response.data.data : [];
+            const listed = shortlistData.some(p => p.profileId === profileId || p._id === profileId);
             setIsShortlisted(listed);
           }
         } catch (error) {
@@ -671,7 +672,7 @@ const MoreDetails = () => {
                   alignItems: "center",
                   gap: "12px",
                   fontSize: "18px",
-                  fontWeight: "500",
+                  fontWeight: "bold",
                   lineHeight: "1",
                   fontVariantNumeric: "lining-nums",
                 }}

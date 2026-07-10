@@ -331,7 +331,7 @@ const ProfileCompletion = ({ userData }) => {
           </div>
           <p className="text-center text-muted mb-0" style={{ fontSize: '13px' }}>Complete your profile to get better matches</p>
         </div>
-        <div className="mt-auto w-100">
+        <div className="mt-auto w-100 mb-5">
           <button onClick={() => navigate(`/user/user-profile-edit-page/${userData?._id}`)} className="dash-btn-outline w-100 d-flex justify-content-between align-items-center" style={{ borderColor: '#d8b4fe', color: '#6d28d9', borderRadius: '8px', padding: '12px 16px', background: 'transparent' }}>
             <span className="mx-auto fw-bold" style={{ fontSize: '14px' }}>Complete Your Profile</span>
             <FaChevronRight size={12} style={{ color: '#a855f7' }} />

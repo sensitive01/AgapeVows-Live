@@ -316,10 +316,10 @@ const MainLayout = () => {
 
       <header className="bg-white shadow-md relative font-cormorant z-[1000]">
         <div className="w-[92%] xl:w-[88%] max-w-[1350px] mx-auto py-4">
-          <div className="flex items-center gap-4 md:gap-8">
+          <div className="flex items-center justify-between w-full">
             <a
               href="/"
-              className="flex items-center cursor-pointer shrink-0 mr-18 lg:mr-40"
+              className="flex items-center cursor-pointer shrink-0"
               onClick={(e) => {
                 if (!e.ctrlKey) {
                   e.preventDefault();
@@ -341,7 +341,7 @@ const MainLayout = () => {
               </div>
             </a>
 
-            <nav className="hidden md:flex items-center space-x-6 lg:space-x-8 ml-auto mr-4 lg:mr-12">
+            <nav className="hidden lg:flex items-center space-x-4 xl:space-x-6">
               <a
                 href="/about-us"
                 onClick={(e) => {
@@ -467,7 +467,7 @@ const MainLayout = () => {
               </div>
             </nav>
 
-            <div className="hidden md:flex items-center space-x-6 justify-end">
+            <div className="hidden lg:flex items-center space-x-4 xl:space-x-6 justify-end">
               {isUserActive ? (
                 <div
                   className="relative"
@@ -531,7 +531,7 @@ const MainLayout = () => {
             </div>
 
             <button
-              className="md:hidden ml-auto"
+              className="lg:hidden ml-auto"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? (
