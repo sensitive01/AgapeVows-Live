@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [
     react(),
     ViteImageOptimizer({
+      exclude: /fontawesome-webfont.*\.svg$/i,
       png: { quality: 80 },
       jpeg: { quality: 80 },
       jpg: { quality: 80 },
