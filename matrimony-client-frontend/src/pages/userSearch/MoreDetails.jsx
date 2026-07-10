@@ -602,25 +602,25 @@ const MoreDetails = () => {
                 {/* Contact Details in LEFT COLUMN */}
                 {showContact && (
                   <div style={{ width: "100%", marginTop: "4px", display: "flex", flexDirection: "column", gap: "10px" }}>
-                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem", marginBottom: "5px" }}>
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "calc(0.85rem + 2px)", fontWeight: "bold", marginBottom: "5px" }}>
                       👤 User Name: {userInfo?.userName || "Not specified"}
                     </div>
 
                     <div style={{ height: "2px", background: "#cbd5e1", margin: "2px 0", borderRadius: "2px", width: "100%" }}></div>
 
-                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "calc(0.85rem + 2px)" }}>
                       👤 Contact Person: {userInfo?.contactPersonName || "Not specified"}
                     </div>
 
-                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "calc(0.85rem + 2px)" }}>
                       🤝 Relationship: {userInfo?.relationship || "Not specified"}
                     </div>
 
-                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "calc(0.85rem + 2px)" }}>
                       📞 Phone Number: {userInfo?.contactPhone || "Not specified"}
                     </div>
 
-                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "0.85rem" }}>
+                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "calc(0.85rem + 2px)" }}>
                       📧 Email: {userInfo?.contactEmail || "Not specified"}
                     </div>
                   </div>

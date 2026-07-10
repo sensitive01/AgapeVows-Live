@@ -395,4 +395,4 @@ footer {
     align-items: center !important;
     justify-content: center !important;
   }
-}
+}@keyframes bgZoomInOut { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }

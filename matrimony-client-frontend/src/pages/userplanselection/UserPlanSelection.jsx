@@ -328,8 +328,21 @@ const UserPlanSelection = () => {
       <>
         <LayoutComponent />
         <section>
-          <div className="w-full bg-cover bg-center bg-no-repeat flex items-center justify-center" style={{ backgroundImage: `url(${planBg})`, minHeight: '45vh' }}>
-            <div className="container">
+          <div className="w-full relative flex items-center justify-center overflow-hidden" style={{ minHeight: '45vh' }}>
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundImage: `url(${planBg})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              zIndex: 0,
+              animation: 'bgZoomInOut 10s infinite alternate ease-in-out'
+            }}></div>
+            <div className="container" style={{ position: 'relative', zIndex: 1 }}>
               <div className="row">
                 <h1 className="text-white text-3xl font-bold text-center">Loading plans...</h1>
               </div>
@@ -349,12 +362,24 @@ const UserPlanSelection = () => {
       </div>
 
       <div className="pt-[125px]"> 
-        <div className="w-full bg-cover bg-center bg-no-repeat flex items-center" style={{
-          backgroundImage: `url(${planBg})`,
+        <div className="w-full relative flex items-center overflow-hidden" style={{
           minHeight: '45vh',
           padding: '40px 0'
         }}>
-          <div className="container mx-auto px-4">
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundImage: `url(${planBg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            zIndex: 0,
+            animation: 'bgZoomInOut 10s infinite alternate ease-in-out'
+          }}></div>
+          <div className="container mx-auto px-4" style={{ position: 'relative', zIndex: 1 }}>
             <div className="row">
               <div className="col-md-8 col-lg-6" style={{ textAlign: "left", paddingLeft: "5%" }}>
                 <span style={{
