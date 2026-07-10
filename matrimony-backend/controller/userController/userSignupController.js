@@ -85,16 +85,14 @@ const saveSignUpData = async (req, res) => {
       });
     }
 
-    // Check if email and mobile are verified
-    const isEmailVerified = req.app.locals[`verified_${email}`];
+    // Check if mobile is verified
     const isMobileVerified = req.app.locals[`verified_${phone}`];
 
-    if (!isEmailVerified || !isMobileVerified) {
-      return res.status(403).json({ message: "Please verify both your email and mobile number first" });
+    if (!isMobileVerified) {
+      return res.status(403).json({ message: "Please verify your mobile number first" });
     }
 
     // Clear verification flag after use
-    delete req.app.locals[`verified_${email}`];
     delete req.app.locals[`verified_${phone}`];
 
     const hashedPassword = await bcrypt.hash(password, 10);

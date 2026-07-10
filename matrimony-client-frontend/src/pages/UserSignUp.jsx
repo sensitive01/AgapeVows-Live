@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Footer from "../components/Footer";
 import { sendSignUpRequest, sendRegistrationOtpRequest, verifyRegistrationOtpRequest } from "../api/axiosService/userSignUpService";
-import { showAlert, showOtpAlert } from "../utils/alertService";
+import { showAlert } from "../utils/alertService";
 import LayoutComponent from "../components/layouts/LayoutComponent";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import ExistingUserWarning from "../components/new-template/ExistingUserWarning";
 import RegisterPageContent from "../components/new-template/RegisterPageContent";
 import { FaRegUser, FaRegEnvelope, FaPhoneAlt, FaLock, FaEye, FaEyeSlash, FaCheckCircle } from "react-icons/fa";
+import { FiInfo } from "react-icons/fi";
 import registrationBg from '../assets/images/Registration-page-bg.png';
 
 const UserSignUp = () => {
@@ -29,15 +30,10 @@ const UserSignUp = () => {
   const [passwordErrorMsg, setPasswordErrorMsg] = useState("");
   const [agreeError, setAgreeError] = useState(false);
 
-  const [isEmailOtpSent, setIsEmailOtpSent] = useState(false);
-  const [isEmailVerified, setIsEmailVerified] = useState(false);
-  const [emailOtpValue, setEmailOtpValue] = useState("");
-  const [emailOtpLoading, setEmailOtpLoading] = useState(false);
-
-  const [isMobileOtpSent, setIsMobileOtpSent] = useState(false);
-  const [isMobileVerified, setIsMobileVerified] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
   const [mobileOtpValue, setMobileOtpValue] = useState("");
   const [mobileOtpLoading, setMobileOtpLoading] = useState(false);
+  const [otpVerifyLoading, setOtpVerifyLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -53,8 +49,6 @@ const UserSignUp = () => {
       setAgreeError(false);
     }
     if (name === "email") {
-      setIsEmailVerified(false);
-      setIsEmailOtpSent(false);
     }
   };
 
@@ -83,31 +77,12 @@ const UserSignUp = () => {
     return "";
   };
 
-  const handleSendOtp = async (type) => {
-    if (type === 'email' && !formData.email) {
-      showAlert({ title: "Validation Error", text: "Please enter your email first", icon: "warning" });
-      return;
-    }
-    if (type === 'mobile') {
-      if (!formData.phone) {
-        showAlert({ title: "Validation Error", text: "Please enter your mobile number first", icon: "warning" });
-        return;
-      }
-      const phoneError = validatePhone();
-      if (phoneError) {
-        showAlert({ title: "Validation Error", text: phoneError, icon: "warning" });
-        return;
-      }
-    }
-
+  const handleSendOtp = async () => {
     try {
-      if (type === 'email') setEmailOtpLoading(true);
-      else setMobileOtpLoading(true);
-
-      const otpResponse = await sendRegistrationOtpRequest(type, formData.email, formData.phone);
+      setMobileOtpLoading(true);
+      const otpResponse = await sendRegistrationOtpRequest('mobile', formData.email, formData.phone);
       if (otpResponse.status === 200) {
-        if (type === 'email') setIsEmailOtpSent(true);
-        else setIsMobileOtpSent(true);
+        setShowOtpModal(true);
       }
     } catch (err) {
       console.error("Send OTP error:", err);
@@ -115,45 +90,43 @@ const UserSignUp = () => {
 
       if (errorMessage.toLowerCase().includes("already registered") || errorMessage.toLowerCase().includes("exists")) {
         const responseData = err.response?.data || {};
-
+        const isMobile = errorMessage.toLowerCase().includes("phone") || errorMessage.toLowerCase().includes("mobile");
         setExistingUserWarning({
-          type: type,
+          type: isMobile ? "mobile" : "email",
           name: responseData.userName || formData.name || "User",
           connectedContact: responseData.connectedContact || "",
-          loginId: type === "mobile" ? formData.phone : formData.email
+          loginId: isMobile ? formData.phone : formData.email
         });
-        return;
+        return false;
       }
 
       showAlert({ title: "Error", text: errorMessage, icon: "error" });
+      return false;
     } finally {
-      if (type === 'email') setEmailOtpLoading(false);
-      else setMobileOtpLoading(false);
+      setMobileOtpLoading(false);
     }
+    return true;
   };
 
-  const handleVerifyOtp = async (type) => {
-    const value = type === 'email' ? emailOtpValue : mobileOtpValue;
-    if (!value || value.length < 6) {
+  const handleVerifyAndSubmit = async (e) => {
+    if (e) e.preventDefault();
+    if (!mobileOtpValue || mobileOtpValue.length < 6) {
       showAlert({ title: "Validation Error", text: "Please enter a valid 6-digit OTP", icon: "warning" });
       return;
     }
 
     try {
-      if (type === 'email') setEmailOtpLoading(true);
-      else setMobileOtpLoading(true);
-
-      const verifyResponse = await verifyRegistrationOtpRequest(type, formData.email, formData.phone, value);
+      setOtpVerifyLoading(true);
+      const verifyResponse = await verifyRegistrationOtpRequest('mobile', formData.email, formData.phone, mobileOtpValue);
       if (verifyResponse.status === 200) {
-        if (type === 'email') setIsEmailVerified(true);
-        else setIsMobileVerified(true);
+        // OTP Verified, proceed to create account
+        await createAccount();
       }
     } catch (err) {
       console.error("Verify OTP error:", err);
       showAlert({ title: "Error", text: "Invalid or expired OTP", icon: "error" });
     } finally {
-      if (type === 'email') setEmailOtpLoading(false);
-      else setMobileOtpLoading(false);
+      setOtpVerifyLoading(false);
     }
   };
 
@@ -187,28 +160,17 @@ const UserSignUp = () => {
       return;
     }
 
-    if (!isEmailVerified && !isMobileVerified) {
-      showAlert({ title: "Verification Required", text: "Please verify both your email and mobile using OTP first", icon: "warning" });
-      setLoading(false);
-      return;
-    }
+    // Trigger OTP send process instead of immediately submitting
+    await handleSendOtp();
+    setLoading(false);
+  };
 
-    if (!isEmailVerified) {
-      showAlert({ title: "Verification Required", text: "Please verify your email using OTP first", icon: "warning" });
-      setLoading(false);
-      return;
-    }
-
-    if (!isMobileVerified) {
-      showAlert({ title: "Verification Required", text: "Please verify your mobile using OTP first", icon: "warning" });
-      setLoading(false);
-      return;
-    }
-
+  const createAccount = async () => {
     try {
       setLoading(true);
       const response = await sendSignUpRequest(formData);
       if (response.status === 201) {
+        setShowOtpModal(false);
         const userData = response.data;
         if (userData.userId) localStorage.setItem("userId", userData.userId);
         if (userData.token) localStorage.setItem("authToken", userData.token);
@@ -228,6 +190,7 @@ const UserSignUp = () => {
       }
     } catch (err) {
       console.error("Signup error:", err);
+      setShowOtpModal(false);
       const errorMessage = err.response?.data?.message || "Registration failed. Please try again.";
 
       if (errorMessage.toLowerCase().includes("already registered") || errorMessage.toLowerCase().includes("exists")) {
@@ -332,61 +295,9 @@ const UserSignUp = () => {
                         className="block w-full pl-12 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-[#58219f] focus:border-[#58219f] sm:text-sm transition-colors text-gray-800 placeholder-gray-400 bg-white"
                         placeholder="Enter your email address"
                         autoComplete="off"
-                        disabled={isEmailVerified}
                         required
                       />
                     </div>
-                    {!isEmailVerified && !isEmailOtpSent && (
-                      <div className="flex justify-end mt-2">
-                        <button 
-                          type="button" 
-                          onClick={() => handleSendOtp('email')}
-                          disabled={emailOtpLoading}
-                          className="text-sm text-[#58219f] font-bold hover:underline"
-                        >
-                          {emailOtpLoading ? "Sending OTP..." : "Send Email OTP"}
-                        </button>
-                      </div>
-                    )}
-                    {isEmailOtpSent && !isEmailVerified && (
-                      <div className="mt-3 bg-[#f8f5fd] p-3 rounded-lg border border-[#e8dff5]">
-                        <label className="block text-[11px] font-bold text-[#58219f] mb-1.5 uppercase tracking-wider">Enter 6-Digit OTP</label>
-                        <div className="flex gap-2">
-                          <input 
-                            type="text" 
-                            maxLength="6" 
-                            value={emailOtpValue}
-                            onChange={(e) => setEmailOtpValue(e.target.value.replace(/\D/g, ''))}
-                            className="w-full px-3 py-2.5 border border-[#d1bcf5] rounded-xl focus:ring-[#58219f] focus:border-[#58219f] text-sm text-center tracking-[0.3em] font-bold"
-                            placeholder="XXXXXX"
-                          />
-                          <button 
-                            type="button" 
-                            onClick={() => handleVerifyOtp('email')}
-                            disabled={emailOtpLoading || emailOtpValue.length < 6}
-                            className="bg-[#58219f] text-white px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap shadow-sm hover:bg-[#471b80] transition-colors"
-                          >
-                            {emailOtpLoading ? "Verifying..." : "Verify"}
-                          </button>
-                        </div>
-                        <div className="flex justify-between items-center mt-2">
-                          <p className="text-[10.5px] text-gray-500">OTP sent to your email</p>
-                          <button 
-                            type="button" 
-                            onClick={() => handleSendOtp('email')}
-                            disabled={emailOtpLoading}
-                            className="text-[10.5px] text-[#58219f] font-bold hover:underline whitespace-nowrap"
-                          >
-                            {emailOtpLoading ? "Sending..." : "Resend OTP"}
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                    {isEmailVerified && (
-                      <p className="text-[12px] text-green-600 font-bold mt-2 flex items-center gap-1.5 ml-1">
-                        <FaCheckCircle className="text-green-500" /> Email Verified
-                      </p>
-                    )}
                   </div>
 
                   {/* Mobile Number */}
@@ -401,8 +312,6 @@ const UserSignUp = () => {
                         value={formData.phone}
                         onChange={(value, data) => {
                           setFormData({ ...formData, phone: value, countryCode: data?.countryCode || "in" });
-                          setIsMobileVerified(false);
-                          setIsMobileOtpSent(false);
                         }}
                         inputStyle={{
                           width: "100%",
@@ -421,60 +330,14 @@ const UserSignUp = () => {
                         containerStyle={{
                           flex: 1,
                         }}
-                        disabled={isMobileVerified}
                       />
                     </div>
-                    {!isMobileVerified && !isMobileOtpSent && (
-                      <div className="flex justify-end mt-2">
-                        <button 
-                          type="button" 
-                          onClick={() => handleSendOtp('mobile')}
-                          disabled={mobileOtpLoading}
-                          className="text-sm text-[#58219f] font-bold hover:underline"
-                        >
-                          {mobileOtpLoading ? "Sending OTP..." : "Send Mobile OTP"}
-                        </button>
-                      </div>
-                    )}
-                    {isMobileOtpSent && !isMobileVerified && (
-                      <div className="mt-3 bg-[#f8f5fd] p-3 rounded-lg border border-[#e8dff5]">
-                        <label className="block text-[11px] font-bold text-[#58219f] mb-1.5 uppercase tracking-wider">Enter 6-Digit OTP</label>
-                        <div className="flex gap-2">
-                          <input 
-                            type="text" 
-                            maxLength="6" 
-                            value={mobileOtpValue}
-                            onChange={(e) => setMobileOtpValue(e.target.value.replace(/\D/g, ''))}
-                            className="w-full px-3 py-2.5 border border-[#d1bcf5] rounded-xl focus:ring-[#58219f] focus:border-[#58219f] text-sm text-center tracking-[0.3em] font-bold"
-                            placeholder="XXXXXX"
-                          />
-                          <button 
-                            type="button" 
-                            onClick={() => handleVerifyOtp('mobile')}
-                            disabled={mobileOtpLoading || mobileOtpValue.length < 6}
-                            className="bg-[#58219f] text-white px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap shadow-sm hover:bg-[#471b80] transition-colors"
-                          >
-                            {mobileOtpLoading ? "Verifying..." : "Verify"}
-                          </button>
-                        </div>
-                        <div className="flex justify-between items-center mt-2">
-                          <p className="text-[10.5px] text-gray-500">OTP sent to your mobile</p>
-                          <button 
-                            type="button" 
-                            onClick={() => handleSendOtp('mobile')}
-                            disabled={mobileOtpLoading}
-                            className="text-[10.5px] text-[#58219f] font-bold hover:underline whitespace-nowrap"
-                          >
-                            {mobileOtpLoading ? "Sending..." : "Resend OTP"}
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                    {isMobileVerified && (
-                      <p className="text-[12px] text-green-600 font-bold mt-2 flex items-center gap-1.5 ml-1">
-                        <FaCheckCircle className="text-green-500" /> Mobile Verified
-                      </p>
-                    )}
+                    <div className="flex items-center gap-1.5 mt-2 pl-1">
+                      <FiInfo className="text-[#58219f] text-[13px]" />
+                      <span className="text-[12px] text-[#4a4a4a] font-medium">
+                        We will send OTP to this mobile number for verification.
+                      </span>
+                    </div>
                   </div>
 
                   {/* Password */}
@@ -588,6 +451,62 @@ const UserSignUp = () => {
         </div>
       </div>
       
+      {/* OTP Verification Modal */}
+      {showOtpModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="relative animate__animated animate__zoomIn animate__faster w-full max-w-sm bg-white rounded-2xl p-6 shadow-2xl">
+            <button
+              onClick={() => setShowOtpModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              ✕
+            </button>
+            <div className="text-center mb-6">
+              <div className="w-12 h-12 bg-[#f4effa] rounded-full flex items-center justify-center mx-auto mb-3">
+                <FaPhoneAlt className="text-[#58219f] text-xl" />
+              </div>
+              <h3 className="text-xl font-bold text-[#4a2580]">Verify Mobile Number</h3>
+              <p className="text-sm text-gray-500 mt-2">
+                We've sent a 6-digit OTP to <br/><span className="font-semibold text-gray-800">+{formData.phone}</span>
+              </p>
+            </div>
+            
+            <form onSubmit={handleVerifyAndSubmit}>
+              <div className="mb-6">
+                <input 
+                  type="text" 
+                  maxLength="6" 
+                  value={mobileOtpValue}
+                  onChange={(e) => setMobileOtpValue(e.target.value.replace(/\D/g, ''))}
+                  className="w-full px-4 py-3 border border-[#d1bcf5] rounded-xl focus:ring-[#58219f] focus:border-[#58219f] text-lg text-center tracking-[0.5em] font-bold"
+                  placeholder="XXXXXX"
+                  autoFocus
+                />
+              </div>
+              <button 
+                type="submit"
+                disabled={otpVerifyLoading || mobileOtpValue.length < 6}
+                className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-md text-[15px] font-bold text-white transition-all bg-[#58219f] hover:bg-[#471b80] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#58219f] disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {otpVerifyLoading ? "Verifying..." : "Verify & Create Account"}
+              </button>
+            </form>
+            
+            <div className="text-center mt-5">
+              <p className="text-xs text-gray-500">Didn't receive the code?</p>
+              <button 
+                type="button"
+                onClick={handleSendOtp}
+                disabled={mobileOtpLoading}
+                className="text-sm text-[#58219f] font-bold hover:underline mt-1"
+              >
+                {mobileOtpLoading ? "Sending..." : "Resend OTP"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Existing User Warning Modal */}
       {existingUserWarning && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">

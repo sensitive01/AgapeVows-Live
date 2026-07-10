@@ -5,13 +5,13 @@ export const sendSignUpRequest = async (formData) => {
   return response;
 };
 
-export const sendRegistrationOtpRequest = async (email, phone) => {
-  const response = await axiosInstance.post(`/user/send-registration-otp`, { email, phone });
+export const sendRegistrationOtpRequest = async (type, email, phone) => {
+  const response = await axiosInstance.post(`/user/send-registration-otp`, { type, email, phone });
   return response;
 };
 
-export const verifyRegistrationOtpRequest = async (email, otp) => {
-  const response = await axiosInstance.post(`/user/verify-registration-otp`, { email, otp });
+export const verifyRegistrationOtpRequest = async (type, email, phone, otp) => {
+  const response = await axiosInstance.post(`/user/verify-registration-otp`, { type, email, phone, otp });
   return response;
 };
 
