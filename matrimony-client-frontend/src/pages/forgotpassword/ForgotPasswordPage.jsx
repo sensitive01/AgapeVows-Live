@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 import Footer from "../../components/Footer";
 import CopyRights from "../../components/CopyRights";
@@ -18,8 +20,7 @@ const ForgotPassword = () => {
     emailOrPhone: "",
     otp: ["", "", "", ""],
   });
-
-  const [displayOtp, setDisplayOtp] = useState("");
+  const [resetMethod, setResetMethod] = useState("email"); // 'email' or 'mobile'
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -105,14 +106,13 @@ const ForgotPassword = () => {
       if (response.status === 200) {
         setSuccess(response.data.message);
         setUserId(response.data.userId);
-        setDisplayOtp(response.data.otp);
 
         setStep(2);
         setTimer(60);
         setCanResend(false);
       }
     } catch (err) {
-      setError("Network error. Please check your connection and try again.");
+      setError(err.response?.data?.message || "Network error. Please check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -165,7 +165,6 @@ const ForgotPassword = () => {
       if (response.status === 200) {
         setSuccess(response.data.message);
         setUserId(response.data.userId);
-        setDisplayOtp(response.data.otp);
 
         setTimer(60);
         setCanResend(false);
@@ -267,22 +266,81 @@ const ForgotPassword = () => {
 
                       {step === 1 ? (
                         <form onSubmit={handleSubmitEmailPhone}>
-                          <div className="form-group">
-                            <label className="lb">Email or Phone:</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter your email or phone number"
-                              name="emailOrPhone"
-                              value={formData.emailOrPhone}
-                              onChange={handleInputChange}
-                              required
-                            />
+                          {resetMethod === "email" ? (
+                            <div className="form-group">
+                              <label className="lb">Email Address:</label>
+                              <input
+                                type="email"
+                                className="form-control"
+                                placeholder="Enter your email address"
+                                name="emailOrPhone"
+                                value={formData.emailOrPhone}
+                                onChange={handleInputChange}
+                                required
+                              />
+                            </div>
+                          ) : (
+                            <div className="form-group">
+                              <label className="lb">Mobile Number:</label>
+                              <PhoneInput
+                                country={"in"}
+                                value={formData.emailOrPhone}
+                                onChange={(value) =>
+                                  setFormData((prev) => ({ ...prev, emailOrPhone: value }))
+                                }
+                                inputStyle={{
+                                  width: "100%",
+                                  height: "45px",
+                                  fontSize: "15px",
+                                  paddingLeft: "48px",
+                                  borderRadius: "4px",
+                                  border: "1px solid #ced4da",
+                                }}
+                                buttonStyle={{
+                                  borderRadius: "4px 0 0 4px",
+                                  border: "1px solid #ced4da",
+                                  backgroundColor: "#f8f9fa",
+                                }}
+                                containerStyle={{
+                                  width: "100%",
+                                }}
+                              />
+                            </div>
+                          )}
+
+                          <div className="text-right mb-3">
+                            {resetMethod === "email" ? (
+                              <a
+                                href="#!"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  setResetMethod("mobile");
+                                  setFormData((prev) => ({ ...prev, emailOrPhone: "" }));
+                                }}
+                                style={{ fontSize: "14px", color: "#58219f", fontWeight: "600" }}
+                              >
+                                Reset with Mobile OTP
+                              </a>
+                            ) : (
+                              <a
+                                href="#!"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  setResetMethod("email");
+                                  setFormData((prev) => ({ ...prev, emailOrPhone: "" }));
+                                }}
+                                style={{ fontSize: "14px", color: "#58219f", fontWeight: "600" }}
+                              >
+                                Reset with Email OTP
+                              </a>
+                            )}
                           </div>
+
                           <button
                             type="submit"
-                            className="btn btn-primary"
-                            disabled={loading}
+                            className="btn btn-primary w-100"
+                            disabled={loading || !formData.emailOrPhone}
+                            style={{ backgroundColor: "#58219f", borderColor: "#58219f", padding: "10px" }}
                           >
                             {loading ? "Sending OTP..." : "Send OTP"}
                           </button>
@@ -299,15 +357,6 @@ const ForgotPassword = () => {
                               }}
                             >
                               OTP sent to {formData.emailOrPhone}
-                            </p>
-                            <p
-                              style={{
-                                fontSize: "14px",
-                                color: "red",
-                                marginBottom: "20px",
-                              }}
-                            >
-                              {`Dummy Otp is ${displayOtp}`}
                             </p>
                             <div
                               style={{

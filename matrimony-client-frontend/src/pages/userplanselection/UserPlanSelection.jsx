@@ -395,7 +395,7 @@ const UserPlanSelection = () => {
 
       {/* PRICING PLANS WITH CAROUSEL */}
       <section>
-        <div className="plans-main" style={{ marginTop: '-30px' }}>
+        <div className="plans-main" style={{ marginTop: '-90px', position: 'relative', zIndex: 10 }}>
           <div className="container">
             <div className="row" style={{ position: "relative" }}>
               {!userId ? (
@@ -407,7 +407,7 @@ const UserPlanSelection = () => {
                   boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
                   width: "100%",
                   maxWidth: "500px",
-                  margin: "20px auto 40px auto",
+                  margin: "0 auto 40px auto",
                   position: "relative",
                   zIndex: 10
                 }}>
@@ -586,11 +586,7 @@ const UserPlanSelection = () => {
                           className="flex justify-center"
                           style={{ width: isMobile ? "100%" : "33.33%" }}
                         >
-                          <div className={`pri-box ${isCenter ? "pri-box-pop" : ""}`}>
-
-                            {isCenter && (
-                              <span className="pop-pln">Most popular plan</span>
-                            )}
+                          <div className="pri-box">
 
                             <h2>{plan.name}</h2>
                             <p>Printer took a type and scrambled</p>

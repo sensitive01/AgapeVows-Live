@@ -129,7 +129,7 @@ const FaqPage = () => {
               Our support team is here to help you with your matchmaking journey and answer every question.
             </p>
             <a
-              href="/help-support"
+              href="/contact-page"
               className="inline-block bg-white text-[#5c2a9d] px-8 py-3 rounded-full font-semibold hover:bg-slate-50 transition-colors"
             >
               Contact Support

@@ -5,6 +5,7 @@ const templates = {
   verifyEmail: require("./emailTemplates/emailVerification"),
   otpVerification: require("./emailTemplates/otpVerification"),
   formSubmission: require("./emailTemplates/formSubmission"),
+  forgotPasswordOtp: require("./emailTemplates/forgotPasswordOtp"),
 };
 
 const transporter = nodemailer.createTransport({

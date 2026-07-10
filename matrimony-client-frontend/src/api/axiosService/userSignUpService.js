@@ -20,10 +20,8 @@ export const verifyUser = async (formData) => {
   return response;
 };
 
-export const sendForgotPasswordRequest = async (emailOrPhone) => {
-  const response = await axiosInstance.post(`/user/forgot-password`, {
-    emailOrPhone,
-  });
+export const sendForgotPasswordRequest = async (data) => {
+  const response = await axiosInstance.post(`/user/forgot-password`, data);
   return response;
 };
 

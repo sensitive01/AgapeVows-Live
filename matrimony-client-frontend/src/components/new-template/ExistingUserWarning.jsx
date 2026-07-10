@@ -35,19 +35,19 @@ const ExistingUserWarning = ({
   
   return (
     <div style={{
-      maxWidth: "550px",
-      margin: "40px auto",
+      width: "100%",
       padding: "40px",
       backgroundColor: "#fff",
-      borderRadius: "8px",
+      borderRadius: "24px",
       boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
       fontFamily: "'Inter', 'Poppins', sans-serif"
     }}>
       <h2 style={{ 
         fontSize: "24px", 
         fontWeight: "700", 
-        color: "#1e293b", 
-        marginBottom: "20px" 
+        color: "#4a2580", 
+        marginBottom: "20px",
+        fontFamily: "'Playfair Display', serif"
       }}>
         Login Now
       </h2>
@@ -78,7 +78,7 @@ const ExistingUserWarning = ({
         gap: "10px", 
         marginBottom: "30px" 
       }}>
-        <IoInformationCircle style={{ color: "#7c3aed", fontSize: "20px", flexShrink: 0, marginTop: "2px" }} />
+        <IoInformationCircle style={{ color: "#58219f", fontSize: "20px", flexShrink: 0, marginTop: "2px" }} />
         <p style={{ fontSize: "14px", color: "#475569", lineHeight: "1.5", margin: 0 }}>
           {isBoth ? (
             <>
@@ -121,7 +121,7 @@ const ExistingUserWarning = ({
               outline: "none",
               transition: "border-color 0.2s"
             }}
-            onFocus={(e) => e.target.style.borderColor = "#7c3aed"}
+            onFocus={(e) => e.target.style.borderColor = "#58219f"}
             onBlur={(e) => e.target.style.borderColor = "#cbd5e1"}
           />
           <button
@@ -154,7 +154,7 @@ const ExistingUserWarning = ({
 
         <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "25px" }}>
           <a href="/forgot-password" style={{ 
-            color: "#7c3aed", 
+            color: "#58219f", 
             fontSize: "14px", 
             fontWeight: "600", 
             textDecoration: "underline" 
@@ -193,7 +193,7 @@ const ExistingUserWarning = ({
             style={{
               background: "none",
               border: "none",
-              color: "#7c3aed",
+              color: "#58219f",
               fontSize: "14px",
               fontWeight: "700",
               cursor: "pointer",

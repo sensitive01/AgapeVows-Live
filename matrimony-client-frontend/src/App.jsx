@@ -1,55 +1,61 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   useLocation,
 } from "react-router-dom";
-import UserHomePage from "./pages/UserHomePage";
-import UserLoginPage from "./pages/UserLoginPage";
-import UserSignUp from "./pages/UserSignUp";
-import UserWedding from "./pages/UserWedding";
-import UserWeddingVideoPage from "./pages/UserWeddingVideoPage";
-import UserSettingsPage from "./pages/UserSettingsPage";
-import UserProfilePage from "./pages/UserProfilePage";
-import UserProfileEditPage from "./pages/UserProfileEditPage";
-import UserPlanPage from "./pages/UserPlanPage";
-import UserInterest from "./pages/UserInterest";
 
-import UserDashboardPage from "./pages/UserDashboardPage";
-import UserServicePage from "./pages/UserServicePage";
-import UserAllProfilePage from "./pages/allprofile/UserAllProfilePage";
-import AboutPage from "./pages/aboutPage/AboutPage";
-import FaqPage from "./pages/faq/FaqPage";
-import ContactPage from "./pages/contact/ContactPage";
-import EnquiryPage from "./pages/enquirypage/EnquiryPage";
-import JoinNow from "./pages/joinnow/JoinNow";
-import MoreDetails from "./pages/allprofile/MoreDetails";
-import ForgotPassword from "./pages/forgotpassword/ForgotPasswordPage";
-import ChangePassword from "./pages/changepassword/ChangePassword";
-import UserPlanSelection from "./pages/userplanselection/UserPlanSelection";
-import UserSearchResult from "./pages/userSearch/UserSearchResult";
-import AgapeVowsApp from "./components/sample/AgapeVowsApp";
-import NewHomePageComponent from "./components/agapeows-components/pages/NewHomePageComponent";
-import ShortListedProfile from "./pages/shortlist/ShortListedProfile";
-import WhoViewedYou from "./hooks/whoviewedyou/WhoViewedYou";
-import BlockedProfile from "./pages/blockedprofile/BlockedProfile";
-import IgnoredProfile from "./pages/ignoredprofile/IgnoredProfile";
-import Events from "./pages/public/Events"; // Import Events page
-import GlobalSearchModal from "./components/GlobalSearchModal";
-import HelpAndSupport from "./pages/HelpAndSupport";
-import BridalMakeup from "./pages/public/BridalMakeup";
-import InsuranceServices from "./pages/public/InsuranceServices";
-import ReportIssue from "./pages/ReportIssue";
-import PersonalizedMatrimony from "./pages/public/PersonalizedMatrimony";
-import NriMatrimony from "./pages/public/NriMatrimony";
-import ChurchPartner from "./pages/public/ChurchPartner";
-import MatrimonialAdvisor from "./pages/public/MatrimonialAdvisor";
-import MaritalCounseling from "./pages/public/MaritalCounseling";
-import Blogs from "./pages/public/Blogs";
-import BlogDetailsPage from "./pages/public/Blogs/[id]";
-import PrivacyPolicy from "./pages/policy/PrivacyPolicy";
-import TermsOfUse from "./pages/policy/TermsOfUse";
+const PageLoader = () => (
+  <div className="flex justify-center items-center h-screen w-full bg-white/80">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#58219f]"></div>
+  </div>
+);
+
+const UserHomePage = React.lazy(() => import("./pages/UserHomePage"));
+const UserLoginPage = React.lazy(() => import("./pages/UserLoginPage"));
+const UserSignUp = React.lazy(() => import("./pages/UserSignUp"));
+const UserWedding = React.lazy(() => import("./pages/UserWedding"));
+const UserWeddingVideoPage = React.lazy(() => import("./pages/UserWeddingVideoPage"));
+const UserSettingsPage = React.lazy(() => import("./pages/UserSettingsPage"));
+const UserProfilePage = React.lazy(() => import("./pages/UserProfilePage"));
+const UserProfileEditPage = React.lazy(() => import("./pages/UserProfileEditPage"));
+const UserPlanPage = React.lazy(() => import("./pages/UserPlanPage"));
+const UserInterest = React.lazy(() => import("./pages/UserInterest"));
+const UserDashboardPage = React.lazy(() => import("./pages/UserDashboardPage"));
+const UserServicePage = React.lazy(() => import("./pages/UserServicePage"));
+const UserAllProfilePage = React.lazy(() => import("./pages/allprofile/UserAllProfilePage"));
+const AboutPage = React.lazy(() => import("./pages/aboutPage/AboutPage"));
+const FaqPage = React.lazy(() => import("./pages/faq/FaqPage"));
+const ContactPage = React.lazy(() => import("./pages/contact/ContactPage"));
+const EnquiryPage = React.lazy(() => import("./pages/enquirypage/EnquiryPage"));
+const JoinNow = React.lazy(() => import("./pages/joinnow/JoinNow"));
+const MoreDetails = React.lazy(() => import("./pages/allprofile/MoreDetails"));
+const ForgotPassword = React.lazy(() => import("./pages/forgotpassword/ForgotPasswordPage"));
+const ChangePassword = React.lazy(() => import("./pages/changepassword/ChangePassword"));
+const UserPlanSelection = React.lazy(() => import("./pages/userplanselection/UserPlanSelection"));
+const UserSearchResult = React.lazy(() => import("./pages/userSearch/UserSearchResult"));
+const AgapeVowsApp = React.lazy(() => import("./components/sample/AgapeVowsApp"));
+const NewHomePageComponent = React.lazy(() => import("./components/agapeows-components/pages/NewHomePageComponent"));
+const ShortListedProfile = React.lazy(() => import("./pages/shortlist/ShortListedProfile"));
+const WhoViewedYou = React.lazy(() => import("./hooks/whoviewedyou/WhoViewedYou"));
+const BlockedProfile = React.lazy(() => import("./pages/blockedprofile/BlockedProfile"));
+const IgnoredProfile = React.lazy(() => import("./pages/ignoredprofile/IgnoredProfile"));
+const Events = React.lazy(() => import("./pages/public/Events"));
+const GlobalSearchModal = React.lazy(() => import("./components/GlobalSearchModal"));
+const HelpAndSupport = React.lazy(() => import("./pages/HelpAndSupport"));
+const BridalMakeup = React.lazy(() => import("./pages/public/BridalMakeup"));
+const InsuranceServices = React.lazy(() => import("./pages/public/InsuranceServices"));
+const ReportIssue = React.lazy(() => import("./pages/ReportIssue"));
+const PersonalizedMatrimony = React.lazy(() => import("./pages/public/PersonalizedMatrimony"));
+const NriMatrimony = React.lazy(() => import("./pages/public/NriMatrimony"));
+const ChurchPartner = React.lazy(() => import("./pages/public/ChurchPartner"));
+const MatrimonialAdvisor = React.lazy(() => import("./pages/public/MatrimonialAdvisor"));
+const MaritalCounseling = React.lazy(() => import("./pages/public/MaritalCounseling"));
+const Blogs = React.lazy(() => import("./pages/public/Blogs"));
+const BlogDetailsPage = React.lazy(() => import("./pages/public/Blogs/[id]"));
+const PrivacyPolicy = React.lazy(() => import("./pages/policy/PrivacyPolicy"));
+const TermsOfUse = React.lazy(() => import("./pages/policy/TermsOfUse"));
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ScrollToTop from "./ScrollTop";
@@ -61,6 +67,8 @@ import SEOHelmet from "./components/common/SEOHelmet";
 function SEOManager() {
   const location = useLocation();
   const privatePaths = [
+    '/user/user-login',
+    '/user/user-sign-up',
     '/user/user-dashboard-page',
     '/user/user-profile-page',
     '/user/user-settings-page',
@@ -254,92 +262,94 @@ function App() {
         <ToastContainer position="top-right" autoClose={3000} />
       {/* <ReloadHandler /> */}
       <ProfileCompletionGuard>
-      <Routes>
-        {/* <Route path="/" element={<UserHomePage />} /> */}
-        <Route path="/" element={<NewHomePageComponent />} />
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            {/* <Route path="/" element={<UserHomePage />} /> */}
+            <Route path="/" element={<NewHomePageComponent />} />
 
-        <Route path="/user/user-login" element={<UserLoginPage />} />
-        <Route path="/user/user-sign-up" element={<UserSignUp />} />
+            <Route path="/user/user-login" element={<UserLoginPage />} />
+            <Route path="/user/user-sign-up" element={<UserSignUp />} />
 
-        <Route path="/user/user-wedding-page" element={<UserWedding />} />
-        <Route
-          path="/user/user-wedding-video-page"
-          element={<UserWeddingVideoPage />}
-        />
-        <Route path="/user/user-settings-page" element={<UserSettingsPage />} />
-        <Route path="/user/user-profile-page" element={<UserProfilePage />} />
-        <Route
-          path="/user/user-profile-edit-page/:userId"
-          element={<UserProfileEditPage />}
-        />
+            <Route path="/user/user-wedding-page" element={<UserWedding />} />
+            <Route
+              path="/user/user-wedding-video-page"
+              element={<UserWeddingVideoPage />}
+            />
+            <Route path="/user/user-settings-page" element={<UserSettingsPage />} />
+            <Route path="/user/user-profile-page" element={<UserProfilePage />} />
+            <Route
+              path="/user/user-profile-edit-page/:userId"
+              element={<UserProfileEditPage />}
+            />
 
-        <Route
-          path="/user/user-plan-selection"
-          element={<UserPlanSelection />}
-        />
-        <Route path="/user/user-plan-page" element={<UserPlanPage />} />
-        <Route path="/user/user-interest-page" element={<UserInterest />} />
+            <Route
+              path="/user/user-plan-selection"
+              element={<UserPlanSelection />}
+            />
+            <Route path="/user/user-plan-page" element={<UserPlanPage />} />
+            <Route path="/user/user-interest-page" element={<UserInterest />} />
 
 
-        <Route
-          path="/user/user-dashboard-page"
-          element={<UserDashboardPage />}
-        />
-        <Route path="/user/user-service-page" element={<UserServicePage />} />
-        <Route
-          path="/user/show-all-profiles"
-          element={<UserAllProfilePage />}
-        />
-        <Route
-          path="/user/show-all-profiles/:searchContent"
-          element={<UserAllProfilePage />}
-        />
-        <Route
-          path="/user/short-listed-profiles-page"
-          element={<ShortListedProfile />}
-        />
-        <Route path="/user/who-viewed-you-page" element={<WhoViewedYou />} />
-        <Route
-          path="/user/blocked-profiles-page"
-          element={<BlockedProfile />}
-        />
-        <Route path="/help-support" element={<HelpAndSupport />} />
-        <Route
-          path="/user/ignored-profiles-page"
-          element={<IgnoredProfile />}
-        />
+            <Route
+              path="/user/user-dashboard-page"
+              element={<UserDashboardPage />}
+            />
+            <Route path="/user/user-service-page" element={<UserServicePage />} />
+            <Route
+              path="/user/show-all-profiles"
+              element={<UserAllProfilePage />}
+            />
+            <Route
+              path="/user/show-all-profiles/:searchContent"
+              element={<UserAllProfilePage />}
+            />
+            <Route
+              path="/user/short-listed-profiles-page"
+              element={<ShortListedProfile />}
+            />
+            <Route path="/user/who-viewed-you-page" element={<WhoViewedYou />} />
+            <Route
+              path="/user/blocked-profiles-page"
+              element={<BlockedProfile />}
+            />
+            <Route path="/help-support" element={<HelpAndSupport />} />
+            <Route
+              path="/user/ignored-profiles-page"
+              element={<IgnoredProfile />}
+            />
 
-        <Route path="/show-searched-result" element={<UserSearchResult />} />
-        <Route path="/user/find-matches" element={<GlobalSearchModal />} />
-        <Route path="/reset-password/:userId" element={<ChangePassword />} />
-        <Route path="/user/user-change-password/:userId" element={<ChangePassword />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route
-          path="/profile-more-details/:profileId"
-          element={<MoreDetails />}
-        />
-        <Route path="/join-now-page" element={<JoinNow />} />
-        <Route path="/enquiry-page" element={<EnquiryPage />} />
-        <Route path="/contact-page" element={<ContactPage />} />
-        <Route path="/faq" element={<FaqPage />} />
-        <Route path="/about-us" element={<AboutPage />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/terms-of-use" element={<TermsOfUse />} />
-        <Route path="/bridal-makeup" element={<BridalMakeup />} />
-        <Route path="/insurance-services" element={<InsuranceServices />} />
-        <Route path="/user/events-page" element={<Events />} />
+            <Route path="/show-searched-result" element={<UserSearchResult />} />
+            <Route path="/user/find-matches" element={<GlobalSearchModal />} />
+            <Route path="/reset-password/:userId" element={<ChangePassword />} />
+            <Route path="/user/user-change-password/:userId" element={<ChangePassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route
+              path="/profile-more-details/:profileId"
+              element={<MoreDetails />}
+            />
+            <Route path="/join-now-page" element={<JoinNow />} />
+            <Route path="/enquiry-page" element={<EnquiryPage />} />
+            <Route path="/contact-page" element={<ContactPage />} />
+            <Route path="/faq" element={<FaqPage />} />
+            <Route path="/about-us" element={<AboutPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-use" element={<TermsOfUse />} />
+            <Route path="/bridal-makeup" element={<BridalMakeup />} />
+            <Route path="/insurance-services" element={<InsuranceServices />} />
+            <Route path="/user/events-page" element={<Events />} />
 
-        <Route path="/report-issue" element={<ReportIssue />} />
+            <Route path="/report-issue" element={<ReportIssue />} />
 
-        <Route path="/personalized-matrimony" element={<PersonalizedMatrimony />} />
-        <Route path="/nri-matrimony" element={<NriMatrimony />} />
-        <Route path="/church-partner" element={<ChurchPartner />} />
-        <Route path="/matrimonial-advisor" element={<MatrimonialAdvisor />} />
-        <Route path="/marital-counseling" element={<MaritalCounseling />} />
-        <Route path="/blogs" element={<Blogs />} />
-        <Route path="/blog-details/:id" element={<BlogDetailsPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+            <Route path="/personalized-matrimony" element={<PersonalizedMatrimony />} />
+            <Route path="/nri-matrimony" element={<NriMatrimony />} />
+            <Route path="/church-partner" element={<ChurchPartner />} />
+            <Route path="/matrimonial-advisor" element={<MatrimonialAdvisor />} />
+            <Route path="/marital-counseling" element={<MaritalCounseling />} />
+            <Route path="/blogs" element={<Blogs />} />
+            <Route path="/blog-details/:id" element={<BlogDetailsPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
       </ProfileCompletionGuard>
       </Router>
     </HelmetProvider>

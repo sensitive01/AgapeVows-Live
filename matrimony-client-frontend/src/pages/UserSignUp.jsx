@@ -29,6 +29,16 @@ const UserSignUp = () => {
   const [passwordErrorMsg, setPasswordErrorMsg] = useState("");
   const [agreeError, setAgreeError] = useState(false);
 
+  const [isEmailOtpSent, setIsEmailOtpSent] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [emailOtpValue, setEmailOtpValue] = useState("");
+  const [emailOtpLoading, setEmailOtpLoading] = useState(false);
+
+  const [isMobileOtpSent, setIsMobileOtpSent] = useState(false);
+  const [isMobileVerified, setIsMobileVerified] = useState(false);
+  const [mobileOtpValue, setMobileOtpValue] = useState("");
+  const [mobileOtpLoading, setMobileOtpLoading] = useState(false);
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prevState) => ({
@@ -41,6 +51,10 @@ const UserSignUp = () => {
     }
     if (name === "agree") {
       setAgreeError(false);
+    }
+    if (name === "email") {
+      setIsEmailVerified(false);
+      setIsEmailOtpSent(false);
     }
   };
 
@@ -67,6 +81,80 @@ const UserSignUp = () => {
       return "Password must include at least one special character.";
     }
     return "";
+  };
+
+  const handleSendOtp = async (type) => {
+    if (type === 'email' && !formData.email) {
+      showAlert({ title: "Validation Error", text: "Please enter your email first", icon: "warning" });
+      return;
+    }
+    if (type === 'mobile') {
+      if (!formData.phone) {
+        showAlert({ title: "Validation Error", text: "Please enter your mobile number first", icon: "warning" });
+        return;
+      }
+      const phoneError = validatePhone();
+      if (phoneError) {
+        showAlert({ title: "Validation Error", text: phoneError, icon: "warning" });
+        return;
+      }
+    }
+
+    try {
+      if (type === 'email') setEmailOtpLoading(true);
+      else setMobileOtpLoading(true);
+
+      const otpResponse = await sendRegistrationOtpRequest(type, formData.email, formData.phone);
+      if (otpResponse.status === 200) {
+        if (type === 'email') setIsEmailOtpSent(true);
+        else setIsMobileOtpSent(true);
+      }
+    } catch (err) {
+      console.error("Send OTP error:", err);
+      const errorMessage = err.response?.data?.message || "Failed to send OTP";
+
+      if (errorMessage.toLowerCase().includes("already registered") || errorMessage.toLowerCase().includes("exists")) {
+        const responseData = err.response?.data || {};
+
+        setExistingUserWarning({
+          type: type,
+          name: responseData.userName || formData.name || "User",
+          connectedContact: responseData.connectedContact || "",
+          loginId: type === "mobile" ? formData.phone : formData.email
+        });
+        return;
+      }
+
+      showAlert({ title: "Error", text: errorMessage, icon: "error" });
+    } finally {
+      if (type === 'email') setEmailOtpLoading(false);
+      else setMobileOtpLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (type) => {
+    const value = type === 'email' ? emailOtpValue : mobileOtpValue;
+    if (!value || value.length < 6) {
+      showAlert({ title: "Validation Error", text: "Please enter a valid 6-digit OTP", icon: "warning" });
+      return;
+    }
+
+    try {
+      if (type === 'email') setEmailOtpLoading(true);
+      else setMobileOtpLoading(true);
+
+      const verifyResponse = await verifyRegistrationOtpRequest(type, formData.email, formData.phone, value);
+      if (verifyResponse.status === 200) {
+        if (type === 'email') setIsEmailVerified(true);
+        else setIsMobileVerified(true);
+      }
+    } catch (err) {
+      console.error("Verify OTP error:", err);
+      showAlert({ title: "Error", text: "Invalid or expired OTP", icon: "error" });
+    } finally {
+      if (type === 'email') setEmailOtpLoading(false);
+      else setMobileOtpLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -99,39 +187,44 @@ const UserSignUp = () => {
       return;
     }
 
+    if (!isEmailVerified && !isMobileVerified) {
+      showAlert({ title: "Verification Required", text: "Please verify both your email and mobile using OTP first", icon: "warning" });
+      setLoading(false);
+      return;
+    }
+
+    if (!isEmailVerified) {
+      showAlert({ title: "Verification Required", text: "Please verify your email using OTP first", icon: "warning" });
+      setLoading(false);
+      return;
+    }
+
+    if (!isMobileVerified) {
+      showAlert({ title: "Verification Required", text: "Please verify your mobile using OTP first", icon: "warning" });
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
-      const otpResponse = await sendRegistrationOtpRequest(formData.email, formData.phone);
-
-      if (otpResponse.status === 200) {
-        setLoading(false);
-        const otp = await showOtpAlert({ text: `A 4-digit OTP has been sent to ${formData.email}` });
-        if (!otp) return;
-
-        setLoading(true);
-        const verifyResponse = await verifyRegistrationOtpRequest(formData.email, otp);
-
-        if (verifyResponse.status === 200) {
-          const response = await sendSignUpRequest(formData);
-          if (response.status === 201) {
-            const userData = response.data;
-            if (userData.userId) localStorage.setItem("userId", userData.userId);
-            if (userData.token) localStorage.setItem("authToken", userData.token);
-            if (userData.userName) localStorage.setItem("userName", userData.userName);
-            if (userData.gender) localStorage.setItem("gender", userData.gender);
-            if (userData.isProfileCompleted !== undefined) {
-              localStorage.setItem("isProfileCompleted", String(userData.isProfileCompleted));
-            } else {
-              localStorage.setItem("isProfileCompleted", "false");
-            }
-            sessionStorage.setItem("session_active", "true");
-
-            showAlert({ title: "Success", text: response.data.message || "Account created successfully!", icon: "success" });
-            setTimeout(() => {
-              navigate(`/user/user-profile-edit-page/${userData.userId}`, { replace: true });
-            }, 1500);
-          }
+      const response = await sendSignUpRequest(formData);
+      if (response.status === 201) {
+        const userData = response.data;
+        if (userData.userId) localStorage.setItem("userId", userData.userId);
+        if (userData.token) localStorage.setItem("authToken", userData.token);
+        if (userData.userName) localStorage.setItem("userName", userData.userName);
+        if (userData.gender) localStorage.setItem("gender", userData.gender);
+        if (userData.isProfileCompleted !== undefined) {
+          localStorage.setItem("isProfileCompleted", String(userData.isProfileCompleted));
+        } else {
+          localStorage.setItem("isProfileCompleted", "false");
         }
+        sessionStorage.setItem("session_active", "true");
+
+        showAlert({ title: "Success", text: response.data.message || "Account created successfully!", icon: "success" });
+        setTimeout(() => {
+          navigate(`/user/user-profile-edit-page/${userData.userId}`, { replace: true });
+        }, 1500);
       }
     } catch (err) {
       console.error("Signup error:", err);
@@ -202,16 +295,7 @@ const UserSignUp = () => {
                 <div className="w-16 h-[2px] bg-[#4a2580] mx-auto mt-2"></div>
               </div>
 
-              {existingUserWarning ? (
-                <ExistingUserWarning
-                  type={existingUserWarning.type}
-                  name={existingUserWarning.name}
-                  connectedContact={existingUserWarning.connectedContact}
-                  loginId={existingUserWarning.loginId}
-                  onTryAnotherWay={() => setExistingUserWarning(null)}
-                />
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-3" autoComplete="off">
+              <form onSubmit={handleSubmit} className="space-y-3" autoComplete="off">
 
                   {/* Full Name */}
                   <div>
@@ -248,9 +332,61 @@ const UserSignUp = () => {
                         className="block w-full pl-12 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-[#58219f] focus:border-[#58219f] sm:text-sm transition-colors text-gray-800 placeholder-gray-400 bg-white"
                         placeholder="Enter your email address"
                         autoComplete="off"
+                        disabled={isEmailVerified}
                         required
                       />
                     </div>
+                    {!isEmailVerified && !isEmailOtpSent && (
+                      <div className="flex justify-end mt-2">
+                        <button 
+                          type="button" 
+                          onClick={() => handleSendOtp('email')}
+                          disabled={emailOtpLoading}
+                          className="text-sm text-[#58219f] font-bold hover:underline"
+                        >
+                          {emailOtpLoading ? "Sending OTP..." : "Send Email OTP"}
+                        </button>
+                      </div>
+                    )}
+                    {isEmailOtpSent && !isEmailVerified && (
+                      <div className="mt-3 bg-[#f8f5fd] p-3 rounded-lg border border-[#e8dff5]">
+                        <label className="block text-[11px] font-bold text-[#58219f] mb-1.5 uppercase tracking-wider">Enter 6-Digit OTP</label>
+                        <div className="flex gap-2">
+                          <input 
+                            type="text" 
+                            maxLength="6" 
+                            value={emailOtpValue}
+                            onChange={(e) => setEmailOtpValue(e.target.value.replace(/\D/g, ''))}
+                            className="w-full px-3 py-2.5 border border-[#d1bcf5] rounded-xl focus:ring-[#58219f] focus:border-[#58219f] text-sm text-center tracking-[0.3em] font-bold"
+                            placeholder="XXXXXX"
+                          />
+                          <button 
+                            type="button" 
+                            onClick={() => handleVerifyOtp('email')}
+                            disabled={emailOtpLoading || emailOtpValue.length < 6}
+                            className="bg-[#58219f] text-white px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap shadow-sm hover:bg-[#471b80] transition-colors"
+                          >
+                            {emailOtpLoading ? "Verifying..." : "Verify"}
+                          </button>
+                        </div>
+                        <div className="flex justify-between items-center mt-2">
+                          <p className="text-[10.5px] text-gray-500">OTP sent to your email</p>
+                          <button 
+                            type="button" 
+                            onClick={() => handleSendOtp('email')}
+                            disabled={emailOtpLoading}
+                            className="text-[10.5px] text-[#58219f] font-bold hover:underline whitespace-nowrap"
+                          >
+                            {emailOtpLoading ? "Sending..." : "Resend OTP"}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {isEmailVerified && (
+                      <p className="text-[12px] text-green-600 font-bold mt-2 flex items-center gap-1.5 ml-1">
+                        <FaCheckCircle className="text-green-500" /> Email Verified
+                      </p>
+                    )}
                   </div>
 
                   {/* Mobile Number */}
@@ -265,6 +401,8 @@ const UserSignUp = () => {
                         value={formData.phone}
                         onChange={(value, data) => {
                           setFormData({ ...formData, phone: value, countryCode: data?.countryCode || "in" });
+                          setIsMobileVerified(false);
+                          setIsMobileOtpSent(false);
                         }}
                         inputStyle={{
                           width: "100%",
@@ -283,12 +421,60 @@ const UserSignUp = () => {
                         containerStyle={{
                           flex: 1,
                         }}
+                        disabled={isMobileVerified}
                       />
                     </div>
-                    <p className="text-[11px] text-gray-500 mt-1 flex items-center gap-1.5">
-                      <svg className="w-3.5 h-3.5 text-[#58219f]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                      We will send OTP to this mobile number for verification
-                    </p>
+                    {!isMobileVerified && !isMobileOtpSent && (
+                      <div className="flex justify-end mt-2">
+                        <button 
+                          type="button" 
+                          onClick={() => handleSendOtp('mobile')}
+                          disabled={mobileOtpLoading}
+                          className="text-sm text-[#58219f] font-bold hover:underline"
+                        >
+                          {mobileOtpLoading ? "Sending OTP..." : "Send Mobile OTP"}
+                        </button>
+                      </div>
+                    )}
+                    {isMobileOtpSent && !isMobileVerified && (
+                      <div className="mt-3 bg-[#f8f5fd] p-3 rounded-lg border border-[#e8dff5]">
+                        <label className="block text-[11px] font-bold text-[#58219f] mb-1.5 uppercase tracking-wider">Enter 6-Digit OTP</label>
+                        <div className="flex gap-2">
+                          <input 
+                            type="text" 
+                            maxLength="6" 
+                            value={mobileOtpValue}
+                            onChange={(e) => setMobileOtpValue(e.target.value.replace(/\D/g, ''))}
+                            className="w-full px-3 py-2.5 border border-[#d1bcf5] rounded-xl focus:ring-[#58219f] focus:border-[#58219f] text-sm text-center tracking-[0.3em] font-bold"
+                            placeholder="XXXXXX"
+                          />
+                          <button 
+                            type="button" 
+                            onClick={() => handleVerifyOtp('mobile')}
+                            disabled={mobileOtpLoading || mobileOtpValue.length < 6}
+                            className="bg-[#58219f] text-white px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap shadow-sm hover:bg-[#471b80] transition-colors"
+                          >
+                            {mobileOtpLoading ? "Verifying..." : "Verify"}
+                          </button>
+                        </div>
+                        <div className="flex justify-between items-center mt-2">
+                          <p className="text-[10.5px] text-gray-500">OTP sent to your mobile</p>
+                          <button 
+                            type="button" 
+                            onClick={() => handleSendOtp('mobile')}
+                            disabled={mobileOtpLoading}
+                            className="text-[10.5px] text-[#58219f] font-bold hover:underline whitespace-nowrap"
+                          >
+                            {mobileOtpLoading ? "Sending..." : "Resend OTP"}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {isMobileVerified && (
+                      <p className="text-[12px] text-green-600 font-bold mt-2 flex items-center gap-1.5 ml-1">
+                        <FaCheckCircle className="text-green-500" /> Mobile Verified
+                      </p>
+                    )}
                   </div>
 
                   {/* Password */}
@@ -351,7 +537,7 @@ const UserSignUp = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full flex justify-center items-center gap-2 mt-3 py-3 px-4 border border-transparent rounded-xl shadow-md text-[15px] font-bold text-white bg-[#58219f] hover:bg-[#471b80] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#58219f] transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="w-full flex justify-center items-center gap-2 mt-3 py-3 px-4 border border-transparent rounded-xl shadow-md text-[15px] font-bold text-white transition-all bg-[#58219f] hover:bg-[#471b80] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#58219f]"
                   >
                     {loading ? (
                       <>
@@ -396,12 +582,27 @@ const UserSignUp = () => {
                   </div>
 
                 </form>
-              )}
             </div>
           </div>
 
         </div>
       </div>
+      
+      {/* Existing User Warning Modal */}
+      {existingUserWarning && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="relative animate__animated animate__zoomIn animate__faster w-full max-w-lg">
+            <ExistingUserWarning
+              type={existingUserWarning.type}
+              name={existingUserWarning.name}
+              connectedContact={existingUserWarning.connectedContact}
+              loginId={existingUserWarning.loginId}
+              onTryAnotherWay={() => setExistingUserWarning(null)}
+            />
+          </div>
+        </div>
+      )}
+
       <RegisterPageContent />
       <Footer />
     </div>

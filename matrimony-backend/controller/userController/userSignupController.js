@@ -69,7 +69,7 @@ const saveSignUpData = async (req, res) => {
 
     const existingUser = await userModel.findOne({ userEmail: email });
     if (existingUser) {
-      return res.status(409).json({ 
+      return res.status(409).json({
         message: "User already exists with this email",
         userName: existingUser.userName,
         connectedContact: maskPhone(existingUser.userMobile)
@@ -78,21 +78,24 @@ const saveSignUpData = async (req, res) => {
 
     const existingPhone = await userModel.findOne({ userMobile: phone });
     if (existingPhone) {
-      return res.status(409).json({ 
+      return res.status(409).json({
         message: "Phone number already registered",
         userName: existingPhone.userName,
         connectedContact: maskEmail(existingPhone.userEmail)
       });
     }
 
-    // Check if email is verified
-    const isVerified = req.app.locals[`verified_${email}`];
-    if (!isVerified) {
-      return res.status(403).json({ message: "Please verify your email first" });
+    // Check if email and mobile are verified
+    const isEmailVerified = req.app.locals[`verified_${email}`];
+    const isMobileVerified = req.app.locals[`verified_${phone}`];
+
+    if (!isEmailVerified || !isMobileVerified) {
+      return res.status(403).json({ message: "Please verify both your email and mobile number first" });
     }
 
     // Clear verification flag after use
     delete req.app.locals[`verified_${email}`];
+    delete req.app.locals[`verified_${phone}`];
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -116,12 +119,12 @@ const saveSignUpData = async (req, res) => {
     await newUser.save();
 
     const token = jwt.sign(
-      { userId: newUser._id }, 
-      process.env.JWT_SECRET || 'agape_vows_secret_key_2026', 
+      { userId: newUser._id },
+      process.env.JWT_SECRET || 'agape_vows_secret_key_2026',
       { expiresIn: '7d' }
     );
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: "User registered successfully",
       token,
       userId: newUser._id,
@@ -182,8 +185,11 @@ const verifyLogin = async (req, res) => {
 
 const userForgotPassword = async (req, res) => {
   try {
-    const { emailOrPhone } = req.body.emailOrPhone;
+    const { emailOrPhone } = req.body;
 
+    if (!emailOrPhone) {
+      return res.status(400).json({ success: false, message: "Email or Phone is required" });
+    }
 
     const user = await userModel.findOne({
       $or: [{ userEmail: emailOrPhone }, { userMobile: emailOrPhone }],
@@ -200,15 +206,69 @@ const userForgotPassword = async (req, res) => {
     const key = `otp_${user._id}`;
     req.app.locals[key] = {
       otp,
-      expiresAt: Date.now() + 60 * 1000,
+      expiresAt: Date.now() + 10 * 60 * 1000,
     };
 
-    return res.status(200).json({
-      success: true,
-      message: "OTP sent successfully",
-      userId: user._id,
-      otp: otp,
-    });
+    if (emailOrPhone.includes('@')) {
+      try {
+        await sendEmail(emailOrPhone, "Password Reset OTP - Agape Vows Matrimony", "forgotPasswordOtp", [otp]);
+        return res.status(200).json({
+          success: true,
+          message: "OTP sent successfully to your email",
+          userId: user._id
+        });
+      } catch (emailError) {
+        console.error("Failed to send forgot password email:", emailError);
+        return res.status(200).json({
+          success: true,
+          message: "OTP generated (Email failed to send, please check console)",
+          userId: user._id,
+          otp: otp
+        });
+      }
+    } else {
+      try {
+        const smsPayload = {
+          "sender_id": "AGVOWS",
+          "template_id": "1707178329955243008", // Reusing the welcome/verification template for now as requested
+          "priority": 0,
+          "dcs": 0,
+          "messages": [
+            {
+              "mobile": emailOrPhone,
+              "message": `Welcome to AgapeVows! Your verification code is ${otp}. It expires in 10 minutes. Do not share this OTP with anyone. - AGVOWS`,
+              "transaction_id": `TXN-${Date.now()}`
+            }
+          ]
+        };
+
+        const smsResponse = await fetch('https://portal.weformsolution.com/sms/api/send-campaign', {
+          method: 'POST',
+          headers: {
+            'X-API-Key': process.env.SMS_API_KEY,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(smsPayload)
+        });
+
+        const smsResponseText = await smsResponse.text();
+        console.log(`WeForm SMS API Response: [${smsResponse.status}]`, smsResponseText);
+
+        if (!smsResponse.ok || smsResponseText.includes('"success":false')) {
+          throw new Error(`SMS API Failed: ${smsResponseText}`);
+        }
+
+        console.log(`OTP SMS sent to ${emailOrPhone}`);
+        return res.status(200).json({
+          success: true,
+          message: "OTP sent successfully to your mobile",
+          userId: user._id
+        });
+      } catch (smsError) {
+        console.error("Failed to send SMS OTP:", smsError);
+        return res.status(500).json({ success: false, message: "Failed to send SMS. Please check your SMS API key or provider status." });
+      }
+    }
   } catch (err) {
     console.error("Error in verify user in forgot password", err);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -238,7 +298,7 @@ const userVerifyOtp = async (req, res) => {
     if (parseInt(otp) !== storedOtpData.otp) {
       return res.status(400).json({ success: false, message: "Invalid OTP" });
     }
- 
+
     delete req.app.locals[key];
 
     return res.status(200).json({ success: true, message: "OTP verified successfully", userId: userId });
@@ -259,7 +319,7 @@ const saveNewPassword = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    
+
     const updatedUser = await userModel.findByIdAndUpdate(
       userId,
       { userPassword: hashedPassword },
@@ -279,62 +339,93 @@ const saveNewPassword = async (req, res) => {
 
 const sendRegistrationOtp = async (req, res) => {
   try {
-    const { email, phone } = req.body;
-    console.log("SEND OTP REQUEST - EMAIL:", email, "PHONE:", phone);
+    const { type, email, phone } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ success: false, message: "Email is required" });
+    if (!type || (type === 'email' && !email) || (type === 'mobile' && !phone)) {
+      return res.status(400).json({ success: false, message: "Invalid request. Missing email or phone for the requested type." });
     }
 
-    const existingUser = await userModel.findOne({ userEmail: email });
-    const existingPhone = phone ? await userModel.findOne({ userMobile: phone }) : null;
-    console.log("EXISTING EMAIL:", !!existingUser, "EXISTING PHONE:", !!existingPhone);
+    if (type === 'email') {
+      const existingUser = await userModel.findOne({ userEmail: email });
+      if (existingUser) {
+        return res.status(409).json({
+          success: false,
+          message: "User already exists with this email",
+          userName: existingUser.userName,
+          connectedContact: maskPhone(existingUser.userMobile)
+        });
+      }
 
-    if (existingUser && existingPhone) {
-      return res.status(409).json({ 
-        success: false, 
-        message: "Both email and phone number already registered",
-        userName: existingUser.userName,
-        connectedContact: ""
-      });
-    } else if (existingUser) {
-      return res.status(409).json({ 
-        success: false, 
-        message: "User already exists with this email",
-        userName: existingUser.userName,
-        connectedContact: maskPhone(existingUser.userMobile)
-      });
-    } else if (existingPhone) {
-      return res.status(409).json({ 
-        success: false, 
-        message: "Phone number already registered",
-        userName: existingPhone.userName,
-        connectedContact: maskEmail(existingPhone.userEmail)
-      });
-    }
+      const otp = Math.floor(100000 + Math.random() * 900000);
+      req.app.locals[`reg_otp_email_${email}`] = {
+        otp,
+        expiresAt: Date.now() + 10 * 60 * 1000,
+      };
 
-    const otp = Math.floor(1000 + Math.random() * 9000);
-    const key = `reg_otp_${email}`;
-    
-    req.app.locals[key] = {
-      otp,
-      expiresAt: Date.now() + 5 * 60 * 1000, // 5 minutes
-    };
+      try {
+        await sendEmail(email, "Verify your email - Agape Vows Matrimony", "otpVerification", [otp]);
+        return res.status(200).json({ success: true, message: "OTP sent successfully to your email" });
+      } catch (emailError) {
+        console.error("Failed to send registration email:", emailError);
+        return res.status(200).json({ success: true, message: "OTP generated (Email failed to send, please check console)", devOtp: otp });
+      }
 
-    try {
-      await sendEmail(email, "Verify your email - Agape Vows Matrimony", "otpVerification", [otp]);
-      return res.status(200).json({
-        success: true,
-        message: "OTP sent successfully to your email",
-      });
-    } catch (emailError) {
-      console.error("Failed to send registration email:", emailError);
-      // For development: even if email fails, we return success so user can use the console-logged OTP
-      return res.status(200).json({ 
-        success: true, 
-        message: "OTP generated (Email failed to send, please check console)",
-        devOtp: otp // Included for testing convenience
-      });
+    } else if (type === 'mobile') {
+      const existingPhone = await userModel.findOne({ userMobile: phone });
+      if (existingPhone) {
+        return res.status(409).json({
+          success: false,
+          message: "Phone number already registered",
+          userName: existingPhone.userName,
+          connectedContact: maskEmail(existingPhone.userEmail)
+        });
+      }
+
+      const otp = Math.floor(100000 + Math.random() * 900000);
+      req.app.locals[`reg_otp_mobile_${phone}`] = {
+        otp,
+        expiresAt: Date.now() + 10 * 60 * 1000,
+      };
+
+      try {
+        const smsPayload = {
+          "sender_id": "AGVOWS",
+          "template_id": "1707178329955243008",
+          "priority": 0,
+          "dcs": 0,
+          "messages": [
+            {
+              "mobile": phone,
+              "message": `Welcome to AgapeVows! Your verification code is ${otp}. It expires in 10 minutes. Do not share this OTP with anyone. - AGVOWS`,
+              "transaction_id": `TXN-${Date.now()}`
+            }
+          ]
+        };
+
+        const smsResponse = await fetch('https://portal.weformsolution.com/sms/api/send-campaign', {
+          method: 'POST',
+          headers: {
+            'X-API-Key': process.env.SMS_API_KEY,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(smsPayload)
+        });
+
+        const smsResponseText = await smsResponse.text();
+        console.log(`WeForm SMS API Response: [${smsResponse.status}]`, smsResponseText);
+
+        if (!smsResponse.ok || smsResponseText.includes('"success":false')) {
+          throw new Error(`SMS API Failed: ${smsResponseText}`);
+        }
+
+        console.log(`OTP SMS sent to ${phone}`);
+        return res.status(200).json({ success: true, message: "OTP sent successfully to your mobile" });
+      } catch (smsError) {
+        console.error("Failed to send SMS OTP:", smsError);
+        return res.status(500).json({ success: false, message: "Failed to send SMS. Please check your SMS API key or provider status." });
+      }
+    } else {
+      return res.status(400).json({ success: false, message: "Invalid type specified" });
     }
   } catch (err) {
     console.error("Error in sendRegistrationOtp", err);
@@ -344,13 +435,25 @@ const sendRegistrationOtp = async (req, res) => {
 
 const verifyRegistrationOtp = async (req, res) => {
   try {
-    const { email, otp } = req.body;
+    const { type, email, phone, otp } = req.body;
 
-    if (!email || !otp) {
-      return res.status(400).json({ success: false, message: "Email and OTP are required" });
+    if (!type || !otp) {
+      return res.status(400).json({ success: false, message: "Type and OTP are required" });
     }
 
-    const key = `reg_otp_${email}`;
+    let key = '';
+    let target = '';
+
+    if (type === 'email' && email) {
+      key = `reg_otp_email_${email}`;
+      target = email;
+    } else if (type === 'mobile' && phone) {
+      key = `reg_otp_mobile_${phone}`;
+      target = phone;
+    } else {
+      return res.status(400).json({ success: false, message: "Invalid type or missing contact info" });
+    }
+
     const storedOtpData = req.app.locals[key];
 
     if (!storedOtpData) {
@@ -367,10 +470,10 @@ const verifyRegistrationOtp = async (req, res) => {
     }
 
     // Mark as verified in session/locals
-    req.app.locals[`verified_${email}`] = true;
+    req.app.locals[`verified_${target}`] = true;
     delete req.app.locals[key];
 
-    return res.status(200).json({ success: true, message: "Email verified successfully" });
+    return res.status(200).json({ success: true, message: `${type === 'email' ? 'Email' : 'Mobile'} verified successfully` });
   } catch (err) {
     console.error("Error in verifyRegistrationOtp", err);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -403,7 +506,7 @@ const sendLoginOtp = async (req, res) => {
 
     const otp = Math.floor(1000 + Math.random() * 9000);
     const key = `login_otp_${user._id}`;
-    
+
     req.app.locals[key] = {
       otp,
       expiresAt: Date.now() + 5 * 60 * 1000, // 5 minutes
@@ -420,8 +523,8 @@ const sendLoginOtp = async (req, res) => {
         });
       } catch (emailError) {
         console.error("Failed to send login email:", emailError);
-        return res.status(200).json({ 
-          success: true, 
+        return res.status(200).json({
+          success: true,
           message: "OTP generated (Email failed to send, please check console)",
           userId: user._id
         });
@@ -464,13 +567,13 @@ const verifyLoginOtp = async (req, res) => {
 
     const user = await userModel.findById(userId);
     if (!user) {
-       return res.status(401).json({ success: false, message: "User not found" });
+      return res.status(401).json({ success: false, message: "User not found" });
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'agape_vows_secret_key_2026', { expiresIn: '7d' });
 
-    return res.status(200).json({ 
-      success: true, 
+    return res.status(200).json({
+      success: true,
       message: "Login successful",
       token,
       userId: user._id,

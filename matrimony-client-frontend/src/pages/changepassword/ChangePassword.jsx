@@ -558,7 +558,8 @@ import Footer from "../../components/Footer";
 import CopyRights from "../../components/CopyRights";
 import LayoutComponent from "../../components/layouts/LayoutComponent";
 import { resetPasswordRequest } from "../../api/axiosService/userSignUpService";
-//import loginCouple from "../../assets/images/login-couple.png";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+
 const ChangePassword = () => {
   const navigate = useNavigate();
   const { userId } = useParams();
@@ -619,7 +620,7 @@ const ChangePassword = () => {
    try {
   const response = await resetPasswordRequest({
     newPassword: formData.newPassword,
-    userId: isLoggedIn ? loggedInUserId : userId, // Use localStorage userId if logged in
+    userId: isLoggedIn ? loggedInUserId : userId,
   });
 
   if (response.status === 200) {
@@ -632,7 +633,7 @@ const ChangePassword = () => {
       } else {
         navigate("/user/user-login");
       }
-    }, 1000); // 1-second delay so user sees success message
+    }, 1000);
   }
 } catch (err) {
   setError("Network error. Please check your connection and try again.");
@@ -753,10 +754,15 @@ const ChangePassword = () => {
                                 border: "none",
                                 background: "none",
                                 cursor: "pointer",
-                                fontSize: "16px",
+                                fontSize: "20px",
+                                color: "#94a3b8",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                padding: 0
                               }}
                             >
-                              {showPassword ? "👁️" : "🙈"}
+                              {showPassword ? <FiEye /> : <FiEyeOff />}
                             </button>
                           </div>
                           {formData.newPassword && (
@@ -809,10 +815,15 @@ const ChangePassword = () => {
                                 border: "none",
                                 background: "none",
                                 cursor: "pointer",
-                                fontSize: "16px",
+                                fontSize: "20px",
+                                color: "#94a3b8",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                padding: 0
                               }}
                             >
-                              {showConfirmPassword ? "👁️" : "🙈"}
+                              {showConfirmPassword ? <FiEye /> : <FiEyeOff />}
                             </button>
                           </div>
                           {formData.confirmPassword && (

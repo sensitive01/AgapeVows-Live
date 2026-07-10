@@ -14,7 +14,10 @@ const SEOHelmet = ({
   canonicalUrl, 
   noindex = false,
   schemaData = [],
-  preloadImage
+  preloadImage,
+  ogTitle,
+  ogDescription,
+  ogImage = "https://agapevows.com/images/og-default.jpg"
 }) => {
   return (
     <Helmet>
@@ -35,9 +38,10 @@ const SEOHelmet = ({
       )}
 
       {/* Open Graph Tags for Social Sharing */}
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
+      <meta property="og:title" content={ogTitle || title} />
+      <meta property="og:description" content={ogDescription || description} />
       <meta property="og:type" content="website" />
+      <meta property="og:image" content={ogImage} />
       {canonicalUrl && <meta property="og:url" content={`https://agapevows.com${canonicalUrl}`} />}
       <meta property="og:site_name" content="AgapeVows" />
       
