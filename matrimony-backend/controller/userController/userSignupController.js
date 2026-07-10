@@ -5,6 +5,8 @@ const admin = require("../../utils/firebaseAdmin");
 const { getAuth } = require("firebase-admin/auth");
 
 const userModel = require("../../model/user/userModel");
+const planModel = require("../../model/admin/planModel");
+const paymentModel = require("../../model/user/planBookings");
 const jwt = require("jsonwebtoken");
 
 const generateAgwid = async () => {
@@ -116,6 +118,73 @@ const saveSignUpData = async (req, res) => {
 
     await newUser.save();
 
+    let assignedWelcomePlan = null;
+    // Check for active Welcome plan
+    try {
+      const welcomePlan = await planModel.findOne({ name: "Welcome plan", status: "Active" });
+      if (welcomePlan) {
+          assignedWelcomePlan = welcomePlan;
+        // Auto-assign welcome plan
+        const orderId = `AV${Math.floor(100000 + Math.random() * 900000)}`;
+        const payment = new paymentModel({
+          userId: newUser._id,
+          razorpayPaymentId: "free_welcome",
+          orderId: orderId,
+          planId: welcomePlan._id,
+          planName: welcomePlan.name,
+          amount: 0,
+          paymentStatus: "success",
+          paymentMethod: "free",
+          planDetails: {
+            name: welcomePlan.name,
+            price: welcomePlan.price,
+            duration: welcomePlan.duration,
+            durationType: welcomePlan.durationType,
+            maxProfiles: welcomePlan.maxProfiles,
+            profilesType: welcomePlan.profilesType,
+            dailyLimit: welcomePlan.dailyLimit,
+            canViewProfiles: welcomePlan.canViewProfiles,
+            maxSendInterest: welcomePlan.maxSendInterest,
+            dailyLimitSendInterest: welcomePlan.dailyLimitSendInterest,
+            maxViewContact: welcomePlan.maxViewContact,
+            dailyLimitViewContact: welcomePlan.dailyLimitViewContact,
+          }
+        });
+        await payment.save();
+
+        const validFrom = new Date();
+        let validTo = new Date(validFrom);
+        if (welcomePlan.durationType?.toLowerCase() === "days") {
+          validTo.setDate(validTo.getDate() + parseInt(welcomePlan.duration));
+        } else if (welcomePlan.durationType?.toLowerCase() === "months") {
+          validTo.setMonth(validTo.getMonth() + parseInt(welcomePlan.duration));
+        } else if (welcomePlan.durationType?.toLowerCase() === "years") {
+          validTo.setFullYear(validTo.getFullYear() + parseInt(welcomePlan.duration));
+        }
+        newUser.paymentDetails.push({
+          subscriptionValidFrom: validFrom,
+          subscriptionValidTo: validTo,
+          subscriptionType: welcomePlan.name,
+          subscriptionStatus: "Active",
+          subscriptionOrderId: "WELCOME_PLAN_ORDER",
+          subscriptionTransactionId: "WELCOME_PLAN_TXN",
+          canViewProfiles: welcomePlan.canViewProfiles || "All Profiles",
+          viewContactDetails: welcomePlan.viewContactDetails || "No",
+          sendInterestRequest: welcomePlan.sendInterestRequest || "No",
+          maxProfiles: welcomePlan.maxProfiles || 0,
+          dailyLimit: welcomePlan.dailyLimit || 0,
+          maxSendInterest: welcomePlan.maxSendInterest || "0",
+          dailyLimitSendInterest: welcomePlan.dailyLimitSendInterest || "0",
+          maxViewContact: welcomePlan.maxViewContact || "0",
+          dailyLimitViewContact: welcomePlan.dailyLimitViewContact || "0"
+        });
+        newUser.isAnySubscriptionTaken = true;
+        await newUser.save();
+      }
+    } catch (planErr) {
+      console.error("Error assigning welcome plan:", planErr);
+    }
+
     const token = jwt.sign(
       { userId: newUser._id },
       process.env.JWT_SECRET || 'agape_vows_secret_key_2026',
@@ -128,7 +197,8 @@ const saveSignUpData = async (req, res) => {
       userId: newUser._id,
       userName: newUser.userName,
       gender: newUser.gender,
-      isProfileCompleted: newUser.isProfileCompleted
+      isProfileCompleted: newUser.isProfileCompleted,
+        welcomePlan: assignedWelcomePlan
     });
   } catch (err) {
     console.error("Error in saving the signup data", err);
@@ -141,7 +211,23 @@ const verifyLogin = async (req, res) => {
     const { formData } = req.body;
     const { email, password, rememberMe } = formData;
 
-    const user = await userModel.findOne({ userEmail: email });
+    // Try matching exactly, or adjusting for common India country code issue
+    let phoneQueryWith91 = email;
+    let phoneQueryWithout91 = email;
+    if (/^\d{10}$/.test(email)) {
+      phoneQueryWith91 = `91${email}`;
+    } else if (/^91\d{10}$/.test(email)) {
+      phoneQueryWithout91 = email.substring(2);
+    }
+
+    const user = await userModel.findOne({
+      $or: [
+        { userEmail: email }, 
+        { userMobile: email },
+        { userMobile: phoneQueryWith91 },
+        { userMobile: phoneQueryWithout91 }
+      ],
+    });
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });
@@ -189,8 +275,21 @@ const userForgotPassword = async (req, res) => {
       return res.status(400).json({ success: false, message: "Email or Phone is required" });
     }
 
+    let phoneQueryWith91 = emailOrPhone;
+    let phoneQueryWithout91 = emailOrPhone;
+    if (/^\d{10}$/.test(emailOrPhone)) {
+      phoneQueryWith91 = `91${emailOrPhone}`;
+    } else if (/^91\d{10}$/.test(emailOrPhone)) {
+      phoneQueryWithout91 = emailOrPhone.substring(2);
+    }
+
     const user = await userModel.findOne({
-      $or: [{ userEmail: emailOrPhone }, { userMobile: emailOrPhone }],
+      $or: [
+        { userEmail: emailOrPhone }, 
+        { userMobile: emailOrPhone },
+        { userMobile: phoneQueryWith91 },
+        { userMobile: phoneQueryWithout91 }
+      ],
     });
 
     if (!user) {

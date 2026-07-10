@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Footer from "../components/Footer";
 import { sendSignUpRequest, sendRegistrationOtpRequest, verifyRegistrationOtpRequest } from "../api/axiosService/userSignUpService";
 import { showAlert } from "../utils/alertService";
+import Swal from "sweetalert2";
 import LayoutComponent from "../components/layouts/LayoutComponent";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -183,10 +184,41 @@ const UserSignUp = () => {
         }
         sessionStorage.setItem("session_active", "true");
 
-        showAlert({ title: "Success", text: response.data.message || "Account created successfully!", icon: "success" });
-        setTimeout(() => {
+        const navigateToProfileEdit = () => {
           navigate(`/user/user-profile-edit-page/${userData.userId}`, { replace: true });
-        }, 1500);
+        };
+
+        if (userData.welcomePlan) {
+          Swal.fire({
+             title: 'Welcome to AgapeVows!',
+             html: `
+              <div style="text-align: left; font-size: 15px; line-height: 1.6;">
+                We're delighted to have you join our community.<br/><br/>
+                You've been given complimentary access to our Welcome Plan, a premium membership valid for 60 days.<br/><br/>
+                Your plan includes:<br/>
+                &bull; View up to 100 profiles<br/>
+                &bull; View contact details of 5 matching profiles<br/>
+                &bull; Send up to 5 interests<br/>
+                &bull; 60 Days Validity<br/><br/>
+                Complete your profile to unlock your dashboard, where you can view your membership details and begin connecting with verified Christian profiles that match your preferences.
+              </div>
+              <p style="text-align: left; font-size: 15px; margin-top: 15px; font-weight: bold;">
+                Thank you for being part of AgapeVows. We wish you all the best.
+              </p>
+             `,
+             icon: 'success',
+             showCloseButton: true,
+             confirmButtonText: 'OK',
+             confirmButtonColor: '#c21146',
+          }).then(() => {
+             navigateToProfileEdit();
+          });
+        } else {
+          showAlert({ title: "Success", text: response.data.message || "Account created successfully!", icon: "success" });
+          setTimeout(() => {
+            navigateToProfileEdit();
+          }, 1500);
+        }
       }
     } catch (err) {
       console.error("Signup error:", err);
@@ -272,7 +304,7 @@ const UserSignUp = () => {
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        className="block w-full pl-12 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-[#58219f] focus:border-[#58219f] sm:text-sm transition-colors text-gray-800 placeholder-gray-400 bg-white"
+                        className="block w-full pl-12 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-[#58219f] focus:border-[#58219f] sm:text-sm transition-colors text-gray-800 placeholder-gray-400 placeholder:text-[12px] bg-white"
                         placeholder="Enter your full name as it appears on your government issued ID"
                         autoComplete="off"
                         required

@@ -38,9 +38,9 @@ export default function SidebarLoginComponent({ closePopup }) {
     const newErrors = {};
 
     if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
+      newErrors.email = "Email or Phone is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email) && !/^\d{10,15}$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address or phone number";
     }
 
     if (!formData.password) {
@@ -349,11 +349,11 @@ export default function SidebarLoginComponent({ closePopup }) {
               )}
 
               <div className="form-group" style={{ marginBottom: '22px' }}>
-                <label style={{ fontWeight: '700', marginBottom: '8px', display: 'block', color: '#333', fontSize: '14px' }}>Email:</label>
+                <label style={{ fontWeight: '700', marginBottom: '8px', display: 'block', color: '#333', fontSize: '14px' }}>Email or Phone Number:</label>
                 <input
-                  type="email"
+                  type="text"
                   className={`form-control ${errors.email ? "is-invalid" : ""}`}
-                  placeholder="Enter email"
+                  placeholder="Enter email or phone"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}

@@ -1590,7 +1590,7 @@ const UserProfileEditPage = () => {
 
         // Optional: navigate after update
         setTimeout(() => {
-          navigate(`/user/user-dashboard-page`);
+          navigate(`/user/user-dashboard-page`, { state: { profileJustCompleted: true } });
         }, 500);
       } else {
         const errorMessage = response.data?.message || "Error updating profile. Please try again.";
@@ -2906,10 +2906,10 @@ const UserProfileEditPage = () => {
                       <FormInput
                         label="Alternate Mobile Number"
                         name="contactPhone"
-                        type="tel"
+                        required
+                        type="tel" 
                         value={formData.contactPhone}
                         onChange={handleInputChange}
-                        required
                       />
                       <FormInput
                         label="Landline Number"

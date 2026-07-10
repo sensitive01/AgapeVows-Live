@@ -214,7 +214,99 @@ const ActivePlanCard = ({ externalPlanData }) => {
         
         <div className="active-plan-benefits-grid mt-2 flex-grow-1">
           <div className="row g-3">
-            {/* Daily Profile View Limit */}
+            {/* Total Profile Views */}
+            <div className="col-xl-4 col-6">
+              <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+                <div className="d-flex align-items-center mb-3">
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
+                    <FiEye size={16} color="#3b82f6" />
+                  </div>
+                  <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Total Profile Views</span>
+                </div>
+                <div className="mt-auto">
+                  <div className="d-flex justify-content-between align-items-end mb-2">
+                    <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>{profilesViewedCount}</span>
+                    {isUnlimitedProfiles ? (
+                       <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 'bold' }}>Unlimited</span>
+                    ) : (
+                       <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of {parsedMax}</span>
+                    )}
+                  </div>
+                  {!isUnlimitedProfiles ? (
+                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
+                      <div className="progress-bar" style={{ width: `${usagePercent}%`, backgroundColor: '#3b82f6', borderRadius: '2px' }}></div>
+                    </div>
+                  ) : (
+                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#d1fae5' }}>
+                      <div className="progress-bar" style={{ width: '100%', backgroundColor: '#10b981', borderRadius: '2px' }}></div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Interest Requests Total */}
+            <div className="col-xl-4 col-6">
+              <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+                <div className="d-flex align-items-center mb-3">
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
+                    <FiHeart size={16} color="#ef4444" />
+                  </div>
+                  <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Total Interests</span>
+                </div>
+                <div className="mt-auto">
+                  <div className="d-flex justify-content-between align-items-end mb-2">
+                    <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>{interestSentCount}</span>
+                    {isUnlimitedInterest ? (
+                       <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 'bold' }}>Unlimited</span>
+                    ) : (
+                       <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of {parsedMaxInterest}</span>
+                    )}
+                  </div>
+                  {!isUnlimitedInterest ? (
+                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
+                      <div className="progress-bar" style={{ width: `${interestUsagePercent}%`, backgroundColor: '#ef4444', borderRadius: '2px' }}></div>
+                    </div>
+                  ) : (
+                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#d1fae5' }}>
+                      <div className="progress-bar" style={{ width: '100%', backgroundColor: '#10b981', borderRadius: '2px' }}></div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Details Total */}
+            <div className="col-xl-4 col-6">
+              <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+                <div className="d-flex align-items-center mb-3">
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#f3e8ff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
+                    <FiPhone size={16} color="#8b5cf6" />
+                  </div>
+                  <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Total Contacts</span>
+                </div>
+                <div className="mt-auto">
+                  <div className="d-flex justify-content-between align-items-end mb-2">
+                    <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>{contactViewCount}</span>
+                    {isUnlimitedContact ? (
+                       <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 'bold' }}>Unlimited</span>
+                    ) : (
+                       <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of {parsedMaxContact}</span>
+                    )}
+                  </div>
+                  {!isUnlimitedContact ? (
+                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
+                      <div className="progress-bar" style={{ width: `${contactUsagePercent}%`, backgroundColor: '#8b5cf6', borderRadius: '2px' }}></div>
+                    </div>
+                  ) : (
+                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#d1fae5' }}>
+                      <div className="progress-bar" style={{ width: '100%', backgroundColor: '#10b981', borderRadius: '2px' }}></div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+{/* Daily Profile View Limit */}
             {(isUnlimitedDaily || parsedDaily > 0) && (
             <div className="col-xl-4 col-6">
               <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
@@ -313,99 +405,7 @@ const ActivePlanCard = ({ externalPlanData }) => {
             </div>
             )}
 
-            {/* Total Profile Views */}
-            <div className="col-xl-4 col-6">
-              <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
-                <div className="d-flex align-items-center mb-3">
-                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
-                    <FiEye size={16} color="#3b82f6" />
-                  </div>
-                  <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Total Profile Views</span>
-                </div>
-                <div className="mt-auto">
-                  <div className="d-flex justify-content-between align-items-end mb-2">
-                    <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>{profilesViewedCount}</span>
-                    {isUnlimitedProfiles ? (
-                       <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 'bold' }}>Unlimited</span>
-                    ) : (
-                       <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of {parsedMax}</span>
-                    )}
-                  </div>
-                  {!isUnlimitedProfiles ? (
-                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
-                      <div className="progress-bar" style={{ width: `${usagePercent}%`, backgroundColor: '#3b82f6', borderRadius: '2px' }}></div>
-                    </div>
-                  ) : (
-                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#d1fae5' }}>
-                      <div className="progress-bar" style={{ width: '100%', backgroundColor: '#10b981', borderRadius: '2px' }}></div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Interest Requests Total */}
-            <div className="col-xl-4 col-6">
-              <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
-                <div className="d-flex align-items-center mb-3">
-                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
-                    <FiHeart size={16} color="#ef4444" />
-                  </div>
-                  <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Total Interests</span>
-                </div>
-                <div className="mt-auto">
-                  <div className="d-flex justify-content-between align-items-end mb-2">
-                    <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>{interestSentCount}</span>
-                    {isUnlimitedInterest ? (
-                       <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 'bold' }}>Unlimited</span>
-                    ) : (
-                       <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of {parsedMaxInterest}</span>
-                    )}
-                  </div>
-                  {!isUnlimitedInterest ? (
-                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
-                      <div className="progress-bar" style={{ width: `${interestUsagePercent}%`, backgroundColor: '#ef4444', borderRadius: '2px' }}></div>
-                    </div>
-                  ) : (
-                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#d1fae5' }}>
-                      <div className="progress-bar" style={{ width: '100%', backgroundColor: '#10b981', borderRadius: '2px' }}></div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Contact Details Total */}
-            <div className="col-xl-4 col-6">
-              <div className="usage-stat-card p-3 rounded h-100 d-flex flex-column" style={{ border: '1px solid #f3f4f6', backgroundColor: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
-                <div className="d-flex align-items-center mb-3">
-                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#f3e8ff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
-                    <FiPhone size={16} color="#8b5cf6" />
-                  </div>
-                  <span className="fw-bold" style={{ fontSize: '13px', color: '#374151' }}>Total Contacts</span>
-                </div>
-                <div className="mt-auto">
-                  <div className="d-flex justify-content-between align-items-end mb-2">
-                    <span style={{ fontSize: '20px', fontWeight: '800', color: '#111827', lineHeight: '1' }}>{contactViewCount}</span>
-                    {isUnlimitedContact ? (
-                       <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 'bold' }}>Unlimited</span>
-                    ) : (
-                       <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>of {parsedMaxContact}</span>
-                    )}
-                  </div>
-                  {!isUnlimitedContact ? (
-                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#e5e7eb' }}>
-                      <div className="progress-bar" style={{ width: `${contactUsagePercent}%`, backgroundColor: '#8b5cf6', borderRadius: '2px' }}></div>
-                    </div>
-                  ) : (
-                    <div className="progress" style={{ height: '4px', borderRadius: '2px', backgroundColor: '#d1fae5' }}>
-                      <div className="progress-bar" style={{ width: '100%', backgroundColor: '#10b981', borderRadius: '2px' }}></div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+                      </div>
         </div>
         
         <div className="active-plan-bottom mt-4">

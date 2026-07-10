@@ -1438,7 +1438,7 @@ const getSearchedProfileData = async (req, res) => {
 
 const getPlanDetails = async (req, res) => {
   try {
-    const planData = await planModel.find({ status: "Active" });
+    const planData = await planModel.find({ status: "Active", name: { $ne: "Welcome plan" } });
 
     res.status(200).json({
       success: true,

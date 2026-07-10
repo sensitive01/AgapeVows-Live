@@ -5,7 +5,7 @@ const planSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      enum: ["Basic", "Premium", "Platinum", "Golden membership"],
+      enum: ["Basic", "Premium", "Platinum", "Golden membership", "Welcome plan"],
       required: true,
     },
     price: {

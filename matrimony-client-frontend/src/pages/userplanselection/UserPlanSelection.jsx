@@ -509,6 +509,48 @@ const UserPlanSelection = () => {
                     </button>
                   </div>
                 </div>
+              ) : plans.length === 0 ? (
+                <div style={{
+                  background: "#fff",
+                  borderRadius: "20px",
+                  padding: "40px",
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+                  textAlign: "center",
+                  maxWidth: "600px",
+                  margin: "0 auto",
+                  position: "relative",
+                  overflow: "hidden"
+                }}>
+                  <div style={{
+                    width: "80px",
+                    height: "80px",
+                    background: "#f3f4f6",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 20px auto"
+                  }}>
+                    <i className="fa fa-folder-open" style={{ fontSize: "32px", color: "#9ca3af" }}></i>
+                  </div>
+                  <h2 style={{
+                    fontSize: "1.5rem",
+                    color: "#1f2937",
+                    marginBottom: "10px",
+                    fontWeight: "700"
+                  }}>
+                    No Plans Available
+                  </h2>
+                  <p style={{
+                    fontSize: "0.95rem",
+                    color: "#4b5563",
+                    maxWidth: "450px",
+                    margin: "0 auto",
+                    lineHeight: "1.5"
+                  }}>
+                    There are currently no membership plans available. Please check back later.
+                  </p>
+                </div>
               ) : (
                 <>
                   {/* Carousel Navigation */}

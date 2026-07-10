@@ -180,7 +180,7 @@ const PlanDetails = ({ externalPlanData }) => {
         <div className="remaining-days-box d-flex align-items-center justify-content-center p-2 mb-3" style={{ backgroundColor: '#fffbeb', borderRadius: '6px', color: '#b45309', fontSize: '12px', fontWeight: 'bold' }}>
           <FiCalendar style={{ marginRight: '6px' }} /> Remaining Days: {getRemainingDays(planData.subscriptionValidFrom, planData.subscriptionValidTo)} days
         </div>
-        <div className="mt-auto w-100">
+        <div className="mt-auto w-100 mb-5">
           <button onClick={() => navigate("/user/user-plan-selection")} className="dash-btn-primary w-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: '#6d28d9', border: 'none', borderRadius: '8px', padding: '12px 0', color: 'white', fontWeight: 'bold', fontSize: '14px' }}>
             <FaCrown style={{ marginRight: '8px' }} /> Upgrade Now
           </button>

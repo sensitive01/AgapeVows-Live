@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import Footer from "../components/Footer";
 import CopyRights from "../components/CopyRights";
@@ -94,6 +94,8 @@ const UserDashboardPage = () => {
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -476,10 +478,15 @@ const UserDashboardPage = () => {
               >
                 
                 {userInfo && userInfo.idVerificationStatus !== 'Verified' && (
-                  <div className="alert alert-warning d-flex align-items-center mb-4" role="alert" style={{ backgroundColor: '#fff3cd', color: '#856404', border: '1px solid #ffeeba', borderRadius: '8px', padding: '15px' }}>
-                    <i className="fa fa-exclamation-triangle" style={{ fontSize: '24px', marginRight: '15px' }}></i>
-                    <div>
-                      <strong>Action Required:</strong> Help us keep AgapeVows safe and trusted for everyone. Please submit your Government ID proof to verify your profile. Accounts that remain unverified beyond the grace period may be temporarily suspended.
+                  <div className="alert alert-warning d-flex align-items-start mb-4" role="alert" style={{ backgroundColor: '#fff3cd', color: '#664d03', border: '1px solid #ffeeba', borderRadius: '8px', padding: '15px' }}>
+                    <i className="fa fa-exclamation-triangle" style={{ fontSize: '24px', marginRight: '15px', marginTop: '6px' }}></i>
+                    <div style={{ fontSize: '15px' }}>
+                      <p className="mb-2">
+                        <strong>Action Required:</strong> To continue using AgapeVows without interruption, please submit your Government-issued ID to verify your profile immediately. Accounts that remain unverified after the grace period may be suspended without prior notice. Please <Link to="/user/user-profile-page" style={{ color: '#0056b3', textDecoration: 'underline', fontWeight: 'bold' }}>click here</Link> to upload your ID proof.
+                      </p>
+                      <p className="mb-0">
+                        Thank you for helping us keep AgapeVows safe and trusted for everyone. Your Government-issued ID will be stored securely, used only for verification purposes, and will never be shared with anyone.
+                      </p>
                     </div>
                   </div>
                 )}

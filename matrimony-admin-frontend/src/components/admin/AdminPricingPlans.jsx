@@ -548,6 +548,7 @@ const AdminPricingPlans = () => {
                             <option value="Premium">Premium</option>
                             <option value="Platinum">Platinum</option>
                             <option value="Golden membership">Golden membership</option>
+                            <option value="Welcome plan">Welcome plan</option>
                           </select>
                         </div>
 
