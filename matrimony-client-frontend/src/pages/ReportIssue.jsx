@@ -4,6 +4,7 @@ import Footer from "../components/Footer";
 import CommonBanner from "../components/CommonBanner";
 import { getUserProfile, reportIssue } from "../api/axiosService/userAuthService";
 import { showAlert } from "../utils/alertService";
+import imageCompression from "browser-image-compression";
 
 const ReportIssue = () => {
   const userId = localStorage.getItem("userId");
@@ -52,7 +53,19 @@ const ReportIssue = () => {
   };
 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, attachment: e.target.files[0] });
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        showAlert({
+          title: "File Too Large",
+          text: "Maximum file size allowed is 5 MB.",
+          icon: "warning",
+        });
+        e.target.value = null; // Clear the input
+        return;
+      }
+      setFormData({ ...formData, attachment: file });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -71,7 +84,6 @@ const ReportIssue = () => {
     try {
       const data = new FormData();
 
-      // ✅ Append only if logged in
       if (userId) {
         data.append("userId", userId);
       }
@@ -83,7 +95,20 @@ const ReportIssue = () => {
       data.append("details", formData.details);
 
       if (formData.attachment) {
-        data.append("attachment", formData.attachment);
+        let fileToUpload = formData.attachment;
+        if (fileToUpload.type.startsWith("image/")) {
+          const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+          };
+          try {
+            fileToUpload = await imageCompression(fileToUpload, options);
+          } catch (error) {
+            console.error("Image compression failed:", error);
+          }
+        }
+        data.append("attachment", fileToUpload, formData.attachment.name);
       }
 
       const res = await reportIssue(data);
@@ -239,7 +264,11 @@ const ReportIssue = () => {
                     />
                   </label>
 
-                  <span className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-500 mt-2">
+                    Attach screenshots or documents if applicable (Max 5MB).
+                  </p>
+
+                  <span className="text-sm text-gray-500 mt-1">
                     {formData.attachment
                       ? formData.attachment.name
                       : "No file selected"}

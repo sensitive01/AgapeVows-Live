@@ -172,7 +172,7 @@ const AdminIssues = () => {
       name: "Attachment",
       cell: row => row.attachment ? (
         <a
-          href={row.attachment.startsWith('http') ? row.attachment : `http://localhost:4000/${row.attachment}`}
+          href={row.attachment.startsWith('http') ? row.attachment : `${import.meta.env.VITE_BASE_ROUTE}/${row.attachment}`}
           target="_blank"
           rel="noreferrer"
           className="btn btn-success btn-sm"
@@ -414,7 +414,7 @@ const AdminIssues = () => {
                     <div className="row">
                       <div className="col-4 fw-bold">Attachment:</div>
                       <div className="col-8">
-                        <a href={selectedIssue.attachment.startsWith('http') ? selectedIssue.attachment : `http://localhost:4000/${selectedIssue.attachment}`} target="_blank" rel="noreferrer" className="text-primary text-decoration-underline">
+                        <a href={selectedIssue.attachment.startsWith('http') ? selectedIssue.attachment : `${import.meta.env.VITE_BASE_ROUTE}/${selectedIssue.attachment}`} target="_blank" rel="noreferrer" className="text-primary text-decoration-underline">
                           View Uploaded File
                         </a> 
                       </div>
