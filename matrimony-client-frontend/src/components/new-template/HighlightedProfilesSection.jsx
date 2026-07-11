@@ -261,7 +261,7 @@ const HighlightedProfilesSection = () => {
   ];
 
   return (
-    <section className="py-12 bg-gray-50 overflow-hidden" id="highlighted-profiles-section">
+    <section className="pt-24 pb-12 bg-gray-50 overflow-hidden" id="highlighted-profiles-section">
       {renderLimitPopup()}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-50 rounded-full blur-3xl opacity-50 -z-10 -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
       <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
@@ -270,19 +270,19 @@ const HighlightedProfilesSection = () => {
           {/* Left Sidebar Info */}
           <div className="lg:w-1/4 flex flex-col gap-6">
             <h2 className="text-4xl md:text-5xl font-bold leading-tight text-gray-800">
-              Stand Out <br />
-              and Let Your <br />
-              <span className="italic font-serif text-teal-500" style={{ color: 'var(--primary-purple)' }}>Uniqueness</span> <br />
-              Shine!
+              It's Time to <br />
+              Find Your <br />
+              <span className="italic font-serif" style={{ color: '#4b1e7a' }}>Soulmate!</span>
             </h2>
 
-            <div className="bg-purple-100/50 p-6 rounded-2xl border border-purple-200" style={{ backgroundColor: 'rgba(94, 44, 165, 0.05)', borderColor: 'rgba(94, 44, 165, 0.2)' }}>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-gray-800">Highlighted Profiles</h3>
-                <span style={{ color: 'var(--primary-purple)' }}>^</span>
-              </div>
-              <p className="text-gray-600 text-sm mb-6">
-                Our hand-picked profiles, May this be your soulmate.
+            <div className="bg-purple-100/50 p-6 rounded-2xl border" style={{ 
+              backgroundColor: 'rgba(94, 44, 165, 0.05)', 
+              borderColor: '#FFD700',
+              borderWidth: '2px',
+              boxShadow: '0 0 15px rgba(255, 215, 0, 0.6)' 
+            }}>
+              <p className="text-black text-sm mb-6 mt-2">
+                Discover More of Verified Christian Profiles
               </p>
 
               <div className="flex flex-col gap-2 mt-4 search-dropdown-container relative">
@@ -318,10 +318,10 @@ const HighlightedProfilesSection = () => {
                     navigate("/user/user-login");
                   }
                 }}
-                className="w-full flex items-center justify-center gap-2 bg-white font-bold py-3 px-4 rounded-xl shadow-sm transition-all uppercase text-sm tracking-wider mt-6 border"
-                style={{ borderColor: 'var(--primary-purple)', color: 'var(--primary-purple)' }}
+                className="w-full flex items-center justify-center gap-2 font-bold py-3 px-4 rounded-xl shadow-sm transition-all uppercase text-sm tracking-wider mt-6 text-white"
+                style={{ backgroundColor: '#4b1e7a' }}
               >
-                Find Partner
+                Find More Profiles
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>

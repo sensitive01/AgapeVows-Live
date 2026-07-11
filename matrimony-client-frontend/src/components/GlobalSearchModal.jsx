@@ -801,8 +801,8 @@ ${activeTab === "quick"
                       </button>
                       <button
                         className={`py-3 text-center text-xs md:text-sm font-medium transition-all px-1 h-full flex items-center justify-center ${activeTab === "regular"
-                            ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white"
-                            : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                          ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white"
+                          : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                           }`}
                         onClick={() => setActiveTab("regular")}
                       >
@@ -810,8 +810,8 @@ ${activeTab === "quick"
                       </button>
                       <button
                         className={`py-3 text-center text-xs md:text-sm font-medium transition-all px-1 h-full flex items-center justify-center ${activeTab === "advanced"
-                            ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white"
-                            : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                          ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white"
+                          : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                           }`}
                         onClick={() => setActiveTab("advanced")}
                       >

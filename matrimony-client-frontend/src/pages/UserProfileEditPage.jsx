@@ -753,7 +753,7 @@ const UserProfileEditPage = () => {
   useEffect(() => {
     if (location.state?.showWelcomePlan) {
       Swal.fire({
-         html: `
+        html: `
           <div style="font-family: 'Inter', sans-serif; color: #333; padding: 10px;">
             <h2 style="color: #4b1e7a; font-size: 26px; font-weight: 700; text-align: center; margin-bottom: 15px; margin-top: 0;">Welcome to AgapeVows!</h2>
             <div style="text-align: center; font-size: 15px; line-height: 1.6; margin-bottom: 20px;">
@@ -812,17 +812,17 @@ const UserProfileEditPage = () => {
             </div>
           </div>
          `,
-         showCloseButton: true,
-         showConfirmButton: true,
-         confirmButtonText: 'OK',
-         confirmButtonColor: '#4b1e7a',
-         width: '600px',
-         padding: '1rem',
-         customClass: {
-           confirmButton: 'px-8 py-2 rounded text-white font-bold tracking-wide'
-         }
+        showCloseButton: true,
+        showConfirmButton: true,
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4b1e7a',
+        width: '600px',
+        padding: '1rem',
+        customClass: {
+          confirmButton: 'px-8 py-2 rounded text-white font-bold tracking-wide'
+        }
       });
-      
+
       // Clear the state so it doesn't pop up again on refresh
       window.history.replaceState({}, document.title);
     }
@@ -1192,7 +1192,7 @@ const UserProfileEditPage = () => {
 
           const parseMulti = (val) => {
             if (Array.isArray(val)) {
-              return val.flatMap(item => 
+              return val.flatMap(item =>
                 typeof item === 'string' ? item.split(',').map(s => s.trim()).filter(Boolean) : item
               );
             }
@@ -1573,10 +1573,10 @@ const UserProfileEditPage = () => {
     }
 
     if (missingFields.length > 0) {
-      showAlert({ 
-        title: "Missing Required Fields", 
-        text: `Please fill in the following mandatory fields: ${missingFields.join(", ")}`, 
-        icon: "warning" 
+      showAlert({
+        title: "Missing Required Fields",
+        text: `Please fill in the following mandatory fields: ${missingFields.join(", ")}`,
+        icon: "warning"
       });
       return;
     }
@@ -3025,7 +3025,7 @@ const UserProfileEditPage = () => {
                         label="Alternate Mobile Number"
                         name="contactPhone"
                         required
-                        type="tel" 
+                        type="tel"
                         value={formData.contactPhone}
                         onChange={handleInputChange}
                       />
