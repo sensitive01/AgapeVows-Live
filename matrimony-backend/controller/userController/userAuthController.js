@@ -1629,7 +1629,7 @@ const getMyActivePlanDetails = async (req, res) => {
 
     const dailyInterestSentCount = isToday(latestPlan.lastInterestSentDate) ? (latestPlan.dailyInterestSentCount || 0) : 0;
     const dailyContactViewCount = isToday(latestPlan.lastContactViewDate) ? (latestPlan.dailyContactViewCount || 0) : 0;
-    const dailyViewedCount = isToday(latestPlan.lastProfileViewDate) ? (latestPlan.dailyViewedCount || 0) : 0;
+    const dailyViewedCount = isToday(latestPlan.lastViewDate) ? (latestPlan.dailyViewedCount || 0) : 0;
 
     const response = {
       subscriptionType: latestPlan.subscriptionType,
@@ -2635,6 +2635,86 @@ const updatePrivacySettings = async (req, res) => {
   }
 };
 
+const checkProfileViewLimit = async (req, res) => {
+  try {
+    const { profileId } = req.params;
+    const { viewerId } = req.query;
+
+    if (!viewerId || viewerId === "undefined" || viewerId === "null" || viewerId === profileId) {
+      return res.status(200).json({ success: true, message: "Allowed" });
+    }
+
+    const profileData = await userModel.findById(profileId);
+    if (!profileData || profileData.profileStatus === "Deactivated") {
+      return res.status(404).json({ success: false, message: "Profile not found or deactivated" });
+    }
+
+    // If viewer already viewed this profile, they don't consume a limit again
+    if (profileData.profileViews && profileData.profileViews.includes(viewerId)) {
+      return res.status(200).json({ success: true, message: "Already viewed, allowed" });
+    }
+
+    const viewerData = await userModel.findById(viewerId);
+    if (viewerData && viewerData.paymentDetails?.length > 0) {
+      const now = new Date();
+      const activePlans = viewerData.paymentDetails.filter(
+        (p) => p.subscriptionStatus === "Active" && new Date(p.subscriptionValidTo) > now
+      );
+
+      if (activePlans.length > 0) {
+        activePlans.sort((a, b) => new Date(b.subscriptionValidFrom) - new Date(a.subscriptionValidFrom));
+        const actualPlan = activePlans[0];
+        
+        const viewerCanViewRaw = actualPlan.canViewProfiles || "All Profiles";
+        const viewerCanView = viewerCanViewRaw.toString().trim().toLowerCase();
+
+        if (!viewerCanView.includes("all")) {
+          const targetActivePlan = profileData.paymentDetails?.find(
+            (p) => p.subscriptionStatus === "Active" && new Date(p.subscriptionValidTo) > now
+          );
+          if (targetActivePlan) {
+            const targetPlanName = targetActivePlan.subscriptionType?.toLowerCase() || "basic";
+            if (viewerCanView === "only basic" && targetPlanName !== "basic") {
+              return res.status(403).json({ success: false, message: "Upgrade your plan to view Platinum and Golden Membership profiles." });
+            }
+            if (viewerCanView === "only premium" && targetPlanName === "basic") {
+              return res.status(403).json({ success: false, message: "Upgrade your plan to view Basic profiles." });
+            }
+          }
+        }
+
+        let maxP = actualPlan.maxProfiles;
+        let dailyL = actualPlan.dailyLimit;
+        if (!actualPlan.maxProfiles || actualPlan.maxProfiles === 0 || actualPlan.maxProfiles === "0" || !actualPlan.dailyLimit || actualPlan.dailyLimit === 0 || actualPlan.dailyLimit === "0") {
+          const planModel = require("../../model/admin/planModel");
+          const planDef = await planModel.findOne({ name: actualPlan.subscriptionType });
+          if (planDef) {
+            maxP = planDef.maxProfiles;
+            dailyL = planDef.dailyLimit;
+          }
+        }
+
+        const isUnlimited = (val) => val === "Unlimited" || val === "unlimited" || parseInt(val) >= 999999;
+        const parsedMax = parseInt(maxP);
+        const parsedDaily = parseInt(dailyL);
+        const currentProfileCount = actualPlan.profilesViewedCount || 0;
+        const currentDailyCount = actualPlan.dailyViewedCount || 0;
+
+        if (!isUnlimited(maxP) && !isNaN(parsedMax) && currentProfileCount >= parsedMax) {
+          return res.status(403).json({ success: false, message: "Your limit has been reached." });
+        }
+        if (!isUnlimited(dailyL) && !isNaN(parsedDaily) && currentDailyCount >= parsedDaily) {
+          return res.status(403).json({ success: false, message: "Your daily limit has been reached." });
+        }
+      }
+    }
+    return res.status(200).json({ success: true, message: "Allowed" });
+  } catch (err) {
+    console.error("Check Limit Error:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 module.exports = {
   getWhoViewedYou,
   getShortListedProfileData,
@@ -2673,5 +2753,6 @@ module.exports = {
   deactivateProfile,
   requestContactUpdate,
   markNotificationsRead,
-  updatePrivacySettings
+  updatePrivacySettings,
+  checkProfileViewLimit
 };

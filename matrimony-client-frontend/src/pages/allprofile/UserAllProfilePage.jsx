@@ -7,12 +7,14 @@ import {
   fetchAllUserProfiles,
   fetchAllUserProfilesHome,
   getMyActivePlanData,
+  saveTheProfileAsShortlisted,
 } from "../../api/axiosService/userAuthService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ShowInterest from "./ShowInterest";
 import MembershipBadge from "../../components/common/MembershipBadge";
 import UserCardImageSlider from "../../components/common/UserCardImageSlider";
+import { useProfileNavigation } from "../../hooks/useProfileNavigation";
 
 const UserAllProfilePage = () => {
   const navigate = useNavigate();
@@ -35,6 +37,7 @@ const UserAllProfilePage = () => {
 
   const [currentUserPlan, setCurrentUserPlan] = useState(null);
   const [showUpgradePopup, setShowUpgradePopup] = useState(false);
+  const { navigateToProfile, renderLimitPopup } = useProfileNavigation();
 
   const isPaidUser = useMemo(() => {
     if (!currentUserPlan) return false;
@@ -170,6 +173,23 @@ const UserAllProfilePage = () => {
     setIsChatOpen(false);
   };
 
+  const shortListProfile = async (user) => {
+    if (!userId) {
+      window.location.href = "/user/user-login";
+      return;
+    }
+    try {
+      const response = await saveTheProfileAsShortlisted(user._id, userId);
+      if (response.status === 200) {
+        toast.success(response.data.message);
+      } else {
+        toast.error("Failed to save profile as shortlisted");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to shortlist profile");
+    }
+  };
+
   const handleViewProfile = (e, targetUser) => {
     e.preventDefault();
     if (!userId) {
@@ -212,12 +232,12 @@ const UserAllProfilePage = () => {
         return;
       }
     }
-
-    window.location.href = `/profile-more-details/${targetUser._id}`;
+    navigateToProfile(targetUser._id, userId, e);
   };
 
   return (
     <div className="min-h-screen">
+      {renderLimitPopup()}
       <div className="fixed top-0 left-0 right-0 z-50">
         <LayoutComponent />
       </div>

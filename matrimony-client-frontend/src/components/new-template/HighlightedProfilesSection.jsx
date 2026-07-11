@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchAllUserProfilesHome, getUserInfo } from "../../api/axiosService/userAuthService";
+import { useProfileNavigation } from "../../hooks/useProfileNavigation";
 
 // Search dropdown component
 const SearchDropdown = ({
@@ -94,6 +95,7 @@ const HighlightedProfilesSection = () => {
   const [denominationSearch, setDenominationSearch] = useState("All");
   const [showDenominationDropdown, setShowDenominationDropdown] = useState(false);
   const navigate = useNavigate();
+  const { navigateToProfile, renderLimitPopup } = useProfileNavigation();
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -184,15 +186,8 @@ const HighlightedProfilesSection = () => {
     window.scrollTo(0, 0);
     const userId = localStorage.getItem("userId");
     if (userId) {
-      // If logged in, take them to the specific person's profile
-      if (e && (e.ctrlKey || e.metaKey)) {
-        const newTab = window.open(`/profile-more-details/${id}`, '_blank');
-        if (newTab) newTab.focus();
-      } else {
-        navigate(`/profile-more-details/${id}`);
-      }
+      navigateToProfile(id, userId, e);
     } else {
-      // If not logged in, take to registration/login
       navigate("/user/user-login");
     }
   };
@@ -267,6 +262,8 @@ const HighlightedProfilesSection = () => {
 
   return (
     <section className="py-12 bg-gray-50 overflow-hidden" id="highlighted-profiles-section">
+      {renderLimitPopup()}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-50 rounded-full blur-3xl opacity-50 -z-10 -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
       <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
         <div className="flex flex-col lg:flex-row gap-8">
 

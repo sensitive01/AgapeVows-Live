@@ -118,6 +118,7 @@ userAuthRoutes.get("/is-am-made-interest/:userId/:profileId", userAuthController
 userAuthRoutes.get("/get-all-user-profile-home", userAuthController.getAllUserProfileDataHome);
 userAuthRoutes.get("/new-profile-matches/:userId", userAuthController.getNewProfileMatches);
 userAuthRoutes.get("/get-profile-more-information/:profileId", userAuthController.getProfileMoreInformation);
+userAuthRoutes.get("/check-profile-view-limit/:profileId", userAuthController.checkProfileViewLimit);
 userAuthRoutes.get("/get-plan-details", userAuthController.getPlanDetails);
 userAuthRoutes.get("/get-my-active-plan-details/:userId", userAuthController.getMyActivePlanDetails);
 userAuthRoutes.post("/view-contact-details/:userId", userAuthController.viewContactDetails);

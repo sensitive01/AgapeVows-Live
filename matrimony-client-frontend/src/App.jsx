@@ -56,6 +56,13 @@ const Blogs = React.lazy(() => import("./pages/public/Blogs"));
 const BlogDetailsPage = React.lazy(() => import("./pages/public/Blogs/[id]"));
 const PrivacyPolicy = React.lazy(() => import("./pages/policy/PrivacyPolicy"));
 const TermsOfUse = React.lazy(() => import("./pages/policy/TermsOfUse"));
+
+// SEO Pages
+const SafetySecurity = React.lazy(() => import("./pages/seo/SafetySecurity"));
+const SuccessStories = React.lazy(() => import("./pages/seo/SuccessStories"));
+const LocationMatrimony = React.lazy(() => import("./pages/seo/LocationMatrimony"));
+const DenominationMatrimony = React.lazy(() => import("./pages/seo/DenominationMatrimony"));
+
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ScrollToTop from "./ScrollTop";
@@ -116,16 +123,18 @@ const ProfileCompletionGuard = ({ children }) => {
     const userId = localStorage.getItem("userId");
     const isProfileCompleted = localStorage.getItem("isProfileCompleted") === "true";
     
-    // Allow public routes and the edit profile page itself
     const publicPaths = [
       '/', '/user/user-login', '/user/user-sign-up', 
       '/help-support', '/show-searched-result', '/forgot-password',
-      '/contact-us', '/about-us', '/faq', '/events', '/blogs'
+      '/contact-us', '/about-us', '/faq', '/events', '/blogs',
+      '/safety-security', '/success-stories'
     ];
     
     const isPublic = publicPaths.includes(location.pathname) || 
                      location.pathname.startsWith('/reset-password') || 
-                     location.pathname.startsWith('/user/user-change-password');
+                     location.pathname.startsWith('/user/user-change-password') ||
+                     location.pathname.startsWith('/location/') ||
+                     location.pathname.startsWith('/denomination/');
                      
     if (userId && !isProfileCompleted && !isPublic) {
       if (!location.pathname.includes('/user/user-profile-edit-page')) {
@@ -347,6 +356,12 @@ function App() {
             <Route path="/marital-counseling" element={<MaritalCounseling />} />
             <Route path="/blogs" element={<Blogs />} />
             <Route path="/blog-details/:id" element={<BlogDetailsPage />} />
+            
+            <Route path="/safety-security" element={<SafetySecurity />} />
+            <Route path="/success-stories" element={<SuccessStories />} />
+            <Route path="/location/:locationName" element={<LocationMatrimony />} />
+            <Route path="/denomination/:denominationName" element={<DenominationMatrimony />} />
+            
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>

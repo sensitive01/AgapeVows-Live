@@ -20,9 +20,11 @@ import DashboardSearchComponent from "./userdashboard/DashboardSearchComponent";
 import ActivePlanCard from "./userdashboard/ActivePlanCard";
 import MembershipBadge from "../components/common/MembershipBadge";
 import defaultProfileImg from "../assets/images/blue-circle-with-white-user_78370-4707.avif";
+import { useProfileNavigation } from "../hooks/useProfileNavigation";
 
 const UserDashboardPage = () => {
   const navigate = useNavigate();
+  const { navigateToProfile, renderLimitPopup } = useProfileNavigation();
   const userId = localStorage.getItem("userId");
   const [profileMatches, setProfileMatches] = useState([]);
   const [allProfiles, setAllProfiles] = useState([]);
@@ -50,35 +52,43 @@ const UserDashboardPage = () => {
         title: '🎉 Congratulations!',
         html: `
           <div style="text-align: left; background: #f8f9fa; padding: 15px; border-radius: 8px; font-size: 14px;">
+            <p style="text-align: center; color: #333; margin-top: 0; margin-bottom: 15px; font-size: 15px;">
+              You've made a fantastic choice! The <strong>${plan.name}</strong> plan unlocks great features to help you find your perfect match.
+            </p>
             <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px;">
               <div><strong>Plan:</strong> <span style="color: #4a2580; font-weight: 600;">${plan.name}</span></div>
               <div><strong>Price:</strong> ₹${plan.price}</div>
               <div><strong>Duration:</strong> ${plan.duration} ${plan.durationType}</div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; background: #fff; padding: 15px 10px; border-radius: 8px; border: 1px solid #eee;">
               
               <div>
-                <h6 style="color: #4a2580; font-weight: bold; margin-bottom: 5px; font-size: 14px;">Profile Views</h6>
-                <ul style="list-style-type: none; padding: 0; margin: 0; font-size: 13px; line-height: 1.6;">
-                  <li>✔ Total Limit: <strong>${formatNum(plan.maxProfiles)}</strong></li>
-                  <li>✔ Daily Limit: <strong>${formatNum(plan.dailyLimit)}</strong></li>
-                  <li>✔ Can View: <strong>${plan.canViewProfiles}</strong></li>
-                </ul>
+                <h6 style="color: #4a2580; font-weight: bold; margin-bottom: 8px; font-size: 13px;">Profile Views</h6>
+                <div style="font-size: 13px; color: #333;">
+                  <div style="margin-bottom: 4px;">Total: <strong>${formatNum(plan.maxProfiles)}</strong></div>
+                  <div>Daily: <strong>${formatNum(plan.dailyLimit)}</strong></div>
+                </div>
+              </div>
+
+              <div style="border-left: 1px solid #eee; border-right: 1px solid #eee; padding: 0 5px;">
+                <h6 style="color: #4a2580; font-weight: bold; margin-bottom: 8px; font-size: 13px;">Send Interests</h6>
+                <div style="font-size: 13px; color: #333;">
+                  ${plan.sendInterestRequest !== 'No' && plan.sendInterestRequest !== '0' && plan.sendInterestRequest !== false ? `
+                    <div style="margin-bottom: 4px;">Total: <strong>${formatNum(plan.maxSendInterest)}</strong></div>
+                    <div>Daily: <strong>${formatNum(plan.dailyLimitSendInterest)}</strong></div>
+                  ` : `<div style="color: #d9534f; font-weight: 500; margin-top: 10px;">No Access</div>`}
+                </div>
               </div>
 
               <div>
-                <h6 style="color: #4a2580; font-weight: bold; margin-bottom: 5px; font-size: 14px;">Contact & Interests</h6>
-                <ul style="list-style-type: none; padding: 0; margin: 0; font-size: 13px; line-height: 1.6;">
-                  <li>✔ View Contacts: <strong>${plan.viewContactDetails}</strong></li>
+                <h6 style="color: #4a2580; font-weight: bold; margin-bottom: 8px; font-size: 13px;">Contact Info</h6>
+                <div style="font-size: 13px; color: #333;">
                   ${plan.viewContactDetails !== 'No' && plan.viewContactDetails !== '0' && plan.viewContactDetails !== false ? `
-                    <li style="color: #555; padding-left: 15px;">Total: ${formatNum(plan.maxViewContact)} | Daily: ${formatNum(plan.dailyLimitViewContact)}</li>
-                  ` : ''}
-                  <li style="margin-top: 4px;">✔ Send Interests: <strong>${plan.sendInterestRequest}</strong></li>
-                  ${plan.sendInterestRequest !== 'No' && plan.sendInterestRequest !== '0' && plan.sendInterestRequest !== false ? `
-                    <li style="color: #555; padding-left: 15px;">Total: ${formatNum(plan.maxSendInterest)} | Daily: ${formatNum(plan.dailyLimitSendInterest)}</li>
-                  ` : ''}
-                </ul>
+                    <div style="margin-bottom: 4px;">Total: <strong>${formatNum(plan.maxViewContact)}</strong></div>
+                    <div>Daily: <strong>${formatNum(plan.dailyLimitViewContact)}</strong></div>
+                  ` : `<div style="color: #d9534f; font-weight: 500; margin-top: 10px;">No Access</div>`}
+                </div>
               </div>
 
             </div>
@@ -341,12 +351,7 @@ const UserDashboardPage = () => {
       }
     }
 
-    if (e && (e.ctrlKey || e.metaKey)) {
-      const newTab = window.open(`/profile-more-details/${targetUser._id}`, '_blank');
-      if (newTab) newTab.focus();
-    } else {
-      navigate(`/profile-more-details/${targetUser._id}`);
-    }
+    navigateToProfile(targetUser._id, userId, e);
   };
 
   // Initialize components on first load
@@ -450,6 +455,7 @@ const UserDashboardPage = () => {
 
   return (
     <div className="min-h-screen">
+      {renderLimitPopup()}
       {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50">
         <LayoutComponent />

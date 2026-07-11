@@ -15,9 +15,11 @@ import { showAlert } from "../../utils/alertService";
 import defaultProfileImg from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
 import MembershipBadge from "../../components/common/MembershipBadge";
 import UserCardImageSlider from "../../components/common/UserCardImageSlider";
+import { useProfileNavigation } from "../../hooks/useProfileNavigation";
 
 const UserSearchResult = () => {
   const location = useLocation();
+  const { navigateToProfile, renderLimitPopup } = useProfileNavigation();
   const state = location.state;
   const navigate = useNavigate();
 
@@ -283,12 +285,7 @@ const UserSearchResult = () => {
       }
     }
 
-    if (e && (e.ctrlKey || e.metaKey)) {
-      const newTab = window.open(`/profile-more-details/${targetUser._id}`, '_blank');
-      if (newTab) newTab.focus();
-    } else {
-      navigate(`/profile-more-details/${targetUser._id}`, { state: targetUser });
-    }
+    navigateToProfile(targetUser._id, userId, e);
   };
 
   const shortListProfile = async (user) => {
@@ -307,6 +304,7 @@ const UserSearchResult = () => {
 
   return (
     <div className="min-h-screen">
+      {renderLimitPopup()}
       <div className="fixed top-0 left-0 right-0 z-50">
         <LayoutComponent />
       </div>

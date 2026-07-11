@@ -54,6 +54,15 @@ export const getTheProfieMoreDetails = async (profileId, viewerId) => {
   return response;
 };
 
+export const checkProfileViewLimit = async (profileId, viewerId) => {
+  let url = `/check-profile-view-limit/${profileId}`;
+  if (viewerId && viewerId !== "undefined" && viewerId !== "null") {
+    url += `?viewerId=${viewerId}`;
+  }
+  const response = await userInstance.get(url);
+  return response;
+};
+
 export const sendInterestData = async (interestData, userId) => {
   const response = await userInstance.post(`/show-user-interests/${userId}`, {
     interestData,
