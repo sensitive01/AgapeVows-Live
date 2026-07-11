@@ -129,7 +129,7 @@ const MoreDetails = () => {
         try {
           const response = await getShortListedProfileData(currentUserId);
           if (response.data && response.data.success) {
-            const shortlistData = Array.isArray(response.data.data) ? response.data.data : [];
+            const shortlistData = Array.isArray(response.data.data?.shortlistedByYou) ? response.data.data.shortlistedByYou : [];
             const listed = shortlistData.some(p => p.profileId === profileId || p._id === profileId);
             setIsShortlisted(listed);
           }

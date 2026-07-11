@@ -10,6 +10,7 @@ import LayoutComponent from "../components/layouts/LayoutComponent";
 import { showAlert } from "../utils/alertService";
 import MembershipBadge from "../components/common/MembershipBadge";
 import MaskedIdGuide from "../assets/images/Masked_ID_Guide.pdf";
+import imageCompression from 'browser-image-compression';
 
 // Helper Components
 const InfoRow = ({ label, value }) => {
@@ -170,7 +171,16 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        showAlert({
+          title: "File Too Large",
+          text: "Maximum allowed file size is 5MB.",
+          icon: "warning",
+        });
+        return;
+      }
+      setFile(selectedFile);
     }
   };
 
@@ -189,7 +199,16 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setFile(e.dataTransfer.files[0]);
+      const selectedFile = e.dataTransfer.files[0];
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        showAlert({
+          title: "File Too Large",
+          text: "Maximum allowed file size is 5MB.",
+          icon: "warning",
+        });
+        return;
+      }
+      setFile(selectedFile);
     }
   };
 
@@ -205,10 +224,24 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
 
     setIsUploading(true);
     try {
+      let fileToUpload = file;
+      if (file.type.startsWith("image/")) {
+        try {
+          const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+          };
+          fileToUpload = await imageCompression(file, options);
+        } catch (error) {
+          console.error("Image compression error:", error);
+        }
+      }
+
       const formData = new FormData();
       formData.append("idProofType", idType);
       formData.append("idProofNumber", idNumber);
-      formData.append("idProof", file);
+      formData.append("idProof", fileToUpload, file.name);
 
       const userId = localStorage.getItem("userId");
 
@@ -326,7 +359,7 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
         }}>
           <h3 style={{ fontWeight: "700", color: "#333", marginBottom: "20px", fontSize: "1.5rem" }}>Verify Your Profile</h3>
           <p style={{ color: "#555", fontSize: "1rem", lineHeight: "1.4", marginBottom: "25px", textAlign: "justify" }}>
-            To ensure user authenticity and platform safety, AgapeVows requires all users to upload a masked version of a valid government ID, in compliance with the Indian IT Act 2000. Your ID information is securely handled and will not be shared with any third party. This guide outlines how to correctly mask and upload your ID while safeguarding your sensitive details. Masking your ID helps protect it from misuse, even in the unlikely event of unauthorized access. Please <a href={MaskedIdGuide} target="_blank" rel="noopener noreferrer" style={{ color: "#5c2a9d", fontWeight: "600", textDecoration: "underline" }}>click here</a> to download the ID masking guide.
+            To ensure user authenticity and platform safety, AgapeVows requires all users to upload a masked version of a valid government ID, in compliance with the Indian IT Act 2000. Your ID information is securely handled and will not be shared with any third party. <br /><br /> This guide outlines how to correctly mask and upload your ID while safeguarding your sensitive details. Masking your ID helps protect it from misuse, even in the unlikely event of unauthorized access. Please <a href={MaskedIdGuide} target="_blank" rel="noopener noreferrer" style={{ color: "#5c2a9d", fontWeight: "600", textDecoration: "underline" }}>click here</a> to download the ID masking guide.
           </p>
           <h5 style={{ fontWeight: "700", color: "#333", marginBottom: "15px" }}>Important Notes</h5>
           <ul style={{ color: "#555", fontSize: "0.95rem", lineHeight: "1.7", listStyleType: "disc", paddingLeft: "20px", marginBottom: "30px" }}>
@@ -414,7 +447,7 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
             ) : (
               <>
                 <p style={{ fontWeight: "600", color: "#555", margin: 0 }}>Drag & drop file here</p>
-                <p style={{ color: "#999", fontSize: "0.75rem", marginTop: "10px" }}>Only PNG/JPG/JPEG/PDF format with maximum 30MB size allowed</p>
+                <p style={{ color: "#999", fontSize: "0.75rem", marginTop: "10px" }}>Only PNG/JPG/JPEG/PDF format with maximum 5MB size allowed</p>
               </>
             )}
           </div>

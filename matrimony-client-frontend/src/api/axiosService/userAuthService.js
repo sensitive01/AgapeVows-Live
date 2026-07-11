@@ -85,6 +85,13 @@ export const getInterestedProfile = async (userId, reqStatus) => {
   return response;
 };
 
+export const getSentInterestedProfile = async (userId) => {
+  const response = await userInstance.post(
+    `/get-sent-interest-request/${userId}`
+  );
+  return response;
+};
+
 export const handleChangeInterestStatus = async (
   userId,
   profileId,

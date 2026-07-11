@@ -138,6 +138,7 @@ userAuthRoutes.get("/download-invoice/:userId/:transactionId", userAuthControlle
 // POST Requests
 userAuthRoutes.post("/get-searched-profile-data", userAuthController.getSearchedProfileData);
 userAuthRoutes.post("/get-interested-profile-request/:userId", userAuthController.getInterestedProfileRequest);
+userAuthRoutes.post("/get-sent-interest-request/:userId", userAuthController.getSentInterestRequests);
 userAuthRoutes.post("/show-user-interests/:userId", userAuthController.showUserInterests);
 
 // ================== COMPLETE PROFILE DATA ================== //

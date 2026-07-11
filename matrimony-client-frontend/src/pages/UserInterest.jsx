@@ -8,6 +8,7 @@ import CopyRights from "../components/CopyRights";
 import {
   getInterestedProfile,
   handleChangeInterestStatus,
+  getSentInterestedProfile,
   markNotificationsRead
 } from "../api/axiosService/userAuthService";
 import { showAlert } from "../utils/alertService";
@@ -84,6 +85,8 @@ const ProfileActionMenu = ({ profile, activeTab, navigate, handleAccept, handleR
           <i className="fa fa-check"></i> Accept
         </button>
       )}
+
+
     </div>
   );
 };
@@ -103,7 +106,12 @@ const UserInterest = () => {
     setLoading(true);
     setError("");
     try {
-      const response = await getInterestedProfile(userId, status);
+      let response;
+      if (status === "sent") {
+        response = await getSentInterestedProfile(userId);
+      } else {
+        response = await getInterestedProfile(userId, status);
+      }
       if (response.status === 200) {
         setActiveTab(status);
         setProfileData(response.data.data);
@@ -497,6 +505,17 @@ const UserInterest = () => {
                                 onClick={() => handleTabChange("rejected")}
                               >
                                 Rejected Request
+                              </button>
+                            </li>
+                            <li className="nav-item" style={{ flex: "0 0 auto" }}>
+                              <button
+                                className={`nav-link ${activeTab === "sent" ? "active" : ""
+                                  }`}
+                                style={{ whiteSpace: "nowrap" }}
+                                type="button"
+                                onClick={() => handleTabChange("sent")}
+                              >
+                                Interest Sent
                               </button>
                             </li>
                           </ul>

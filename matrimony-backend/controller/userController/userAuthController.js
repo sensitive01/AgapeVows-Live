@@ -1096,6 +1096,56 @@ const getInterestedProfileRequest = async (req, res) => {
   }
 };
 
+const getSentInterestRequests = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing userId",
+      });
+    }
+
+    const interests = await interestModel.find(
+      { senderId: userId },
+      { sharedSections: 0 }
+    ).sort({ createdAt: -1 });
+
+    const targetIds = interests.map((item) => item.targetUserId);
+
+    const user = await userModel.findById(userId, { blockedUsers: 1 });
+    const blockedIds = user?.blockedUsers?.map(b => b.user.toString()) || [];
+
+    const targetDetails = await userModel.find(
+      { _id: { $in: targetIds, $nin: blockedIds } },
+      "userName profileImage city age gender jobType height paymentDetails isAnySubscriptionTaken"
+    );
+
+    const mergedData = interests.map((interest) => {
+      const target = targetDetails.find(
+        (u) => u._id.toString() === interest.targetUserId
+      );
+      if (!target) return null;
+      return {
+        ...interest.toObject(),
+        senderDetails: target, // Reusing senderDetails for frontend compatibility
+      };
+    }).filter(item => item !== null);
+
+    return res.status(200).json({
+      success: true,
+      message: "Sent interested profiles fetched successfully",
+      data: mergedData,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
 const changeInterestStatus = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -2131,7 +2181,7 @@ const downloadInvoice = async (req, res) => {
     doc.text(`Name: ${user.userName}`, 55, boxY + 10);
     doc.text(`Email: ${user.userEmail}`, 55, boxY + 28);
     doc.text(`Mobile: ${user.userMobile}`, 55, boxY + 46);
-    doc.text(`AGW ID: ${user.agwid}`, 55, boxY + 64);
+    doc.text(`AV ID: ${user.agwid}`, 55, boxY + 64);
 
     doc.moveDown(5);
 
@@ -2728,6 +2778,7 @@ module.exports = {
   getAllUserProfileDataHome,
   changeInterestStatus,
   getInterestedProfileRequest,
+  getSentInterestRequests,
   getUserProfileImage,
   getUserInformation,
   completeProfileData,
