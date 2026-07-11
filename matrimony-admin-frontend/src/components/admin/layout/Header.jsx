@@ -29,7 +29,7 @@ const Header = () => {
   return (
     <section className="head">
       <div className="container">
-        <div className="row header">
+        <div className="row header align-items-center">
           <div className="col-md-3">
             <div className="logo">
               <img src={headerLogo} alt="" />

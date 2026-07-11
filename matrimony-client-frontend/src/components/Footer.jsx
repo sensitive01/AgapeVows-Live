@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Youtube, Phone, MessageSquare, MessageCircle } from 'lucide-react';
+import { Facebook, Instagram, Youtube, Phone, MessageSquare, MessageCircle, Mail } from 'lucide-react';
 
 const Footer = ({ paddingTop = '40px' }) => {
   return (
@@ -121,6 +121,28 @@ const Footer = ({ paddingTop = '40px' }) => {
               </div>
             </div>
 
+            {/* Email Us */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <div style={{
+                color: '#06b6d4',
+                background: 'rgba(6, 182, 212, 0.1)',
+                padding: '12px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <Mail size={24} style={{ color: '#06b6d4' }} />
+              </div>
+              <div>
+                <div style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '2px' }}>Email Us</div>
+                <div style={{ fontSize: '16px', fontWeight: '600', color: '#fff' }}>
+                  <a href="mailto:support@agapevows.com" className="contact-link-override" style={{ color: '#fff', textDecoration: 'none', display: 'inline', padding: 0, borderBottom: 'none' }}>
+                    support@agapevows.com
+                  </a>
+                </div>
+              </div>
+            </div>
 
             {/* Support Request */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
@@ -197,7 +219,7 @@ const Footer = ({ paddingTop = '40px' }) => {
             }}
           >
             <p style={{ color: "white", marginBottom: "5px" }}>
-              © {new Date().getFullYear()} AgapeVows Christian Matrimony. All rights reserved.
+              Copyright © {new Date().getFullYear()} AgapeVows Matrimony. All rights reserved.
             </p>
             <p style={{ color: "rgba(255, 255, 255, 0.7)", marginBottom: 0, fontSize: "13px", maxWidth: "800px", margin: "0 auto" }}>
               This platform is strictly for matrimonial purposes only and is not a dating or causal relationship platform.
