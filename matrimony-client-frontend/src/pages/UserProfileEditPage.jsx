@@ -449,6 +449,8 @@ const FormInput = ({
   helpText,
   isMulti = false,
   layout = "horizontal",
+  max,
+  onClick,
 }) => (
   <div className={`flex ${layout === "vertical" ? "flex-col" : "flex-col md:flex-row"} ${layout === "vertical" || type === "textarea" ? "items-start" : "items-start md:items-center"} gap-1 md:gap-2 mb-3 w-full`}>
     <label
@@ -545,9 +547,11 @@ const FormInput = ({
           name={name}
           value={value || ""}
           onChange={onChange}
+          onClick={onClick}
           required={required}
           placeholder={placeholder}
           readOnly={readOnly}
+          max={max}
           style={{
             width: "100%",
             padding: "10px 14px",
@@ -749,26 +753,74 @@ const UserProfileEditPage = () => {
   useEffect(() => {
     if (location.state?.showWelcomePlan) {
       Swal.fire({
-         title: 'Welcome to AgapeVows!',
          html: `
-          <div style="text-align: left; font-size: 15px; line-height: 1.6;">
-            We're delighted to have you join our community.<br/><br/>
-            You've been given complimentary access to our Welcome Plan, a premium membership valid for 60 days.<br/><br/>
-            Your plan includes:<br/>
-            &bull; View up to 100 profiles<br/>
-            &bull; View contact details of 5 matching profiles<br/>
-            &bull; Send up to 5 interests<br/>
-            &bull; 60 Days Validity<br/><br/>
-            Complete your profile to unlock your dashboard, where you can view your membership details and begin connecting with verified Christian profiles that match your preferences.
+          <div style="font-family: 'Inter', sans-serif; color: #333; padding: 10px;">
+            <h2 style="color: #4b1e7a; font-size: 26px; font-weight: 700; text-align: center; margin-bottom: 15px; margin-top: 0;">Welcome to AgapeVows!</h2>
+            <div style="text-align: center; font-size: 15px; line-height: 1.6; margin-bottom: 20px;">
+              We're delighted to have you join our community.<br/>
+              You've been given <span style="color: #4b1e7a; font-weight: 700;">FREE access</span> to our <span style="color: #4b1e7a; font-weight: 700;">Welcome Plan</span>,<br/> a premium membership valid for <span style="color: #4b1e7a; font-weight: 700;">60 days</span>.
+            </div>
+
+            <div style="background-color: #f8f5fb; border-radius: 12px; padding: 20px 25px; margin-bottom: 25px;">
+              <h3 style="color: #4b1e7a; font-size: 16px; font-weight: 700; text-align: center; margin-bottom: 20px; margin-top: 0;">Your plan includes:</h3>
+              
+              <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                  <div style="background-color: #4b1e7a; color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  </div>
+                  <div style="font-size: 15px; border-bottom: 1px solid #eaeaea; padding-bottom: 15px; width: 100%; text-align: left;">
+                    View up to <span style="color: #4b1e7a; font-weight: 700;">100</span> profiles
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 15px;">
+                  <div style="background-color: #4b1e7a; color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                  </div>
+                  <div style="font-size: 15px; border-bottom: 1px solid #eaeaea; padding-bottom: 15px; width: 100%; text-align: left;">
+                    View contact details of <span style="color: #4b1e7a; font-weight: 700;">5</span> matching profiles
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 15px;">
+                  <div style="background-color: #4b1e7a; color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                  </div>
+                  <div style="font-size: 15px; border-bottom: 1px solid #eaeaea; padding-bottom: 15px; width: 100%; text-align: left;">
+                    Send up to <span style="color: #4b1e7a; font-weight: 700;">5</span> interests
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 15px;">
+                  <div style="background-color: #4b1e7a; color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                  </div>
+                  <div style="font-size: 15px; padding-bottom: 0px; width: 100%; text-align: left;">
+                    <span style="color: #4b1e7a; font-weight: 700;">60 Days</span> Validity
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="text-align: center; font-size: 13px; line-height: 1.6; color: #111;">
+              Complete your profile to unlock your dashboard, where you can view your<br/>membership details and begin connecting with verified Christian profiles<br/>that match your preferences.
+            </div>
+            
+            <div style="text-align: center; font-size: 14px; font-weight: 700; color: #4b1e7a; margin-top: 15px;">
+              Thank you for being part of AgapeVows. We wish you all the best.
+            </div>
           </div>
-          <p style="text-align: left; font-size: 15px; margin-top: 15px; font-weight: bold;">
-            Thank you for being part of AgapeVows. We wish you all the best.
-          </p>
          `,
-         icon: 'success',
          showCloseButton: true,
+         showConfirmButton: true,
          confirmButtonText: 'OK',
-         confirmButtonColor: '#c21146',
+         confirmButtonColor: '#4b1e7a',
+         width: '600px',
+         padding: '1rem',
+         customClass: {
+           confirmButton: 'px-8 py-2 rounded text-white font-bold tracking-wide'
+         }
       });
       
       // Clear the state so it doesn't pop up again on refresh
@@ -2090,6 +2142,12 @@ const UserProfileEditPage = () => {
                         onChange={handleInputChange}
                         readOnly={isDobReadOnly}
                         helpText={isDobReadOnly ? "To change DOB, please contact Customer Support." : ""}
+                        max={new Date().toISOString().split('T')[0]}
+                        onClick={(e) => {
+                          if (!isDobReadOnly && typeof e.target.showPicker === 'function') {
+                            e.target.showPicker();
+                          }
+                        }}
                       />
                       <FormInput
                         label="Age"

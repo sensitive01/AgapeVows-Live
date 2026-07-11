@@ -363,7 +363,7 @@ const UserPlanSelection = () => {
 
       <div className="pt-[125px]"> 
         <div className="w-full relative flex items-center overflow-hidden" style={{
-          minHeight: '45vh',
+          minHeight: '30vh',
           padding: '40px 0'
         }}>
           <div style={{
@@ -542,7 +542,7 @@ const UserPlanSelection = () => {
                   boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
                   textAlign: "center",
                   maxWidth: "600px",
-                  margin: "0 auto",
+                  margin: "20px auto 40px auto",
                   position: "relative",
                   overflow: "hidden"
                 }}>

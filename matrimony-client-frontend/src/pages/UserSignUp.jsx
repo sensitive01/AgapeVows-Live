@@ -287,7 +287,7 @@ const UserSignUp = () => {
                         value={formData.name}
                         onChange={handleInputChange}
                         className="block w-full pl-12 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-[#58219f] focus:border-[#58219f] sm:text-sm transition-colors text-gray-800 placeholder-gray-400 placeholder:text-[12px] bg-white"
-                        placeholder="Enter your full name as it appears on your  issued ID"
+                        placeholder="Enter your full name"
                         autoComplete="off"
                         required
                       />
