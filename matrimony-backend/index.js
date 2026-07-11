@@ -54,7 +54,11 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:4000",
   "http://187.127.137.237:3000",
-  "http://187.127.137.237:3001"
+  "http://187.127.137.237:3001",
+  "https://agapevows.com",
+  "https://www.agapevows.com",
+  "https://avadmin.agapevows.com"
+
 ];
 
 const corsOptions = {
