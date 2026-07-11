@@ -93,8 +93,9 @@ const Footer = ({ paddingTop = '40px' }) => {
 
           {/* Support and Contact Info Row */}
           <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            display: 'flex',
+            justifyContent: 'space-around',
+            flexWrap: 'wrap',
             gap: '30px',
             borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
             paddingBottom: '20px',
@@ -120,24 +121,6 @@ const Footer = ({ paddingTop = '40px' }) => {
               </div>
             </div>
 
-            {/* Toll Free */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-              <div style={{
-                color: '#06b6d4',
-                background: 'rgba(6, 182, 212, 0.1)',
-                padding: '12px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <Phone size={24} style={{ color: '#06b6d4' }} />
-              </div>
-              <div>
-                <div style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '2px' }}>Toll Free - India</div>
-                <div style={{ fontSize: '16px', fontWeight: '600', color: '#fff' }}>1800 - 103 - 4080</div>
-              </div>
-            </div>
 
             {/* Support Request */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
