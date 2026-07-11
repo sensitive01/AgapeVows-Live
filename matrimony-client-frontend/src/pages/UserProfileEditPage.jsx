@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import imageCompression from "browser-image-compression";
 
 import Footer from "../components/Footer";
 import CopyRights from "../components/CopyRights";
@@ -10,7 +11,8 @@ import {
   uploadIdProof,
 } from "../api/axiosService/userAuthService";
 import { showAlert } from "../utils/alertService";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import Swal from "sweetalert2";
 import UserSideBar from "../components/UserSideBar";
 import LayoutComponent from "../components/layouts/LayoutComponent";
 import SearchableSelect from "../components/SearchableSelect";
@@ -742,6 +744,37 @@ const UserProfileEditPage = () => {
     ? rawUserId.substring(0, 24)
     : rawUserId;
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.showWelcomePlan) {
+      Swal.fire({
+         title: 'Welcome to AgapeVows!',
+         html: `
+          <div style="text-align: left; font-size: 15px; line-height: 1.6;">
+            We're delighted to have you join our community.<br/><br/>
+            You've been given complimentary access to our Welcome Plan, a premium membership valid for 60 days.<br/><br/>
+            Your plan includes:<br/>
+            &bull; View up to 100 profiles<br/>
+            &bull; View contact details of 5 matching profiles<br/>
+            &bull; Send up to 5 interests<br/>
+            &bull; 60 Days Validity<br/><br/>
+            Complete your profile to unlock your dashboard, where you can view your membership details and begin connecting with verified Christian profiles that match your preferences.
+          </div>
+          <p style="text-align: left; font-size: 15px; margin-top: 15px; font-weight: bold;">
+            Thank you for being part of AgapeVows. We wish you all the best.
+          </p>
+         `,
+         icon: 'success',
+         showCloseButton: true,
+         confirmButtonText: 'OK',
+         confirmButtonColor: '#c21146',
+      });
+      
+      // Clear the state so it doesn't pop up again on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const [isGenderReadOnly, setIsGenderReadOnly] = useState(false);
   const [isDobReadOnly, setIsDobReadOnly] = useState(false);
@@ -1545,22 +1578,49 @@ const UserProfileEditPage = () => {
       });
 
       // ========================
-      // Step 3: Handle profile image
+      // Step 3: Handle profile image (with compression)
       // ========================
+      const compressionOptions = {
+        maxSizeMB: 1, // compress to max 1MB
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      };
+
       if (profileImageFile) {
-        submitFormData.append("profileImage", profileImageFile);
+        try {
+          // If it's an image, compress it. Otherwise, upload as is.
+          if (profileImageFile.type.startsWith('image/')) {
+            const compressedFile = await imageCompression(profileImageFile, compressionOptions);
+            submitFormData.append("profileImage", compressedFile, profileImageFile.name);
+          } else {
+            submitFormData.append("profileImage", profileImageFile);
+          }
+        } catch (error) {
+          console.error("Error compressing profile image:", error);
+          submitFormData.append("profileImage", profileImageFile);
+        }
       }
       if (deleteProfileImageFlag) {
         submitFormData.append("deleteProfileImage", "true");
       }
 
       // ========================
-      // Step 4: Handle additional images
+      // Step 4: Handle additional images (with compression)
       // ========================
       if (additionalImageFiles.length > 0) {
-        additionalImageFiles.forEach((file) => {
-          submitFormData.append("additionalImages", file);
-        });
+        for (const file of additionalImageFiles) {
+          try {
+            if (file.type.startsWith('image/')) {
+              const compressedFile = await imageCompression(file, compressionOptions);
+              submitFormData.append("additionalImages", compressedFile, file.name);
+            } else {
+              submitFormData.append("additionalImages", file);
+            }
+          } catch (error) {
+            console.error("Error compressing additional image:", error);
+            submitFormData.append("additionalImages", file);
+          }
+        }
       }
 
       // Include existing additional images
@@ -1711,7 +1771,7 @@ const UserProfileEditPage = () => {
           z-index: 100 !important;
         }
       `}</style>
-      <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 50 }}>
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 9999 }}>
         <LayoutComponent />
       </div>
 

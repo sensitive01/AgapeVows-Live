@@ -22,14 +22,13 @@ const Footer = ({ paddingTop = '40px' }) => {
             color: #fff !important;
             text-decoration: none;
             transition: 0.3s;
-            display: block;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: inline-block;
+            padding: 8px 0;
           }
 
           .agape-vows-footer a:hover {
-            padding-left: 10px;
             color: #d4af37 !important;
+            transform: translateX(5px);
           }
 
           .agape-vows-footer a.contact-link-override {
@@ -173,15 +172,15 @@ const Footer = ({ paddingTop = '40px' }) => {
           }}>
 
             {/* Quick Links */}
-            <div style={{ flex: '2 1 400px', minWidth: '300px' }}>
+            <div style={{ flex: '1 1 250px', minWidth: '250px', textAlign: 'center' }}>
               <h4 className="footer-section-title">Quick Links</h4>
-              <ul style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '40px' }}>
-                <li><Link to="/about-us">About Us</Link></li>
-                <li><Link to="/faq">FAQs</Link></li>
-                <li><Link to="/user/events-page" style={{ display: 'flex', alignItems: 'center' }}>Events </Link></li>
-                <li><Link to="/church-partner">Churches</Link></li>
-                <li><Link to="/privacy-policy">Privacy Policy</Link></li>
-                <li><Link to="/terms-of-use">Terms of use</Link></li>
+              <ul style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '20px', textAlign: 'center' }}>
+                <li><Link to="/about-us" style={{ display: 'inline-block' }}>About Us</Link></li>
+                <li><Link to="/faq" style={{ display: 'inline-block' }}>FAQs</Link></li>
+                <li><Link to="/user/events-page" style={{ display: 'inline-flex', alignItems: 'center' }}>Events </Link></li>
+                <li><Link to="/church-partner" style={{ display: 'inline-block' }}>Churches</Link></li>
+                <li><Link to="/privacy-policy" style={{ display: 'inline-block' }}>Privacy Policy</Link></li>
+                <li><Link to="/terms-of-use" style={{ display: 'inline-block' }}>Terms of use</Link></li>
               </ul>
             </div>
 

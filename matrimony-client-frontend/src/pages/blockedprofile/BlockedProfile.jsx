@@ -216,7 +216,7 @@ const BlockedProfile = () => {
         <LayoutComponent />
       </div>
 
-      <div style={{ paddingTop: "40px", paddingBottom: "40px" }}>
+      <div style={{ paddingTop: "100px", paddingBottom: "40px" }}>
         <div className="db">
           <div
             className="container-fluid"

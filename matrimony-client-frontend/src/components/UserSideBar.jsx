@@ -711,6 +711,7 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
       borderRadius: "16px",
       boxShadow: "0 12px 30px rgba(0,0,0,0.06)",
       overflow: "hidden",
+      marginBottom: "30px",
     },
 
     profileBox: {

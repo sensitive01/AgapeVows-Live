@@ -198,6 +198,14 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (filteredOptions.length > 0) {
+                    handleSelect(e, filteredOptions[0]);
+                  }
+                }
+              }}
               placeholder="Search..."
               autoFocus
               style={{

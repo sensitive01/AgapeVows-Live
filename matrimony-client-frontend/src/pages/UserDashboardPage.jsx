@@ -175,6 +175,7 @@ const UserDashboardPage = () => {
             // We'll duplicate the array in the render function to ensure there are always > 5 items if we have at least 1 match.
             window.$(sliderRef.current).slick({
               infinite: true,
+              accessibility: false,
               slidesToShow: 5,
               arrows: true,
               prevArrow: '<button type="button" class="slick-prev" style="position: absolute; top: 50%; left: -50px; transform: translateY(-50%); z-index: 10; background: transparent; color: #2d3748; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;"><i class="fa fa-angle-left" style="font-size: 32px;"></i></button>',
@@ -547,8 +548,8 @@ const UserDashboardPage = () => {
 
                     {profileMatches.length > 0 ? (
                       (() => {
-                        // If we have 5 or fewer profiles, duplicate them so infinite scroll works properly
-                        const displayProfiles = profileMatches.length <= 5
+                        // If we have fewer than 15 profiles, duplicate them so infinite scroll and arrows work properly
+                        const displayProfiles = profileMatches.length < 15
                           ? [...profileMatches, ...profileMatches, ...profileMatches]
                           : profileMatches;
 

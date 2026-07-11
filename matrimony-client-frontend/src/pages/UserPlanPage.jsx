@@ -201,7 +201,7 @@ const getRemainingDays = (validFrom, validTo) => {
         <LayoutComponent />
       </div>
 
-      <div style={{ paddingTop: "40px", paddingBottom: "40px" }}>
+      <div style={{ paddingTop: "100px", paddingBottom: "40px" }}>
         <div className="db">
           <div className="container-fluid" style={{ paddingLeft: 0, paddingRight: 0 }}>
             <div className="row" style={{ marginLeft: 0, marginRight: 0 }}>

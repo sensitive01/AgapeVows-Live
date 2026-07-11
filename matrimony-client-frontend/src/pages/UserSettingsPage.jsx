@@ -440,7 +440,6 @@ const UserSettingsPage = () => {
                         <div className="list-group list-group-flush">
                           {[
                             { id: "not-interest", label: "Interest Request", desc: "Interest request email notifications" },
-                            { id: "not-chat", label: "Chat", desc: "New chat notifications" },
                             { id: "not-views", label: "Profile Views", desc: "Get notified when someone views your profile" },
                             { id: "not-match", label: "New Profile Match", desc: "You get the profile match emails" }
                           ].map(item => (

@@ -184,35 +184,17 @@ const UserSignUp = () => {
         }
         sessionStorage.setItem("session_active", "true");
 
-        const navigateToProfileEdit = () => {
-          navigate(`/user/user-profile-edit-page/${userData.userId}`, { replace: true });
+        const navigateToProfileEdit = (stateObj = {}) => {
+          navigate(`/user/user-profile-edit-page/${userData.userId}`, { 
+            replace: true,
+            state: stateObj
+          });
         };
 
         if (userData.welcomePlan) {
-          Swal.fire({
-             title: 'Welcome to AgapeVows!',
-             html: `
-              <div style="text-align: left; font-size: 15px; line-height: 1.6;">
-                We're delighted to have you join our community.<br/><br/>
-                You've been given complimentary access to our Welcome Plan, a premium membership valid for 60 days.<br/><br/>
-                Your plan includes:<br/>
-                &bull; View up to 100 profiles<br/>
-                &bull; View contact details of 5 matching profiles<br/>
-                &bull; Send up to 5 interests<br/>
-                &bull; 60 Days Validity<br/><br/>
-                Complete your profile to unlock your dashboard, where you can view your membership details and begin connecting with verified Christian profiles that match your preferences.
-              </div>
-              <p style="text-align: left; font-size: 15px; margin-top: 15px; font-weight: bold;">
-                Thank you for being part of AgapeVows. We wish you all the best.
-              </p>
-             `,
-             icon: 'success',
-             showCloseButton: true,
-             confirmButtonText: 'OK',
-             confirmButtonColor: '#c21146',
-          }).then(() => {
-             navigateToProfileEdit();
-          });
+          // Instead of showing the modal here, we pass the state to the Edit Profile page
+          // so it shows up right in front of the Edit Profile page.
+          navigateToProfileEdit({ showWelcomePlan: true, welcomePlanData: userData.welcomePlan });
         } else {
           showAlert({ title: "Success", text: response.data.message || "Account created successfully!", icon: "success" });
           setTimeout(() => {
@@ -305,7 +287,7 @@ const UserSignUp = () => {
                         value={formData.name}
                         onChange={handleInputChange}
                         className="block w-full pl-12 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-[#58219f] focus:border-[#58219f] sm:text-sm transition-colors text-gray-800 placeholder-gray-400 placeholder:text-[12px] bg-white"
-                        placeholder="Enter your full name as it appears on your government issued ID"
+                        placeholder="Enter your full name as it appears on your  issued ID"
                         autoComplete="off"
                         required
                       />
@@ -321,9 +303,9 @@ const UserSignUp = () => {
                       </div>
                       <input
                         type="email"
-                        name="email"
+                        name="registerEmail"
                         value={formData.email}
-                        onChange={handleInputChange}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className="block w-full pl-12 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-[#58219f] focus:border-[#58219f] sm:text-sm transition-colors text-gray-800 placeholder-gray-400 bg-white"
                         placeholder="Enter your email address"
                         autoComplete="off"
@@ -381,9 +363,9 @@ const UserSignUp = () => {
                       </div>
                       <input
                         type={showPassword ? "text" : "password"}
-                        name="password"
+                        name="registerPassword"
                         value={formData.password}
-                        onChange={handleInputChange}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         className="block w-full pl-12 pr-12 py-2.5 border border-gray-200 rounded-xl focus:ring-[#58219f] focus:border-[#58219f] sm:text-sm transition-colors text-gray-800 placeholder-gray-400 bg-white"
                         placeholder="Choose a secure password"
                         autoComplete="new-password"
