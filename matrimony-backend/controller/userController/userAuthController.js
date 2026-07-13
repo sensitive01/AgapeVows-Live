@@ -479,7 +479,7 @@ const getAllUserProfileData = async (req, res) => {
         _id: { $ne: userId, $nin: blockedIds },
         gender: { $ne: userGender },
         profileStatus: { $ne: "Deactivated" },
-        isApproved: true,
+
         isDeleted: false,
       },
       { userPassword: 0 }
@@ -503,7 +503,7 @@ const getAllUserProfileDataHome = async (req, res) => {
     const userData = await userModel.find(
       {
         profileStatus: { $ne: "Deactivated" },
-        isApproved: true,
+
         isDeleted: false
       },
       { userPassword: 0 }
@@ -1218,7 +1218,7 @@ const getNewProfileMatches = async (req, res) => {
       _id: { $ne: new mongoose.Types.ObjectId(userId), $nin: blockedIds },
       gender: oppositeGender,
       profileStatus: { $ne: "Deactivated" },
-      isApproved: true,
+
       isDeleted: false,
     };
 
@@ -1375,7 +1375,7 @@ const getSearchedProfileData = async (req, res) => {
       const bnrUser = await userModel.findOne({
         agwid: { $regex: new RegExp(`^${bnrId}$`, 'i') },
         profileStatus: { $ne: "Deactivated" },
-        isApproved: true,
+
         isDeleted: false
       }).select("-userPassword -__v");
 
@@ -1405,7 +1405,7 @@ const getSearchedProfileData = async (req, res) => {
 
     const query = {
       _id: { $nin: blockedIds },
-      isApproved: true,
+
       profileStatus: { $ne: "Deactivated" },
       isDeleted: false,
     };
@@ -2329,18 +2329,18 @@ const reportIssue = async (req, res) => {
 const getUserCounts = async (req, res) => {
   try {
     const totalUsers = await userModel.countDocuments({
-      isApproved: true,
+
       isDeleted: false,
     });
 
     const maleCount = await userModel.countDocuments({
-      isApproved: true,
+
       isDeleted: false,
       gender: "Male",
     });
 
     const femaleCount = await userModel.countDocuments({
-      isApproved: true,
+
       isDeleted: false,
       gender: "Female",
     });

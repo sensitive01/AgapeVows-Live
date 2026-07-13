@@ -101,7 +101,7 @@ const getAllUsersData = async (req, res) => {
   try {
     const userData = await userModel
       .find(
-        {},
+        { isDeleted: false },
         {
           userEmail: 1,
           userMobile: 1,
@@ -170,65 +170,7 @@ const getPaidUsersData = async (req, res) => {
   }
 };
 
-/* =========================
-   GET NEW REQUESTED USERS
-========================== */
-const getAllNewRequestedUsersData = async (req, res) => {
-  try {
-    const userData = await userModel
-      .find(
-        { isApproved: false, isDeleted: false },
-        {
-          userEmail: 1,
-          userMobile: 1,
-          userName: 1,
-          gender: 1,
-          profileImage: 1,
-          paymentDetails: 1,
-          createdAt: 1,
-        }
-      )
-      .sort({ createdAt: -1 });
 
-    res.status(200).json({ success: true, data: userData });
-  } catch (err) {
-    console.error("Error fetching unapproved users:", err);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-};
-
-/* =========================
-   APPROVE USER
-========================== */
-const approveNewUser = async (req, res) => {
-  try {
-    const { userId } = req.params;
-
-    const userData = await userModel.findOneAndUpdate(
-      { _id: userId, isDeleted: false },
-      { isApproved: true },
-      { new: true }
-    );
-
-    if (!userData) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: "User approved successfully",
-    });
-  } catch (err) {
-    console.error("Error approving user:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-};
 
 /* =========================
    SOFT DELETE USER
@@ -685,7 +627,7 @@ const registerUser = async (req, res) => {
       ...userData,
       userPassword: hashedPassword,
       agwid,
-      isApproved: true,
+
       profileStatus: "Active",
     });
 
@@ -754,7 +696,7 @@ const bulkRegisterUsers = async (req, res) => {
           ...sanitizedData,
           userPassword: hashedPassword,
           agwid,
-          isApproved: true,
+
           profileStatus: "Active",
         });
 
@@ -1083,8 +1025,7 @@ const deleteSubadmin = async (req, res) => {
 
 module.exports = {
   getPaidUsersData,
-  approveNewUser,
-  getAllNewRequestedUsersData,
+
   registerAdmin,
   verifyAdmin,
   getAllUsersData,

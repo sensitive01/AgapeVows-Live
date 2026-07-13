@@ -6,7 +6,7 @@ import CustomTable from "./common/CustomTable";
 import profImages from "/assets/images/profiles/1.jpg";
 import NewLayout from "./layout/NewLayout";
 import {
-  getNewRequestedUsers, getAllUserData,
+  getAllUserData,
   getPaidUserData,
   getAllPlanData,
   getAllEnquiries,
@@ -23,8 +23,7 @@ const DashboardPage = () => {
   });
 
 
-  const [newUserCount, setNewUserCount] = useState(0);
-  const [newRequestedUsers, setNewRequestedUsers] = useState([]);
+
   const [plans, setPlans] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [paidUsers, setPaidUsers] = useState([]);
@@ -147,34 +146,6 @@ const DashboardPage = () => {
     fetchPlans();
   }, []);
 
-  useEffect(() => {
-    const fetchNewUserCount = async () => {
-      try {
-        const response = await getNewRequestedUsers();
-
-        if (response?.data?.success) {
-          const users = response.data.data;
-          
-          const sortedUsers = users.sort((a, b) => 
-            new Date(b.createdAt) - new Date(a.createdAt)
-          );
-          setNewRequestedUsers(sortedUsers);
-
-          const today = new Date().toISOString().split("T")[0];
-
-          const todayUsers = users.filter((user) =>
-            user.createdAt.startsWith(today)
-          );
-
-          setNewUserCount(todayUsers.length);
-        }
-      } catch (error) {
-        console.error("Error fetching new users count:", error);
-      }
-    };
-
-    fetchNewUserCount();
-  }, []);
 
   useEffect(() => {
     if (!paidUsers.length) return;
@@ -491,13 +462,7 @@ const DashboardPage = () => {
         </div>
         <div className="row">
           <div className={adminRole === "superadmin" ? "col-md-3" : "col-md-6"}>
-            <div className="box-com box-qui box-drk grn-box">
-              <h4>New Users</h4>
-              <h2>User requests</h2>
-              <span className="bnum">{newUserCount}</span>
-              <p>This count for today how many users can register.</p>
-              <Link to="/admin/new-user-requests" className="fclick"></Link>
-            </div>
+
             <div className="box-com box-qui box-lig ali-cen">
               <h3>
                 <span>All</span> Members
@@ -613,7 +578,7 @@ const DashboardPage = () => {
               <div className="table-responsive">
                 <CustomTable itemsPerPage={10}
                   columns={recentMembersColumns}
-                  data={newRequestedUsers}
+                  data={allUsers}
                   pagination
                   paginationPerPage={5}
                   paginationRowsPerPageOptions={[5, 10, 20]}

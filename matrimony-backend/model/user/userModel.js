@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema(
 
       isEmailVerified: { type: Boolean, default: false },
       isPhoneVerified: { type: Boolean, default: false },
-      isApproved: { type: Boolean, default: false },
+
       isProfileCompleted: { type: Boolean, default: false },
 
 

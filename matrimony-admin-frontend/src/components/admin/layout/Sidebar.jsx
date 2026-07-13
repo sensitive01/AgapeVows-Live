@@ -31,7 +31,6 @@ const Sidebar = () => {
   useEffect(() => {
     // Automatically expand the "Users" menu if any sub-route related to users is active
     const usersRoutes = [
-      "/admin/new-user-requests",
       "/admin/all-user-list",
       "/admin/paid-user-list",
       "/admin/add-new-user",

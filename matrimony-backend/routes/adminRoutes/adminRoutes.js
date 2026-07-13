@@ -78,15 +78,9 @@ adminRoutes.get("/get-all-users", adminController.getAllUsersData);
 adminRoutes.get("/get-user/:id", adminController.getUserById);
 adminRoutes.put("/update-user/:id", adminController.updateUser);
 
-adminRoutes.get(
-  "/get-all-new-requested-users",
-  adminController.getAllNewRequestedUsersData
-);
 
-adminRoutes.put(
-  "/approve-new-user/:userId",
-  adminController.approveNewUser
-);
+
+
 
 adminRoutes.get("/paid-users-data", adminController.getPaidUsersData);
 

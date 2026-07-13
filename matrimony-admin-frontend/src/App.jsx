@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import MatrimonyAdminLogin from "./components/admin/AdminLoginPage";
-import AdminNewUserRequest from "./components/admin/AdminNewUserRequest";
+
 import DashboardPage from "./components/admin/DashboardPage";
 import AdminAllUsersList from "./components/admin/AdminAllUsersList";
 import AdminFreeUserList from "./components/admin/AdminFreeUserList";
@@ -140,14 +140,7 @@ function App() {
             </AdminLayout>
           }
         />
-        <Route
-          path="/admin/new-user-requests"
-          element={
-            <AdminLayout>
-              <AdminNewUserRequest />
-            </AdminLayout>
-          }
-        />
+
         <Route
           path="/admin/all-user-list"
           element={

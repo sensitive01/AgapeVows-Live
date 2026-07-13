@@ -47,15 +47,7 @@ export const getAllUserData = async () => {
   return await adminInstance.get(`/get-all-users?t=${new Date().getTime()}`);
 };
 
-// Get New Requested Users
-export const getNewRequestedUsers = async () => {
-  return await adminInstance.get(`/get-all-new-requested-users`);
-};
- 
-// Approve User
-export const approveNewUser = async (userId) => {
-  return await adminInstance.put(`/approve-new-user/${userId}`);
-};
+
 
 // Get Paid Users
 export const getPaidUserData = async () => {
