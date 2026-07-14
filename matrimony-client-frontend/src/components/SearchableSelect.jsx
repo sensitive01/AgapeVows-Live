@@ -56,6 +56,8 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const displayRef = useRef(null);
+
   const handleSelect = (e, option) => {
     e.stopPropagation();
     if (disabled) return;
@@ -83,10 +85,16 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
 
       onChange({ target: { name, value: newValues } });
       // Do not close dropdown on multi-select generally, only for exclusive options above
+      displayRef.current?.focus();
     } else {
       onChange({ target: { name, value: optValue } });
       setIsOpen(false);
       setSearchTerm("");
+      
+      // Delay focus restoration slightly to ensure dropdown is fully closed
+      setTimeout(() => {
+        displayRef.current?.focus();
+      }, 10);
     }
   };
 
@@ -94,9 +102,18 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
     <div ref={dropdownRef} style={{ position: "relative", width: "100%", zIndex: isOpen ? 1010 : 1 }}>
       {/* Selected Value Display */}
       <div
+        ref={displayRef}
+        tabIndex={disabled ? -1 : 0}
         onClick={(e) => {
           e.stopPropagation();
           if (!disabled) setIsOpen(!isOpen);
+        }}
+        onKeyDown={(e) => {
+          if (!disabled && (e.key === "Enter" || e.key === " ")) {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsOpen(!isOpen);
+          }
         }}
         style={{
           width: "100%",

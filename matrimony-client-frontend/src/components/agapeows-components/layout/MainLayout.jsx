@@ -319,7 +319,7 @@ const MainLayout = () => {
           <div className="flex items-center justify-between w-full">
             <a
               href="/"
-              className="flex items-center cursor-pointer shrink-0"
+              className="flex items-center cursor-pointer shrink-0 mr-12 lg:mr-20 xl:mr-32"
               onClick={(e) => {
                 if (!e.ctrlKey) {
                   e.preventDefault();
@@ -341,7 +341,7 @@ const MainLayout = () => {
               </div>
             </a>
 
-            <nav className="hidden lg:flex items-center space-x-4 xl:space-x-6">
+            <nav className="hidden lg:flex items-center space-x-8 xl:space-x-12">
               <a
                 href="/about-us"
                 onClick={(e) => {

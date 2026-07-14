@@ -48,7 +48,7 @@ const EnquiryPage = () => {
                           style={{ display: "none" }}
                           role="alert"
                         >
-                          Your message was sent successfully.
+                          Your enquiry has been sent successfully. Our team will be in touch with you soon.
                         </div>
                         <div className="form-group">
                           <label className="lb">Name:</label>

@@ -15,12 +15,12 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
   const firstOtpInputRef = useRef(null);
 
-  const [step, setStep] = useState(1); // 1: Email/Phone, 2: OTP Verification
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     emailOrPhone: "",
     otp: ["", "", "", ""],
   });
-  const [resetMethod, setResetMethod] = useState("email"); // 'email' or 'mobile'
+  const [resetMethod, setResetMethod] = useState("mobile");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

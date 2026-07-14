@@ -29,7 +29,23 @@ export default function AdminViewNewUser() {
     // =========================
     const formatMobile = (mobile) => {
         if (!mobile) return "Not Provided";
-        return mobile.startsWith("+91") ? mobile : `+91-${mobile}`;
+        let mobStr = String(mobile);
+        if (mobStr.startsWith("+91-")) return mobStr;
+        if (mobStr.startsWith("+91")) return `+91-${mobStr.substring(3)}`;
+        if (mobStr.startsWith("91") && mobStr.length === 12) return `+91-${mobStr.substring(2)}`;
+        return `+91-${mobStr}`;
+    };
+
+    // =========================
+    // 🔥 FORMAT DATE
+    // =========================
+    const formatDateDDMMYYYY = (dateString) => {
+        if (!dateString) return "Not Provided";
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
     };
 
     // =========================
@@ -357,14 +373,12 @@ export default function AdminViewNewUser() {
                             label="Date of Birth"
                             value={
                                 user.dateOfBirth
-                                    ? new Date(user.dateOfBirth).toLocaleDateString()
+                                    ? formatDateDDMMYYYY(user.dateOfBirth)
                                     : "Not Provided"
                             }
                         />
                         <InfoRow label="Marital Status" value={user.maritalStatus} />
                     </div>
-
-
 
                     <div className="col-md-6">
                         <InfoRow label="Body Type" value={user.bodyType} />
@@ -670,13 +684,13 @@ export default function AdminViewNewUser() {
                                         <InfoRow
                                             label="From"
                                             value={
-                                                new Date(plan.subscriptionValidFrom).toLocaleDateString()
+                                                formatDateDDMMYYYY(plan.subscriptionValidFrom)
                                             }
                                         />
                                         <InfoRow
                                             label="To"
                                             value={
-                                                new Date(plan.subscriptionValidTo).toLocaleDateString()
+                                                formatDateDDMMYYYY(plan.subscriptionValidTo)
                                             }
                                         />
                                         <InfoRow

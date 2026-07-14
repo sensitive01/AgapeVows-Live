@@ -584,7 +584,7 @@ const ChangePassword = () => {
   };
 
   const validatePassword = (password) => {
-    if (password.length < 8) return "Password must be at least 8 characters long";
+    if (password.length < 6 || password.length > 14) return "Password must be between 6 and 14 characters long";
     if (!/[A-Z]/.test(password)) return "Password must contain at least one uppercase letter";
     if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter";
     if (!/\d/.test(password)) return "Password must contain at least one number";
@@ -649,7 +649,7 @@ const ChangePassword = () => {
   const getPasswordStrength = (password) => {
     if (!password) return "";
     const checks = [
-      password.length >= 8,
+      password.length >= 6 && password.length <= 14,
       /[A-Z]/.test(password),
       /[a-z]/.test(password),
       /\d/.test(password),
@@ -786,8 +786,7 @@ const ChangePassword = () => {
                               marginTop: "5px",
                             }}
                           >
-                            Password must contain at least 8 characters with
-                            uppercase, lowercase, number, and special character
+                            Password must be at least 6 - 14 characters long and include an uppercase letter, a number, and a special character.
                           </div>
                         </div>
 
@@ -921,7 +920,7 @@ const ChangePassword = () => {
                   </p>
                 )}
                 <p className="text-xs text-gray-400 mt-1">
-                  Must contain 8+ chars, uppercase, lowercase, number, special char
+                  Password must be at least 6 - 14 characters long and include an uppercase letter, a number, and a special character.
                 </p>
               </div>
 

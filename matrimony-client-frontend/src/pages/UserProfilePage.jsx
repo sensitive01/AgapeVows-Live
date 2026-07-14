@@ -1013,7 +1013,7 @@ const UserProfilePage = () => {
                                   borderRadius: "20px",
                                 }}
                               >
-                                {visibility}
+                                {visibility === "Public" ? "Visibility: All Users" : visibility}
                               </span>
 
                               {userInfo?.idVerificationStatus === "Verified" && (

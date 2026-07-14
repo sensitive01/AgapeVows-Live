@@ -62,8 +62,11 @@ const upload = require("../../middleware/multer");
 adminRoutes.get("/", adminController.registerAdmin);
 adminRoutes.post("/verify-admin", adminController.verifyAdmin);
 
+// ID PROOF UPLOAD (ADMIN)
+adminRoutes.post("/upload-id-proof/:userId", upload.single("idProof"), adminController.uploadIdProofAdmin);
+
 /* =========================
-   SUBADMIN MANAGEMENT
+   DASHBOARD & USERS
 ========================== */
 adminRoutes.get("/get-admin-profile/:id", adminController.getAdminProfile);
 adminRoutes.post("/create-subadmin", adminController.createSubadmin);

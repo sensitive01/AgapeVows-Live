@@ -724,14 +724,14 @@ const getProfileMoreInformation = async (req, res) => {
             await userModel.findByIdAndUpdate(profileId, { $inc: { unreadViewsCount: 1 } });
           }
         } else {
-          if (!profileData.profileViews.includes(viewerId)) {
+          if (!profileData.profileViews.some(id => String(id) === String(viewerId))) {
             profileData.profileViews.push(viewerId);
             await profileData.save();
             await userModel.findByIdAndUpdate(profileId, { $inc: { unreadViewsCount: 1 } });
           }
         }
       } else {
-        if (!profileData.profileViews.includes(viewerId)) {
+        if (!profileData.profileViews.some(id => String(id) === String(viewerId))) {
           profileData.profileViews.push(viewerId);
           await profileData.save();
           await userModel.findByIdAndUpdate(profileId, { $inc: { unreadViewsCount: 1 } });
@@ -1631,7 +1631,7 @@ const getMyActivePlanDetails = async (req, res) => {
     }
 
     if (!userData.paymentDetails || userData.paymentDetails.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "No Subscription Found",
       });
@@ -1648,7 +1648,7 @@ const getMyActivePlanDetails = async (req, res) => {
     );
 
     if (activePlans.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "No active plan",
       });
@@ -1734,7 +1734,7 @@ const shortListTheProfile = async (req, res) => {
     let shortListedData = await shortListedSchema.findOne({ userId });
 
     if (shortListedData) {
-      const alreadyShortlisted = shortListedData.profiles.includes(profileId);
+      const alreadyShortlisted = shortListedData.profiles.some(id => String(id) === String(profileId));
       if (!alreadyShortlisted) {
         shortListedData.profiles.push(profileId);
         await shortListedData.save();
@@ -2700,7 +2700,7 @@ const checkProfileViewLimit = async (req, res) => {
     }
 
     // If viewer already viewed this profile, they don't consume a limit again
-    if (profileData.profileViews && profileData.profileViews.includes(viewerId)) {
+    if (profileData.profileViews && profileData.profileViews.some(id => String(id) === String(viewerId))) {
       return res.status(200).json({ success: true, message: "Already viewed, allowed" });
     }
 

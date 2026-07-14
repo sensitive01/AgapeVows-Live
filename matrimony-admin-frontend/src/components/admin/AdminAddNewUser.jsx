@@ -6,7 +6,7 @@ import BasicInfomation from "./BasicInfomation";
 import * as XLSX from "xlsx";
 import { Modal } from "react-bootstrap";
 import CustomTable from "./common/CustomTable";
-import { registerUserByAdmin, bulkRegisterUsersByAdmin } from "../../api/service/adminServices";
+import { registerUserByAdmin, bulkRegisterUsersByAdmin, uploadIdProofByAdmin } from "../../api/service/adminServices";
 import { showAlert } from "../../utils/alertService";
 
 const FormSection = ({ title, children, id, activeTab }) => (
@@ -186,6 +186,7 @@ const AdminAddNewUser = () => {
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [additionalImageFiles, setAdditionalImageFiles] = useState([]);
   const [additionalImagePreviews, setAdditionalImagePreviews] = useState([]);
+  const [idProofFile, setIdProofFile] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -436,6 +437,14 @@ const AdminAddNewUser = () => {
     try {
       const response = await registerUserByAdmin(sanitizedData);
       if (response.data.success) {
+        const newUserId = response.data.userId;
+
+        if (idProofFile && newUserId) {
+          const idFormData = new FormData();
+          idFormData.append("idProof", idProofFile);
+          await uploadIdProofByAdmin(newUserId, idFormData);
+        }
+
         showAlert({
           title: "Success",
           text: "User Profile Created Successfully!",
@@ -539,13 +548,14 @@ const AdminAddNewUser = () => {
                   { id: "basic", label: "Basic Details", icon: "fa-user-plus" },
                   { id: "gallery", label: "Gallery", icon: "fa-image" },
                   { id: "family", label: "Family Details", icon: "fa-users" },
-                  { id: "religious", label: "Religious Information", icon: "fa-church" },
+                  { id: "religious", label: "Religious Information", icon: "fa-book" },
                   { id: "professional", label: "Professional Information", icon: "fa-briefcase" },
                   { id: "contact", label: "Contact Information", icon: "fa-phone" },
                   { id: "lifestyle", label: "Life style", icon: "fa-heart" },
                   { id: "partner", label: "Partner preference", icon: "fa-handshake-o" },
                   { id: "partner_professional", label: "Partner Preferences - Professional", icon: "fa-briefcase" },
-                  { id: "partner_location", label: "Partner Preferences - location", icon: "fa-map-marker" }
+                  { id: "partner_location", label: "Partner Preferences - location", icon: "fa-map-marker" },
+                  { id: "upload_proof", label: "Upload Proof", icon: "fa-id-card" }
                 ].map((tab) => (
                   <li className="nav-item" key={tab.id}>
                     <button
@@ -560,13 +570,13 @@ const AdminAddNewUser = () => {
             </div>
 
             <div className="tab-content" id="profileTabsContent">
-              {/* AUTH & BASIC INFO */}
-              <FormSection title="Basic Details" id="basic" activeTab={activeTab}>
-                <InputField label="Full Name" name="userName" required formData={formData} handleChange={handleChange} />
-                <InputField label="Email Address" name="userEmail" type="email" required formData={formData} handleChange={handleChange} />
-                <InputField label="Mobile Number" name="userMobile" required formData={formData} handleChange={handleChange} />
-                <InputField label="Account Password" name="password" type="password" required formData={formData} handleChange={handleChange} />
+              {/* BASIC PERSONAL DETAILS */}
+              <FormSection title="Basic Personal Details" id="basic" activeTab={activeTab}>
                 <InputField label="About Me" name="aboutMe" type="textarea" col="12" formData={formData} handleChange={handleChange} />
+                <InputField label="Full Name" name="userName" required formData={formData} handleChange={handleChange} />
+                <InputField label="Email" name="userEmail" type="email" required formData={formData} handleChange={handleChange} />
+                <InputField label="Phone" name="userMobile" required formData={formData} handleChange={handleChange} />
+                <InputField label="Account Password" name="password" type="password" required formData={formData} handleChange={handleChange} />
                 <InputField label="Date of Birth" name="dateOfBirth" type="date" formData={formData} handleChange={handleChange} />
                 <InputField label="Gender" name="gender" options={["Male", "Female", "Other"]} formData={formData} handleChange={handleChange} />
                 <InputField label="Profile Created For" name="profileCreatedFor" options={["Self", "Son", "Daughter", "Brother", "Sister", "Friend"]} formData={formData} handleChange={handleChange} />
@@ -621,9 +631,9 @@ const AdminAddNewUser = () => {
 
               {/* RELIGIOUS */}
               <FormSection title="Religious Information" id="religious" activeTab={activeTab}>
-                <InputField label="Religion" name="religion" formData={formData} handleChange={handleChange} />
                 <InputField label="Denomination" name="denomination" formData={formData} handleChange={handleChange} />
                 <InputField label="Church Name" name="church" formData={formData} handleChange={handleChange} />
+                <InputField label="Church Activity" name="churchActivity" formData={formData} handleChange={handleChange} />
                 <InputField label="Pastors Name" name="pastorsName" formData={formData} handleChange={handleChange} />
                 <InputField label="Spirituality" name="spirituality" formData={formData} handleChange={handleChange} />
                 <InputField label="Religious Detail" name="religiousDetail" type="textarea" col="12" formData={formData} handleChange={handleChange} />
@@ -649,8 +659,58 @@ const AdminAddNewUser = () => {
                 <InputField label="Alternate Mobile" name="alternateMobile" formData={formData} handleChange={handleChange} />
                 <InputField label="Alternate Email" name="alternateEmail" type="email" formData={formData} handleChange={handleChange} />
                 <InputField label="Landline" name="landlineNumber" formData={formData} handleChange={handleChange} />
-                <InputField label="Current Address" name="currentAddress" type="textarea" col="12" formData={formData} handleChange={handleChange} />
-                <InputField label="Permanent Address" name="permanentAddress" type="textarea" col="12" formData={formData} handleChange={handleChange} />
+                <div className="col-12 mt-4">
+                  <h6 className="fw-bold border-bottom pb-2">Current Address</h6>
+                </div>
+                <InputField label="Door / Flat No (Name), Street" name="currentDoorNo" formData={formData} handleChange={handleChange} />
+                <InputField label="Locality / Area" name="currentLocality" formData={formData} handleChange={handleChange} />
+                <InputField label="Country" name="currentCountry" formData={formData} handleChange={handleChange} />
+                <InputField label="State" name="currentState" formData={formData} handleChange={handleChange} />
+                <InputField label="District" name="currentDistrict" formData={formData} handleChange={handleChange} />
+                <InputField label="Pincode" name="currentPincode" formData={formData} handleChange={handleChange} />
+
+                <div className="col-12 mt-4">
+                  <div className="d-flex align-items-center border-bottom pb-2">
+                    <h6 className="fw-bold mb-0">Permanent Address</h6>
+                    <div className="form-check ms-3">
+                      <input 
+                        className="form-check-input" 
+                        type="checkbox" 
+                        id="sameAsCurrentAddress" 
+                        name="sameAsCurrentAddress"
+                        checked={formData.sameAsCurrentAddress}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          handleChange({ target: { name: "sameAsCurrentAddress", value: checked } });
+                          if (checked) {
+                            handleChange({ target: { name: "permanentDoorNo", value: formData.currentDoorNo } });
+                            handleChange({ target: { name: "permanentLocality", value: formData.currentLocality } });
+                            handleChange({ target: { name: "permanentCountry", value: formData.currentCountry } });
+                            handleChange({ target: { name: "permanentState", value: formData.currentState } });
+                            handleChange({ target: { name: "permanentDistrict", value: formData.currentDistrict } });
+                            handleChange({ target: { name: "permanentPincode", value: formData.currentPincode } });
+                          } else {
+                            handleChange({ target: { name: "permanentDoorNo", value: "" } });
+                            handleChange({ target: { name: "permanentLocality", value: "" } });
+                            handleChange({ target: { name: "permanentCountry", value: "" } });
+                            handleChange({ target: { name: "permanentState", value: "" } });
+                            handleChange({ target: { name: "permanentDistrict", value: "" } });
+                            handleChange({ target: { name: "permanentPincode", value: "" } });
+                          }
+                        }}
+                      />
+                      <label className="form-check-label small" htmlFor="sameAsCurrentAddress">
+                        Same as current address
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <InputField label="Door / Flat No (Name), Street" name="permanentDoorNo" formData={formData} handleChange={handleChange} />
+                <InputField label="Locality / Area" name="permanentLocality" formData={formData} handleChange={handleChange} />
+                <InputField label="Country" name="permanentCountry" formData={formData} handleChange={handleChange} />
+                <InputField label="State" name="permanentState" formData={formData} handleChange={handleChange} />
+                <InputField label="District" name="permanentDistrict" formData={formData} handleChange={handleChange} />
+                <InputField label="Pincode" name="permanentPincode" formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* LIFESTYLE */}
@@ -696,6 +756,20 @@ const AdminAddNewUser = () => {
                 <InputField label="Preferred Country" name="partnerCountry" formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred State" name="partnerState" formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred District" name="partnerDistrict" formData={formData} handleChange={handleChange} />
+              </FormSection>
+
+              {/* UPLOAD PROOF */}
+              <FormSection title="Upload Proof" id="upload_proof" activeTab={activeTab}>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label small fw-bold text-muted">ID Proof Document</label>
+                  <input
+                    type="file"
+                    className="form-control"
+                    accept="image/*,.pdf"
+                    onChange={(e) => setIdProofFile(e.target.files[0])}
+                  />
+                  {idProofFile && <small className="text-success mt-1 d-block">File selected: {idProofFile.name}</small>}
+                </div>
               </FormSection>
             </div>
 

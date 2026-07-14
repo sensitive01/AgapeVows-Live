@@ -94,11 +94,13 @@ const Footer = ({ paddingTop = '40px' }) => {
           {/* Support and Contact Info Row */}
           <div style={{
             display: 'flex',
-            justifyContent: 'space-around',
+            justifyContent: 'space-between',
             flexWrap: 'wrap',
             gap: '30px',
             borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
             paddingBottom: '20px',
+            paddingLeft: '70px',
+            paddingRight: '70px',
             marginBottom: '25px',
             width: '100%'
           }}>
@@ -145,7 +147,7 @@ const Footer = ({ paddingTop = '40px' }) => {
             </div>
 
             {/* Support Request */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', width: '220px' }}>
               <div style={{
                 color: '#06b6d4',
                 background: 'rgba(6, 182, 212, 0.1)',
@@ -164,26 +166,27 @@ const Footer = ({ paddingTop = '40px' }) => {
                 </div>
               </div>
             </div>
-
-
           </div>
 
           <div style={{
             display: 'flex',
             flexWrap: 'wrap',
             gap: '50px',
-            justifyContent: 'center',
-            alignItems: 'flex-start'
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            padding: '0 70px'
           }}>
 
             {/* Quick Links */}
-            <div style={{ flex: '1 1 250px', minWidth: '250px', textAlign: 'center' }}>
-              <h4 className="footer-section-title">Quick Links</h4>
-              <ul style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '20px', textAlign: 'center' }}>
+            <div style={{ width: '450px', textAlign: 'left' }}>
+              <h4 className="footer-section-title" style={{ textAlign: 'left' }}>Quick Links</h4>
+              <ul style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', columnGap: '20px', textAlign: 'left' }}>
                 <li><Link to="/about-us" style={{ display: 'inline-block' }}>About Us</Link></li>
                 <li><Link to="/faq" style={{ display: 'inline-block' }}>FAQs</Link></li>
+                <li><Link to="/blogs" style={{ display: 'inline-block' }}>Blogs</Link></li>
                 <li><Link to="/user/events-page" style={{ display: 'inline-flex', alignItems: 'center' }}>Events </Link></li>
                 <li><Link to="/church-partner" style={{ display: 'inline-block' }}>Churches</Link></li>
+                <li><Link to="/help-support" style={{ display: 'inline-block' }}>Help Centre</Link></li>
                 <li><Link to="/privacy-policy" style={{ display: 'inline-block' }}>Privacy Policy</Link></li>
                 <li><Link to="/terms-of-use" style={{ display: 'inline-block' }}>Terms of use</Link></li>
               </ul>
@@ -191,15 +194,14 @@ const Footer = ({ paddingTop = '40px' }) => {
 
             {/* Social Icons */}
             <div style={{
-              flex: '1 1 220px',
-              minWidth: '200px',
-              textAlign: "center",
+              width: '220px',
+              textAlign: "left",
               display: "flex",
               flexDirection: "column",
-              alignItems: "center"
+              alignItems: "flex-start"
             }}>
-              <h4 className="footer-section-title">Connect With Us</h4>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '10px' }}>
+              <h4 className="footer-section-title" style={{ textAlign: 'left' }}>Connect With Us</h4>
+              <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '15px', marginTop: '10px' }}>
                 <a href="https://www.facebook.com/AgapeVows/" target="_blank" rel="noopener noreferrer" className="soc-icon-wrap"><Facebook /></a>
                 <a href="https://www.instagram.com/agapevows_matrimony" target="_blank" rel="noopener noreferrer" className="soc-icon-wrap"><Instagram /></a>
                 <a href="https://www.youtube.com/@AgapeVowsMatrimony" target="_blank" rel="noopener noreferrer" className="soc-icon-wrap"><Youtube /></a>

@@ -20,7 +20,7 @@ const ContactPage = () => {
     setStatusMsg("");
     try {
       await submitEnquiry(formData);
-      setStatusMsg("Your message was sent successfully.");
+      setStatusMsg("Your enquiry has been sent successfully. Our team will be in touch with you soon.");
       setIsError(false);
       setFormData({ name: "", email: "", phone: "", message: "" });
     } catch (error) {

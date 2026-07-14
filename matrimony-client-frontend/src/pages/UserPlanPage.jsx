@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import UserSideBar from "../components/UserSideBar";
 import Footer from "../components/Footer";
 import LayoutComponent from "../components/layouts/LayoutComponent";
-import planIcon from "../assets/images/icon/plan.png";
+import PlanDetails from "./userdashboard/PlanDetails";
 import {
   cancelUserPlan,
   getMyActivePlanData,
@@ -216,59 +216,8 @@ const getRemainingDays = (validFrom, validTo) => {
                 <div className="row">
 
                   {/* ================= PLAN DETAILS ================= */}
-                  <div className="col-md-4 db-sec-com">
-                    <h2 className="db-tit">Plan Details</h2>
-
-                    <div className="db-pro-stat">
-                      <h6 className="tit-top-curv">Current Plan</h6>
-
-                      <div className="db-plan-card d-flex justify-content-center w-100">
-                        <img src={planIcon} style={{ margin: "0 auto", display: "block" }} alt="AgapeVows Image" />
-                      </div>
-
-                      <div className="db-plan-detil">
-                        {loading ? (
-                          <p>Loading...</p>
-                        ) : !planData ? (
-                          <div>
-                            <p style={{ color: "red" }}>❌ No Active Subscription</p>
-                            <a href="/user/user-plan-selection" className="cta-3">
-                              Subscribe Now
-                            </a>
-                          </div>
-                        ) : (
-                          <ul>
-                            <li>
-                              Plan Name: <strong>{planData.subscriptionType}</strong>
-                            </li>
-                            <li>
-                              Valid From: <strong>{planData.subscriptionValidFrom}</strong>
-                            </li>
-                            <li>
-                              Valid Till: <strong>{planData.subscriptionValidTo}</strong>
-                            </li>
-                            <li>
-  Remaining Days:{" "}
-  <strong>
-    {getRemainingDays(
-      planData.subscriptionValidFrom,
-      planData.subscriptionValidTo
-    )} days
-  </strong>
-</li>
-                            <li>
-                              Amount: <strong>₹{planData.subscriptionAmount}</strong>
-                            </li>
-                            <li>
-                              <a href="/user/user-plan-selection" className="cta-3">
-                                Upgrade Now
-                              </a>
-                            </li>
-                          </ul>
-                        )}
-                      </div>
-
-                    </div>
+                  <div className="col-md-4 d-flex" style={{ marginBottom: "20px" }}>
+                    <PlanDetails externalPlanData={planData} noWrapper={true} />
                   </div>
 
                   {/* ================= INVOICE ================= */}

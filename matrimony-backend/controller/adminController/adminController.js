@@ -1,13 +1,22 @@
-
 const bcrypt = require("bcrypt");
 const {
   ADMIN_EMAIL_ID,
   ADMIN_PASSWORD,
+  CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET,
 } = require("../../config/variables/variables");
 const adminModel = require("../../model/admin/adminModel");
 const userModel = require("../../model/user/userModel");
 const { generateAgwid } = require("../userController/userSignupController");
 const jwt = require("jsonwebtoken");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: CLOUDINARY_CLOUD_NAME,
+  api_key: CLOUDINARY_API_KEY,
+  api_secret: CLOUDINARY_API_SECRET,
+});
 
 /* =========================
    REGISTER ADMIN
@@ -636,6 +645,7 @@ const registerUser = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "User registered successfully",
+      userId: newUser._id,
     });
   } catch (err) {
     console.error("Error in registerUser:", err);
@@ -1023,11 +1033,59 @@ const deleteSubadmin = async (req, res) => {
   }
 };
 
+/* =========================
+   UPLOAD ID PROOF (ADMIN)
+========================== */
+const uploadIdProofAdmin = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({
+        success: false,
+        message: "No file uploaded",
+      });
+    }
+
+    // Upload to Cloudinary
+    const result = await cloudinary.uploader.upload(file.path, {
+      folder: `matrimony/users/${userId}/idProof`,
+      resource_type: "auto",
+    });
+
+    const { idProofType, idProofNumber } = req.body;
+
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      {
+        idProofDocument: result.secure_url,
+        idProofType: idProofType || "",
+        idProofNumber: idProofNumber || "",
+        idVerificationStatus: "Uploaded",
+      },
+      { new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "ID Proof uploaded successfully",
+      data: updatedUser,
+    });
+  } catch (err) {
+    console.error("Error in uploadIdProofAdmin:", err);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
 module.exports = {
   getPaidUsersData,
-
   registerAdmin,
   verifyAdmin,
+  uploadIdProofAdmin,
   getAllUsersData,
   deleteUser,
   permanentDeleteUser,

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { FaCrown, FaEllipsisH } from "react-icons/fa";
 import { FiCreditCard, FiClock, FiCalendar } from "react-icons/fi";
 
-const PlanDetails = ({ externalPlanData }) => {
+const PlanDetails = ({ externalPlanData, noWrapper = false }) => {
   const navigate = useNavigate();
   const [planData, setPlanData] = useState(externalPlanData || null);
   const [loading, setLoading] = useState(!externalPlanData);
@@ -99,21 +99,19 @@ const PlanDetails = ({ externalPlanData }) => {
   };
 
   if (loading) {
-    return (
-      <div className="col-lg-3 col-md-6 mb-4 d-flex">
+    const Content = (
         <div className="plan-details-card d-flex flex-column w-100 justify-content-center align-items-center" style={{ minHeight: '300px' }}>
           <div className="spinner-border" role="status" style={{ color: '#6d28d9' }}>
             <span className="visually-hidden">Loading...</span>
           </div>
           <p className="mt-3 text-muted fw-bold">Loading plan details...</p>
         </div>
-      </div>
     );
+    return noWrapper ? Content : <div className="col-lg-3 col-md-6 mb-4 d-flex">{Content}</div>;
   }
 
   if (error || !planData) {
-    return (
-      <div className="col-lg-3 col-md-6 mb-4 d-flex">
+    const Content = (
         <div className="plan-details-card d-flex flex-column w-100">
           <div className="plan-details-header d-flex justify-content-between align-items-center mb-4">
             <div className="d-flex align-items-center">
@@ -148,12 +146,11 @@ const PlanDetails = ({ externalPlanData }) => {
             </button>
           </div>
         </div>
-      </div>
     );
+    return noWrapper ? Content : <div className="col-lg-3 col-md-6 mb-4 d-flex">{Content}</div>;
   }
 
-  return (
-    <div className="col-lg-3 col-md-6 mb-4 d-flex">
+  const Content = (
       <div className="plan-details-card d-flex flex-column w-100">
         <div className="plan-details-header d-flex justify-content-between align-items-center mb-4">
           <div className="d-flex align-items-center">
@@ -186,8 +183,9 @@ const PlanDetails = ({ externalPlanData }) => {
           </button>
         </div>
       </div>
-    </div>
   );
+
+  return noWrapper ? Content : <div className="col-lg-3 col-md-6 mb-4 d-flex">{Content}</div>;
 };
 
 export default PlanDetails;

@@ -73,29 +73,7 @@ function App() {
 
 
 
-    // Universal Ctrl + Click handler to force foreground navigation
-    const handleGlobalClick = (e) => {
-      if (e.ctrlKey && e.button === 0) {
-        const target = e.target.closest("a");
-        if (target && target.href && target.href !== "javascript:void(0)" && !target.href.startsWith("#")) {
-          e.preventDefault();
-          e.stopPropagation();
-          
-          // Strategy: Programmatically click a target="_blank" link WITHOUT the Ctrl modifier.
-          // This forces most browsers to treat it as a foreground tab open.
-          const a = document.createElement("a");
-          a.href = target.href;
-          a.target = "_blank";
-          a.rel = "noopener noreferrer";
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        }
-      }
-    };
-
     window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("click", handleGlobalClick, true);
 
     // CSS to disable Text Selection & Print
     const style = document.createElement("style");
@@ -113,7 +91,6 @@ function App() {
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("click", handleGlobalClick, true);
       window.removeEventListener("storage", handleStorageChange);
       if (document.head.contains(style)) {
         document.head.removeChild(style);
@@ -150,29 +127,29 @@ function App() {
           }
         />
         <Route
-  path="/admin/edit-user/:id"
-  element={
-    <AdminLayout>
-      <AdminEditUser />
-    </AdminLayout>
-  }
-/>
-<Route
-  path="/admin/deleted-users"
-  element={
-    <AdminLayout>
-      <AdminDeletedUsers />
-    </AdminLayout>
-  }
-/>
-<Route
-  path="/admin/deactivated-users"
-  element={
-    <AdminLayout>
-      <AdminDeactivatedUsers />
-    </AdminLayout>
-  }
-/>
+          path="/admin/edit-user/:id"
+          element={
+            <AdminLayout>
+              <AdminEditUser />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/deleted-users"
+          element={
+            <AdminLayout>
+              <AdminDeletedUsers />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/deactivated-users"
+          element={
+            <AdminLayout>
+              <AdminDeactivatedUsers />
+            </AdminLayout>
+          }
+        />
 
         <Route
           path="/admin/paid-user-list"
@@ -280,45 +257,45 @@ function App() {
           }
         />
         <Route
-  path="/admin/issues"
-  element={
-    <AdminLayout>
-      <AdminIssues />
-    </AdminLayout>
-  }
-/>
+          path="/admin/issues"
+          element={
+            <AdminLayout>
+              <AdminIssues />
+            </AdminLayout>
+          }
+        />
         <Route
-  path="/admin/new-user/:id"
-  element={
-    <AdminLayout>
-      <AdminViewNewUser />
-    </AdminLayout>
-  }
-/>
-<Route
-  path="/admin/billing-info/:id"
-  element={
-    <AdminLayout>
-      <AdminBillingInfo />
-    </AdminLayout>
-  }
-/>
-<Route
-  path="/admin/user-plan/:id"
-  element={
-    <AdminLayout>
-      <AdminUserPlan />
-    </AdminLayout>
-  }
-/>
-<Route
-  path="/admin/blogs"
-  element={
-    <AdminLayout>
-      <AdminBlogs />
-    </AdminLayout>
-  }
-/>
+          path="/admin/new-user/:id"
+          element={
+            <AdminLayout>
+              <AdminViewNewUser />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/billing-info/:id"
+          element={
+            <AdminLayout>
+              <AdminBillingInfo />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/user-plan/:id"
+          element={
+            <AdminLayout>
+              <AdminUserPlan />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/blogs"
+          element={
+            <AdminLayout>
+              <AdminBlogs />
+            </AdminLayout>
+          }
+        />
         <Route
           path="/admin/enquiries"
           element={

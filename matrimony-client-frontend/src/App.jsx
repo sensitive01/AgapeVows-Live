@@ -122,28 +122,28 @@ const ProfileCompletionGuard = ({ children }) => {
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     const isProfileCompleted = localStorage.getItem("isProfileCompleted") === "true";
-    
+
     const publicPaths = [
-      '/', '/user/user-login', '/user/user-sign-up', 
+      '/', '/user/user-login', '/user/user-sign-up',
       '/help-support', '/show-searched-result', '/forgot-password',
       '/contact-us', '/about-us', '/faq', '/events', '/blogs',
       '/safety-security', '/success-stories'
     ];
-    
-    const isPublic = publicPaths.includes(location.pathname) || 
-                     location.pathname.startsWith('/reset-password') || 
-                     location.pathname.startsWith('/user/user-change-password') ||
-                     location.pathname.startsWith('/location/') ||
-                     location.pathname.startsWith('/denomination/');
-                     
+
+    const isPublic = publicPaths.includes(location.pathname) ||
+      location.pathname.startsWith('/reset-password') ||
+      location.pathname.startsWith('/user/user-change-password') ||
+      location.pathname.startsWith('/location/') ||
+      location.pathname.startsWith('/denomination/');
+
     if (userId && !isProfileCompleted && !isPublic) {
       if (!location.pathname.includes('/user/user-profile-edit-page')) {
-        showAlert({ 
-          title: "Incomplete Profile", 
-          text: "Please fill all the mandatory details to continue.", 
-          icon: "warning" 
+        showAlert({
+          title: "Incomplete Profile",
+          text: "Please fill all the mandatory details to continue.",
+          icon: "warning"
         });
-        
+
         // Use timeout to allow React Router to settle if called during initial mount
         setTimeout(() => {
           navigate(`/user/user-profile-edit-page/${userId}`, { replace: true });
@@ -157,10 +157,12 @@ const ProfileCompletionGuard = ({ children }) => {
 
 function App() {
   useEffect(() => {
-    // Remember Me - Session Expiration Logic
+    // =============================================
+    // REMEMBER ME + SESSION CHECK
+    // =============================================
     const rememberMe = localStorage.getItem("rememberMe");
     const isSessionActive = sessionStorage.getItem("session_active");
-    
+
     if (rememberMe === "false" && !isSessionActive) {
       // If we don't have an active session for this tab, clear the global login state
       localStorage.removeItem("userId");
@@ -174,7 +176,50 @@ function App() {
       sessionStorage.setItem("session_active", "true");
     }
 
-    // Synchronize logout across tabs
+    // =============================================
+    // INACTIVITY AUTO-LOGOUT (1 HOUR = 60 MINUTES)
+    // =============================================
+    const INACTIVITY_TIMEOUT_MS = 60 * 60 * 1000; // 60*60*1000 minutes
+    let inactivityTimer = null;
+
+    const doLogout = () => {
+      const userId = localStorage.getItem("userId");
+      if (!userId) return; // Already logged out
+
+      // Clear all auth data
+      localStorage.removeItem("userId");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("userImage");
+      localStorage.removeItem("gender");
+      localStorage.removeItem("rememberMe");
+      localStorage.removeItem("isProfileCompleted");
+      localStorage.removeItem("authToken");
+      sessionStorage.removeItem("session_active");
+
+      // Redirect to login
+      window.location.href = "/user/user-login";
+    };
+
+    const resetInactivityTimer = () => {
+      if (inactivityTimer) clearTimeout(inactivityTimer);
+      // Only set timer if user is logged in
+      if (localStorage.getItem("userId")) {
+        inactivityTimer = setTimeout(doLogout, INACTIVITY_TIMEOUT_MS);
+      }
+    };
+
+    // Events that count as "activity"
+    const activityEvents = ["mousemove", "mousedown", "keydown", "touchstart", "scroll", "click"];
+    activityEvents.forEach((event) => {
+      window.addEventListener(event, resetInactivityTimer, { passive: true });
+    });
+
+    // Start the timer on mount if logged in
+    resetInactivityTimer();
+
+    // =============================================
+    // CROSS-TAB LOGOUT SYNC
+    // =============================================
     const handleStorageChange = (e) => {
       // If userId is removed or localStorage is cleared
       if ((e.key === "userId" && !e.newValue) || e.key === null) {
@@ -189,6 +234,8 @@ function App() {
     if (!ADD_SECURITY_CHECK) {
       return () => {
         window.removeEventListener("storage", handleStorageChange);
+        activityEvents.forEach((event) => window.removeEventListener(event, resetInactivityTimer));
+        if (inactivityTimer) clearTimeout(inactivityTimer);
       };
     }
 
@@ -215,29 +262,7 @@ function App() {
 
 
 
-    // Universal Ctrl + Click handler to force foreground navigation
-    const handleGlobalClick = (e) => {
-      if (e.ctrlKey && e.button === 0) {
-        const target = e.target.closest("a");
-        if (target && target.href && target.href !== "javascript:void(0)" && !target.href.startsWith("#")) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          // Strategy: Programmatically click a target="_blank" link WITHOUT the Ctrl modifier.
-          // This forces most browsers to treat it as a foreground tab open.
-          const a = document.createElement("a");
-          a.href = target.href;
-          a.target = "_blank";
-          a.rel = "noopener noreferrer";
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        }
-      }
-    };
-
     window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("click", handleGlobalClick, true);
 
     // CSS to disable Text Selection & Print
     const style = document.createElement("style");
@@ -255,8 +280,9 @@ function App() {
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("click", handleGlobalClick, true);
       window.removeEventListener("storage", handleStorageChange);
+      activityEvents.forEach((event) => window.removeEventListener(event, resetInactivityTimer));
+      if (inactivityTimer) clearTimeout(inactivityTimer);
       if (document.head.contains(style)) {
         document.head.removeChild(style);
       }
@@ -269,103 +295,103 @@ function App() {
         <SEOManager />
         <ScrollToTop />
         <ToastContainer position="top-right" autoClose={3000} />
-      {/* <ReloadHandler /> */}
-      <ProfileCompletionGuard>
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            {/* <Route path="/" element={<UserHomePage />} /> */}
-            <Route path="/" element={<NewHomePageComponent />} />
+        {/* <ReloadHandler /> */}
+        <ProfileCompletionGuard>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              {/* <Route path="/" element={<UserHomePage />} /> */}
+              <Route path="/" element={<NewHomePageComponent />} />
 
-            <Route path="/user/user-login" element={<UserLoginPage />} />
-            <Route path="/user/user-sign-up" element={<UserSignUp />} />
+              <Route path="/user/user-login" element={<UserLoginPage />} />
+              <Route path="/user/user-sign-up" element={<UserSignUp />} />
 
-            <Route path="/user/user-wedding-page" element={<UserWedding />} />
-            <Route
-              path="/user/user-wedding-video-page"
-              element={<UserWeddingVideoPage />}
-            />
-            <Route path="/user/user-settings-page" element={<UserSettingsPage />} />
-            <Route path="/user/user-profile-page" element={<UserProfilePage />} />
-            <Route
-              path="/user/user-profile-edit-page/:userId"
-              element={<UserProfileEditPage />}
-            />
+              <Route path="/user/user-wedding-page" element={<UserWedding />} />
+              <Route
+                path="/user/user-wedding-video-page"
+                element={<UserWeddingVideoPage />}
+              />
+              <Route path="/user/user-settings-page" element={<UserSettingsPage />} />
+              <Route path="/user/user-profile-page" element={<UserProfilePage />} />
+              <Route
+                path="/user/user-profile-edit-page/:userId"
+                element={<UserProfileEditPage />}
+              />
 
-            <Route
-              path="/user/user-plan-selection"
-              element={<UserPlanSelection />}
-            />
-            <Route path="/user/user-plan-page" element={<UserPlanPage />} />
-            <Route path="/user/user-interest-page" element={<UserInterest />} />
+              <Route
+                path="/user/user-plan-selection"
+                element={<UserPlanSelection />}
+              />
+              <Route path="/user/user-plan-page" element={<UserPlanPage />} />
+              <Route path="/user/user-interest-page" element={<UserInterest />} />
 
 
-            <Route
-              path="/user/user-dashboard-page"
-              element={<UserDashboardPage />}
-            />
-            <Route path="/user/user-service-page" element={<UserServicePage />} />
-            <Route
-              path="/user/show-all-profiles"
-              element={<UserAllProfilePage />}
-            />
-            <Route
-              path="/user/show-all-profiles/:searchContent"
-              element={<UserAllProfilePage />}
-            />
-            <Route
-              path="/user/short-listed-profiles-page"
-              element={<ShortListedProfile />}
-            />
-            <Route path="/user/who-viewed-you-page" element={<WhoViewedYou />} />
-            <Route
-              path="/user/blocked-profiles-page"
-              element={<BlockedProfile />}
-            />
-            <Route path="/help-support" element={<HelpAndSupport />} />
-            <Route
-              path="/user/ignored-profiles-page"
-              element={<IgnoredProfile />}
-            />
+              <Route
+                path="/user/user-dashboard-page"
+                element={<UserDashboardPage />}
+              />
+              <Route path="/user/user-service-page" element={<UserServicePage />} />
+              <Route
+                path="/user/show-all-profiles"
+                element={<UserAllProfilePage />}
+              />
+              <Route
+                path="/user/show-all-profiles/:searchContent"
+                element={<UserAllProfilePage />}
+              />
+              <Route
+                path="/user/short-listed-profiles-page"
+                element={<ShortListedProfile />}
+              />
+              <Route path="/user/who-viewed-you-page" element={<WhoViewedYou />} />
+              <Route
+                path="/user/blocked-profiles-page"
+                element={<BlockedProfile />}
+              />
+              <Route path="/help-support" element={<HelpAndSupport />} />
+              <Route
+                path="/user/ignored-profiles-page"
+                element={<IgnoredProfile />}
+              />
 
-            <Route path="/show-searched-result" element={<UserSearchResult />} />
-            <Route path="/user/find-matches" element={<GlobalSearchModal />} />
-            <Route path="/reset-password/:userId" element={<ChangePassword />} />
-            <Route path="/user/user-change-password/:userId" element={<ChangePassword />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route
-              path="/profile-more-details/:profileId"
-              element={<MoreDetails />}
-            />
-            <Route path="/join-now-page" element={<JoinNow />} />
-            <Route path="/enquiry-page" element={<EnquiryPage />} />
-            <Route path="/contact-page" element={<ContactPage />} />
-            <Route path="/faq" element={<FaqPage />} />
-            <Route path="/about-us" element={<AboutPage />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms-of-use" element={<TermsOfUse />} />
-            <Route path="/bridal-makeup" element={<BridalMakeup />} />
-            <Route path="/insurance-services" element={<InsuranceServices />} />
-            <Route path="/user/events-page" element={<Events />} />
+              <Route path="/show-searched-result" element={<UserSearchResult />} />
+              <Route path="/user/find-matches" element={<GlobalSearchModal />} />
+              <Route path="/reset-password/:userId" element={<ChangePassword />} />
+              <Route path="/user/user-change-password/:userId" element={<ChangePassword />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route
+                path="/profile-more-details/:profileId"
+                element={<MoreDetails />}
+              />
+              <Route path="/join-now-page" element={<JoinNow />} />
+              <Route path="/enquiry-page" element={<EnquiryPage />} />
+              <Route path="/contact-page" element={<ContactPage />} />
+              <Route path="/faq" element={<FaqPage />} />
+              <Route path="/about-us" element={<AboutPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-use" element={<TermsOfUse />} />
+              <Route path="/bridal-makeup" element={<BridalMakeup />} />
+              <Route path="/insurance-services" element={<InsuranceServices />} />
+              <Route path="/user/events-page" element={<Events />} />
 
-            <Route path="/report-issue" element={<ReportIssue />} />
+              <Route path="/report-issue" element={<ReportIssue />} />
 
-            <Route path="/personalized-matrimony" element={<PersonalizedMatrimony />} />
-            <Route path="/nri-matrimony" element={<NriMatrimony />} />
-            <Route path="/church-partner" element={<ChurchPartner />} />
-            <Route path="/matrimonial-advisor" element={<MatrimonialAdvisor />} />
-            <Route path="/marital-counseling" element={<MaritalCounseling />} />
-            <Route path="/blogs" element={<Blogs />} />
-            <Route path="/blog-details/:id" element={<BlogDetailsPage />} />
-            
-            <Route path="/safety-security" element={<SafetySecurity />} />
-            <Route path="/success-stories" element={<SuccessStories />} />
-            <Route path="/location/:locationName" element={<LocationMatrimony />} />
-            <Route path="/denomination/:denominationName" element={<DenominationMatrimony />} />
-            
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </Suspense>
-      </ProfileCompletionGuard>
+              <Route path="/personalized-matrimony" element={<PersonalizedMatrimony />} />
+              <Route path="/nri-matrimony" element={<NriMatrimony />} />
+              <Route path="/church-partner" element={<ChurchPartner />} />
+              <Route path="/matrimonial-advisor" element={<MatrimonialAdvisor />} />
+              <Route path="/marital-counseling" element={<MaritalCounseling />} />
+              <Route path="/blogs" element={<Blogs />} />
+              <Route path="/blog-details/:id" element={<BlogDetailsPage />} />
+
+              <Route path="/safety-security" element={<SafetySecurity />} />
+              <Route path="/success-stories" element={<SuccessStories />} />
+              <Route path="/location/:locationName" element={<LocationMatrimony />} />
+              <Route path="/denomination/:denominationName" element={<DenominationMatrimony />} />
+
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </Suspense>
+        </ProfileCompletionGuard>
       </Router>
     </HelmetProvider>
   );

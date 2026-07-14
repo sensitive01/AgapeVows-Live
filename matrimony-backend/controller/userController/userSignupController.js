@@ -188,7 +188,7 @@ const saveSignUpData = async (req, res) => {
     const token = jwt.sign(
       { userId: newUser._id },
       process.env.JWT_SECRET || 'agape_vows_secret_key_2026',
-      { expiresIn: '7d' }
+      { expiresIn: '21d' }
     );
 
     res.status(201).json({
@@ -249,7 +249,7 @@ const verifyLogin = async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'agape_vows_secret_key_2026', { expiresIn: '7d' });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'agape_vows_secret_key_2026', { expiresIn: '21d' });
 
     return res.status(200).json({
       message: "Login successful",
@@ -667,7 +667,7 @@ const verifyLoginOtp = async (req, res) => {
       return res.status(401).json({ success: false, message: "User not found" });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'agape_vows_secret_key_2026', { expiresIn: '7d' });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'agape_vows_secret_key_2026', { expiresIn: '21d' });
 
     return res.status(200).json({
       success: true,

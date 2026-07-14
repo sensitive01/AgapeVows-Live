@@ -131,9 +131,19 @@ export const bulkRegisterUsersByAdmin = async (users) => {
 
 // Export All Users
 export const exportUsersData = async () => {
-  return await adminInstance.get(`/export-users`);
+  return await adminInstance.get(`/export-users`, {
+    responseType: "blob",
+  });
 };
 
+// Upload ID Proof
+export const uploadIdProofByAdmin = async (userId, formData) => {
+  return await adminInstance.post(`/upload-id-proof/${userId}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
 
 /* =========================
    PLAN MANAGEMENT
