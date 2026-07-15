@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { confirmAction, showAlert } from "../../utils/alertService";
 import CustomTable from "./common/CustomTable";
+import { formatPhoneNumber } from '../../utils/formatters';
 
 const AdminDeactivatedUsers = () => {
   const [users, setUsers] = useState([]);
@@ -139,7 +140,7 @@ const AdminDeactivatedUsers = () => {
             <h6 className="mb-0 fw-bold text-truncate" style={{ maxWidth: '250px' }}>{row.userName}</h6>
             <small className="text-muted text-truncate d-block" style={{ maxWidth: '250px' }}>{row.userEmail}</small>
             <div className="d-md-none">
-              <small className="text-muted d-block text-truncate" style={{ maxWidth: '250px' }}>{row.userMobile}</small>
+              <small className="text-muted d-block text-truncate" style={{ maxWidth: '250px' }}>{formatPhoneNumber(row.userMobile)}</small>
               <small className="text-muted d-lg-none text-truncate" style={{ maxWidth: '250px' }}>{row.city}</small>
             </div>
           </div>

@@ -27,6 +27,7 @@ export const confirmAction = async ({
 export const showAlert = ({
   title,
   text = '',
+  html,
   icon = 'success',
   confirmButtonColor = '#58219f',
 }) => {
@@ -41,7 +42,7 @@ export const showAlert = ({
 
   return Swal.fire({
     title: displayTitle,
-    text,
+    ...(html ? { html } : { text }),
     icon: icon === 'warning' ? undefined : icon,
     iconHtml: icon === 'warning' ? warningSvg : undefined,
     confirmButtonColor,

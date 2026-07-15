@@ -1576,8 +1576,10 @@ const UserProfileEditPage = () => {
 
     if (missingFields.length > 0) {
       showAlert({
-        title: "Missing Required Fields",
-        text: `Please fill in the following mandatory fields: ${missingFields.join(", ")}`,
+        title: "Please Complete Your Profile",
+        html: `<div style="margin-top: -8px; font-size: 17px; color: #111; font-weight: bold;">
+                 Please fill all the mandatory<span style="color: red;">*</span> details to continue.
+               </div>`,
         icon: "warning"
       });
       return;
@@ -1871,7 +1873,7 @@ const UserProfileEditPage = () => {
                 className="col-md-9 col-lg-10"
                 style={{ paddingLeft: "20px", paddingRight: "20px" }}
               >
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} noValidate>
                   {/* Top Buttons Section */}
                   <div
                     style={{

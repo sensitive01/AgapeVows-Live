@@ -147,8 +147,10 @@ const ProfileCompletionGuard = ({ children }) => {
     if (userId && !isProfileCompleted && !isPublic) {
       if (!location.pathname.includes('/user/user-profile-edit-page')) {
         showAlert({
-          title: "Incomplete Profile",
-          text: "Please fill all the mandatory details to continue.",
+          title: "Please Complete Your Profile",
+          html: `<div style="margin-top: -8px; font-size: 17px; color: #111; font-weight: bold;">
+                   Please fill all the mandatory<span style="color: red;">*</span> details to continue.
+                 </div>`,
           icon: "warning"
         });
 

@@ -5,6 +5,7 @@ import CustomTable from "./common/CustomTable";
 
 import profImages from "/assets/images/profiles/1.jpg";
 import NewLayout from "./layout/NewLayout";
+import { formatPhoneNumber } from '../../utils/formatters';
 import {
   getAllUserData,
   getPaidUserData,
@@ -352,7 +353,7 @@ const DashboardPage = () => {
         </div>
       )
     },
-    { name: "Phone", selector: row => row.userMobile, sortable: true },
+    { name: "Phone", selector: row => formatPhoneNumber(row.userMobile), sortable: true },
     {
       name: "Join date",
       selector: row => row.createdAt ? new Date(row.createdAt).getTime() : 0,
@@ -394,7 +395,7 @@ const DashboardPage = () => {
         </div>
       )
     },
-    { name: "Phone", selector: row => row.userMobile, sortable: true },
+    { name: "Phone", selector: row => formatPhoneNumber(row.userMobile), sortable: true },
     {
       name: "Expiry date",
       selector: row => row.paymentDetails,

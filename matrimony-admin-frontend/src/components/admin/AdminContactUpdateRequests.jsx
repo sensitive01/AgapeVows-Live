@@ -8,6 +8,7 @@ import {
   rejectContactUpdate,
 } from "../../api/service/adminServices";
 import { confirmAction, showAlert } from "../../utils/alertService";
+import { formatPhoneNumber } from '../../utils/formatters';
 
 const AdminContactUpdateRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -129,7 +130,7 @@ const AdminContactUpdateRequests = () => {
       center: true, width:"280px",
       cell: row => (
         <div>
-          {row.requestedMobile && <div><strong>Mobile:</strong> {row.userMobile}</div>}
+          {row.requestedMobile && <div><strong>Mobile:</strong> {formatPhoneNumber(row.userMobile)}</div>}
           {row.requestedEmail && <div><strong>Email:</strong> {row.userEmail}</div>}
         </div>
       )

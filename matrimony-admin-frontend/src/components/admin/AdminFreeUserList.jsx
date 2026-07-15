@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { confirmAction, showAlert } from "../../utils/alertService";
 import * as XLSX from "xlsx";
 import CustomTable from "./common/CustomTable";
+import { formatPhoneNumber } from '../../utils/formatters';
 
 const AdminFreeUserList = () => {
   const [users, setUsers] = useState([]);
@@ -178,11 +179,11 @@ const AdminFreeUserList = () => {
       {
       name: "CONTACT",
       hide: "md",
-      selector: row => row.userMobile,
+      selector: row => formatPhoneNumber(row.userMobile),
       sortable: true,
       cell: row => (
         <div>
-          <div className="small text-dark fw-medium">{row.userMobile}</div>
+          <div className="small text-dark fw-medium">{formatPhoneNumber(row.userMobile)}</div>
           <div className="small text-muted">{row.city}</div>
         </div>
       ),

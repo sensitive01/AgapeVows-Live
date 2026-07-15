@@ -7,6 +7,7 @@ import {
   deleteIssue,
 } from "../../api/service/adminServices";
 import { confirmAction, showAlert } from "../../utils/alertService";
+import { formatPhoneNumber } from '../../utils/formatters';
 
 const AdminIssues = () => {
   const [issues, setIssues] = useState([]);
@@ -152,7 +153,7 @@ const AdminIssues = () => {
       cell: row => (
         <div className="text-start">
           <div className="small">{row.userEmail || "N/A"}</div>
-          <div className="text-muted small">{row.userMobile || "N/A"}</div>
+          <div className="text-muted small">{formatPhoneNumber(row.userMobile)}</div>
         </div>
       )
     },

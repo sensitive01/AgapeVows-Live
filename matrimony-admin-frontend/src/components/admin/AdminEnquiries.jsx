@@ -7,6 +7,7 @@ import {
 } from "../../api/service/adminServices";
 import { confirmAction, showAlert } from "../../utils/alertService";
 import CustomTable from "./common/CustomTable";
+import { formatPhoneNumber } from '../../utils/formatters';
 
 const AdminEnquiries = () => {
   const [enquiries, setEnquiries] = useState([]);
@@ -192,13 +193,13 @@ const AdminEnquiries = () => {
     },
     {
       name: "Contact Info",
-      selector: row => row.phone,
+      selector: row => formatPhoneNumber(row.phone),
       sortable: true,
       wrap: true,
       cell: row => (
         <div style={{ wordBreak: "normal", padding: "8px 0" }}>
-          <a href={`tel:${row.phone}`} style={{ color: "#667eea", textDecoration: "none", display: "block", marginBottom: "4px" }}>
-            {/* <i className="fa fa-phone me-1"></i>*/} {row.phone} 
+          <a href={`tel:${formatPhoneNumber(row.phone)}`} style={{ color: "#667eea", textDecoration: "none", display: "block", marginBottom: "4px" }}>
+            {/* <i className="fa fa-phone me-1"></i>*/} {formatPhoneNumber(row.phone)} 
           </a>
           {row.email && (
             <a href={`mailto:${row.email}`} style={{ color: "#667eea", textDecoration: "none", display: "block" }}>
