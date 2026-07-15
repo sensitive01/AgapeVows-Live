@@ -669,6 +669,7 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
 
   useEffect(() => {
     const fetchProfile = async () => {
+      if (!userId) return;
       const res = await getUserProfile(userId);
       if (res.status === 200) {
         setUserInfo(res.data.data);

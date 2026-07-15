@@ -220,6 +220,7 @@ const UserDashboardPage = () => {
   };
 
   const fetchProfileMatches = async () => {
+    if (!userId) return;
     try {
       setLoading(true);
       const response = await newProfileMatch(userId);
