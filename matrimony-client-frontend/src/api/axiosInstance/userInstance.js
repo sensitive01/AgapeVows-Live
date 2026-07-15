@@ -8,7 +8,20 @@ userInstance.interceptors.request.use(
   (config) => {
     const userId = localStorage.getItem("userId");
     const authToken = localStorage.getItem("authToken");
-    if (userId) {
+
+    // CRITICAL FIX: Block invalid API requests
+    if (config.url && (config.url.includes("/null") || config.url.includes("/undefined"))) {
+      // Return a dummy resolved promise to avoid crashing frontend components without try-catch
+      return Promise.reject({
+        response: {
+          status: 400,
+          data: { success: false, message: "Invalid user ID" }
+        },
+        message: "Invalid user ID intercepted"
+      });
+    }
+
+    if (userId && userId !== "null" && userId !== "undefined") {
       config.headers["user-id"] = userId; 
     }
     if (authToken) {

@@ -24,6 +24,14 @@ dbConnect();
 
 app.use((req, res, next) => {
   console.log(`${req.method} request to ${req.url}`);
+  
+  // CRITICAL FIX: Intercept requests containing literal "null" or "undefined" in URL params
+  // This prevents Mongoose CastErrors from bringing down the server or polluting logs
+  if (/\/null(\/|\?|$)/.test(req.url) || /\/undefined(\/|\?|$)/.test(req.url)) {
+    console.log("Blocked invalid request with null/undefined parameter");
+    return res.status(400).json({ success: false, message: "Invalid parameter" });
+  }
+  
   next();
 });
 
