@@ -78,7 +78,7 @@ const AdminAllUsersList = () => {
       const matchesSearch =
         (user.userName || "").toLowerCase().includes(sTerm) ||
         (user.userEmail || "").toLowerCase().includes(sTerm) ||
-        (user.userMobile || "").includes(searchTerm);
+        (user.userMobile || "").includes(searchTerm) || (user.agwid || "").toLowerCase().includes(sTerm);
 
       return matchesSearch;
     });
@@ -468,7 +468,7 @@ const AdminAllUsersList = () => {
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Search by name, email, or phone..."
+                    placeholder="Search by AVID, name, email, or phone..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />

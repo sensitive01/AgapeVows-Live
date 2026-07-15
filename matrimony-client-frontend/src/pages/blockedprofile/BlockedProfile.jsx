@@ -10,6 +10,7 @@ import {
 } from "../../api/axiosService/userAuthService";
 import { useNavigate } from "react-router-dom";
 import { confirmAction, showAlert } from "../../utils/alertService";
+import dummyProfileImage from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
 
 const BlockedProfile = () => {
   const userId = localStorage.getItem("userId");
@@ -106,9 +107,9 @@ const BlockedProfile = () => {
             <li key={profile._id}>
               <div className="db-int-pro-1" style={{ position: "relative" }}>
                 <img
-                  src={profile.profileImage || "/images/img-profile.jpg"}
+                  src={profile.profileImage || dummyProfileImage}
                   alt={profile.userName || "Blocked Profile"}
-                  onError={(e) => { e.target.onerror = null; e.target.src = "/images/img-profile.jpg"; }}
+                  onError={(e) => { e.target.onerror = null; e.target.src = dummyProfileImage; }}
                   style={{
                     width: "80px",
                     height: "80px",

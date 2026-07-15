@@ -710,6 +710,24 @@ const UserDashboardPage = () => {
                   </div>
                 </div>
 
+                <div className="row">
+                  <div className="col-md-12">
+                    {userInfo && userInfo.profileVisibility === 'Hidden' && (
+                      <div className="alert alert-danger d-flex align-items-start mb-4 shadow-sm" role="alert" style={{ backgroundColor: '#fff5f5', color: '#c53030', border: '1px solid #feb2b2', borderRadius: '8px', padding: '15px' }}>
+                        <i className="fa fa-eye-slash" style={{ fontSize: '24px', marginRight: '15px', marginTop: '3px' }}></i>
+                        <div style={{ fontSize: '15px' }}>
+                          <p className="mb-1">
+                            <strong>Your profile is currently hidden.</strong>
+                          </p>
+                          <p className="mb-0">
+                            Other members cannot see your profile, and you will not be able to view other member profiles until you unhide it. <Link to="/user/user-settings-page" style={{ color: '#c53030', textDecoration: 'underline', fontWeight: 'bold' }}>Unhide Profile</Link>
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <div className="row g-4" style={{ marginTop: "0px" }}>
                   <ProfileCompletion userData={userInfo} />
 

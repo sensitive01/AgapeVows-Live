@@ -40,7 +40,7 @@ export default function AdminVerifiedIdUsers() {
           user.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           user.userEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           (user.agwid && user.agwid.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          user.userMobile?.includes(searchTerm)
+          user.userMobile?.includes(searchTerm) || (user.agwid || "").toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -267,7 +267,7 @@ export default function AdminVerifiedIdUsers() {
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Search by name, email or AV ID..."
+                  placeholder="Search by AVID, name, email or AV ID..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />

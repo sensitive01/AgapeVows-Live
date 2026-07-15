@@ -7,7 +7,7 @@ import ShowInterest from "./ShowInterest";
 import RelatedProfiles from "./RelatedProfiles";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getTheProfieMoreDetails, getUserProfile, viewContactDetails, sendChatMessage, submitReport, isUserMadeTheInterest, saveTheProfileAsShortlisted, getShortListedProfileData, removeShortlistedProfile } from "../../api/axiosService/userAuthService";
+import { getTheProfieMoreDetails, getUserProfile, viewContactDetails, sendChatMessage, submitReport, isUserMadeTheInterest, saveTheProfileAsShortlisted, getShortListedProfileData, removeShortlistedProfile, sendPhotoRequest } from "../../api/axiosService/userAuthService";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { showAlert, confirmAction } from "../../utils/alertService";
 
@@ -122,6 +122,28 @@ const MoreDetails = () => {
   const [interestStatus, setInterestStatus] = useState(null);
   const [isShortlisted, setIsShortlisted] = useState(false);
   const [isShortlisting, setIsShortlisting] = useState(false);
+  const [isPhotoRequested, setIsPhotoRequested] = useState(() => {
+    return localStorage.getItem(`photoRequested_${profileId}`) === "true";
+  });
+
+  const handleRequestPhoto = async () => {
+    try {
+      const res = await sendPhotoRequest(currentUserId, profileId);
+      if (res.data && res.data.success) {
+        setIsPhotoRequested(true);
+        localStorage.setItem(`photoRequested_${profileId}`, "true");
+        toast.success("Photo requested successfully!");
+      }
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.message === "Photo request already sent") {
+        setIsPhotoRequested(true);
+        localStorage.setItem(`photoRequested_${profileId}`, "true");
+        toast.info("Photo request already sent");
+      } else {
+        toast.error("Failed to request photo");
+      }
+    }
+  };
 
   useEffect(() => {
     setIsShortlisted(false);
@@ -517,6 +539,28 @@ const MoreDetails = () => {
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%" }}>
+                {(!userInfo?.profileImage && (!userInfo?.additionalImages || userInfo.additionalImages.length === 0)) && (
+                  <button
+                    className="interest-btn font-cormorant font-bold text-[20px]"
+                    style={{
+                      width: "100%",
+                      height: "40px",
+                      marginBottom: "0",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: "8px",
+                      padding: "0",
+                      background: isPhotoRequested ? "#10b981" : "#d97706",
+                      color: "#fff",
+                      border: "none"
+                    }}
+                    onClick={handleRequestPhoto}
+                  >
+                    <i className="fa fa-camera me-2"></i>
+                    {isPhotoRequested ? "Photo Requested" : "Request Photo"}
+                  </button>
+                )}
                 <button
                   className="interest-btn font-cormorant font-bold text-[20px]"
                   style={{

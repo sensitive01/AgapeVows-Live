@@ -1,4 +1,6 @@
+import Select from "react-select";
 import React, { useState } from "react";
+import { DROPDOWN_OPTIONS } from "../../utils/dropdownOptions";
 import { useNavigate } from "react-router-dom";
 import NewLayout from "./layout/NewLayout";
 import { Country, State, City } from "country-state-city";
@@ -18,23 +20,76 @@ const FormSection = ({ title, children, id, activeTab }) => (
   </div>
 );
 
-const InputField = ({ label, name, type = "text", options = null, col = "6", required = false, formData, handleChange }) => (
-  <div className={`col-md-${col}`}>
-    <label className="form-label small fw-bold text-muted">{label} {required && <span className="text-danger">*</span>}</label>
-    {options ? (
-      <select className="form-select" name={name} value={formData[name] || ""} onChange={handleChange}>
-        <option value="">Select {label}</option>
-        {options.map((opt, i) => (
-          <option key={i} value={opt}>{opt}</option>
-        ))}
-      </select>
-    ) : type === "textarea" ? (
-      <textarea className="form-control" name={name} value={formData[name] || ""} onChange={handleChange} rows="3" />
-    ) : (
-      <input type={type} className="form-control" name={name} value={formData[name] || ""} onChange={handleChange} required={required} />
-    )}
-  </div>
-);
+const InputField = ({ label, name, type = "text", options = null, isMulti = false, col = "6", required = false, formData, handleChange }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPasswordField = type === "password";
+  const inputType = isPasswordField ? (showPassword ? "text" : "password") : type;
+  const customStyles = {
+    control: (base) => ({
+      ...base,
+      minHeight: '38px',
+      borderColor: '#dee2e6',
+      boxShadow: 'none',
+      '&:hover': {
+        borderColor: '#dee2e6'
+      }
+    }),
+    menuPortal: base => ({ ...base, zIndex: 9999 })
+  };
+
+  const getSelectValue = () => {
+    if (isMulti) {
+      if (Array.isArray(formData[name])) {
+        return formData[name].map(val => ({ value: val, label: val }));
+      }
+      return [];
+    }
+    return formData[name] ? { value: formData[name], label: formData[name] } : null;
+  };
+
+  return (
+    <div className={`col-md-${col}`}>
+      <label className="form-label small fw-bold text-muted">{label} {required && <span className="text-danger">*</span>}</label>
+      {options ? (
+        <Select
+          isMulti={isMulti}
+          options={options.map(opt => ({ value: opt, label: opt }))}
+          value={getSelectValue()}
+          onChange={(selectedOption) => {
+            let value;
+            if (isMulti) {
+              value = selectedOption ? selectedOption.map(opt => opt.value) : [];
+            } else {
+              value = selectedOption ? selectedOption.value : '';
+            }
+            handleChange({ target: { name, value } });
+          }}
+          placeholder={`Select ${label}`}
+          styles={customStyles}
+          isClearable
+          menuPortalTarget={document.body}
+        />
+      ) : type === "textarea" ? (
+        <textarea className="form-control" name={name} value={formData[name] || ""} onChange={handleChange} rows="3" />
+      ) : (
+        <div className="position-relative">
+          <input type={inputType} className="form-control" name={name} value={formData[name] || ""} onChange={handleChange} required={required} style={isPasswordField ? { paddingRight: "40px" } : {}} />
+          {isPasswordField && (
+            <button
+              type="button"
+              className="btn btn-link position-absolute top-50 end-0 translate-middle-y text-muted px-3"
+              style={{ textDecoration: 'none' }}
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              <i className={`fa ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+InputField.displayName = 'InputField';
 InputField.displayName = 'InputField';
 
 const RELATIONSHIP_OPTIONS = ["Self", "Father", "Mother", "Brother", "Sister", "Uncle", "Aunt", "Relative", "Friend", "Other"];
@@ -582,20 +637,20 @@ const AdminAddNewUser = () => {
                 <InputField label="Phone" name="userMobile" required formData={formData} handleChange={handleChange} />
                 <InputField label="Account Password" name="password" type="password" required formData={formData} handleChange={handleChange} />
                 <InputField label="Date of Birth" name="dateOfBirth" type="date" formData={formData} handleChange={handleChange} />
-                <InputField label="Gender" name="gender" options={["Male", "Female", "Other"]} formData={formData} handleChange={handleChange} />
-                <InputField label="Profile Created For" name="profileCreatedFor" options={["Self", "Son", "Daughter", "Brother", "Sister", "Friend"]} formData={formData} handleChange={handleChange} />
-                <InputField label="Marital Status" name="maritalStatus" options={["Never Married", "Divorced", "Awaiting Divorce", "Widow/Widower"]} formData={formData} handleChange={handleChange} />
-                <InputField label="Height" name="height" options={["4ft", "4ft 1in", "4ft 2in", "4ft 3in", "4ft 4in", "4ft 5in", "4ft 6in", "4ft 7in", "4ft 8in", "4ft 9in", "4ft 10in", "4ft 11in", "5ft", "5ft 1in", "5ft 2in", "5ft 3in", "5ft 4in", "5ft 5in", "5ft 6in", "5ft 7in", "5ft 8in", "5ft 9in", "5ft 10in", "5ft 11in", "6ft", "6ft 1in", "6ft 2in", "6ft 3in", "6ft 4in", "6ft 5in", "6ft 6in", "6ft 7in", "6ft 8in", "6ft 9in", "6ft 10in", "6ft 11in", "7ft"]} formData={formData} handleChange={handleChange} />
-                <InputField label="Weight" name="weight" formData={formData} handleChange={handleChange} />
-                <InputField label="Body Type" name="bodyType" options={["Average", "Slim", "Athletic", "Heavy"]} formData={formData} handleChange={handleChange} />
-                <InputField label="Complexion" name="complexion" options={["Fair", "Very Fair", "Wheatish", "Dark"]} formData={formData} handleChange={handleChange} />
-                <InputField label="Physical State" name="physicalStatus" options={["Normal", "Physically Challenged"]} formData={formData} handleChange={handleChange} />
-                <InputField label="Age" name="age" type="number" formData={formData} handleChange={handleChange} />
-                <InputField label="Eating Habits" name="eatingHabits" options={["Vegetarian", "Non-Vegetarian", "Eggetarian"]} formData={formData} handleChange={handleChange} />
-                <InputField label="Drinking Habits" name="drinkingHabits" options={["No", "Yes", "Occasionally"]} formData={formData} handleChange={handleChange} />
-                <InputField label="Smoking Habits" name="smokingHabits" options={["No", "Yes", "Occasionally"]} formData={formData} handleChange={handleChange} />
-                <InputField label="Mother Tongue" name="motherTongue" formData={formData} handleChange={handleChange} />
-                <InputField label="Caste" name="caste" formData={formData} handleChange={handleChange} />
+                <InputField label="Gender" name="gender" options={DROPDOWN_OPTIONS.gender} formData={formData} handleChange={handleChange} />
+                <InputField label="Profile Created By" name="profileCreatedFor" options={DROPDOWN_OPTIONS.profileCreatedFor} formData={formData} handleChange={handleChange} />
+                <InputField label="Marital Status" name="maritalStatus" options={DROPDOWN_OPTIONS.maritalStatus} formData={formData} handleChange={handleChange} />
+                <InputField label="Height" name="height" options={DROPDOWN_OPTIONS.height} formData={formData} handleChange={handleChange} />
+                <InputField label="Weight" name="weight" options={Array.from({ length: 101 }, (_, i) => String(i + 40))} formData={formData} handleChange={handleChange} />
+                <InputField label="Body Type" name="bodyType" options={DROPDOWN_OPTIONS.bodyType} formData={formData} handleChange={handleChange} />
+                <InputField label="Complexion" name="complexion" options={DROPDOWN_OPTIONS.complexion} formData={formData} handleChange={handleChange} />
+                <InputField label="Physical State" name="physicalStatus" options={DROPDOWN_OPTIONS.physicalStatus} formData={formData} handleChange={handleChange} />
+                <InputField label="Age" name="age" options={Array.from({ length: 53 }, (_, i) => String(i + 18))} formData={formData} handleChange={handleChange} />
+                <InputField label="Eating Habits" name="eatingHabits" options={DROPDOWN_OPTIONS.eatingHabits} formData={formData} handleChange={handleChange} />
+                <InputField label="Drinking Habits" name="drinkingHabits" options={DROPDOWN_OPTIONS.drinkingHabits} formData={formData} handleChange={handleChange} />
+                <InputField label="Smoking Habits" name="smokingHabits" options={DROPDOWN_OPTIONS.smokingHabits} formData={formData} handleChange={handleChange} />
+                <InputField label="Mother Tongue" name="motherTongue" options={DROPDOWN_OPTIONS.motherTongue} formData={formData} handleChange={handleChange} />
+                <InputField label="Caste" name="caste" options={DROPDOWN_OPTIONS.caste} formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* GALLERY */}
@@ -616,51 +671,52 @@ const AdminAddNewUser = () => {
               {/* FAMILY */}
               <FormSection title="Family Details" id="family" activeTab={activeTab}>
                 <InputField label="Father's Name" name="fathersName" formData={formData} handleChange={handleChange} />
-                <InputField label="Father's Occupation" name="fathersOccupation" formData={formData} handleChange={handleChange} />
+                <InputField label="Father's Occupation" name="fathersOccupation" options={["Retired", "Business", "Government Employee", "Private Employee", "Professional", "Farmer", "Homemaker", "Others"]} formData={formData} handleChange={handleChange} />
                 <InputField label="Mother's Name" name="mothersName" formData={formData} handleChange={handleChange} />
-                <InputField label="Mother's Occupation" name="mothersOccupation" formData={formData} handleChange={handleChange} />
+                <InputField label="Mother's Occupation" name="mothersOccupation" options={["Retired", "Business", "Government Employee", "Private Employee", "Professional", "Farmer", "Homemaker", "Others"]} formData={formData} handleChange={handleChange} />
                 <InputField label="Father's Profession" name="fathersProfession" formData={formData} handleChange={handleChange} />
                 <InputField label="Mother's Profession" name="mothersProfession" formData={formData} handleChange={handleChange} />
                 <InputField label="Fathers' Native" name="fathersNative" formData={formData} handleChange={handleChange} />
                 <InputField label="Mothers' Native" name="mothersNative" formData={formData} handleChange={handleChange} />
-                <InputField label="Family Value" name="familyValue" options={["Traditional", "Moderate", "Liberal"]} formData={formData} handleChange={handleChange} />
-                <InputField label="Family Type" name="familyType" options={["Joint", "Nuclear"]} formData={formData} handleChange={handleChange} />
-                <InputField label="Residence type" name="residenceType" options={["Apartment", "House", "Villa", "Townhouse", "Condo", "Duplex", "Other"]} formData={formData} handleChange={handleChange} />
-                <InputField label="Family Status" name="familyStatus" options={["Middle Class", "Upper Middle Class", "Rich", "Affluent"]} formData={formData} handleChange={handleChange} />
-                <InputField label="No. of Brothers" name="numberOfBrothers" type="number" formData={formData} handleChange={handleChange} />
-                <InputField label="Married Brothers" name="marriedBrothers" type="number" formData={formData} handleChange={handleChange} />
-                <InputField label="No. of Sisters" name="numberOfSisters" type="number" formData={formData} handleChange={handleChange} />
-                <InputField label="Married Sisters" name="marriedSisters" type="number" formData={formData} handleChange={handleChange} />
+                <InputField label="Family Value" name="familyValue" options={DROPDOWN_OPTIONS.familyValue} formData={formData} handleChange={handleChange} />
+                <InputField label="Family Type" name="familyType" options={DROPDOWN_OPTIONS.familyType} formData={formData} handleChange={handleChange} />
+                <InputField label="Residence type" name="residenceType" options={DROPDOWN_OPTIONS.residenceType} formData={formData} handleChange={handleChange} />
+                <InputField label="Family Status" name="familyStatus" options={DROPDOWN_OPTIONS.familyStatus} formData={formData} handleChange={handleChange} />
+                <InputField label="No. of Brothers" name="numberOfBrothers" options={DROPDOWN_OPTIONS.numberOfBrothers} formData={formData} handleChange={handleChange} />
+                <InputField label="Married Brothers" name="marriedBrothers" options={DROPDOWN_OPTIONS.marriedBrothers} formData={formData} handleChange={handleChange} />
+                <InputField label="No. of Sisters" name="numberOfSisters" options={DROPDOWN_OPTIONS.numberOfSisters} formData={formData} handleChange={handleChange} />
+                <InputField label="Married Sisters" name="marriedSisters" options={DROPDOWN_OPTIONS.marriedSisters} formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* RELIGIOUS */}
               <FormSection title="Religious Information" id="religious" activeTab={activeTab}>
-                <InputField label="Denomination" name="denomination" formData={formData} handleChange={handleChange} />
+                <InputField label="Denomination" name="denomination" options={DROPDOWN_OPTIONS.denomination} formData={formData} handleChange={handleChange} />
                 <InputField label="Church Name" name="church" formData={formData} handleChange={handleChange} />
-                <InputField label="Church Activity" name="churchActivity" formData={formData} handleChange={handleChange} />
+                <InputField label="Church Activity" name="churchActivity" options={DROPDOWN_OPTIONS.churchActivity} formData={formData} handleChange={handleChange} />
                 <InputField label="Pastors Name" name="pastorsName" formData={formData} handleChange={handleChange} />
-                <InputField label="Spirituality" name="spirituality" formData={formData} handleChange={handleChange} />
+                <InputField label="Spirituality" name="spirituality" options={DROPDOWN_OPTIONS.spirituality} formData={formData} handleChange={handleChange} />
                 <InputField label="Religious Detail" name="religiousDetail" type="textarea" col="12" formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* PROFESSIONAL */}
               <FormSection title="Professional Information" id="professional" activeTab={activeTab}>
-                <InputField label="Highest Education" name="education" formData={formData} handleChange={handleChange} />
-                <InputField label="Additional Education" name="additionalEducation" formData={formData} handleChange={handleChange} />
+                <InputField label="Highest Education" name="education" options={DROPDOWN_OPTIONS.education} formData={formData} handleChange={handleChange} />
+                <InputField label="Additional Education" name="additionalEducation" options={DROPDOWN_OPTIONS.additionalEducation} formData={formData} handleChange={handleChange} />
                 <InputField label="College" name="college" formData={formData} handleChange={handleChange} />
                 <InputField label="Education in Detail" name="educationDetail" type="textarea" col="12" formData={formData} handleChange={handleChange} />
-                <InputField label="Employee Type" name="employmentType" options={["Government", "Private", "Business", "Self Employed", "Not Working"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Employee Type" name="employmentType" options={DROPDOWN_OPTIONS.employmentType} formData={formData} handleChange={handleChange} />
                 <InputField label="Position" name="position" formData={formData} handleChange={handleChange} />
-                <InputField label="Occupation" name="occupation" formData={formData} handleChange={handleChange} />
+                <InputField label="Occupation" name="occupation" options={DROPDOWN_OPTIONS.occupation} formData={formData} handleChange={handleChange} />
                 <InputField label="Company Name" name="companyName" formData={formData} handleChange={handleChange} />
-                <InputField label="Annual Income" name="annualIncome" formData={formData} handleChange={handleChange} />
+                <InputField label="Annual Income" name="annualIncome" options={DROPDOWN_OPTIONS.annualIncome} formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* CONTACT */}
               <FormSection title="Contact Information" id="contact" activeTab={activeTab}>
                 <InputField label="Contact Person Name" name="contactPersonName" formData={formData} handleChange={handleChange} />
-                <InputField label="Relationship" name="relationship" options={RELATIONSHIP_OPTIONS} formData={formData} handleChange={handleChange} />
-                <InputField label="Alternate Mobile" name="alternateMobile" formData={formData} handleChange={handleChange} />
+                <InputField label="Relationship" name="relationship" options={DROPDOWN_OPTIONS.relationship} formData={formData} handleChange={handleChange} />
+                <InputField label="Citizen Of" name="citizenOf" options={Country.getAllCountries().map(c => c.name)} formData={formData} handleChange={handleChange} />
+                  <InputField label="Alternate Mobile" name="alternateMobile" formData={formData} handleChange={handleChange} />
                 <InputField label="Alternate Email" name="alternateEmail" type="email" formData={formData} handleChange={handleChange} />
                 <InputField label="Landline" name="landlineNumber" formData={formData} handleChange={handleChange} />
                 <div className="col-12 mt-4">
@@ -668,9 +724,9 @@ const AdminAddNewUser = () => {
                 </div>
                 <InputField label="Door / Flat No (Name), Street" name="currentDoorNo" formData={formData} handleChange={handleChange} />
                 <InputField label="Locality / Area" name="currentLocality" formData={formData} handleChange={handleChange} />
-                <InputField label="Country" name="currentCountry" formData={formData} handleChange={handleChange} />
-                <InputField label="State" name="currentState" formData={formData} handleChange={handleChange} />
-                <InputField label="District" name="currentDistrict" formData={formData} handleChange={handleChange} />
+                <InputField label="Country" name="currentCountry" options={Country.getAllCountries().map(c => c.name)} formData={formData} handleChange={handleChange} />
+                <InputField label="State" name="currentState" options={formData.currentCountry ? State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "").map(s => s.name) : []} formData={formData} handleChange={handleChange} />
+                <InputField label="District" name="currentDistrict" options={formData.currentState ? City.getCitiesOfState(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "", State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "").find(s => s.name === formData.currentState)?.isoCode || "").map(city => city.name) : []} formData={formData} handleChange={handleChange} />
                 <InputField label="Pincode" name="currentPincode" formData={formData} handleChange={handleChange} />
 
                 <div className="col-12 mt-4">
@@ -711,56 +767,97 @@ const AdminAddNewUser = () => {
                 </div>
                 <InputField label="Door / Flat No (Name), Street" name="permanentDoorNo" formData={formData} handleChange={handleChange} />
                 <InputField label="Locality / Area" name="permanentLocality" formData={formData} handleChange={handleChange} />
-                <InputField label="Country" name="permanentCountry" formData={formData} handleChange={handleChange} />
-                <InputField label="State" name="permanentState" formData={formData} handleChange={handleChange} />
-                <InputField label="District" name="permanentDistrict" formData={formData} handleChange={handleChange} />
+                <InputField label="Country" name="permanentCountry" options={Country.getAllCountries().map(c => c.name)} formData={formData} handleChange={handleChange} />
+                <InputField label="State" name="permanentState" options={formData.permanentCountry ? State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.permanentCountry)?.isoCode || "").map(s => s.name) : []} formData={formData} handleChange={handleChange} />
+                <InputField label="District" name="permanentDistrict" options={formData.permanentState ? City.getCitiesOfState(Country.getAllCountries().find(c => c.name === formData.permanentCountry)?.isoCode || "", State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.permanentCountry)?.isoCode || "").find(s => s.name === formData.permanentState)?.isoCode || "").map(city => city.name) : []} formData={formData} handleChange={handleChange} />
                 <InputField label="Pincode" name="permanentPincode" formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* LIFESTYLE */}
               <FormSection title="Life style" id="lifestyle" activeTab={activeTab}>
-                <InputField label="Hobbies" name="hobbies" formData={formData} handleChange={handleChange} />
+                <InputField label="Hobbies" name="hobbies" isMulti options={["Reading", "Sports", "Music", "Traveling", "Cooking", "Photography", "Dancing", "Gaming", "Painting", "Writing", "Gardening", "Yoga"]} formData={formData} handleChange={handleChange} />
                 <InputField label="Interests" name="interests" formData={formData} handleChange={handleChange} />
                 <InputField label="Music" name="music" formData={formData} handleChange={handleChange} />
                 <InputField label="Favorite Reads" name="favouriteReads" formData={formData} handleChange={handleChange} />
                 <InputField label="Favorite Cuisines" name="favouriteCuisines" formData={formData} handleChange={handleChange} />
-                <InputField label="Exercise" name="exercise" formData={formData} handleChange={handleChange} />
+                <InputField label="Exercise" name="exercise" options={DROPDOWN_OPTIONS.exercise} formData={formData} handleChange={handleChange} />
                 <InputField label="Sport Activities" name="sportsActivities" formData={formData} handleChange={handleChange} />
                 <InputField label="Dress Style" name="dressStyles" formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* PARTNER PREFERENCES */}
               <FormSection title="Partner preference" id="partner" activeTab={activeTab}>
-                <InputField label="Age From" name="partnerAgeFrom" type="number" formData={formData} handleChange={handleChange} />
-                <InputField label="Age To" name="partnerAgeTo" type="number" formData={formData} handleChange={handleChange} />
-                <InputField label="Desired Height From" name="partnerHeight" formData={formData} handleChange={handleChange} />
-                <InputField label="Desired Height To" name="partnerHeightTo" formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred Marital Status" name="partnerMaritalStatus" formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred Mother Tongue" name="partnerMotherTongue" formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred Caste" name="partnerCaste" formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred Physical Status" name="partnerPhysicalStatus" formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred Eating Habits" name="partnerEatingHabits" formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred Drinking Habits" name="partnerDrinkingHabits" formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred Smoking Habits" name="partnerSmokingHabits" formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred Denomination" name="partnerDenomination" formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred Spirituality" name="partnerSpirituality" formData={formData} handleChange={handleChange} />
+                <InputField label="Age From" name="partnerAgeFrom" options={Array.from({ length: 53 }, (_, i) => String(i + 18))} formData={formData} handleChange={handleChange} />
+                <InputField label="Age To" name="partnerAgeTo" options={Array.from({ length: 53 }, (_, i) => String(i + 18))} formData={formData} handleChange={handleChange} />
+                <InputField label="Desired Height From" name="partnerHeight" options={DROPDOWN_OPTIONS.height} formData={formData} handleChange={handleChange} />
+                <InputField label="Desired Height To" name="partnerHeightTo" options={DROPDOWN_OPTIONS.height} formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Marital Status" name="partnerMaritalStatus" isMulti options={DROPDOWN_OPTIONS.partnerMaritalStatus} formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Mother Tongue" name="partnerMotherTongue" isMulti options={DROPDOWN_OPTIONS.partnerMotherTongue} formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Caste" name="partnerCaste" isMulti options={DROPDOWN_OPTIONS.partnerCaste} formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Physical Status" name="partnerPhysicalStatus" isMulti options={DROPDOWN_OPTIONS.partnerPhysicalStatus} formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Eating Habits" name="partnerEatingHabits" isMulti options={DROPDOWN_OPTIONS.partnerEatingHabits} formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Drinking Habits" name="partnerDrinkingHabits" isMulti options={DROPDOWN_OPTIONS.partnerDrinkingHabits} formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Smoking Habits" name="partnerSmokingHabits" isMulti options={DROPDOWN_OPTIONS.partnerSmokingHabits} formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Denomination" name="partnerDenomination" isMulti options={DROPDOWN_OPTIONS.partnerDenomination} formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Spirituality" name="partnerSpirituality" isMulti options={DROPDOWN_OPTIONS.partnerSpirituality} formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* PARTNER PREFERENCES - PROFESSIONAL */}
               <FormSection title="Partner Preferences - Professional" id="partner_professional" activeTab={activeTab}>
-                <InputField label="Preferred Education" name="partnerEducation" formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred Employment Type" name="partnerEmploymentType" formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred Occupation" name="partnerOccupation" formData={formData} handleChange={handleChange} />
-                <InputField label="Annual Income From" name="partnerAnnualIncomeFrom" formData={formData} handleChange={handleChange} />
-                <InputField label="Annual Income To" name="partnerAnnualIncomeTo" formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Education" name="partnerEducation" isMulti options={DROPDOWN_OPTIONS.partnerEducation} formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Employment Type" name="partnerEmploymentType" isMulti options={DROPDOWN_OPTIONS.partnerEmploymentType} formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Occupation" name="partnerOccupation" isMulti options={DROPDOWN_OPTIONS.partnerOccupation} formData={formData} handleChange={handleChange} />
+                <InputField label="Annual Income From" name="partnerAnnualIncomeFrom" options={["50 Thousand", "1 Lakh", "2 Lakhs", "3 Lakhs", "4 Lakhs", "5 Lakhs", "7 Lakhs", "10 Lakhs", "15 Lakhs", "20 Lakhs", "25 Lakhs", "30 Lakhs", "50 Lakhs", "75 Lakhs", "1 Crore"]} formData={formData} handleChange={handleChange} />
+                <InputField label="Annual Income To" name="partnerAnnualIncomeTo" options={["1 Lakh", "2 Lakhs", "3 Lakhs", "4 Lakhs", "5 Lakhs", "7 Lakhs", "10 Lakhs", "15 Lakhs", "20 Lakhs", "25 Lakhs", "30 Lakhs", "50 Lakhs", "75 Lakhs", "1 Crore", "Above 1 Crore"]} formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* PARTNER PREFERENCES - LOCATION */}
-              <FormSection title="Partner Preferences - location" id="partner_location" activeTab={activeTab}>
-                <InputField label="Preferred Country" name="partnerCountry" formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred State" name="partnerState" formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred District" name="partnerDistrict" formData={formData} handleChange={handleChange} />
-              </FormSection>
+                <FormSection title="Partner Preferences - location" id="partner_location" activeTab={activeTab}>
+                  <InputField 
+                    label="Preferred Country" 
+                    name="partnerCountry" 
+                    isMulti 
+                    options={Country.getAllCountries().map(c => c.name)} 
+                    formData={formData} 
+                    handleChange={handleChange} 
+                  />
+                  <InputField 
+                    label="Preferred State" 
+                    name="partnerState" 
+                    isMulti 
+                    options={
+                      (formData.partnerCountry && formData.partnerCountry.length > 0)
+                        ? Array.from(new Set(formData.partnerCountry.flatMap(cName => {
+                            const c = Country.getAllCountries().find(curr => curr.name === cName);
+                            return c ? State.getStatesOfCountry(c.isoCode).map(s => s.name) : [];
+                          })))
+                        : State.getStatesOfCountry("IN").map(s => s.name)
+                    } 
+                    formData={formData} 
+                    handleChange={handleChange} 
+                  />
+                  <InputField 
+                    label="Preferred District" 
+                    name="partnerDistrict" 
+                    isMulti 
+                    options={
+                      (formData.partnerState && formData.partnerState.length > 0)
+                        ? Array.from(new Set(formData.partnerState.flatMap(sName => {
+                            const allCountries = Country.getAllCountries();
+                            const countriesToSearch = (formData.partnerCountry && formData.partnerCountry.length > 0)
+                              ? allCountries.filter(c => formData.partnerCountry.includes(c.name))
+                              : allCountries.filter(c => c.isoCode === "IN");
+                            return countriesToSearch.flatMap(c => {
+                              const s = State.getStatesOfCountry(c.isoCode).find(state => state.name === sName);
+                              return s ? City.getCitiesOfState(c.isoCode, s.isoCode).map(city => city.name) : [];
+                            });
+                          })))
+                        : []
+                    }
+                    formData={formData} 
+                    handleChange={handleChange} 
+                  />
+                </FormSection>
 
               {/* UPLOAD PROOF */}
               <FormSection title="Upload Proof" id="upload_proof" activeTab={activeTab}>

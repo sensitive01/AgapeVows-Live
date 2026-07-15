@@ -21,6 +21,7 @@ import {
   getEmployeeDetails,
   changePassword,
 } from "../../api/services/projectServices";
+import dummyProfileImage from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
 
 const EmployeProfile = () => {
   const [employeeData, setEmployeeData] = useState(null);
@@ -352,18 +353,16 @@ const EmployeProfile = () => {
                         src={
                           employeeData.userProfilePic ||
                           employeeData.profileImage ||
-                          "images/img-profile.jpg"
+                          dummyProfileImage
                         }
                         alt={employeeData.userName}
+                        onError={(e) => { e.target.onerror = null; e.target.src = dummyProfileImage; }}
                         style={{
                           width: "100%",
                           height: "100%",
                           objectFit: "cover",
                           objectPosition: "center",
                           display: "block",
-                        }}
-                        onError={(e) => {
-                          e.target.src = "images/img-profile.jpg";
                         }}
                       />
                     </div>
@@ -779,7 +778,7 @@ const EmployeProfile = () => {
                                 poster={
                                   employeeData.profileVideo.thumbnail ||
                                   employeeData.profileImage ||
-                                  "images/img-profile.jpg"
+                                  dummyProfileImage
                                 }
                               >
                                 <source

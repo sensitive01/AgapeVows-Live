@@ -272,8 +272,10 @@ const BasicInfomation = ({
 
   return (
     <div style={styles.sectionContainer}>
-      <div style={styles.sectionHeader}>PROFILE</div>
-      <h2 style={styles.sectionTitle}>Upload Profile & Album Photos</h2>
+      <h2 style={{ ...styles.sectionTitle, marginBottom: "8px" }}>Upload Your Photos</h2>
+      <p style={{ color: "#4b5563", fontSize: "15px", marginBottom: "32px", fontWeight: "500" }}>
+        Profiles with clear photos receive up to 8x more interests and profile views. Upload your photos to receive more interests.
+      </p>
 
       <div style={styles.divider}></div>
 
@@ -2116,15 +2118,7 @@ const UserProfileEditPage = () => {
                         type="select"
                         value={formData.profileCreatedFor}
                         onChange={handleInputChange}
-                        options={[
-                          "Self",
-                          "Son",
-                          "Daughter",
-                          "Brother",
-                          "Sister",
-                          "Friend",
-                          "Relative",
-                        ]}
+                        options={["Self", "Sibling", "Parents/Guardian", "Friend", "Relative", "Pastor"]}
                       />
                       <FormInput
                         label="Name"
@@ -2998,19 +2992,7 @@ const UserProfileEditPage = () => {
                         searchable={true}
                         value={formData.relationship}
                         onChange={handleInputChange}
-                        options={[
-                          "Self",
-                          "Father",
-                          "Mother",
-                          "Brother",
-                          "Sister",
-                          "Uncle",
-                          "Aunt",
-                          "Pastor",
-                          "Relative",
-                          "Friend",
-                          "Other",
-                        ]}
+                        options={["Self", "Sibling", "Parents/Guardian", "Friend", "Relative", "Pastor"]}
                       />
 
                       <FormInput

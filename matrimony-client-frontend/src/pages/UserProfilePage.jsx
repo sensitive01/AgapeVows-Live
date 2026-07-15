@@ -320,24 +320,33 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
   return (
     <div className="col-12 mb-4">
       {userInfo?.idVerificationStatus === "Rejected" && (
-        <div style={{
-          padding: "15px 20px",
-          background: "#fff1f2",
-          borderRadius: "12px",
-          border: "1px solid #fecdd3",
-          marginBottom: "20px",
-          display: "flex",
-          alignItems: "center",
-          gap: "15px",
-          boxShadow: "0 2px 8px rgba(244, 63, 94, 0.1)"
-        }}>
-          <i className="fa fa-exclamation-circle" style={{ color: "#f43f5e", fontSize: "1.8rem" }}></i>
-          <div>
-            <h6 style={{ margin: 0, color: "#9f1239", fontWeight: "700" }}>Verification Failed</h6>
-            <p style={{ margin: 0, color: "#be123c", fontSize: "0.85rem" }}>Your verification failed. Please re-upload your document with a clear and visible picture.</p>
-          </div>
-        </div>
-      )}
+                              <div
+                                className="alert alert-danger mt-3 mb-0"
+                                role="alert"
+                              >
+                                <h6 className="alert-heading font-weight-bold mb-1">
+                                  <i className="fa fa-exclamation-circle me-2"></i>
+                                  Verification Failed
+                                </h6>
+                                <p className="mb-0 small">
+                                  Your verification failed. Please re-upload
+                                  your document with a clear and visible
+                                  picture.
+                                </p>
+                              </div>
+                            )}
+                            
+                            {userInfo?.profileVisibility === 'Hidden' && (
+                              <div className="alert alert-danger mt-3 mb-0 shadow-sm" role="alert" style={{ backgroundColor: '#fff5f5', color: '#c53030', border: '1px solid #feb2b2', borderRadius: '8px', padding: '15px' }}>
+                                <div className="d-flex align-items-start">
+                                  <i className="fa fa-eye-slash" style={{ fontSize: '24px', marginRight: '15px', marginTop: '3px' }}></i>
+                                  <div style={{ fontSize: '15px' }}>
+                                    <h6 className="fw-bold mb-1">Your Profile is Hidden</h6>
+                                    <p className="mb-0">You cannot view other profiles while your profile is hidden. <Link to="/user/user-settings-page" style={{ color: '#c53030', textDecoration: 'underline', fontWeight: 'bold' }}>Unhide Profile</Link></p>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
       <div style={{
         background: "#fff",
         borderRadius: "12px",
@@ -818,6 +827,7 @@ const UserProfilePage = () => {
                     </div>
                   </div>
 
+
                   {/* Profile Header Card */}
                   <div className="col-12 mb-4">
                     <div
@@ -1013,7 +1023,7 @@ const UserProfilePage = () => {
                                   borderRadius: "20px",
                                 }}
                               >
-                                {visibility === "Public" ? "Visibility: All Users" : visibility}
+                                {visibility === "Public" ? "Visibility: All Users" : visibility === "Private" ? "Visibility: Premium Users" : `Visibility: ${visibility}`}
                               </span>
 
                               {userInfo?.idVerificationStatus === "Verified" && (
@@ -1046,6 +1056,21 @@ const UserProfilePage = () => {
                     </div>
                   </div>
 
+                  <div className="col-12">
+                    {userInfo && userInfo.profileVisibility === 'Hidden' && (
+                      <div className="alert alert-danger d-flex align-items-start mb-4 shadow-sm" role="alert" style={{ backgroundColor: '#fff5f5', color: '#c53030', border: '1px solid #feb2b2', borderRadius: '8px', padding: '15px' }}>
+                        <i className="fa fa-eye-slash" style={{ fontSize: '24px', marginRight: '15px', marginTop: '3px' }}></i>
+                        <div style={{ fontSize: '15px' }}>
+                          <p className="mb-1">
+                            <strong>Your profile is currently hidden.</strong>
+                          </p>
+                          <p className="mb-0">
+                            Other members cannot see your profile, and you will not be able to view other member profiles until you unhide it. <Link to="/user/user-settings-page" style={{ color: '#c53030', textDecoration: 'underline', fontWeight: 'bold' }}>Unhide Profile</Link>
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   <DocumentVerificationSection
                     userInfo={userInfo}
                     onUploadSuccess={() => {

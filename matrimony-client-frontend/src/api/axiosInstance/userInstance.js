@@ -13,7 +13,7 @@ userInstance.interceptors.request.use(
     if (config.url && (config.url.includes("/null") || config.url.includes("/undefined"))) {
       // Return a dummy resolved promise to avoid crashing frontend components without try-catch
       return Promise.reject({
-        response: {
+        response: { 
           status: 400,
           data: { success: false, message: "Invalid user ID" }
         },

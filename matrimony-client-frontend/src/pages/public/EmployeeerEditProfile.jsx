@@ -22,6 +22,7 @@ import {
 } from "../../api/services/projectServices";
 import axios from "axios";
 import { confirmAction } from "../../utils/alertService";
+import dummyProfileImage from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
 
 const EmployeeerEditProfile = () => {
   const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -1204,9 +1205,10 @@ const EmployeeerEditProfile = () => {
                         src={
                           employeeData.profileImage ||
                           employeeData.userProfilePic ||
-                          "images/img-profile.jpg"
+                          dummyProfileImage
                         }
                         alt={employeeData.userName}
+                        onError={(e) => { e.target.onerror = null; e.target.src = dummyProfileImage; }}
                       />
                     </div>
 

@@ -36,7 +36,7 @@ const AdminDeactivatedUsers = () => {
     const filtered = users.filter((user) =>
       user.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.userEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.userMobile?.includes(searchTerm)
+      user.userMobile?.includes(searchTerm) || (user.agwid || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     setFilteredUsers(filtered);

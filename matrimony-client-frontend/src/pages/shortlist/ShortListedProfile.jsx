@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import MembershipBadge from "../../components/common/MembershipBadge";
 import { confirmAction } from "../../utils/alertService";
 import { toast } from "react-toastify";
+import dummyProfileImage from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
 
 const ShortListedProfile = () => {
   const userId = localStorage.getItem("userId");
@@ -133,17 +134,18 @@ const ShortListedProfile = () => {
                 </div>
 
                 {/* ✅ Profile Image */}
-                <img
-                  src={profile.profileImage || "images/profiles/default.jpg"}
-                  alt={profile.userName}
-                  style={{
-                    width: "80px",
-                    height: "80px",
-                    objectFit: "cover",
-                    borderRadius: "8px",
-                    marginTop: "15px" // 👈 push image down
-                  }}
-                />
+                  <img
+                    src={profile.profileImage || dummyProfileImage}
+                    alt={profile.userName}
+                    style={{
+                      width: "80px",
+                      height: "80px",
+                      objectFit: "cover",
+                      borderRadius: "8px",
+                      marginTop: "15px"
+                    }}
+                    onError={(e) => { e.target.onerror = null; e.target.src = dummyProfileImage; }}
+                  />
 
                 {/* Watermark Overlay on the Right Side */}
                 <div

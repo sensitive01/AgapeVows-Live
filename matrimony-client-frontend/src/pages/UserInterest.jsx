@@ -13,6 +13,7 @@ import {
 } from "../api/axiosService/userAuthService";
 import { showAlert } from "../utils/alertService";
 import MembershipBadge from "../components/common/MembershipBadge";
+import dummyProfileImage from "../assets/images/blue-circle-with-white-user_78370-4707.avif";
 
 const ProfileActionMenu = ({ profile, activeTab, navigate, handleAccept, handleReject }) => {
   const btnStyle = {
@@ -302,11 +303,12 @@ const UserInterest = () => {
                           <MembershipBadge user={profile.senderDetails} isMini={true} />
                         </div>
                         <div style={{ position: "relative", width: "130px", height: "130px", minWidth: "130px", flexShrink: 0 }}>
-                        <img
-                          src={profile.senderDetails.profileImage || "images/profiles/default.jpg"}
-                          alt={profile.senderDetails.userName}
-                          style={{ width: "130px", height: "130px", minWidth: "130px", minHeight: "130px", objectFit: "cover", borderRadius: "50%", border: "none" }}
-                        />
+                          <img
+                            src={profile.senderDetails.profileImage || dummyProfileImage}
+                            alt={profile.senderDetails.userName}
+                            style={{ width: "130px", height: "130px", minWidth: "130px", minHeight: "130px", objectFit: "cover", borderRadius: "50%", border: "none" }}
+                            onError={(e) => { e.target.onerror = null; e.target.src = dummyProfileImage; }}
+                          />
                         {profile.senderDetails.idVerificationStatus === "Verified" && (
                           <span className="badge bg-success shadow-sm" style={{ position: "absolute", bottom: "-5px", left: "50%", transform: "translateX(-50%)", fontSize: "0.5rem", padding: "2px 4px", borderRadius: "10px" }}>
                             <i className="fa fa-check-circle"></i>

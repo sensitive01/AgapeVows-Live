@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { checkProfileViewLimit } from '../api/axiosService/userAuthService';
+import { checkProfileViewLimit, getUserProfile } from '../api/axiosService/userAuthService';
 import UpgradePopup from '../components/common/UpgradePopup';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 export const useProfileNavigation = () => {
     const navigate = useNavigate();
@@ -15,10 +16,42 @@ export const useProfileNavigation = () => {
             e.preventDefault();
         }
 
+        
         if (isChecking) return; // Prevent double clicks
         
         try {
             setIsChecking(true);
+            
+            // 1. Check if the user's own profile is hidden
+            if (viewerId) {
+                try {
+                    const userRes = await getUserProfile(viewerId);
+                    const userData = userRes?.data?.data || userRes?.data;
+                    if (userData?.profileVisibility === 'Hidden') {
+                        Swal.fire({
+                            title: "Profile Hidden",
+                            text: "Your profile is hidden. Unhide your profile to view other member profiles.",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonText: "Unhide Now",
+                            cancelButtonText: "Cancel",
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            reverseButtons: true
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                navigate("/user/user-settings-page");
+                            }
+                        });
+                        setIsChecking(false);
+                        return;
+                    }
+                } catch (userErr) {
+                    console.error("Error checking user visibility", userErr);
+                }
+            }
+
+            // 2. Check view limit
             await checkProfileViewLimit(profileId, viewerId);
             
             // Limit check passed, we can navigate

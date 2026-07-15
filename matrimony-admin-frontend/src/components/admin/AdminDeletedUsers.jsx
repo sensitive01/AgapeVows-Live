@@ -35,7 +35,7 @@ const AdminDeletedUsers = () => {
     const filtered = users.filter((user) =>
       (user.userName || "").toLowerCase().includes(lowerSearch) ||
       (user.userEmail || "").toLowerCase().includes(lowerSearch) ||
-      (user.userMobile || "").includes(searchTerm)
+      (user.userMobile || "").includes(searchTerm) || (user.agwid || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     setFilteredUsers(filtered);

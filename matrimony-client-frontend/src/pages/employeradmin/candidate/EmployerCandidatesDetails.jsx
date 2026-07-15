@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import user01 from "../../../assets/employer-admin/assets/img/users/user-01.jpg";
+import user01 from "../../../../assets/images/blue-circle-with-white-user_78370-4707.avif";
 import AddNoteModal from "../../../components/common/AddNoteModal";
 import { FaLink, FaFilePdf } from "react-icons/fa";
 const EmployerCandidatesDetails = ({ show, onClose, candidate }) => {

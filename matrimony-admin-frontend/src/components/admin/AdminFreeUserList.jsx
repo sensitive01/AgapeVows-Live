@@ -63,7 +63,7 @@ const AdminFreeUserList = () => {
       const matchesSearch =
         (user.userName || "").toLowerCase().includes(lowerSearch) ||
         (user.userEmail || "").toLowerCase().includes(lowerSearch) ||
-        (user.userMobile || "").includes(searchTerm);
+        (user.userMobile || "").includes(searchTerm) || (user.agwid || "").toLowerCase().includes(lowerSearch);
       const matchesPlan = filterPlan === "all" || user.planType === filterPlan;
       const matchesPayment = filterPayment === "all" || user.payment === filterPayment;
       return matchesSearch && matchesPlan && matchesPayment;
@@ -169,6 +169,13 @@ const AdminFreeUserList = () => {
       ),
     },
     {
+        name: "AVID",
+        selector: row => row.agwid,
+        sortable: true,
+        width: "130px",
+        cell: row => <span className="fw-bold text-primary">{row.agwid || "N/A"}</span>
+      },
+      {
       name: "CONTACT",
       hide: "md",
       selector: row => row.userMobile,
@@ -313,7 +320,7 @@ const AdminFreeUserList = () => {
                   <input
                     type="text"
                     className="form-control bg-transparent border-0 shadow-none ps-2"
-                    placeholder="Search by name, email, or mobile..."
+                    placeholder="Search by AVID, name, email, or mobile..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />

@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import MembershipBadge from "../../components/common/MembershipBadge";
 import { confirmAction, showAlert } from "../../utils/alertService";
+import dummyProfileImage from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
 
 const IgnoredProfile = () => {
   const userId = localStorage.getItem("userId");
@@ -107,7 +108,7 @@ const IgnoredProfile = () => {
             <li key={profile._id}>
               <div className="db-int-pro-1" style={{ position: "relative" }}>
                 <img
-                  src={profile.profileImage || "images/profiles/default.jpg"}
+                  src={profile.profileImage || dummyProfileImage}
                   alt={profile.userName}
                   style={{
                     width: "80px",
@@ -116,6 +117,7 @@ const IgnoredProfile = () => {
                     borderRadius: "8px",
                     opacity: "0.6",
                   }}
+                  onError={(e) => { e.target.onerror = null; e.target.src = dummyProfileImage; }}
                 />
 
                 {/* Watermark Overlay on the Right Side */}

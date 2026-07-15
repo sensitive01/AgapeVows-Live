@@ -45,6 +45,7 @@ const UserSearchResult = React.lazy(() => import("./pages/userSearch/UserSearchR
 const AgapeVowsApp = React.lazy(() => import("./components/sample/AgapeVowsApp"));
 const NewHomePageComponent = React.lazy(() => import("./components/agapeows-components/pages/NewHomePageComponent"));
 const ShortListedProfile = React.lazy(() => import("./pages/shortlist/ShortListedProfile"));
+const PhotoRequestsPage = React.lazy(() => import("./pages/PhotoRequestsPage"));
 const WhoViewedYou = React.lazy(() => import("./hooks/whoviewedyou/WhoViewedYou"));
 const BlockedProfile = React.lazy(() => import("./pages/blockedprofile/BlockedProfile"));
 const IgnoredProfile = React.lazy(() => import("./pages/ignoredprofile/IgnoredProfile"));
@@ -353,6 +354,7 @@ function App() {
                 element={<ShortListedProfile />}
               />
               <Route path="/user/who-viewed-you-page" element={<WhoViewedYou />} />
+              <Route path="/user/photo-requests-page" element={<PhotoRequestsPage />} />
               <Route
                 path="/user/blocked-profiles-page"
                 element={<BlockedProfile />}

@@ -1,4 +1,6 @@
+import Select from "react-select";
 import React, { useEffect, useState, useCallback } from "react";
+import { DROPDOWN_OPTIONS } from "../../utils/dropdownOptions";
 import { useParams, useNavigate } from "react-router-dom";
 import NewLayout from "./layout/NewLayout";
 import { getUserById, updateUserById, uploadIdProofByAdmin } from "../../api/service/adminServices";
@@ -23,23 +25,75 @@ const YES_NO_OPTIONS = ["No", "Yes", "Occasionally"];
 const RELATIONSHIP_OPTIONS = ["Self", "Father", "Mother", "Brother", "Sister", "Uncle", "Aunt", "Relative", "Friend", "Other"];
 
 // Memoized InputField component - prevents re-render on parent state changes
-const InputField = React.memo(({ label, name, type = "text", options = null, col = "6", value, onChange }) => (
-  <div className={`col-md-${col}`}>
-    <label className="form-label small fw-bold text-muted">{label}</label>
-    {options ? (
-      <select className="form-select" name={name} value={value || ""} onChange={onChange}>
-        <option value="">Select {label}</option>
-        {options.map((opt, i) => (
-          <option key={i} value={opt}>{opt}</option>
-        ))}
-      </select>
-    ) : type === "textarea" ? (
-      <textarea className="form-control" name={name} value={value || ""} onChange={onChange} rows="3" />
-    ) : (
-      <input type={type} className="form-control" name={name} value={value || ""} onChange={onChange} />
-    )}
-  </div>
-));
+const InputField = React.memo(({ label, name, type = "text", options = null, isMulti = false, col = "6", value, onChange }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPasswordField = type === "password";
+  const inputType = isPasswordField ? (showPassword ? "text" : "password") : type;
+  const customStyles = {
+    control: (base) => ({
+      ...base,
+      minHeight: '38px',
+      borderColor: '#dee2e6',
+      boxShadow: 'none',
+      '&:hover': {
+        borderColor: '#dee2e6'
+      }
+    }),
+    menuPortal: base => ({ ...base, zIndex: 9999 })
+  };
+
+  const getSelectValue = () => {
+    if (isMulti) {
+      if (Array.isArray(value)) {
+        return value.map(val => ({ value: val, label: val }));
+      }
+      return [];
+    }
+    return value ? { value: value, label: value } : null;
+  };
+
+  return (
+    <div className={`col-md-${col}`}>
+      <label className="form-label small fw-bold text-muted">{label}</label>
+      {options ? (
+        <Select
+          isMulti={isMulti}
+          options={options.map(opt => ({ value: opt, label: opt }))}
+          value={getSelectValue()}
+          onChange={(selectedOption) => {
+            let val;
+            if (isMulti) {
+              val = selectedOption ? selectedOption.map(opt => opt.value) : [];
+            } else {
+              val = selectedOption ? selectedOption.value : '';
+            }
+            onChange({ target: { name, value: val } });
+          }}
+          placeholder={`Select ${label}`}
+          styles={customStyles}
+          isClearable
+          menuPortalTarget={document.body}
+        />
+      ) : type === "textarea" ? (
+        <textarea className="form-control" name={name} value={value || ""} onChange={onChange} rows="3" />
+      ) : (
+        <div className="position-relative">
+          <input type={inputType} className="form-control" name={name} value={value || ""} onChange={onChange} style={isPasswordField ? { paddingRight: "40px" } : {}} />
+          {isPasswordField && (
+            <button
+              type="button"
+              className="btn btn-link position-absolute top-50 end-0 translate-middle-y text-muted px-3"
+              style={{ textDecoration: 'none', zIndex: 10 }}
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              <i className={`fa ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+});
 
 InputField.displayName = 'InputField';
 
@@ -327,7 +381,7 @@ const AdminEditUser = () => {
 
 
   // Helper to create InputField with automatic props
-  const renderField = (label, name, type = "text", options = null, col = "6") => (
+  const renderField = (label, name, type = "text", options = null, col = "6", isMulti = false) => (
     <InputField
       key={name}
       label={label}
@@ -347,7 +401,7 @@ const AdminEditUser = () => {
           <div className="card border-0 shadow-sm overflow-hidden">
             <div className="card-header bg-white p-4 border-0 d-flex justify-content-between align-items-center">
               <div>
-                <h3 className="fw-bold mb-0">Edit User Profile</h3>
+                <h3 className="fw-bold mb-0">Edit User Profile {formData?.agwid ? `- ${formData.agwid}` : ""}</h3>
                 <p className="text-muted small mb-0">Modify full details for {formData.userName}</p>
               </div>
               <div className="d-flex gap-2">
@@ -395,14 +449,14 @@ const AdminEditUser = () => {
                 {renderField("About Me", "aboutMe", "textarea", null, "12")}
                 {renderField("Date of Birth", "dateOfBirth", "date", null, "6")}
                 {renderField("Gender", "gender", "text", ["Male", "Female", "Other"], "6")}
-                {renderField("Profile Created For", "profileCreatedFor", "text", ["Self", "Son", "Daughter", "Brother", "Sister", "Friend"], "6")}
+                {renderField("Profile Created By", "profileCreatedFor", "text", DROPDOWN_OPTIONS.profileCreatedFor, "6")}
                 {renderField("Marital Status", "maritalStatus", "text", ["Never Married", "Divorced", "Awaiting Divorce", "Widow/Widower"], "6")}
                 {renderField("Height", "height", "text", ["4ft", "4ft 1in", "4ft 2in", "4ft 3in", "4ft 4in", "4ft 5in", "4ft 6in", "4ft 7in", "4ft 8in", "4ft 9in", "4ft 10in", "4ft 11in", "5ft", "5ft 1in", "5ft 2in", "5ft 3in", "5ft 4in", "5ft 5in", "5ft 6in", "5ft 7in", "5ft 8in", "5ft 9in", "5ft 10in", "5ft 11in", "6ft", "6ft 1in", "6ft 2in", "6ft 3in", "6ft 4in", "6ft 5in", "6ft 6in", "6ft 7in", "6ft 8in", "6ft 9in", "6ft 10in", "6ft 11in", "7ft"], "6")}
-                {renderField("Weight", "weight", "text", null, "6")}
+                {renderField("Weight", "weight", "text", Array.from({ length: 101 }, (_, i) => String(i + 40)), "6")}
                 {renderField("Body Type", "bodyType", "text", ["Average", "Slim", "Athletic", "Heavy"], "6")}
                 {renderField("Complexion", "complexion", "text", ["Fair", "Very Fair", "Wheatish", "Dark"], "6")}
                 {renderField("Physical State", "physicalStatus", "text", ["Normal", "Physically Challenged"], "6")}
-                {renderField("Age", "age", "number", null, "6")}
+                {renderField("Age", "age", "text", Array.from({ length: 53 }, (_, i) => String(i + 18)), "6")}
                 {renderField("Eating Habits", "eatingHabits", "text", ["Vegetarian", "Non-Vegetarian", "Eggetarian"], "6")}
                 {renderField("Drinking Habits", "drinkingHabits", "text", ["No", "Yes", "Occasionally"], "6")}
                 {renderField("Smoking Habits", "smokingHabits", "text", ["No", "Yes", "Occasionally"], "6")}
@@ -428,9 +482,9 @@ const AdminEditUser = () => {
               {/* FAMILY */}
               <FormSection title="Family Details" id="family" activeTab={activeTab}>
                 {renderField("Father's Name", "fathersName", "text", null, "6")}
-                {renderField("Father's Occupation", "fathersOccupation", "text", null, "6")}
+                {renderField("Father's Occupation", "fathersOccupation", "text", ["Retired", "Business", "Government Employee", "Private Employee", "Professional", "Farmer", "Homemaker", "Others"], "6")}
                 {renderField("Mother's Name", "mothersName", "text", null, "6")}
-                {renderField("Mother's Occupation", "mothersOccupation", "text", null, "6")}
+                {renderField("Mother's Occupation", "mothersOccupation", "text", ["Retired", "Business", "Government Employee", "Private Employee", "Professional", "Farmer", "Homemaker", "Others"], "6")}
                 {renderField("Father's Profession", "fathersProfession", "text", null, "6")}
                 {renderField("Mother's Profession", "mothersProfession", "text", null, "6")}
                 {renderField("Fathers' Native", "fathersNative", "text", null, "6")}
@@ -471,8 +525,9 @@ const AdminEditUser = () => {
               {/* CONTACT */}
               <FormSection title="Contact Information" id="contact" activeTab={activeTab}>
                 {renderField("Contact Person Name", "contactPersonName", "text", null, "6")}
-                {renderField("Relationship", "relationship", "text", RELATIONSHIP_OPTIONS, "6")}
-                {renderField("Alternate Mobile", "alternateMobile", "text", null, "6")}
+                {renderField("Relationship", "relationship", "text", DROPDOWN_OPTIONS.relationship, "6")}
+                {renderField("Citizen Of", "citizenOf", "text", Country.getAllCountries().map(c => c.name), "6")}
+                  {renderField("Alternate Mobile", "alternateMobile", "text", null, "6")}
                 {renderField("Alternate Email", "alternateEmail", "email", null, "6")}
                 {renderField("Landline", "landlineNumber", "text", null, "6")}
                 <div className="col-12 mt-4">
@@ -480,9 +535,9 @@ const AdminEditUser = () => {
                 </div>
                 {renderField("Door / Flat No (Name), Street", "currentDoorNo", "text", null, "6")}
                 {renderField("Locality / Area", "currentLocality", "text", null, "6")}
-                {renderField("Country", "currentCountry", "text", null, "6")}
-                {renderField("State", "currentState", "text", null, "6")}
-                {renderField("District", "currentDistrict", "text", null, "6")}
+                {renderField("Country", "currentCountry", "text", Country.getAllCountries().map(c => c.name), "6")}
+                {renderField("State", "currentState", "text", formData.currentCountry ? State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "").map(s => s.name) : [], "6")}
+                {renderField("District", "currentDistrict", "text", formData.currentState ? City.getCitiesOfState(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "", State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "").find(s => s.name === formData.currentState)?.isoCode || "").map(city => city.name) : [], "6")}
                 {renderField("Pincode", "currentPincode", "text", null, "6")}
 
                 <div className="col-12 mt-4">
@@ -526,15 +581,15 @@ const AdminEditUser = () => {
                 </div>
                 {renderField("Door / Flat No (Name), Street", "permanentDoorNo", "text", null, "6")}
                 {renderField("Locality / Area", "permanentLocality", "text", null, "6")}
-                {renderField("Country", "permanentCountry", "text", null, "6")}
-                {renderField("State", "permanentState", "text", null, "6")}
-                {renderField("District", "permanentDistrict", "text", null, "6")}
+                {renderField("Country", "permanentCountry", "text", Country.getAllCountries().map(c => c.name), "6")}
+                {renderField("State", "permanentState", "text", formData.permanentCountry ? State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.permanentCountry)?.isoCode || "").map(s => s.name) : [], "6")}
+                {renderField("District", "permanentDistrict", "text", formData.permanentState ? City.getCitiesOfState(Country.getAllCountries().find(c => c.name === formData.permanentCountry)?.isoCode || "", State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.permanentCountry)?.isoCode || "").find(s => s.name === formData.permanentState)?.isoCode || "").map(city => city.name) : [], "6")}
                 {renderField("Pincode", "permanentPincode", "text", null, "6")}
               </FormSection>
 
               {/* LIFESTYLE */}
               <FormSection title="Life style" id="lifestyle" activeTab={activeTab}>
-                {renderField("Hobbies", "hobbies", "text", null, "6")}
+                {renderField("Hobbies", "hobbies", "text", ["Reading", "Sports", "Music", "Traveling", "Cooking", "Photography", "Dancing", "Gaming", "Painting", "Writing", "Gardening", "Yoga"], "6", true)}
                 {renderField("Interests", "interests", "text", null, "6")}
                 {renderField("Music", "music", "text", null, "6")}
                 {renderField("Favorite Reads", "favouriteReads", "text", null, "6")}
@@ -546,36 +601,77 @@ const AdminEditUser = () => {
 
               {/* PARTNER PREFERENCES */}
               <FormSection title="Partner preference" id="partner" activeTab={activeTab}>
-                {renderField("Age From", "partnerAgeFrom", "number", null, "6")}
-                {renderField("Age To", "partnerAgeTo", "number", null, "6")}
-                {renderField("Desired Height From", "partnerHeight", "text", null, "6")}
-                {renderField("Desired Height To", "partnerHeightTo", "text", null, "6")}
-                {renderField("Preferred Marital Status", "partnerMaritalStatus", "text", null, "6")}
-                {renderField("Preferred Mother Tongue", "partnerMotherTongue", "text", null, "6")}
-                {renderField("Preferred Caste", "partnerCaste", "text", null, "6")}
-                {renderField("Preferred Physical Status", "partnerPhysicalStatus", "text", null, "6")}
-                {renderField("Preferred Eating Habits", "partnerEatingHabits", "text", null, "6")}
-                {renderField("Preferred Drinking Habits", "partnerDrinkingHabits", "text", null, "6")}
-                {renderField("Preferred Smoking Habits", "partnerSmokingHabits", "text", null, "6")}
-                {renderField("Preferred Denomination", "partnerDenomination", "text", null, "6")}
-                {renderField("Preferred Spirituality", "partnerSpirituality", "text", null, "6")}
+                {renderField("Age From", "partnerAgeFrom", "text", Array.from({ length: 53 }, (_, i) => String(i + 18)), "6")}
+                {renderField("Age To", "partnerAgeTo", "text", Array.from({ length: 53 }, (_, i) => String(i + 18)), "6")}
+                {renderField("Desired Height From", "partnerHeight", "text", DROPDOWN_OPTIONS.height, "6")}
+                {renderField("Desired Height To", "partnerHeightTo", "text", DROPDOWN_OPTIONS.height, "6")}
+                {renderField("Preferred Marital Status", "partnerMaritalStatus", "text", DROPDOWN_OPTIONS.partnerMaritalStatus, "6", true)}
+                {renderField("Preferred Mother Tongue", "partnerMotherTongue", "text", DROPDOWN_OPTIONS.partnerMotherTongue, "6", true)}
+                {renderField("Preferred Caste", "partnerCaste", "text", DROPDOWN_OPTIONS.partnerCaste, "6", true)}
+                {renderField("Preferred Physical Status", "partnerPhysicalStatus", "text", DROPDOWN_OPTIONS.partnerPhysicalStatus, "6", true)}
+                {renderField("Preferred Eating Habits", "partnerEatingHabits", "text", DROPDOWN_OPTIONS.partnerEatingHabits, "6", true)}
+                {renderField("Preferred Drinking Habits", "partnerDrinkingHabits", "text", DROPDOWN_OPTIONS.partnerDrinkingHabits, "6", true)}
+                {renderField("Preferred Smoking Habits", "partnerSmokingHabits", "text", DROPDOWN_OPTIONS.partnerSmokingHabits, "6", true)}
+                {renderField("Preferred Denomination", "partnerDenomination", "text", DROPDOWN_OPTIONS.partnerDenomination, "6", true)}
+                {renderField("Preferred Spirituality", "partnerSpirituality", "text", DROPDOWN_OPTIONS.partnerSpirituality, "6", true)}
               </FormSection>
 
               {/* PARTNER PREFERENCES - PROFESSIONAL */}
               <FormSection title="Partner Preferences - Professional" id="partner_professional" activeTab={activeTab}>
-                {renderField("Preferred Education", "partnerEducation", "text", null, "6")}
-                {renderField("Preferred Employment Type", "partnerEmploymentType", "text", null, "6")}
-                {renderField("Preferred Occupation", "partnerOccupation", "text", null, "6")}
-                {renderField("Annual Income From", "partnerAnnualIncomeFrom", "text", null, "6")}
-                {renderField("Annual Income To", "partnerAnnualIncomeTo", "text", null, "6")}
+                {renderField("Preferred Education", "partnerEducation", "text", DROPDOWN_OPTIONS.partnerEducation, "6", true)}
+                {renderField("Preferred Employment Type", "partnerEmploymentType", "text", DROPDOWN_OPTIONS.partnerEmploymentType, "6", true)}
+                {renderField("Preferred Occupation", "partnerOccupation", "text", DROPDOWN_OPTIONS.partnerOccupation, "6", true)}
+                {renderField("Annual Income From", "partnerAnnualIncomeFrom", "text", ["50 Thousand", "1 Lakh", "2 Lakhs", "3 Lakhs", "4 Lakhs", "5 Lakhs", "7 Lakhs", "10 Lakhs", "15 Lakhs", "20 Lakhs", "25 Lakhs", "30 Lakhs", "50 Lakhs", "75 Lakhs", "1 Crore"], "6")}
+                {renderField("Annual Income To", "partnerAnnualIncomeTo", "text", ["1 Lakh", "2 Lakhs", "3 Lakhs", "4 Lakhs", "5 Lakhs", "7 Lakhs", "10 Lakhs", "15 Lakhs", "20 Lakhs", "25 Lakhs", "30 Lakhs", "50 Lakhs", "75 Lakhs", "1 Crore", "Above 1 Crore"], "6")}
               </FormSection>
 
               {/* PARTNER PREFERENCES - LOCATION */}
-              <FormSection title="Partner Preferences - location" id="partner_location" activeTab={activeTab}>
-                {renderField("Preferred Country", "partnerCountry", "text", null, "6")}
-                {renderField("Preferred State", "partnerState", "text", null, "6")}
-                {renderField("Preferred District", "partnerDistrict", "text", null, "6")}
-              </FormSection>
+                <FormSection title="Partner Preferences - location" id="partner_location" activeTab={activeTab}>
+                  <InputField 
+                    label="Preferred Country" 
+                    name="partnerCountry" 
+                    isMulti 
+                    options={Country.getAllCountries().map(c => c.name)} 
+                    value={formData.partnerCountry} 
+                    onChange={handleChange} 
+                  />
+                  <InputField 
+                    label="Preferred State" 
+                    name="partnerState" 
+                    isMulti 
+                    options={
+                      (formData.partnerCountry && formData.partnerCountry.length > 0)
+                        ? Array.from(new Set(formData.partnerCountry.flatMap(cName => {
+                            const c = Country.getAllCountries().find(curr => curr.name === cName);
+                            return c ? State.getStatesOfCountry(c.isoCode).map(s => s.name) : [];
+                          })))
+                        : State.getStatesOfCountry("IN").map(s => s.name)
+                    } 
+                    value={formData.partnerState} 
+                    onChange={handleChange} 
+                  />
+                  <InputField 
+                    label="Preferred District" 
+                    name="partnerDistrict" 
+                    isMulti 
+                    options={
+                      (formData.partnerState && formData.partnerState.length > 0)
+                        ? Array.from(new Set(formData.partnerState.flatMap(sName => {
+                            const allCountries = Country.getAllCountries();
+                            const countriesToSearch = (formData.partnerCountry && formData.partnerCountry.length > 0)
+                              ? allCountries.filter(c => formData.partnerCountry.includes(c.name))
+                              : allCountries.filter(c => c.isoCode === "IN");
+                            return countriesToSearch.flatMap(c => {
+                              const s = State.getStatesOfCountry(c.isoCode).find(state => state.name === sName);
+                              return s ? City.getCitiesOfState(c.isoCode, s.isoCode).map(city => city.name) : [];
+                            });
+                          })))
+                        : []
+                    }
+                    value={formData.partnerDistrict} 
+                    onChange={handleChange} 
+                  />
+                </FormSection>
 
               {/* UPLOAD PROOF */}
               <FormSection title="Upload Proof" id="upload_proof" activeTab={activeTab}>

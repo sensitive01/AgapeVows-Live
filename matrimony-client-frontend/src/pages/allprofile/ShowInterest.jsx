@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { sendInterestData } from "../../api/axiosService/userAuthService";
 import { showAlert } from "../../utils/alertService";
+import dummyProfileImage from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
 
 const ShowInterest = ({ selectedUser, userId, onSuccess }) => {
     const senderId = localStorage.getItem("userId");
@@ -122,20 +123,19 @@ const ShowInterest = ({ selectedUser, userId, onSuccess }) => {
               }}
             >
               <img
-                src={
-                  selectedUser?.profileImage ||
-                  "images/default-profile.jpg"
-                }
-                alt={selectedUser?.userName}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  display: "block",
-                }}
-                onError={(e) => {
-                  e.target.src = "images/default-profile.jpg";
-                }}
+                  src={
+                    selectedUser?.profileImage || dummyProfileImage
+                  }
+                  alt={selectedUser?.userName}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    display: "block",
+                  }}
+                  onError={(e) => {
+                    e.target.src = dummyProfileImage;
+                  }}
               />
             </div>
             <h5 className="text-dark mb-0" style={{ lineHeight: "1.5", fontSize: "1.1rem" }}>

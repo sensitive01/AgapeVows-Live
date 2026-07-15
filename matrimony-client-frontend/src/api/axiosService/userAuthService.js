@@ -483,3 +483,34 @@ export const updatePrivacySettings = async (userId, data) => {
     throw error;
   }
 };
+
+// Photo Requests
+export const sendPhotoRequest = async (requesterId, receiverId) => {
+  try {
+    const response = await userInstance.post("/request-photo", { requesterId, receiverId });
+    return response;
+  } catch (error) {
+    console.error("Error sending photo request:", error);
+    throw error;
+  }
+};
+
+export const getPhotoRequests = async (userId) => {
+  try {
+    const response = await userInstance.get(`/photo-requests/${userId}`);
+    return response;
+  } catch (error) {
+    console.error("Error getting photo requests:", error);
+    throw error;
+  }
+};
+
+export const respondToPhotoRequest = async (requestId, status) => {
+  try {
+    const response = await userInstance.put(`/respond-photo-request/${requestId}`, { status });
+    return response;
+  } catch (error) {
+    console.error("Error responding to photo request:", error);
+    throw error;
+  }
+};

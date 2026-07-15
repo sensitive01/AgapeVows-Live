@@ -185,7 +185,7 @@ const UserSignUp = () => {
         sessionStorage.setItem("session_active", "true");
 
         const navigateToProfileEdit = (stateObj = {}) => {
-          navigate(`/user/user-profile-edit-page/${userData.userId}`, { 
+          navigate(`/user/user-profile-edit-page/${userData.userId}`, {
             replace: true,
             state: stateObj
           });
@@ -246,17 +246,28 @@ const UserSignUp = () => {
           backgroundRepeat: 'no-repeat'
         }}
       >
-        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12 flex flex-col lg:flex-row items-center justify-between z-10 relative">
+        <div className="max-w-[1440px] mx-auto w-full px-4 sm:px-6 lg:px-12 py-12 flex flex-col lg:flex-row items-center justify-between z-10 relative">
 
           {/* Left Text Content */}
-          <div className="w-full lg:w-5/12 mb-12 lg:mb-0 text-left self-start lg:mt-0">
-            <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-bold text-[#4a2580] mb-8 leading-[1.1] tracking-tight font-cormorant">
-              Begin Your Journey<br />
+          <div className="w-full lg:w-7/12 mb-12 lg:mb-0 text-left self-start lg:mt-8 lg:pl-12 pr-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold text-[#4a2580] mb-2 leading-snug font-cormorant tracking-normal">
+              Begin Your Journey
               with AgapeVows.<br />
               Register for Free.
             </h1>
-            <div className="w-16 h-[2px] bg-[#4a2580] mb-8"></div>
-            <h3 className="text-xl font-bold text-[#4a2580] mb-3">
+            <div className="w-16 h-[2px] bg-[#4a2580] mb-3"></div>
+            <div className="mb-4">
+              <h3 className="text-2xl font-bold text-[#4a2580] mb-2">
+                Need help registering?
+              </h3>
+              <p className="text-[20px] text-[#4a2580] font-normal opacity-90 leading-snug">
+                Email your profile with your latest photos to <a href="mailto:profiles@agapevows.com" className="font-semibold underline">profiles@agapevows.com</a><br className="hidden sm:block" />
+                or WhatsApp us at <a href="https://wa.me/919663796699" className="font-semibold underline">+91 96637 96699</a>, and we’ll assist you<br className="hidden sm:block" />
+                with your profile creation.
+              </p>
+            </div>
+
+            <h3 className="text-xl font-bold text-[#4a2580] mb-2">
               Your future spouse could be just one click away.
             </h3>
             <p className="text-[#4a2580] text-lg font-normal opacity-90">
@@ -265,8 +276,8 @@ const UserSignUp = () => {
           </div>
 
           {/* Right Form Card */}
-          <div className="w-full lg:w-5/12">
-            <div className="bg-white rounded-[24px] p-6 sm:p-8 shadow-2xl relative w-full">
+          <div className="w-full lg:w-4/12 lg:min-w-[450px]">
+            <div className="bg-white rounded-[24px] p-10 sm:p-12 shadow-2xl relative w-full">
               <div className="text-center mb-6">
                 <h2 className="text-[32px] font-bold text-[#4a2580] font-playfair">Create Your Account</h2>
                 <div className="w-16 h-[2px] bg-[#4a2580] mx-auto mt-2"></div>
@@ -274,197 +285,197 @@ const UserSignUp = () => {
 
               <form onSubmit={handleSubmit} className="space-y-3" autoComplete="off">
 
-                  {/* Full Name */}
-                  <div>
-                    <label className="block text-sm font-bold text-gray-900 mb-1.5">Full Name</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#58219f]">
-                        <FaRegUser className="text-lg" />
-                      </div>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        className="block w-full pl-12 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-[#58219f] focus:border-[#58219f] sm:text-sm transition-colors text-gray-800 placeholder-gray-400 placeholder:text-[12px] bg-white"
-                        placeholder="Enter your full name"
-                        autoComplete="off"
-                        required
-                      />
+                {/* Full Name */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-900 mb-1.5">Full Name</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#58219f]">
+                      <FaRegUser className="text-lg" />
                     </div>
-                  </div>
-
-                  {/* Email */}
-                  <div>
-                    <label className="block text-sm font-bold text-gray-900 mb-1.5">Email Address</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#58219f]">
-                        <FaRegEnvelope className="text-lg" />
-                      </div>
-                      <input
-                        type="email"
-                        name="registerEmail"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="block w-full pl-12 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-[#58219f] focus:border-[#58219f] sm:text-sm transition-colors text-gray-800 placeholder-gray-400 bg-white"
-                        placeholder="Enter your email address"
-                        autoComplete="off"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* Mobile Number */}
-                  <div>
-                    <label className="block text-sm font-bold text-gray-900 mb-1.5">Mobile Number</label>
-                    <div className="relative flex items-center border border-gray-200 rounded-xl focus-within:ring-1 focus-within:ring-[#58219f] focus-within:border-[#58219f] bg-white overflow-hidden">
-                      <div className="pl-4 pr-2 flex items-center pointer-events-none text-[#58219f] border-r border-gray-200 bg-white z-10 h-full">
-                        <FaPhoneAlt className="text-md" />
-                      </div>
-                      <PhoneInput
-                        country={"in"}
-                        value={formData.phone}
-                        onChange={(value, data) => {
-                          setFormData({ ...formData, phone: value, countryCode: data?.countryCode || "in" });
-                        }}
-                        inputStyle={{
-                          width: "100%",
-                          height: "44px",
-                          border: "none",
-                          paddingLeft: "48px",
-                          fontSize: "14px",
-                          outline: "none",
-                          boxShadow: "none"
-                        }}
-                        buttonStyle={{
-                          border: "none",
-                          backgroundColor: "transparent",
-                          paddingLeft: "10px",
-                        }}
-                        containerStyle={{
-                          flex: 1,
-                        }}
-                      />
-                    </div>
-                    <div className="flex items-center gap-1.5 mt-2 pl-1">
-                      <FiInfo className="text-[#58219f] text-[13px]" />
-                      <span className="text-[12px] text-[#4a4a4a] font-medium">
-                        We will send OTP to this mobile number for verification.
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Password */}
-                  <div>
-                    <label className="block text-sm font-bold text-gray-900 mb-1.5">Create Password</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#58219f]">
-                        <FaLock className="text-lg" />
-                      </div>
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        name="registerPassword"
-                        value={formData.password}
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        className="block w-full pl-12 pr-12 py-2.5 border border-gray-200 rounded-xl focus:ring-[#58219f] focus:border-[#58219f] sm:text-sm transition-colors text-gray-800 placeholder-gray-400 bg-white"
-                        placeholder="Choose a secure password"
-                        autoComplete="new-password"
-                        required
-                      />
-                      <button
-                        type="button"
-                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-[#58219f] hover:text-[#471b80]"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <FaEyeSlash className="text-lg" /> : <FaEye className="text-lg" />}
-                      </button>
-                    </div>
-                    {passwordErrorMsg ? (
-                      <p className="text-red-500 text-[11px] mt-1 font-semibold leading-relaxed">
-                        {passwordErrorMsg}
-                      </p>
-                    ) : (
-                      <p className="text-[11px] text-gray-500 mt-1 leading-relaxed">
-                        Password must be at least 6 - 14 characters long and include an uppercase letter, a number, and a special character.
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Agree Checkbox */}
-                  <div className={`flex items-start mt-4 bg-gray-50/50 p-2.5 rounded-lg ${agreeError ? 'border border-red-300' : ''}`}>
                     <input
-                      id="agree"
-                      name="agree"
-                      type="checkbox"
-                      checked={formData.agree}
+                      type="text"
+                      name="name"
+                      value={formData.name}
                       onChange={handleInputChange}
-                      className="mt-1 h-4 w-4 text-[#58219f] focus:ring-[#58219f] border-gray-300 rounded cursor-pointer"
+                      className="block w-full pl-12 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-[#58219f] focus:border-[#58219f] sm:text-sm transition-colors text-gray-800 placeholder-gray-400 placeholder:text-[12px] bg-white"
+                      placeholder="Enter your full name"
+                      autoComplete="off"
+                      required
                     />
-                    <label htmlFor="agree" className="ml-3 block text-[11.5px] text-gray-600 leading-relaxed cursor-pointer">
-                      By creating an account with AgapeVows, you agree to our <a href="#!" className="text-[#58219f] font-bold hover:underline">Terms of Service</a>, and <a href="#!" className="text-[#58219f] font-bold hover:underline">Privacy Policy</a>. AgapeVows is intended strictly for Christian matrimonial purposes only and is not a dating platform.
-                    </label>
                   </div>
-                  {agreeError && (
-                    <p className="text-red-500 text-[11px] mt-1 font-semibold pl-2">
-                      Please accept the terms of service and privacy policy to continue.
+                </div>
+
+                {/* Email */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-900 mb-1.5">Email Address</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#58219f]">
+                      <FaRegEnvelope className="text-lg" />
+                    </div>
+                    <input
+                      type="email"
+                      name="registerEmail"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="block w-full pl-12 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-[#58219f] focus:border-[#58219f] sm:text-sm transition-colors text-gray-800 placeholder-gray-400 bg-white"
+                      placeholder="Enter your email address"
+                      autoComplete="off"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Mobile Number */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-900 mb-1.5">Mobile Number</label>
+                  <div className="relative flex items-center border border-gray-200 rounded-xl focus-within:ring-1 focus-within:ring-[#58219f] focus-within:border-[#58219f] bg-white overflow-hidden">
+                    <div className="pl-4 pr-2 flex items-center pointer-events-none text-[#58219f] border-r border-gray-200 bg-white z-10 h-full">
+                      <FaPhoneAlt className="text-md" />
+                    </div>
+                    <PhoneInput
+                      country={"in"}
+                      value={formData.phone}
+                      onChange={(value, data) => {
+                        setFormData({ ...formData, phone: value, countryCode: data?.countryCode || "in" });
+                      }}
+                      inputStyle={{
+                        width: "100%",
+                        height: "44px",
+                        border: "none",
+                        paddingLeft: "48px",
+                        fontSize: "14px",
+                        outline: "none",
+                        boxShadow: "none"
+                      }}
+                      buttonStyle={{
+                        border: "none",
+                        backgroundColor: "transparent",
+                        paddingLeft: "10px",
+                      }}
+                      containerStyle={{
+                        flex: 1,
+                      }}
+                    />
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-2 pl-1">
+                    <FiInfo className="text-[#58219f] text-[13px]" />
+                    <span className="text-[12px] text-[#4a4a4a] font-medium">
+                      We will send OTP to this mobile number for verification.
+                    </span>
+                  </div>
+                </div>
+
+                {/* Password */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-900 mb-1.5">Create Password</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#58219f]">
+                      <FaLock className="text-lg" />
+                    </div>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="registerPassword"
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      className="block w-full pl-12 pr-12 py-2.5 border border-gray-200 rounded-xl focus:ring-[#58219f] focus:border-[#58219f] sm:text-sm transition-colors text-gray-800 placeholder-gray-400 bg-white"
+                      placeholder="Choose a secure password"
+                      autoComplete="new-password"
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-[#58219f] hover:text-[#471b80]"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <FaEyeSlash className="text-lg" /> : <FaEye className="text-lg" />}
+                    </button>
+                  </div>
+                  {passwordErrorMsg ? (
+                    <p className="text-red-500 text-[11px] mt-1 font-semibold leading-relaxed">
+                      {passwordErrorMsg}
+                    </p>
+                  ) : (
+                    <p className="text-[11px] text-gray-500 mt-1 leading-relaxed">
+                      Password must be at least 6 - 14 characters long and include an uppercase letter, a number, and a special character.
                     </p>
                   )}
+                </div>
 
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full flex justify-center items-center gap-2 mt-3 py-3 px-4 border border-transparent rounded-xl shadow-md text-[15px] font-bold text-white transition-all bg-[#58219f] hover:bg-[#471b80] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#58219f]"
-                  >
-                    {loading ? (
-                      <>
-                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <FaRegUser className="text-lg" />
-                        Create Free Account
-                      </>
-                    )}
-                  </button>
+                {/* Agree Checkbox */}
+                <div className={`flex items-start mt-4 bg-gray-50/50 p-3 rounded-lg ${agreeError ? 'border border-red-300' : ''}`}>
+                  <input
+                    id="agree"
+                    name="agree"
+                    type="checkbox"
+                    checked={formData.agree}
+                    onChange={handleInputChange}
+                    className="mt-0.5 h-[18px] w-[18px] min-w-[18px] text-[#58219f] focus:ring-[#58219f] border-gray-300 rounded cursor-pointer"
+                  />
+                  <label htmlFor="agree" className="ml-3 block text-[11.5px] text-gray-600 leading-relaxed cursor-pointer">
+                    By creating an account with AgapeVows, you agree to our <a href="#!" className="text-[#58219f] font-bold hover:underline">Terms of Service</a>, and <a href="#!" className="text-[#58219f] font-bold hover:underline">Privacy Policy</a>. AgapeVows is intended strictly for Christian matrimonial purposes only and is not a dating platform.
+                  </label>
+                </div>
+                {agreeError && (
+                  <p className="text-red-500 text-[11px] mt-1 font-semibold pl-2">
+                    Please accept the terms of service and privacy policy to continue.
+                  </p>
+                )}
 
-                  {/* Features */}
-                  <div className="flex justify-center items-center gap-3 text-[10px] sm:text-[11px] text-[#58219f] font-semibold mt-3 flex-wrap">
-                    <span className="flex items-center gap-1"><FaCheckCircle className="text-[#58219f] text-xs" /> 100% Verified Profiles</span>
-                    <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                    <span className="flex items-center gap-1">Safe & Private</span>
-                    <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                    <span className="flex items-center gap-1">Faith-Based Community</span>
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full flex justify-center items-center gap-2 mt-3 py-3 px-4 border border-transparent rounded-xl shadow-md text-[15px] font-bold text-white transition-all bg-[#58219f] hover:bg-[#471b80] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#58219f]"
+                >
+                  {loading ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <FaRegUser className="text-lg" />
+                      Create Free Account
+                    </>
+                  )}
+                </button>
+
+                {/* Features */}
+                <div className="flex justify-center items-center gap-3 text-[10px] sm:text-[11px] text-[#58219f] font-semibold mt-3 flex-wrap">
+                  <span className="flex items-center gap-1"><FaCheckCircle className="text-[#58219f] text-xs" /> 100% Verified Profiles</span>
+                  <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                  <span className="flex items-center gap-1">Safe & Private</span>
+                  <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                  <span className="flex items-center gap-1">Faith-Based Community</span>
+                </div>
+
+                {/* Divider */}
+                <div className="relative mt-2 mb-2">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200"></div>
                   </div>
-
-                  {/* Divider */}
-                  <div className="relative mt-5 mb-4">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-200"></div>
-                    </div>
-                    <div className="relative flex justify-center text-xs">
-                      <span className="px-3 bg-white text-gray-400 font-semibold uppercase">OR</span>
-                    </div>
+                  <div className="relative flex justify-center text-xs">
+                    <span className="px-3 bg-white text-gray-400 font-semibold uppercase">OR</span>
                   </div>
+                </div>
 
-                  {/* Sign In Link */}
-                  <div className="text-center pb-0">
-                    <p className="text-sm text-gray-600 font-medium">
-                      Already have an account?{" "}
-                      <Link to="/user/user-login" className="font-bold text-[#58219f] hover:text-[#471b80] transition-colors">
-                        Sign In
-                      </Link>
-                    </p>
-                  </div>
+                {/* Sign In Link */}
+                <div className="text-center pb-0 mt-0">
+                  <p className="text-sm text-gray-600 font-medium mb-0">
+                    Already have an account?{" "}
+                    <Link to="/user/user-login" className="font-bold text-[#58219f] hover:text-[#471b80] transition-colors">
+                      Sign In
+                    </Link>
+                  </p>
+                </div>
 
-                </form>
+              </form>
             </div>
           </div>
 
         </div>
       </div>
-      
+
       {/* OTP Verification Modal */}
       {showOtpModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -481,15 +492,15 @@ const UserSignUp = () => {
               </div>
               <h3 className="text-xl font-bold text-[#4a2580]">Verify Mobile Number</h3>
               <p className="text-sm text-gray-500 mt-2">
-                We've sent a 6-digit OTP to <br/><span className="font-semibold text-gray-800">+{formData.phone}</span>
+                We've sent a 6-digit OTP to <br /><span className="font-semibold text-gray-800">+{formData.phone}</span>
               </p>
             </div>
-            
+
             <form onSubmit={handleVerifyAndSubmit}>
               <div className="mb-6">
-                <input 
-                  type="text" 
-                  maxLength="6" 
+                <input
+                  type="text"
+                  maxLength="6"
                   value={mobileOtpValue}
                   onChange={(e) => setMobileOtpValue(e.target.value.replace(/\D/g, ''))}
                   className="w-full px-4 py-3 border border-[#d1bcf5] rounded-xl focus:ring-[#58219f] focus:border-[#58219f] text-lg text-center tracking-[0.5em] font-bold"
@@ -497,7 +508,7 @@ const UserSignUp = () => {
                   autoFocus
                 />
               </div>
-              <button 
+              <button
                 type="submit"
                 disabled={otpVerifyLoading || mobileOtpValue.length < 6}
                 className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-md text-[15px] font-bold text-white transition-all bg-[#58219f] hover:bg-[#471b80] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#58219f] disabled:opacity-60 disabled:cursor-not-allowed"
@@ -505,10 +516,10 @@ const UserSignUp = () => {
                 {otpVerifyLoading ? "Verifying..." : "Verify & Create Account"}
               </button>
             </form>
-            
+
             <div className="text-center mt-5">
               <p className="text-xs text-gray-500">Didn't receive the code?</p>
-              <button 
+              <button
                 type="button"
                 onClick={handleSendOtp}
                 disabled={mobileOtpLoading}
