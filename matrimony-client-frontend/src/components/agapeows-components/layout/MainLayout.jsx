@@ -173,17 +173,21 @@ const MainLayout = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await getUserProfile(userId);
-      if (response.status === 200) {
-        // Update with fresh data from server
-        setUserName(response.data.data.userName || "User");
-        setUserImage(response.data.data.profileImage || null);
+      try {
+        const response = await getUserProfile(userId);
+        if (response.status === 200) {
+          // Update with fresh data from server
+          setUserName(response.data.data.userName || "User");
+          setUserImage(response.data.data.profileImage || null);
 
-        // Update storage to keep in sync
-        if (response.data.data.userName)
-          localStorage.setItem("userName", response.data.data.userName);
-        if (response.data.data.profileImage)
-          localStorage.setItem("userImage", response.data.data.profileImage);
+          // Update storage to keep in sync
+          if (response.data.data.userName)
+            localStorage.setItem("userName", response.data.data.userName);
+          if (response.data.data.profileImage)
+            localStorage.setItem("userImage", response.data.data.profileImage);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user profile in MainLayout:", error);
       }
     };
     if (userId) {
