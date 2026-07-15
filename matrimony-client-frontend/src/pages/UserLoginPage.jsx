@@ -40,6 +40,7 @@ const UserLoginPage = () => {
     }
     localStorage.setItem("rememberMe", formData.rememberMe.toString());
     sessionStorage.setItem("session_active", "true");
+    document.cookie = "browser_session=active; path=/";
 
     let redirectPath = location.state?.from || "/user/user-dashboard-page";
     if (location.state?.fromSignUp) {

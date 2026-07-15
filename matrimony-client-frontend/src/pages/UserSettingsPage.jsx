@@ -95,14 +95,25 @@ const UserSettingsPage = () => {
     }
   };
 
+  const validatePassword = (password) => {
+    if (password.length < 6 || password.length > 14) return "Password must be between 6 and 14 characters long";
+    if (!/[A-Z]/.test(password)) return "Password must contain at least one uppercase letter";
+    if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter";
+    if (!/\d/.test(password)) return "Password must contain at least one number";
+    if (!/\W/.test(password)) return "Password must contain at least one special character";
+    return null;
+  };
+
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
-    if (passwordData.newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters");
+
+    const passwordError = validatePassword(passwordData.newPassword);
+    if (passwordError) {
+      toast.error(passwordError);
       return;
     }
 
@@ -363,6 +374,9 @@ const UserSettingsPage = () => {
                                 onClick={() => setShowPassword(!showPassword)}
                               />
                             </div>
+                          </div>
+                          <div className="mb-3 text-muted small">
+                            Password must be at least 6 - 14 characters long and include an uppercase letter, a number, and a special character.
                           </div>
                           <div className="mb-3">
                             <label className="form-label">Confirm New Password</label>

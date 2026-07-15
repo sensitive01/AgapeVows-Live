@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchAllUserProfilesHome, getUserInfo } from "../../api/axiosService/userAuthService";
 import { useProfileNavigation } from "../../hooks/useProfileNavigation";
+import defaultProfileImg from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
 
 // Search dropdown component
 const SearchDropdown = ({
@@ -357,9 +358,12 @@ const HighlightedProfilesSection = () => {
                   >
                     <div className="relative h-[280px] overflow-hidden">
                       <img
-                        src={profile.profileImage || "/images/img-profile.jpg"}
+                        src={profile.profileImage || defaultProfileImg}
                         alt={profile.userName}
                         className={`w-full h-full object-cover ${!localStorage.getItem("userId") ? "blur-[8px]" : "blur-none"} scale-110 group-hover:scale-105 transition-transform duration-500`}
+                        onError={(e) => {
+                          e.target.src = defaultProfileImg;
+                        }}
                       />
 
                       {/* Watermark Overlay on the Right Side */}

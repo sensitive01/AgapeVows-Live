@@ -179,6 +179,10 @@ const AdminAddNewUser = () => {
 
     // --- Profile Visibility ---
     profileVisibility: "Public",
+    
+    // --- Upload Proof ---
+    idProofType: "",
+    idProofNumber: "",
   });
 
   // --- Profile Images ---
@@ -760,6 +764,8 @@ const AdminAddNewUser = () => {
 
               {/* UPLOAD PROOF */}
               <FormSection title="Upload Proof" id="upload_proof" activeTab={activeTab}>
+                <InputField label="ID Proof Type" name="idProofType" options={["Aadhar Card", "Passport"]} formData={formData} handleChange={handleChange} />
+                <InputField label="ID Proof Number" name="idProofNumber" formData={formData} handleChange={handleChange} />
                 <div className="col-md-6 mb-3">
                   <label className="form-label small fw-bold text-muted">ID Proof Document</label>
                   <input

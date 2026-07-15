@@ -161,18 +161,20 @@ function App() {
     // REMEMBER ME + SESSION CHECK
     // =============================================
     const rememberMe = localStorage.getItem("rememberMe");
-    const isSessionActive = sessionStorage.getItem("session_active");
+    const hasBrowserSession = document.cookie.includes("browser_session=active");
 
-    if (rememberMe === "false" && !isSessionActive) {
-      // If we don't have an active session for this tab, clear the global login state
+    if (rememberMe === "false" && !hasBrowserSession) {
+      // If we don't have an active session for this browser, clear the global login state
       localStorage.removeItem("userId");
       localStorage.removeItem("userName");
       localStorage.removeItem("userImage");
       localStorage.removeItem("gender");
       localStorage.removeItem("rememberMe");
       localStorage.removeItem("isProfileCompleted");
+      localStorage.removeItem("authToken");
     } else if (localStorage.getItem("userId")) {
-      // Mark this tab as having an active session
+      // Mark this browser session as active
+      document.cookie = "browser_session=active; path=/";
       sessionStorage.setItem("session_active", "true");
     }
 
@@ -195,6 +197,7 @@ function App() {
       localStorage.removeItem("isProfileCompleted");
       localStorage.removeItem("authToken");
       sessionStorage.removeItem("session_active");
+      document.cookie = "browser_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
       // Redirect to login
       window.location.href = "/user/user-login";

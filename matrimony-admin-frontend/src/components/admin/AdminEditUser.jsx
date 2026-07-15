@@ -188,6 +188,10 @@ const AdminEditUser = () => {
 
     // --- Profile Visibility ---
     profileVisibility: "Public",
+
+    // --- Upload Proof ---
+    idProofType: "",
+    idProofNumber: "",
   });
 
   // --- Profile Images ---
@@ -218,6 +222,8 @@ const AdminEditUser = () => {
             userMobile: userData.userMobile || "",
             dateOfBirth: userData.dateOfBirth?.split("T")[0] || "",
             hobbies: Array.isArray(userData.hobbies) ? userData.hobbies : [],
+            idProofType: userData.idProofType || "",
+            idProofNumber: userData.idProofNumber || "",
           });
 
           if (userData.profileImage) setProfileImagePreview(userData.profileImage);
@@ -573,6 +579,8 @@ const AdminEditUser = () => {
 
               {/* UPLOAD PROOF */}
               <FormSection title="Upload Proof" id="upload_proof" activeTab={activeTab}>
+                {renderField("ID Proof Type", "idProofType", "text", ["Aadhar Card", "Passport"], "6")}
+                {renderField("ID Proof Number", "idProofNumber", "text", null, "6")}
                 <div className="col-md-6 mb-3">
                   <label className="form-label small fw-bold text-muted">ID Proof Document</label>
                   <input
