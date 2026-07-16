@@ -244,7 +244,6 @@ const HighlightedProfilesSection = () => {
     "Marthoma",
     "Methodist",
     "Moravian",
-    "Muslim - Sunni",
     "Orthodox",
     "Orthodox - Knanaya",
     "Pentecost",

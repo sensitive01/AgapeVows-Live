@@ -199,7 +199,6 @@ const DENOMINATIONS = [
   "Marthoma",
   "Methodist",
   "Moravian",
-  "Muslim - Sunni",
   "Orthodox",
   "Orthodox - Knanaya",
   "Pentecost",

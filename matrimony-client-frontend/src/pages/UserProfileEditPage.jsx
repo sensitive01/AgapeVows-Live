@@ -1539,13 +1539,9 @@ const UserProfileEditPage = () => {
     }
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ========================
-    // Validation for Mandatory Fields
-    // ========================
     const missingFields = [];
     if (!formData.profileCreatedFor) missingFields.push("Profile Created By");
     if (!formData.gender) missingFields.push("Gender");
@@ -2889,7 +2885,6 @@ const UserProfileEditPage = () => {
                           "Marthoma",
                           "Methodist",
                           "Moravian",
-                          "Muslim - Sunni",
                           "Orthodox",
                           "Orthodox - Knanaya",
                           "Pentecost",
@@ -3752,7 +3747,6 @@ const UserProfileEditPage = () => {
                           "Marthoma",
                           "Methodist",
                           "Moravian",
-                          "Muslim - Sunni",
                           "Orthodox",
                           "Orthodox - Knanaya",
                           "Pentecost",
