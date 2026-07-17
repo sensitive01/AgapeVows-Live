@@ -3,6 +3,11 @@ const mongoose = require("mongoose");
 
 const adminSchema = new mongoose.Schema(
   {
+    adminName: {
+      type: String,
+      trim: true,
+      default: "Admin"
+    },
     adminEmail: {
       type: String,
       required: true,

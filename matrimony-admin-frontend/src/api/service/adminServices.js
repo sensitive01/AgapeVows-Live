@@ -1,4 +1,3 @@
-
 import { adminInstance } from "../axiosInstance";
 
 /* =========================
@@ -17,7 +16,11 @@ export const verifyAdmin = async (loginData) => {
    SUBADMIN MANAGEMENT
 ========================== */
 export const getAdminProfile = async (id) => {
-  return await adminInstance.get(`/get-admin-profile/${id}`);
+  return await adminInstance.get(`/get-admin-profile/${id}?t=${new Date().getTime()}`);
+};
+
+export const updateAdminProfile = async (id, data) => {
+  return await adminInstance.put(`/update-admin-profile/${id}`, data);
 };
 
 export const createSubadmin = async (data) => {
@@ -36,6 +39,20 @@ export const deleteSubadmin = async (id) => {
   return await adminInstance.delete(`/delete-subadmin/${id}`);
 };
 
+/* =========================
+   MASTER DATA MANAGEMENT
+========================== */
+export const getAllMasterData = async () => {
+  return await adminInstance.get(`/get-all-master-data`);
+};
+
+export const addMasterData = async (data) => {
+  return await adminInstance.post(`/add-master-data`, data);
+};
+
+export const updateMasterData = async (id, data) => {
+  return await adminInstance.put(`/update-master-data/${id}`, data);
+};
 
 
 /* =========================
@@ -46,7 +63,6 @@ export const deleteSubadmin = async (id) => {
 export const getAllUserData = async () => {
   return await adminInstance.get(`/get-all-users?t=${new Date().getTime()}`);
 };
-
 
 
 // Get Paid Users

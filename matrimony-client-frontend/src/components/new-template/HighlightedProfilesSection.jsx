@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchAllUserProfilesHome, getUserInfo } from "../../api/axiosService/userAuthService";
 import { useProfileNavigation } from "../../hooks/useProfileNavigation";
 import defaultProfileImg from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
+import { MasterDataContext } from "../../context/MasterDataContext";
 
 // Search dropdown component
 const SearchDropdown = ({
@@ -97,6 +98,7 @@ const HighlightedProfilesSection = () => {
   const [showDenominationDropdown, setShowDenominationDropdown] = useState(false);
   const navigate = useNavigate();
   const { navigateToProfile, renderLimitPopup } = useProfileNavigation();
+  const { denominations: fetchedDenominations } = useContext(MasterDataContext);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -201,62 +203,9 @@ const HighlightedProfilesSection = () => {
     return age;
   };
 
-  // Distinct denominations aligned with the edit profile master list
   const denominations = [
     "All",
-    "ACI - Anglican Church Of India",
-    "Adventist",
-    "AG - Assembly of God",
-    "Anglican",
-    "Anglo Indian",
-    "Apostolic",
-    "Baptist",
-    "Believers Church",
-    "Brethren",
-    "Catholic",
-    "Catholic - Knanaya",
-    "Catholic - Latin",
-    "Catholic - Malankara",
-    "Catholic - Roman",
-    "Catholic - Syro Malabar",
-    "Chaldean Syrian",
-    "Charismatic",
-    "Christian - Others",
-    "Church Of Christ",
-    "Church Of God",
-    "CNI - Church Of North India",
-    "Congregational",
-    "CPM - Ceylon Pentecostal Mission",
-    "CSI - Church Of South India",
-    "Don't wish to specify",
-    "Evangelist",
-    "Independent Church",
-    "Jacobite",
-    "Jacobite - Knanaya",
-    "Jehovah Shammah",
-    "Jehovah's Witnesses",
-    "Knanaya",
-    "Knanaya Catholic",
-    "Knanaya Jacobite",
-    "Latin Catholic",
-    "Lutheran",
-    "Malankara Catholic",
-    "Marthoma",
-    "Methodist",
-    "Moravian",
-    "Orthodox",
-    "Orthodox - Knanaya",
-    "Pentecost",
-    "Presbyterian",
-    "Protestant",
-    "Reformed",
-    "Revival",
-    "Salvation Army",
-    "Seventh-day Adventist",
-    "St. Thomas Evangelical",
-    "Syro Malabar",
-    "Syrian Catholic",
-    "TPM - The Pentecostal Mission",
+    ...fetchedDenominations,
     "Other",
   ];
 

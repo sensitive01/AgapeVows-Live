@@ -226,133 +226,120 @@ const UserInterest = () => {
     const currentData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
     return (
-      <div className="table-responsive mt-3 interest-responsive-table" style={{ background: "#fff", borderRadius: "12px", padding: "15px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)", border: "1px solid #eaeaea" }}>
-        <style>{`
-          @media (max-width: 768px) {
-            .interest-responsive-table {
-              overflow-x: visible !important;
-            }
-            .interest-responsive-table table, .interest-responsive-table thead, .interest-responsive-table tbody, .interest-responsive-table th, .interest-responsive-table td, .interest-responsive-table tr {
-              display: block;
-            }
-            .interest-responsive-table thead tr {
-              display: none;
-            }
-            .interest-responsive-table tr {
-              margin-bottom: 20px;
-              border: 1px solid #eaeaea;
-              border-radius: 12px;
-              padding: 20px 10px 15px 10px;
-              box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-              position: relative;
-              background: #fff;
-            }
-            .interest-responsive-table td {
-              border: none !important;
-              padding: 10px 5px !important;
-              text-align: center;
-              width: 100% !important;
-            }
-            /* Hide S.No */
-            .interest-responsive-table td:nth-child(1) {
-              display: none;
-            }
-            /* Stack details vertically */
-            .interest-responsive-table td:nth-child(3) > div {
-              flex-direction: column !important;
-              gap: 5px !important;
-            }
-            /* Position the Actions dropdown normally on mobile */
-            .interest-responsive-table td:nth-child(5) {
-              position: static;
-              margin-top: 15px;
-              width: 100% !important;
-              padding: 0 !important;
-            }
-            /* Make top right 3-dot circle smaller on mobile */
-            .interest-top-dropdown {
-              width: 32px !important;
-              height: 32px !important;
-              padding: 0 !important;
-              display: flex !important;
-              align-items: center !important;
-              justify-content: center !important;
-              font-size: 14px !important;
-            }
-          }
-        `}</style>
-        <table className="table align-middle table-hover">
-          <thead className="table-light">
-            <tr>
-              <th scope="col" style={{ width: "5%", color: "#444", fontWeight: "600" }}>S.No</th>
-              <th scope="col" style={{ width: "20%", textAlign: "center", color: "#444", fontWeight: "600" }}>Profile</th>
-              <th scope="col" style={{ width: "45%", textAlign: "center", color: "#444", fontWeight: "600" }}>Details</th>
-              <th scope="col" style={{ width: "15%", color: "#444", fontWeight: "600" }}>Date</th>
-              <th scope="col" style={{ width: "15%", textAlign: "center", color: "#444", fontWeight: "600" }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody style={{ borderTop: "none" }}>
-            {currentData.map((profile, index) => (
-                <tr key={profile._id}>
-                  <td style={{ fontWeight: "500", color: "#666", padding: "2px 8px" }}>{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                  {/* 1. Profile Section */}
-                  <td style={{ padding: "2px 8px" }}>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "5px", marginTop: "-35px", marginBottom: "-10px" }}>
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
-                        <div style={{ transform: "scale(0.65)", transformOrigin: "center bottom", marginTop: "-15px", marginBottom: "-15px", marginLeft: "20px", zIndex: 10 }}>
-                          <MembershipBadge user={profile.senderDetails} isMini={true} />
-                        </div>
-                        <div style={{ position: "relative", width: "130px", height: "130px", minWidth: "130px", flexShrink: 0 }}>
-                          <img
-                            src={profile.senderDetails.profileImage || dummyProfileImage}
-                            alt={profile.senderDetails.userName}
-                            style={{ width: "130px", height: "130px", minWidth: "130px", minHeight: "130px", objectFit: "cover", borderRadius: "50%", border: "none" }}
-                            onError={(e) => { e.target.onerror = null; e.target.src = dummyProfileImage; }}
-                          />
-                        {profile.senderDetails.idVerificationStatus === "Verified" && (
-                          <span className="badge bg-success shadow-sm" style={{ position: "absolute", bottom: "-5px", left: "50%", transform: "translateX(-50%)", fontSize: "0.5rem", padding: "2px 4px", borderRadius: "10px" }}>
-                            <i className="fa fa-check-circle"></i>
-                          </span>
-                        )}
-                      </div>
-                      </div>
-                      <h5 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "600", color: "#333", textAlign: "center", marginTop: "0", marginBottom: "0" }}>
-                        {profile.senderDetails.agwid}
-                      </h5>
-                    </div>
-                  </td>
+      <div className="db-inte-prof-list">
+        <ul>
+          {currentData.map((profile) => (
+            <li key={profile._id}>
+              <div
+                className="db-int-pro-1"
+                style={{
+                  position: "relative",
+                  width: "80px",
+                  height: "95px" // extra space for badge
+                }}
+              >
+                {/* Badge - TOP CENTER */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "0px",
+                    left: "50%",
+                    transform: "translateX(-50%) scale(0.7)",
+                    zIndex: 10
+                  }}
+                >
+                  <MembershipBadge user={profile.senderDetails} isMini={true} />
+                </div>
 
-                  {/* 2. Details Section */}
-                  <td style={{ color: "#555", fontSize: "0.85rem", padding: "2px 8px" }}>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
-                      <div style={{ whiteSpace: "nowrap" }}><strong>Age:</strong> {profile.senderDetails.age} yrs</div>
-                      <div style={{ whiteSpace: "nowrap" }}><strong>Height:</strong> {profile.senderDetails.height} cm</div>
-                      <div style={{ whiteSpace: "nowrap" }}><strong>City:</strong> {profile.senderDetails.city}</div>
-                      <div style={{ whiteSpace: "nowrap" }}><strong>Job:</strong> {profile.senderDetails.jobType || "Not specified"}</div>
-                    </div>
-                  </td>
+                {/* Profile Image */}
+                <img
+                  src={profile.senderDetails.profileImage || dummyProfileImage}
+                  alt={profile.senderDetails.userName}
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    objectFit: "cover",
+                    borderRadius: "8px",
+                    marginTop: "15px"
+                  }}
+                  onError={(e) => { e.target.onerror = null; e.target.src = dummyProfileImage; }}
+                />
 
-                  {/* 3. Date Section */}
-                  <td style={{ color: "#888", fontSize: "0.85rem", whiteSpace: "nowrap", padding: "2px 8px" }}>
-                    {new Date(profile.createdAt).toLocaleDateString()}
-                  </td>
+                {/* Watermark Overlay */}
+                <div
+                  style={{
+                    position: "absolute",
+                    right: "4px",
+                    top: "15px",
+                    bottom: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    pointerEvents: "none",
+                    userSelect: "none",
+                    zIndex: 5,
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "rgba(255, 255, 255, 0.7)",
+                      fontFamily: "'Outfit', 'Inter', sans-serif",
+                      fontSize: "8px",
+                      fontWeight: "1000",
+                      letterSpacing: "1px",
+                      whiteSpace: "nowrap",
+                      textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
+                      writingMode: "vertical-rl",
+                      transform: "rotate(180deg)",
+                    }}
+                  >
+                    AgapeVows.com
+                  </span>
+                </div>
+              </div>
+              
+                {/* Date at the extreme right */}
+                <span style={{ position: "absolute", right: "15px", top: "15px", fontSize: "0.85rem", color: "#888", fontWeight: "500" }}>
+                  {new Date(profile.createdAt).toLocaleDateString()}
+                </span>
 
-                  {/* 4. Actions Section */}
-                  <td style={{ overflow: "visible", padding: "2px 8px" }}>
-                    <div style={{ textAlign: "center" }}>
-                      <ProfileActionMenu 
-                        profile={profile} 
-                        activeTab={activeTab} 
-                        navigate={navigate} 
-                        handleAccept={handleAccept} 
-                        handleReject={handleReject} 
-                      />
-                    </div>
-                  </td>
-                </tr>
-            ))}
-          </tbody>
-        </table>
+                <div className="db-int-pro-2">
+                  <h5 style={{ margin: 0 }}>{profile.senderDetails.agwid}</h5>
+                
+                <ol className="poi">
+                  <li>
+                    Age: <strong>{profile.senderDetails.age || "N/A"}</strong>
+                  </li>
+                  <li>
+                    City: <strong>{profile.senderDetails.city || "N/A"}</strong>
+                  </li>
+                  <li>
+                    Profession: <strong>{profile.senderDetails.jobType || profile.senderDetails.occupation || "N/A"}</strong>
+                  </li>
+                  <li>
+                    Height: <strong>{profile.senderDetails.height ? `${profile.senderDetails.height} cm` : "N/A"}</strong>
+                  </li>
+                  <li>
+                    Language: <strong>{profile.senderDetails.motherTongue || "N/A"}</strong>
+                  </li>
+                  <li>
+                    Education: <strong>{profile.senderDetails.education || profile.senderDetails.degree || "N/A"}</strong>
+                  </li>
+                </ol>
+                
+                <div style={{ marginTop: "10px" }}>
+                  <ProfileActionMenu 
+                    profile={profile} 
+                    activeTab={activeTab} 
+                    navigate={navigate} 
+                    handleAccept={handleAccept} 
+                    handleReject={handleReject} 
+                  />
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
 
         {totalPages > 1 && (
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "15px", padding: "10px 5px", borderTop: "1px solid #eaeaea" }}>

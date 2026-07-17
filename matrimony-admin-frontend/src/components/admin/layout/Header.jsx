@@ -185,42 +185,24 @@ const Header = () => {
                       <ul>
                         <li>
                           <a
-                            href="/admin/settings-page"
+                            href="/admin/master-data"
                             onClick={(e) => {
                               if (!e.ctrlKey) {
                                 e.preventDefault();
-                                navigate("/admin/settings-page");
+                                navigate("/admin/master-data");
                               } else {
                                 e.preventDefault();
-                                const newTab = window.open("/admin/settings-page", "_blank");
+                                const newTab = window.open("/admin/master-data", "_blank");
                                 if (newTab) newTab.focus();
                               }
                             }}
                             className="waves-effect"
                           >
-                            <i className="fa fa-cogs" aria-hidden="true"></i>
-                            Site Setting{" "}
+                            <i className="fa fa-database" aria-hidden="true"></i>{" "}
+                            Master Data{" "}
                           </a>
                         </li>
-                        <li>
-                          <a
-                            href="/admin/seo-google-analystics-code"
-                            onClick={(e) => {
-                              if (!e.ctrlKey) {
-                                e.preventDefault();
-                                navigate("/admin/seo-google-analystics-code");
-                              } else {
-                                e.preventDefault();
-                                const newTab = window.open("/admin/seo-google-analystics-code", "_blank");
-                                if (newTab) newTab.focus();
-                              }
-                            }}
-                            className="waves-effect"
-                          >
-                            <i className="fa fa-list-ul" aria-hidden="true"></i>{" "}
-                            SEO Settings{" "}
-                          </a>
-                        </li>
+
                         <li>
                           <a
                             href="admin-profile-filters.html"
@@ -250,6 +232,25 @@ const Header = () => {
                     </span>
                     <div className="smenu-open">
                       <ul>
+                        <li>
+                          <a
+                            href="/admin/profile"
+                            onClick={(e) => {
+                              if (!e.ctrlKey) {
+                                e.preventDefault();
+                                navigate("/admin/profile");
+                              } else {
+                                e.preventDefault();
+                                const newTab = window.open("/admin/profile", "_blank");
+                                if (newTab) newTab.focus();
+                              }
+                            }}
+                            className="waves-effect"
+                          >
+                            <i className="fa fa-user" aria-hidden="true"></i>{" "}
+                            Profile{" "}
+                          </a>
+                        </li>
                         {adminRole === "superadmin" && (
                           <li>
                             <a
@@ -273,17 +274,16 @@ const Header = () => {
                         )}
                         <li>
                          <a
-  href="#"
-  className="waves-effect"
-  onClick={(e) => {
-    e.preventDefault();
-    handleLogout();
-  }}
->
-  <i className="fa fa-sign-out" aria-hidden="true"></i>{" "}
-  Log out{" "}
-</a>
-
+                            href="#"
+                            className="waves-effect"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleLogout();
+                            }}
+                          >
+                            <i className="fa fa-sign-out" aria-hidden="true"></i>{" "}
+                            Log out{" "}
+                          </a>
                         </li>
                       </ul>
                     </div>

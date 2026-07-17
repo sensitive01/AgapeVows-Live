@@ -222,7 +222,7 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
 
     { path: "/user/short-listed-profiles-page", icon: "fa fa-bookmark", label: "Shortlist", unreadCount: userInfo?.unreadShortlistsCount || 0 },
     { path: "/user/who-viewed-you-page", icon: "fa fa-eye", label: "Viewed You", unreadCount: userInfo?.unreadViewsCount || 0 },
-    { path: "/user/photo-requests-page", icon: "fa fa-camera", label: "Photo Requests" },
+    { path: "/user/photo-requests-page", icon: "fa fa-camera", label: "Photo Requests", unreadCount: userInfo?.unreadPhotoRequestsCount || 0 },
     { path: "/user/blocked-profiles-page", icon: "fa fa-ban", label: "Blocked" },
     { path: "/user/user-plan-page", icon: "fa fa-credit-card", label: "Plan" },
     { path: "/user/user-settings-page", icon: "fa fa-cog", label: "Settings" },

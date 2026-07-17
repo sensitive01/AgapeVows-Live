@@ -27,3 +27,6 @@ dist-ssr
 # Unused Assets
 _quarantine_assets/
 unused_assets_results.json
+denominations.txt
+caste.txt
+denomination.txt

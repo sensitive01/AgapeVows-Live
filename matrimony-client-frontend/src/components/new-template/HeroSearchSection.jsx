@@ -20,57 +20,8 @@ const backgroundImages = [
   landingPageBg3
 ];
 
-// Communities data
-const communities = [
-  "Any",
-  "Adventist",
-  "AG (Assemblies of God)",
-  "ACI (Anglican Church of India)",
-  "Apostolic",
-  "Assyrian",
-  "Baptist",
-  "Basel Mission",
-  "Brethren",
-  "Calvinist",
-  "Cannonite",
-  "Chaldean Syrian",
-  "Cheramar",
-  "Church of Christ",
-  "Church of God",
-  "CNI (Church of North India)",
-  "Congregational",
-  "CSI (Church of South India)",
-  "Evangelical",
-  "Indian Orthodox Christian",
-  "IPC (Indian Pentecostal Church of God)",
-  "Jewish",
-  "Knanaya Catholic",
-  "Knanaya Jacobite",
-  "Knanaya Pentecostal",
-  "Latin Catholic",
-  "Latter Day Saints",
-  "Lutheran",
-  "Malabar Independent Syrian Church",
-  "Malankara Catholic",
-  "Malankara Mar Thoma (Marthoma)",
-  "Melkite",
-  "Mennonite",
-  "Methodist",
-  "Moravian",
-  "Nadar Christian",
-  "New Life Fellowship",
-  "Orthodox",
-  "Pentecost",
-  "Presbyterian",
-  "Protestant",
-  "RC Anglo Indian",
-  "Roman Catholic",
-  "Salvation Army",
-  "Seventh Day Adventist",
-  "Syrian Catholic",
-  "Syrian Orthodox",
-  "Syro Malabar",
-];
+import { useContext } from 'react';
+import { MasterDataContext } from '../../context/MasterDataContext';
 
 // Search dropdown component
 const SearchDropdown = ({
@@ -159,6 +110,8 @@ const SearchDropdown = ({
 
 export default function HeroSearchSection() {
   const navigate = useNavigate();
+  const { denominations = [] } = useContext(MasterDataContext) || {};
+  const communityOptions = ["Any", ...denominations, "Other"];
   const [formData, setFormData] = useState({
     lookingFor: "Groom",
     ageFrom: 25,
@@ -440,7 +393,7 @@ export default function HeroSearchSection() {
                     <label className="font-source font-medium">CHRISTIAN COMMUNITY</label>
                     <SearchDropdown
                       placeholder="Choose your Christian Community"
-                      options={communities}
+                      options={communityOptions}
                       value={formData.community}
                       onChange={(value) => handleInputChange("community", value)}
                       searchTerm={communitySearch}

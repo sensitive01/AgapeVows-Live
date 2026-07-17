@@ -5,6 +5,7 @@ import MatrimonyAdminLogin from "./components/admin/AdminLoginPage";
 
 import DashboardPage from "./components/admin/DashboardPage";
 import AdminAllUsersList from "./components/admin/AdminAllUsersList";
+import AdminIncompleteUsers from "./components/admin/AdminIncompleteUsers";
 import AdminFreeUserList from "./components/admin/AdminFreeUserList";
 import AdminPremiumUserList from "./components/admin/AdminPremiumUserList";
 import AdminAddNewUser from "./components/admin/AdminAddNewUser";
@@ -15,6 +16,7 @@ import AdminAllPayments from "./components/admin/AdminAllPayments";
 import AdminPricingPlans from "./components/admin/AdminPricingPlans";
 import AdminPaymentGateWay from "./components/admin/AdminPaymentGateWay";
 import AdminSettings from "./components/admin/AdminSettings";
+import AdminProfile from "./components/admin/AdminProfile";
 import AdminEvents from "./components/admin/AdminEvents";
 import AdminLayout from "./components/mainLayouts/AdminLayout";
 import AdminDeletedUsers from "./components/admin/AdminDeletedUsers";
@@ -33,6 +35,7 @@ import AdminVerifiedIdUsers from "./components/admin/AdminVerifiedIdUsers";
 import AdminDeactivatedUsers from "./components/admin/AdminDeactivatedUsers";
 import AdminContactUpdateRequests from "./components/admin/AdminContactUpdateRequests";
 import AdminSubadmins from "./components/admin/AdminSubadmins";
+import MasterDataManagement from "./components/admin/MasterDataManagement";
 
 function App() {
   useEffect(() => {
@@ -123,6 +126,14 @@ function App() {
           element={
             <AdminLayout>
               <AdminAllUsersList />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/incomplete-users"
+          element={
+            <AdminLayout>
+              <AdminIncompleteUsers />
             </AdminLayout>
           }
         />
@@ -249,6 +260,14 @@ function App() {
           }
         />
         <Route
+          path="/admin/profile"
+          element={
+            <AdminLayout>
+              <AdminProfile />
+            </AdminLayout>
+          }
+        />
+        <Route
           path="/admin/events"
           element={
             <AdminLayout>
@@ -342,6 +361,14 @@ function App() {
           element={
             <AdminLayout>
               <AdminSubadmins />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/master-data"
+          element={
+            <AdminLayout>
+              <MasterDataManagement />
             </AdminLayout>
           }
         />

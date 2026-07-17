@@ -1,4 +1,5 @@
 import React, { useEffect, Suspense } from "react";
+import { MasterDataProvider } from "./context/MasterDataContext";
 import {
   BrowserRouter as Router,
   Routes,
@@ -303,7 +304,8 @@ function App() {
   }, []);
 
   return (
-    <HelmetProvider>
+    <MasterDataProvider>
+      <HelmetProvider>
       <Router>
         <SEOManager />
         <ScrollToTop />
@@ -407,7 +409,8 @@ function App() {
           </Suspense>
         </ProfileCompletionGuard>
       </Router>
-    </HelmetProvider>
+      </HelmetProvider>
+    </MasterDataProvider>
   );
 }
 

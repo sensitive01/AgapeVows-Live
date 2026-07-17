@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { MasterDataContext } from "../context/MasterDataContext";
 
 const BannerAndSearch = () => {
   const navigate = useNavigate();
+  const { denominations = [] } = useContext(MasterDataContext) || {};
   const [formData, setFormData] = useState({
     lookingFor: "Male",
     age: "",
@@ -101,101 +103,13 @@ const BannerAndSearch = () => {
                             <option value="">
                               Choose your Christian Community
                             </option>
-                            <option value="Adventist">Adventist</option>
-                            <option value="AG">AG (Assemblies of God)</option>
-                            <option value="ACI">
-                              ACI (Anglican Church of India)
-                            </option>
-                            <option value="Apostolic">Apostolic</option>
-                            <option value="Assyrian">Assyrian</option>
-                            <option value="Baptist">Baptist</option>
-                            <option value="Basel Mission">Basel Mission</option>
-                            <option value="Brethren">Brethren</option>
-                            <option value="Calvinist">Calvinist</option>
-                            <option value="Cannonite">Cannonite</option>
-                            <option value="Chaldean Syrian">
-                              Chaldean Syrian
-                            </option>
-                            <option value="Cheramar">Cheramar</option>
-                            <option value="Church of Christ">
-                              Church of Christ
-                            </option>
-                            <option value="Church of God">Church of God</option>
-                            <option value="CNI">
-                              CNI (Church of North India)
-                            </option>
-                            <option value="Congregational">
-                              Congregational
-                            </option>
-                            <option value="CSI">
-                              CSI (Church of South India)
-                            </option>
-                            <option value="Evangelical">Evangelical</option>
-                            <option value="Indian Orthodox Christian">
-                              Indian Orthodox Christian
-                            </option>
-                            <option value="IPC">
-                              IPC (Indian Pentecostal Church of God)
-                            </option>
-                            <option value="Jewish">Jewish</option>
-                            <option value="Knanaya Catholic">
-                              Knanaya Catholic
-                            </option>
-                            <option value="Knanaya Jacobite">
-                              Knanaya Jacobite
-                            </option>
-                            <option value="Knanaya Pentecostal">
-                              Knanaya Pentecostal
-                            </option>
-                            <option value="Latin Catholic">
-                              Latin Catholic
-                            </option>
-                            <option value="Latter Day Saints">
-                              Latter Day Saints
-                            </option>
-                            <option value="Lutheran">Lutheran</option>
-                            <option value="Malabar Independent Syrian Church">
-                              Malabar Independent Syrian Church
-                            </option>
-                            <option value="Malankara Catholic">
-                              Malankara Catholic
-                            </option>
-                            <option value="Malankara Mar Thoma">
-                              Malankara Mar Thoma (Marthoma)
-                            </option>
-                            <option value="Melkite">Melkite</option>
-                            <option value="Mennonite">Mennonite</option>
-                            <option value="Methodist">Methodist</option>
-                            <option value="Moravian">Moravian</option>
-                            <option value="Nadar Christian">
-                              Nadar Christian
-                            </option>
-                            <option value="New Life Fellowship">
-                              New Life Fellowship
-                            </option>
-                            <option value="Orthodox">Orthodox</option>
-                            <option value="Pentecost">Pentecost</option>
-                            <option value="Presbyterian">Presbyterian</option>
-                            <option value="Protestant">Protestant</option>
-                            <option value="RC Anglo Indian">
-                              RC Anglo Indian
-                            </option>
-                            <option value="Roman Catholic">
-                              Roman Catholic
-                            </option>
-                            <option value="Salvation Army">
-                              Salvation Army
-                            </option>
-                            <option value="Seventh Day Adventist">
-                              Seventh Day Adventist
-                            </option>
-                            <option value="Syrian Catholic">
-                              Syrian Catholic
-                            </option>
-                            <option value="Syrian Orthodox">
-                              Syrian Orthodox
-                            </option>
-                            <option value="Syro Malabar">Syro Malabar</option>
+                            <option value="Any">Any</option>
+                            {denominations.map((denom, index) => (
+                              <option key={index} value={denom}>
+                                {denom}
+                              </option>
+                            ))}
+                            <option value="Other">Other</option>
                           </select>
                         </div>
                       </li>

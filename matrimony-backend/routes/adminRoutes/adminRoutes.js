@@ -69,6 +69,7 @@ adminRoutes.post("/upload-id-proof/:userId", upload.single("idProof"), adminCont
    DASHBOARD & USERS
 ========================== */
 adminRoutes.get("/get-admin-profile/:id", adminController.getAdminProfile);
+adminRoutes.put("/update-admin-profile/:id", adminController.updateAdminProfile);
 adminRoutes.post("/create-subadmin", adminController.createSubadmin);
 adminRoutes.get("/get-all-subadmins", adminController.getAllSubadmins);
 adminRoutes.put("/update-subadmin/:id", adminController.updateSubadmin);
@@ -207,6 +208,13 @@ adminRoutes.put(
 
 // Delete Blog
 adminRoutes.delete("/delete-blog/:id", blogController.deleteBlog);
+
+/* =========================
+   MASTER DATA MANAGEMENT
+========================== */
+adminRoutes.get("/get-all-master-data", adminController.getAllMasterData);
+adminRoutes.post("/add-master-data", adminController.addMasterData);
+adminRoutes.put("/update-master-data/:id", adminController.updateMasterData);
 
 /* =========================
    EXPORT (ALWAYS LAST)

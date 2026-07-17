@@ -2647,6 +2647,7 @@ const markNotificationsRead = async (req, res) => {
     if (type === 'interests') update.unreadInterestsCount = 0;
     else if (type === 'shortlists') update.unreadShortlistsCount = 0;
     else if (type === 'views') update.unreadViewsCount = 0;
+    else if (type === 'photorequests') update.unreadPhotoRequestsCount = 0;
     else {
       return res.status(400).json({ success: false, message: "Invalid type" });
     }

@@ -9,7 +9,7 @@ import { formatPhoneNumber } from '../../utils/formatters';
 
 
 
-const AdminAllUsersList = () => {
+const AdminIncompleteUsers = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,15 +52,20 @@ const AdminAllUsersList = () => {
       try {
         const response = await getAllUserData();
         if (response.status === 200) {
-          const mappedUsers = response.data.data.map((user) => ({
-            ...user,
-            city: user.city || "N/A",
-            planStart: user.planStart || "N/A",
-            expiryDate: user.expiryDate || "N/A",
-            payment: user.payment || "Pending",
-            planType: user.planType || "Basic",
-            profileImg: user.profileImage || "",
-          }));
+          const mappedUsers = response.data.data
+            .filter(user => {
+              // A profile is incomplete if the flag is false, or if key mandatory fields are missing
+              return user.isProfileCompleted === false || !user.gender || !user.dateOfBirth || !user.maritalStatus || !user.motherTongue;
+            })
+            .map((user) => ({
+              ...user,
+              city: user.city || "N/A",
+              planStart: user.planStart || "N/A",
+              expiryDate: user.expiryDate || "N/A",
+              payment: user.payment || "Pending",
+              planType: user.planType || "Basic",
+              profileImg: user.profileImage || "",
+            }));
           setUsers(mappedUsers);
           setFilteredUsers(mappedUsers);
         }
@@ -217,8 +222,8 @@ const AdminAllUsersList = () => {
 
       const ws = XLSX.utils.json_to_sheet(exportData);
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "All Users");
-      XLSX.writeFile(wb, `AgapeVows_Users_Export_${new Date().toISOString().split('T')[0]}.xlsx`);
+      XLSX.utils.book_append_sheet(wb, ws, "Incomplete Users");
+      XLSX.writeFile(wb, `AgapeVows_Incomplete_Users_Export_${new Date().toISOString().split('T')[0]}.xlsx`);
     } catch (error) {
       console.error("Export failed:", error);
       alert("Failed to export user data. Please try again.");
@@ -447,8 +452,8 @@ const AdminAllUsersList = () => {
           <div className="box-com box-qui box-lig box-tab">
             <div className="tit d-flex justify-content-between align-items-center">
               <div>
-                <h3>All Users</h3>
-                <p>All user profiles ({filteredUsers.length} users)</p>
+                <h3>Incomplete Profiles</h3>
+                <p>Users who haven't completed their profiles ({filteredUsers.length} users)</p>
               </div>
               <div className="d-flex gap-2">
                 <button
@@ -605,4 +610,4 @@ const AdminAllUsersList = () => {
   );
 };
 
-export default AdminAllUsersList;
+export default AdminIncompleteUsers;

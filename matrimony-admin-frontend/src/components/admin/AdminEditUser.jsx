@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { DROPDOWN_OPTIONS } from "../../utils/dropdownOptions";
 import { useParams, useNavigate } from "react-router-dom";
 import NewLayout from "./layout/NewLayout";
-import { getUserById, updateUserById, uploadIdProofByAdmin } from "../../api/service/adminServices";
+import { getUserById, updateUserById, uploadIdProofByAdmin, getAllMasterData } from "../../api/service/adminServices";
 import { confirmAction, showAlert } from "../../utils/alertService";
 import { Country, State, City } from "country-state-city";
 import BasicInfomation from "./BasicInfomation";
@@ -259,6 +259,33 @@ const AdminEditUser = () => {
   // --- Location Helpers (simplified for now to avoid complexity of nested loops) ---
   const allCountries = Country.getAllCountries();
 
+  // --- Master Data ---
+  const [casteOptions, setCasteOptions] = useState([]);
+  const [denominationOptions, setDenominationOptions] = useState([]);
+
+  useEffect(() => {
+    const fetchMasterData = async () => {
+      try {
+        const res = await getAllMasterData();
+        if (res.data?.success) {
+          const fetchedCastes = res.data.data
+            .filter((c) => c.type === "caste" && c.isActive)
+            .map((c) => c.name)
+            .sort((a, b) => a.localeCompare(b));
+          const fetchedDenominations = res.data.data
+            .filter((d) => d.type === "denomination" && d.isActive)
+            .map((d) => d.name)
+            .sort((a, b) => a.localeCompare(b));
+          setCasteOptions(fetchedCastes);
+          setDenominationOptions(fetchedDenominations);
+        }
+      } catch (err) {
+        console.error("Failed to fetch master data", err);
+      }
+    };
+    fetchMasterData();
+  }, []);
+
   // --- Fetch user data ---
   useEffect(() => {
     const fetchUser = async () => {
@@ -461,7 +488,7 @@ const AdminEditUser = () => {
                 {renderField("Drinking Habits", "drinkingHabits", "text", ["No", "Yes", "Occasionally"], "6")}
                 {renderField("Smoking Habits", "smokingHabits", "text", ["No", "Yes", "Occasionally"], "6")}
                 {renderField("Mother Tongue", "motherTongue", "text", null, "6")}
-                {renderField("Caste", "caste", "text", null, "6")}
+                {renderField("Caste", "caste", "text", casteOptions, "6")}
               </FormSection>
 
               {/* GALLERY */}
@@ -501,7 +528,7 @@ const AdminEditUser = () => {
 
               {/* RELIGIOUS */}
               <FormSection title="Religious Information" id="religious" activeTab={activeTab}>
-                {renderField("Denomination", "denomination", "text", null, "6")}
+                {renderField("Denomination", "denomination", "text", denominationOptions, "6")}
                 {renderField("Church Name", "church", "text", null, "6")}
                 {renderField("Church Activity", "churchActivity", "text", null, "6")}
                 {renderField("Pastors Name", "pastorsName", "text", null, "6")}
@@ -607,12 +634,12 @@ const AdminEditUser = () => {
                 {renderField("Desired Height To", "partnerHeightTo", "text", DROPDOWN_OPTIONS.height, "6")}
                 {renderField("Preferred Marital Status", "partnerMaritalStatus", "text", DROPDOWN_OPTIONS.partnerMaritalStatus, "6", true)}
                 {renderField("Preferred Mother Tongue", "partnerMotherTongue", "text", DROPDOWN_OPTIONS.partnerMotherTongue, "6", true)}
-                {renderField("Preferred Caste", "partnerCaste", "text", DROPDOWN_OPTIONS.partnerCaste, "6", true)}
+                {renderField("Preferred Caste", "partnerCaste", "text", casteOptions, "6", true)}
                 {renderField("Preferred Physical Status", "partnerPhysicalStatus", "text", DROPDOWN_OPTIONS.partnerPhysicalStatus, "6", true)}
                 {renderField("Preferred Eating Habits", "partnerEatingHabits", "text", DROPDOWN_OPTIONS.partnerEatingHabits, "6", true)}
                 {renderField("Preferred Drinking Habits", "partnerDrinkingHabits", "text", DROPDOWN_OPTIONS.partnerDrinkingHabits, "6", true)}
                 {renderField("Preferred Smoking Habits", "partnerSmokingHabits", "text", DROPDOWN_OPTIONS.partnerSmokingHabits, "6", true)}
-                {renderField("Preferred Denomination", "partnerDenomination", "text", DROPDOWN_OPTIONS.partnerDenomination, "6", true)}
+                {renderField("Preferred Denomination", "partnerDenomination", "text", denominationOptions, "6", true)}
                 {renderField("Preferred Spirituality", "partnerSpirituality", "text", DROPDOWN_OPTIONS.partnerSpirituality, "6", true)}
               </FormSection>
 

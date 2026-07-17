@@ -171,6 +171,16 @@ const Sidebar = () => {
                   </Link>
                 </li>
                 )}
+                {hasPermission("users.all") && (
+                <li>
+                  <Link 
+                    to="/admin/incomplete-users" 
+                    style={isActive("/admin/incomplete-users") ? activeLinkStyle : normalLinkStyle}
+                  >
+                    Incomplete Profiles
+                  </Link>
+                </li>
+                )}
                 {hasPermission("users.paid") && (
                 <li>
                   <Link 

@@ -33,56 +33,8 @@ const scrollbarStyles = `
 `;
 
 // Communities data
-const communities = [
-  "Any",
-  "Adventist",
-  "AG (Assemblies of God)",
-  "ACI (Anglican Church of India)",
-  "Apostolic",
-  "Assyrian",
-  "Baptist",
-  "Basel Mission",
-  "Brethren",
-  "Calvinist",
-  "Cannonite",
-  "Chaldean Syrian",
-  "Cheramar",
-  "Church of Christ",
-  "Church of God",
-  "CNI (Church of North India)",
-  "Congregational",
-  "CSI (Church of South India)",
-  "Evangelical",
-  "Indian Orthodox Christian",
-  "IPC (Indian Pentecostal Church of God)",
-  "Jewish",
-  "Knanaya Catholic",
-  "Knanaya Jacobite",
-  "Knanaya Pentecostal",
-  "Latin Catholic",
-  "Latter Day Saints",
-  "Lutheran",
-  "Malabar Independent Syrian Church",
-  "Malankara Catholic",
-  "Malankara Mar Thoma (Marthoma)",
-  "Melkite",
-  "Mennonite",
-  "Methodist",
-  "Moravian",
-  "Nadar Christian",
-  "New Life Fellowship",
-  "Orthodox",
-  "Pentecost",
-  "Presbyterian",
-  "Protestant",
-  "RC Anglo Indian",
-  "Roman Catholic",
-  "Salvation Army",
-  "Seventh Day Adventist",
-  "Syrian Catholic",
-  "Syrian Orthodox",
-  "Syro Malabar",
-];
+import { useContext } from "react";
+import { MasterDataContext } from "../../../context/MasterDataContext";
 
 // States data
 const states = [
@@ -198,7 +150,8 @@ const SearchDropdown = ({
 
 const HeroSection = () => {
   const navigate = useNavigate();
-
+  const { denominations = [] } = useContext(MasterDataContext) || {};
+  const communityOptions = ["Any", ...denominations, "Other"];
   // Form data state with age range (no location)
   const [formData, setFormData] = useState({
     lookingFor: "Groom",
@@ -515,7 +468,7 @@ const HeroSection = () => {
                 </label>
                 <SearchDropdown
                   placeholder="Choose your Christian Community"
-                  options={communities}
+                  options={communityOptions}
                   value={formData.community}
                   onChange={(value) => handleInputChange("community", value)}
                   searchTerm={communitySearch}

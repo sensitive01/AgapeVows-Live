@@ -152,16 +152,22 @@ const WhoViewedYou = () => {
                 {/* <h5>{profile.userName}</h5> */}
                 <ol className="poi">
                   <li>
-                    City: <strong>{profile.city}</strong>
+                    Age: <strong>{profile.age || "N/A"}</strong>
                   </li>
                   <li>
-                    Age: <strong>{profile.age}</strong>
+                    City: <strong>{profile.city || "N/A"}</strong>
                   </li>
                   <li>
-                    Height: <strong>{profile.height} cm</strong>
+                    Profession: <strong>{profile.jobType || profile.occupation || "N/A"}</strong>
                   </li>
                   <li>
-                    Education: <strong>{profile.degree}</strong>
+                    Height: <strong>{profile.height ? `${profile.height} cm` : "N/A"}</strong>
+                  </li>
+                  <li>
+                    Language: <strong>{profile.motherTongue || "N/A"}</strong>
+                  </li>
+                  <li>
+                    Education: <strong>{profile.education || profile.degree || "N/A"}</strong>
                   </li>
                 </ol>
                 <div className="d-flex gap-2 align-items-center">

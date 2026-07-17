@@ -1,5 +1,5 @@
 import Select from "react-select";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DROPDOWN_OPTIONS } from "../../utils/dropdownOptions";
 import { useNavigate } from "react-router-dom";
 import NewLayout from "./layout/NewLayout";
@@ -8,7 +8,7 @@ import BasicInfomation from "./BasicInfomation";
 import * as XLSX from "xlsx";
 import { Modal } from "react-bootstrap";
 import CustomTable from "./common/CustomTable";
-import { registerUserByAdmin, bulkRegisterUsersByAdmin, uploadIdProofByAdmin } from "../../api/service/adminServices";
+import { registerUserByAdmin, bulkRegisterUsersByAdmin, uploadIdProofByAdmin, getAllMasterData } from "../../api/service/adminServices";
 import { showAlert } from "../../utils/alertService";
 
 const FormSection = ({ title, children, id, activeTab }) => (
@@ -246,6 +246,32 @@ const AdminAddNewUser = () => {
   const [additionalImageFiles, setAdditionalImageFiles] = useState([]);
   const [additionalImagePreviews, setAdditionalImagePreviews] = useState([]);
   const [idProofFile, setIdProofFile] = useState(null);
+
+  const [casteOptions, setCasteOptions] = useState([]);
+  const [denominationOptions, setDenominationOptions] = useState([]);
+
+  useEffect(() => {
+    const fetchMasterData = async () => {
+      try {
+        const res = await getAllMasterData();
+        if (res.data?.success) {
+          const fetchedCastes = res.data.data
+            .filter((c) => c.type === "caste" && c.isActive)
+            .map((c) => c.name)
+            .sort((a, b) => a.localeCompare(b));
+          const fetchedDenominations = res.data.data
+            .filter((d) => d.type === "denomination" && d.isActive)
+            .map((d) => d.name)
+            .sort((a, b) => a.localeCompare(b));
+          setCasteOptions(fetchedCastes);
+          setDenominationOptions(fetchedDenominations);
+        }
+      } catch (err) {
+        console.error("Failed to fetch master data", err);
+      }
+    };
+    fetchMasterData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -650,7 +676,7 @@ const AdminAddNewUser = () => {
                 <InputField label="Drinking Habits" name="drinkingHabits" options={DROPDOWN_OPTIONS.drinkingHabits} formData={formData} handleChange={handleChange} />
                 <InputField label="Smoking Habits" name="smokingHabits" options={DROPDOWN_OPTIONS.smokingHabits} formData={formData} handleChange={handleChange} />
                 <InputField label="Mother Tongue" name="motherTongue" options={DROPDOWN_OPTIONS.motherTongue} formData={formData} handleChange={handleChange} />
-                <InputField label="Caste" name="caste" options={DROPDOWN_OPTIONS.caste} formData={formData} handleChange={handleChange} />
+                <InputField label="Caste" name="caste" options={casteOptions} formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* GALLERY */}
@@ -690,7 +716,7 @@ const AdminAddNewUser = () => {
 
               {/* RELIGIOUS */}
               <FormSection title="Religious Information" id="religious" activeTab={activeTab}>
-                <InputField label="Denomination" name="denomination" options={DROPDOWN_OPTIONS.denomination} formData={formData} handleChange={handleChange} />
+                <InputField label="Denomination" name="denomination" options={denominationOptions} formData={formData} handleChange={handleChange} />
                 <InputField label="Church Name" name="church" formData={formData} handleChange={handleChange} />
                 <InputField label="Church Activity" name="churchActivity" options={DROPDOWN_OPTIONS.churchActivity} formData={formData} handleChange={handleChange} />
                 <InputField label="Pastors Name" name="pastorsName" formData={formData} handleChange={handleChange} />
@@ -793,12 +819,12 @@ const AdminAddNewUser = () => {
                 <InputField label="Desired Height To" name="partnerHeightTo" options={DROPDOWN_OPTIONS.height} formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred Marital Status" name="partnerMaritalStatus" isMulti options={DROPDOWN_OPTIONS.partnerMaritalStatus} formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred Mother Tongue" name="partnerMotherTongue" isMulti options={DROPDOWN_OPTIONS.partnerMotherTongue} formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred Caste" name="partnerCaste" isMulti options={DROPDOWN_OPTIONS.partnerCaste} formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Caste" name="partnerCaste" isMulti options={casteOptions} formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred Physical Status" name="partnerPhysicalStatus" isMulti options={DROPDOWN_OPTIONS.partnerPhysicalStatus} formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred Eating Habits" name="partnerEatingHabits" isMulti options={DROPDOWN_OPTIONS.partnerEatingHabits} formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred Drinking Habits" name="partnerDrinkingHabits" isMulti options={DROPDOWN_OPTIONS.partnerDrinkingHabits} formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred Smoking Habits" name="partnerSmokingHabits" isMulti options={DROPDOWN_OPTIONS.partnerSmokingHabits} formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred Denomination" name="partnerDenomination" isMulti options={DROPDOWN_OPTIONS.partnerDenomination} formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Denomination" name="partnerDenomination" isMulti options={denominationOptions} formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred Spirituality" name="partnerSpirituality" isMulti options={DROPDOWN_OPTIONS.partnerSpirituality} formData={formData} handleChange={handleChange} />
               </FormSection>
 

@@ -4,6 +4,7 @@
 // const userAuthRoutes = express.Router();
 // const userAuthController = require("../../controller/userController/userAuthController")
 //  const userChatController = require("../../controller/userController/userChatController")
+const masterDataPublicController = require("../../controller/userController/masterDataPublicController");
 
 // const upload = multer({ dest: "uploads/" });
 
@@ -87,7 +88,7 @@ const fileFilter = (req, file, cb) => {
   const allowedTypes = [
     ".jpg", ".jpeg", ".png", ".webp",   // images
     ".mp4", ".mov", ".avi",             // videos
-    ".pdf", ".doc", ".docx", ".txt"     // documents ✅ NEW
+    ".pdf", ".doc", ".docx", ".txt"     // documents
   ];
 
   const ext = file.originalname
@@ -202,5 +203,8 @@ userAuthRoutes.post("/mark-notifications-read/:userId", userAuthController.markN
 
 // Privacy Settings Route
 userAuthRoutes.put("/update-privacy-settings/:userId", userAuthController.updatePrivacySettings);
+
+// Public Master Data Route
+userAuthRoutes.get("/public/master-data", masterDataPublicController.getPublicMasterData);
 
 module.exports = userAuthRoutes;

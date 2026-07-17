@@ -318,6 +318,7 @@ const userSchema = new mongoose.Schema(
       unreadInterestsCount: { type: Number, default: 0 },
       unreadShortlistsCount: { type: Number, default: 0 },
       unreadViewsCount: { type: Number, default: 0 },
+      unreadPhotoRequestsCount: { type: Number, default: 0 },
    },
    { timestamps: true }
 );

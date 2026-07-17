@@ -23,6 +23,10 @@ exports.requestPhoto = async (req, res) => {
     });
 
     await newRequest.save();
+
+    // Increment unread photo requests count for the receiver
+    await User.findByIdAndUpdate(receiverId, { $inc: { unreadPhotoRequestsCount: 1 } });
+
     return res.status(201).json({ success: true, message: "Photo requested successfully", data: newRequest });
   } catch (error) {
     console.error("Error in requestPhoto:", error);

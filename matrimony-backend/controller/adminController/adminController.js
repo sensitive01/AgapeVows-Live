@@ -8,6 +8,7 @@ const {
 } = require("../../config/variables/variables");
 const adminModel = require("../../model/admin/adminModel");
 const userModel = require("../../model/user/userModel");
+const masterDataModel = require("../../model/admin/masterDataModel");
 const { generateAgwid } = require("../userController/userSignupController");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("cloudinary").v2;
@@ -26,7 +27,7 @@ const registerAdmin = async (req, res) => {
     const adminEmail = ADMIN_EMAIL_ID;
     const adminPassword = ADMIN_PASSWORD;
 
-    const existingAdmin = await adminModel.findOne({ adminEmail });
+    const existingAdmin = await adminModel.findOne({ role: 'superadmin' });
 
     if (existingAdmin) {
       return res.status(200).json({
@@ -120,6 +121,10 @@ const getAllUsersData = async (req, res) => {
           profileImage: 1,
           agwid: 1,
           createdAt: 1,
+          isProfileCompleted: 1,
+          dateOfBirth: 1,
+          maritalStatus: 1,
+          motherTongue: 1,
         }
       )
       .sort({ createdAt: -1 });
@@ -964,6 +969,31 @@ const getAdminProfile = async (req, res) => {
   }
 };
 
+const updateAdminProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, password } = req.body;
+    
+    const updateData = {};
+    if (name) updateData.adminName = name;
+    if (email) updateData.adminEmail = email;
+    
+    if (password) {
+      updateData.adminPassword = await bcrypt.hash(password, 10);
+    }
+    
+    const updatedAdmin = await adminModel.findByIdAndUpdate(id, updateData, { new: true }).select("-adminPassword");
+    if (!updatedAdmin) {
+      return res.status(404).json({ success: false, message: "Admin not found" });
+    }
+    
+    res.status(200).json({ success: true, message: "Admin profile updated successfully", data: updatedAdmin });
+  } catch (err) {
+    console.error("Error updating admin profile:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 const createSubadmin = async (req, res) => {
   try {
     const { email, password, permissions } = req.body;
@@ -1083,6 +1113,61 @@ const uploadIdProofAdmin = async (req, res) => {
   }
 };
 
+/* =========================
+   MASTER DATA MANAGEMENT
+========================== */
+const getAllMasterData = async (req, res) => {
+  try {
+    const data = await masterDataModel.find().sort({ createdAt: -1 });
+    res.status(200).json({ success: true, data });
+  } catch (err) {
+    console.error("Error fetching master data:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+const addMasterData = async (req, res) => {
+  try {
+    const { name, type } = req.body;
+    
+    // Check if it already exists
+    const existing = await masterDataModel.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') }, type });
+    if (existing) {
+      return res.status(400).json({ success: false, message: `${type} with this name already exists` });
+    }
+
+    const newData = new masterDataModel({ name, type });
+    await newData.save();
+    
+    res.status(201).json({ success: true, message: `${type} added successfully`, data: newData });
+  } catch (err) {
+    console.error("Error adding master data:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+const updateMasterData = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, isActive } = req.body;
+    
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (isActive !== undefined) updateData.isActive = isActive;
+    
+    const updated = await masterDataModel.findByIdAndUpdate(id, updateData, { new: true });
+    
+    if (!updated) {
+      return res.status(404).json({ success: false, message: "Master data not found" });
+    }
+    
+    res.status(200).json({ success: true, message: "Updated successfully", data: updated });
+  } catch (err) {
+    console.error("Error updating master data:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 module.exports = {
   getPaidUsersData,
   registerAdmin,
@@ -1113,4 +1198,8 @@ module.exports = {
   getAllSubadmins,
   updateSubadmin,
   deleteSubadmin,
+  updateAdminProfile,
+  getAllMasterData,
+  addMasterData,
+  updateMasterData,
 };
