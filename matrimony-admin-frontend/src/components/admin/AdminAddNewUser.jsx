@@ -92,7 +92,7 @@ const InputField = ({ label, name, type = "text", options = null, isMulti = fals
 InputField.displayName = 'InputField';
 InputField.displayName = 'InputField';
 
-const RELATIONSHIP_OPTIONS = ["Self", "Father", "Mother", "Brother", "Sister", "Uncle", "Aunt", "Relative", "Friend", "Other"];
+
 const AdminAddNewUser = () => {
   const navigate = useNavigate();
   const [updating, setUpdating] = useState(false);

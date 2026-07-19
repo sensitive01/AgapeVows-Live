@@ -10,19 +10,7 @@ import BasicInfomation from "./BasicInfomation";
 import profImages from "/assets/images/profiles/1.jpg";
 
 // Define all options outside component to prevent inline array recreation
-const GENDER_OPTIONS = ["Male", "Female", "Other"];
-const PROFILE_CREATED_FOR_OPTIONS = ["Self", "Son", "Daughter", "Brother", "Sister", "Friend"];
-const MARITAL_STATUS_OPTIONS = ["Never Married", "Divorced", "Awaiting Divorce", "Widow/Widower"];
-const HEIGHT_OPTIONS = ["4ft", "4ft 1in", "4ft 2in", "4ft 3in", "4ft 4in", "4ft 5in", "4ft 6in", "4ft 7in", "4ft 8in", "4ft 9in", "4ft 10in", "4ft 11in", "5ft", "5ft 1in", "5ft 2in", "5ft 3in", "5ft 4in", "5ft 5in", "5ft 6in", "5ft 7in", "5ft 8in", "5ft 9in", "5ft 10in", "5ft 11in", "6ft", "6ft 1in", "6ft 2in", "6ft 3in", "6ft 4in", "6ft 5in", "6ft 6in", "6ft 7in", "6ft 8in", "6ft 9in", "6ft 10in", "6ft 11in", "7ft"];
-const BODY_TYPE_OPTIONS = ["Average", "Slim", "Athletic", "Heavy"];
-const COMPLEXION_OPTIONS = ["Fair", "Very Fair", "Wheatish", "Dark"];
-const EATING_HABITS_OPTIONS = ["Vegetarian", "Non-Vegetarian", "Eggetarian"];
-const FAMILY_VALUE_OPTIONS = ["Traditional", "Moderate", "Liberal"];
-const FAMILY_TYPE_OPTIONS = ["Joint", "Nuclear"];
-const FAMILY_STATUS_OPTIONS = ["Middle Class", "Upper Middle Class", "Rich", "Affluent"];
-const EMPLOYMENT_TYPE_OPTIONS = ["Government", "Private", "Business", "Self Employed", "Not Working"];
-const YES_NO_OPTIONS = ["No", "Yes", "Occasionally"];
-const RELATIONSHIP_OPTIONS = ["Self", "Father", "Mother", "Brother", "Sister", "Uncle", "Aunt", "Relative", "Friend", "Other"];
+// (Unused options removed, using DROPDOWN_OPTIONS from utils instead)
 
 // Memoized InputField component - prevents re-render on parent state changes
 const InputField = React.memo(({ label, name, type = "text", options = null, isMulti = false, col = "6", value, onChange }) => {
@@ -475,19 +463,19 @@ const AdminEditUser = () => {
                 {renderField("Account Password", "password", "password", null, "6")}
                 {renderField("About Me", "aboutMe", "textarea", null, "12")}
                 {renderField("Date of Birth", "dateOfBirth", "date", null, "6")}
-                {renderField("Gender", "gender", "text", ["Male", "Female", "Other"], "6")}
+                {renderField("Gender", "gender", "text", DROPDOWN_OPTIONS.gender, "6")}
                 {renderField("Profile Created By", "profileCreatedFor", "text", DROPDOWN_OPTIONS.profileCreatedFor, "6")}
-                {renderField("Marital Status", "maritalStatus", "text", ["Never Married", "Divorced", "Awaiting Divorce", "Widow/Widower"], "6")}
-                {renderField("Height", "height", "text", ["4ft", "4ft 1in", "4ft 2in", "4ft 3in", "4ft 4in", "4ft 5in", "4ft 6in", "4ft 7in", "4ft 8in", "4ft 9in", "4ft 10in", "4ft 11in", "5ft", "5ft 1in", "5ft 2in", "5ft 3in", "5ft 4in", "5ft 5in", "5ft 6in", "5ft 7in", "5ft 8in", "5ft 9in", "5ft 10in", "5ft 11in", "6ft", "6ft 1in", "6ft 2in", "6ft 3in", "6ft 4in", "6ft 5in", "6ft 6in", "6ft 7in", "6ft 8in", "6ft 9in", "6ft 10in", "6ft 11in", "7ft"], "6")}
+                {renderField("Marital Status", "maritalStatus", "text", DROPDOWN_OPTIONS.maritalStatus, "6")}
+                {renderField("Height", "height", "text", DROPDOWN_OPTIONS.height, "6")}
                 {renderField("Weight", "weight", "text", Array.from({ length: 101 }, (_, i) => String(i + 40)), "6")}
-                {renderField("Body Type", "bodyType", "text", ["Average", "Slim", "Athletic", "Heavy"], "6")}
-                {renderField("Complexion", "complexion", "text", ["Fair", "Very Fair", "Wheatish", "Dark"], "6")}
-                {renderField("Physical State", "physicalStatus", "text", ["Normal", "Physically Challenged"], "6")}
+                {renderField("Body Type", "bodyType", "text", DROPDOWN_OPTIONS.bodyType, "6")}
+                {renderField("Complexion", "complexion", "text", DROPDOWN_OPTIONS.complexion, "6")}
+                {renderField("Physical State", "physicalStatus", "text", DROPDOWN_OPTIONS.physicalStatus, "6")}
                 {renderField("Age", "age", "text", Array.from({ length: 53 }, (_, i) => String(i + 18)), "6")}
-                {renderField("Eating Habits", "eatingHabits", "text", ["Vegetarian", "Non-Vegetarian", "Eggetarian"], "6")}
-                {renderField("Drinking Habits", "drinkingHabits", "text", ["No", "Yes", "Occasionally"], "6")}
-                {renderField("Smoking Habits", "smokingHabits", "text", ["No", "Yes", "Occasionally"], "6")}
-                {renderField("Mother Tongue", "motherTongue", "text", null, "6")}
+                {renderField("Eating Habits", "eatingHabits", "text", DROPDOWN_OPTIONS.eatingHabits, "6")}
+                {renderField("Drinking Habits", "drinkingHabits", "text", DROPDOWN_OPTIONS.drinkingHabits, "6")}
+                {renderField("Smoking Habits", "smokingHabits", "text", DROPDOWN_OPTIONS.smokingHabits, "6")}
+                {renderField("Mother Tongue", "motherTongue", "text", DROPDOWN_OPTIONS.motherTongue, "6")}
                 {renderField("Caste", "caste", "text", casteOptions, "6")}
               </FormSection>
 
@@ -516,10 +504,10 @@ const AdminEditUser = () => {
                 {renderField("Mother's Profession", "mothersProfession", "text", null, "6")}
                 {renderField("Fathers' Native", "fathersNative", "text", null, "6")}
                 {renderField("Mothers' Native", "mothersNative", "text", null, "6")}
-                {renderField("Family Value", "familyValue", "text", ["Traditional", "Moderate", "Liberal"], "6")}
-                {renderField("Family Type", "familyType", "text", ["Joint", "Nuclear"], "6")}
-                {renderField("Residence type", "residenceType", "text", ["Apartment", "House", "Villa", "Townhouse", "Condo", "Duplex", "Other"], "6")}
-                {renderField("Family Status", "familyStatus", "text", ["Middle Class", "Upper Middle Class", "Rich", "Affluent"], "6")}
+                {renderField("Family Value", "familyValue", "text", DROPDOWN_OPTIONS.familyValue, "6")}
+                {renderField("Family Type", "familyType", "text", DROPDOWN_OPTIONS.familyType, "6")}
+                {renderField("Residence type", "residenceType", "text", DROPDOWN_OPTIONS.residenceType, "6")}
+                {renderField("Family Status", "familyStatus", "text", DROPDOWN_OPTIONS.familyStatus, "6")}
                 {renderField("No. of Brothers", "numberOfBrothers", "number", null, "6")}
                 {renderField("Married Brothers", "marriedBrothers", "number", null, "6")}
                 {renderField("No. of Sisters", "numberOfSisters", "number", null, "6")}
@@ -530,23 +518,23 @@ const AdminEditUser = () => {
               <FormSection title="Religious Information" id="religious" activeTab={activeTab}>
                 {renderField("Denomination", "denomination", "text", denominationOptions, "6")}
                 {renderField("Church Name", "church", "text", null, "6")}
-                {renderField("Church Activity", "churchActivity", "text", null, "6")}
+                {renderField("Church Activity", "churchActivity", "text", DROPDOWN_OPTIONS.churchActivity, "6")}
                 {renderField("Pastors Name", "pastorsName", "text", null, "6")}
-                {renderField("Spirituality", "spirituality", "text", null, "6")}
+                {renderField("Spirituality", "spirituality", "text", DROPDOWN_OPTIONS.spirituality, "6")}
                 {renderField("Religious Detail", "religiousDetail", "textarea", null, "12")}
               </FormSection>
 
               {/* PROFESSIONAL */}
               <FormSection title="Professional Information" id="professional" activeTab={activeTab}>
-                {renderField("Highest Education", "education", "text", null, "6")}
-                {renderField("Additional Education", "additionalEducation", "text", null, "6")}
+                {renderField("Highest Education", "education", "text", DROPDOWN_OPTIONS.education, "6")}
+                {renderField("Additional Education", "additionalEducation", "text", DROPDOWN_OPTIONS.additionalEducation, "6")}
                 {renderField("College", "college", "text", null, "6")}
                 {renderField("Education in Detail", "educationDetail", "textarea", null, "12")}
-                {renderField("Employee Type", "employmentType", "text", ["Government", "Private", "Business", "Self Employed", "Not Working"], "6")}
+                {renderField("Employee Type", "employmentType", "text", DROPDOWN_OPTIONS.employmentType, "6")}
                 {renderField("Position", "position", "text", null, "6")}
-                {renderField("Occupation", "occupation", "text", null, "6")}
+                {renderField("Occupation", "occupation", "text", DROPDOWN_OPTIONS.occupation, "6")}
                 {renderField("Company Name", "companyName", "text", null, "6")}
-                {renderField("Annual Income", "annualIncome", "text", null, "6")}
+                {renderField("Annual Income", "annualIncome", "text", DROPDOWN_OPTIONS.annualIncome, "6")}
               </FormSection>
 
               {/* CONTACT */}
@@ -554,7 +542,7 @@ const AdminEditUser = () => {
                 {renderField("Contact Person Name", "contactPersonName", "text", null, "6")}
                 {renderField("Relationship", "relationship", "text", DROPDOWN_OPTIONS.relationship, "6")}
                 {renderField("Citizen Of", "citizenOf", "text", Country.getAllCountries().map(c => c.name), "6")}
-                  {renderField("Alternate Mobile", "alternateMobile", "text", null, "6")}
+                {renderField("Alternate Mobile", "alternateMobile", "text", null, "6")}
                 {renderField("Alternate Email", "alternateEmail", "email", null, "6")}
                 {renderField("Landline", "landlineNumber", "text", null, "6")}
                 <div className="col-12 mt-4">
@@ -621,7 +609,7 @@ const AdminEditUser = () => {
                 {renderField("Music", "music", "text", null, "6")}
                 {renderField("Favorite Reads", "favouriteReads", "text", null, "6")}
                 {renderField("Favorite Cuisines", "favouriteCuisines", "text", null, "6")}
-                {renderField("Exercise", "exercise", "text", null, "6")}
+                {renderField("Exercise", "exercise", "text", DROPDOWN_OPTIONS.exercise, "6")}
                 {renderField("Sport Activities", "sportsActivities", "text", null, "6")}
                 {renderField("Dress Style", "dressStyles", "text", null, "6")}
               </FormSection>
