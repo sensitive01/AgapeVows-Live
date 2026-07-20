@@ -1646,8 +1646,8 @@ const UserProfileEditPage = () => {
       // Step 3: Handle profile image (with compression)
       // ========================
       const compressionOptions = {
-        maxSizeMB: 1, // compress to max 1MB
-        maxWidthOrHeight: 1920,
+        maxSizeMB: 0.4, // compress to max 400KB to easily fit within Vercel's 4.5MB serverless payload limit for 5+ images
+        maxWidthOrHeight: 1280,
         useWebWorker: true,
       };
 
@@ -1718,14 +1718,27 @@ const UserProfileEditPage = () => {
           navigate(`/user/user-dashboard-page`, { state: { profileJustCompleted: true } });
         }, 500);
       } else {
-        const errorMessage = response.data?.message || "Error updating profile. Please try again.";
+        let errorMessage = response.data?.message || "Error updating profile. Please try again.";
+        if (response.data?.error) {
+          errorMessage = `${errorMessage}: ${response.data.error}`;
+        }
         showAlert({ text: errorMessage, icon: "error" });
         console.error("Update failed:", response);
       }
     } catch (error) {
       console.error("Error submitting profile:", error);
-      const errorMessage =
+      let errorMessage =
         error.response?.data?.message || error.message || "Error updating profile. Please try again.";
+      
+      // If the backend provided a specific error reason, append it or use it
+      if (error.response?.data?.error) {
+        errorMessage = `${errorMessage}: ${error.response.data.error}`;
+      }
+        
+      if (errorMessage === "Network Error") {
+        errorMessage = "Failed to connect to the server. Your images might be too large, or your internet connection was interrupted. Please try uploading fewer images.";
+      }
+      
       showAlert({ text: errorMessage, icon: "error" });
     } finally {
       setIsSubmitting(false);
@@ -1812,7 +1825,14 @@ const UserProfileEditPage = () => {
       }
     } catch (error) {
       console.error("Error uploading ID proof (test route):", error);
-      showAlert({ text: "Error uploading ID proof. Please try again.", icon: "error" });
+      let errorMessage = error.response?.data?.message || error.message || "Error uploading ID proof. Please try again.";
+      if (error.response?.data?.error) {
+        errorMessage = `${errorMessage}: ${error.response.data.error}`;
+      }
+      if (errorMessage === "Network Error") {
+        errorMessage = "Failed to connect to the server. Your ID proof file might be too large, or your internet connection was interrupted.";
+      }
+      showAlert({ text: errorMessage, icon: "error" });
     } finally {
       setIsUploadingId(false);
     }

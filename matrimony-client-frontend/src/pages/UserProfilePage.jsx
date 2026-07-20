@@ -565,7 +565,7 @@ const UserProfilePage = () => {
         "numberOfSisters",
       ],
       religious: [
-        "religion",
+
         "denomination",
         "church",
         "churchActivity",
@@ -1289,7 +1289,7 @@ const UserProfilePage = () => {
                     title="Religious Information"
                     icon="fa-book"
                   >
-                    <InfoRow label="Religion" value={userInfo?.religion} />
+
                     <InfoRow
                       label="Denomination"
                       value={userInfo?.denomination}
@@ -1380,9 +1380,8 @@ const UserProfilePage = () => {
                       label="Permanent Address"
                       value={userInfo?.permanentAddress}
                     />
-                    <InfoRow label="City" value={userInfo?.city} />
-                    <InfoRow label="State" value={userInfo?.state} />
                     <InfoRow label="Pincode" value={userInfo?.pincode} />
+                    <InfoRow label="State" value={userInfo?.state} />
 
                   </ProfileSection>
 

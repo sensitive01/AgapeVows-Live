@@ -18,11 +18,41 @@ export default function AdminViewNewUser() {
     // =========================
     // ✅ INFO ROW COMPONENT
     // =========================
-    const InfoRow = ({ label, value }) => (
-        <p>
-            <strong>{label}:</strong> {value || "Not Provided"}
-        </p>
-    );
+    const InfoRow = ({ label, value }) => {
+        let displayValue = value;
+        if (Array.isArray(value)) {
+            displayValue = value.length > 0 ? value.join(', ') : null;
+        }
+
+        const isSerializedAddress = typeof displayValue === "string" && displayValue.includes("|||");
+
+        if (isSerializedAddress) {
+            const parts = String(displayValue).split("|||").map((p) => p && p.trim()).filter(Boolean);
+            const lines = [];
+            if (parts[0]) lines.push(parts[0]);
+            if (parts[1]) lines.push(parts[1]);
+            const cityStatePincode = [parts[4], parts[3], parts[5]].filter(Boolean).join(", ");
+            if (cityStatePincode) lines.push(cityStatePincode);
+            if (parts[2] && !lines.includes(parts[2])) lines.push(parts[2]);
+
+            return (
+                <p>
+                    <strong>{label}:</strong> {lines.map((ln, idx) => (
+                        <span key={idx}>
+                            {idx > 0 && <br />}
+                            {ln}
+                        </span>
+                    ))}
+                </p>
+            );
+        }
+
+        return (
+            <p>
+                <strong>{label}:</strong> {displayValue || "Not Provided"}
+            </p>
+        );
+    };
 
     // =========================
     // 🔥 FORMAT MOBILE NUMBER
@@ -360,60 +390,47 @@ export default function AdminViewNewUser() {
                     <div className="col-md-6">
                         <InfoRow label="Profile Created By" value={user.profileCreatedFor} />
                         <InfoRow label="Name" value={user.userName} />
-                        <InfoRow label="Email" value={user.userEmail} />
-                        <InfoRow label="Mobile" value={formatMobile(user.userMobile)} />
-                        <InfoRow label="Gender" value={user.gender} />
+                        <InfoRow label="Age" value={user.age ? `${user.age} Years` : "Not Provided"} />
                         <InfoRow
-                            label="Age"
-                            value={
-                                user.dateOfBirth ? `${calculateAge(user.dateOfBirth)} years` : "Not Provided"
-                            }
+                            label="DOB"
+                            value={formatDateDDMMYYYY(user.dateOfBirth)}
                         />
-                        <InfoRow
-                            label="Date of Birth"
-                            value={
-                                user.dateOfBirth
-                                    ? formatDateDDMMYYYY(user.dateOfBirth)
-                                    : "Not Provided"
-                            }
-                        />
-                        <InfoRow label="Marital Status" value={user.maritalStatus} />
+                        <InfoRow label="Height" value={user.height} />
+                        <InfoRow label="Weight" value={user.weight} />
+                        <InfoRow label="Physical Status" value={user.physicalStatus} />
                     </div>
 
                     <div className="col-md-6">
-                        <InfoRow label="Body Type" value={user.bodyType} />
-                        <InfoRow label="Physical Status" value={user.physicalStatus} />
-                        <InfoRow label="Complexion" value={user.complexion} />
-                        <InfoRow label="Blood Group" value={user.bloodGroup} />
+                        <InfoRow label="Marital Status" value={user.maritalStatus} />
+                        <InfoRow label="Eating Habits" value={user.eatingHabits} />
+                        <InfoRow label="Drinking" value={user.drinkingHabits} />
+                        <InfoRow label="Smoking" value={user.smokingHabits} />
                         <InfoRow label="Mother Tongue" value={user.motherTongue} />
-                        <InfoRow label="Country" value={user.country} />
-                        <InfoRow label="State" value={user.state} />
-                        <InfoRow label="City" value={user.city} />
+                        <InfoRow label="Gender" value={user.gender} />
                     </div>
                 </div>
                 <hr />
 
                 <h5 className="fw-bold mb-3">Contact Information</h5>
-<div className="row">
-  <div className="col-md-6">
-    <InfoRow label="Mobile Number" value={user.userMobile} />
-    <InfoRow label="Alternate Mobile" value={user.alternateMobile} />
-    <InfoRow label="Landline" value={user.landlineNumber} />
-    <InfoRow label="Email" value={user.userEmail} />
-    <InfoRow label="Current Address" value={user.currentAddress} />
-    <InfoRow label="City" value={user.city} />
-  </div>
-  <div className="col-md-6">
-    <InfoRow label="Permanent Address" value={user.permanentAddress} />
-    <InfoRow label="State" value={user.state} />
-    <InfoRow label="Pincode" value={user.pincode} />
-    <InfoRow label="Citizen Of" value={user.citizenOf} />
-    <InfoRow label="Contact Person" value={user.contactPersonName} />
-    <InfoRow label="Relationship" value={user.relationship} />
-  </div>
-</div>
+                <div className="row">
+                    <div className="col-md-6">
+                        <InfoRow label="Contact Person" value={user.contactPersonName} />
+                        <InfoRow label="Mobile Number" value={user.userMobile} />
+                        <InfoRow label="Alternate Mobile" value={user.alternateMobile} />
+                        <InfoRow label="Landline" value={user.landlineNumber} />
+                        <InfoRow label="Current Address" value={user.currentAddress} />
+                        <InfoRow label="Pincode" value={user.pincode} />
+                    </div>
+                    <div className="col-md-6">
+                        <InfoRow label="Relationship" value={user.relationship} />
+                        <InfoRow label="Email" value={user.contactEmail} />
+                        <InfoRow label="Citizen Of" value={user.citizenOf} />
+                        <InfoRow label="Permanent Address" value={user.permanentAddress} />
+                        <InfoRow label="State" value={user.state} />
+                    </div>
+                </div>
 
-<hr />
+                <hr />
 
                 {/* ================= ABOUT ================= */}
                 <h5 className="fw-bold mb-3">About Me</h5>
@@ -429,20 +446,21 @@ export default function AdminViewNewUser() {
                         <InfoRow label="Father's Occupation" value={user.fathersOccupation} />
                         <InfoRow label="Father's Profession" value={user.fathersProfession} />
                         <InfoRow label="Father's Native" value={user.fathersNative} />
+                        <InfoRow label="Family Value" value={user.familyValue} />
+                        <InfoRow label="Family Status" value={user.familyStatus} />
                         <InfoRow label="No. of Brothers" value={user.numberOfBrothers} />
-                         <InfoRow label="No. of Sisters" value={user.numberOfSisters} />
-                        <InfoRow label="Family Type" value={user.familyType} />
-
+                        <InfoRow label="No. of Sisters" value={user.numberOfSisters} />
                     </div>
 
                     <div className="col-md-6">
-                        <InfoRow label="Residence Type" value={user.residenceType} />
                         <InfoRow label="Mother's Name" value={user.mothersName} />
                         <InfoRow label="Mother's Occupation" value={user.mothersOccupation} />
+                        <InfoRow label="Mother's Profession" value={user.mothersProfession} />
                         <InfoRow label="Mother's Native" value={user.mothersNative} />
-                        <InfoRow label="Family Value" value={user.familyValue} />
-                        <InfoRow label="Family Status" value={user.familyStatus} />
-                       
+                        <InfoRow label="Family Type" value={user.familyType} />
+                        <InfoRow label="Residence Type" value={user.residenceType} />
+                        <InfoRow label="Married Brothers" value={user.marriedBrothers} />
+                        <InfoRow label="Married Sisters" value={user.marriedSisters} />
                     </div>
 
                     <hr />
@@ -463,7 +481,6 @@ export default function AdminViewNewUser() {
                             <InfoRow label="Position" value={user.position} />
                             <InfoRow label="Company Name" value={user.companyName} />
                             <InfoRow label="Annual Income" value={user.annualIncome} />
-                             <InfoRow label="Religious Detail" value={user.religiousDetail} />
                         </div>
                     </div>
                     <hr />
@@ -472,14 +489,14 @@ export default function AdminViewNewUser() {
                     <h5 className="fw-bold mb-3">Religious Information</h5>
                     <div className="row">
                         <div className="col-md-6">
-                            <InfoRow label="Religion Detail" value={user.religiousDetail} />
                             <InfoRow label="Denomination" value={user.denomination} />
-                            <InfoRow label="Caste" value={user.caste} />
+                            <InfoRow label="Church Activity" value={user.churchActivity} />
+                            <InfoRow label="Spirituality" value={user.spirituality} />
                         </div>
                         <div className="col-md-6">
                             <InfoRow label="Church" value={user.church} />
-                            <InfoRow label="Spirituality" value={user.spirituality} />
                             <InfoRow label="Pastor Name" value={user.pastorsName} />
+                            <InfoRow label="Religious Detail" value={user.religiousDetail} />
                         </div>
                     </div>
 
@@ -489,74 +506,73 @@ export default function AdminViewNewUser() {
                     <h5 className="fw-bold mb-3">Lifestyle & Hobbies</h5>
                     <div className="row">
                         <div className="col-md-6">
-                            <InfoRow label="Eating Habits" value={user.eatingHabits} />
-                            <InfoRow label="Drinking" value={user.drinkingHabits} />
-                            <InfoRow label="Smoking" value={user.smokingHabits} />
+                            <InfoRow label="Hobbies" value={user.hobbies} />
+                            <InfoRow label="Music" value={user.music} />
+                            <InfoRow label="Favourite Cuisines" value={user.favouriteCuisines} />
+                            <InfoRow label="Sports/Activities" value={user.sportsActivities} />
                         </div>
                         <div className="col-md-6">
-                            <InfoRow label="Exercise" value={user.exercise} />
-                            <InfoRow
-                                label="Hobbies"
-                                value={
-                                    user.hobbies?.length > 0
-                                        ? user.hobbies.join(", ")
-                                        : "Not Provided"
-                                }
-                            />
                             <InfoRow label="Interests" value={user.interests} />
+                            <InfoRow label="Favourite Reads" value={user.favouriteReads} />
+                            <InfoRow label="Exercise" value={user.exercise} />
+                            <InfoRow label="Dress Styles" value={user.dressStyles} />
                         </div>
                     </div>
 
                     <hr />
 
                     {/* ================= PARTNER PREFERENCES ================= */}
-                   <h5 className="fw-bold mb-3">Partner Preferences</h5>
+                    <h5 className="fw-bold mb-3">Partner Preferences</h5>
 
-{/* Basic & Religious */}
-<div className="row mb-3">
-  <div className="col-md-6">
-    <InfoRow
-      label="Age Range"
-      value={
-        user.partnerAgeFrom && user.partnerAgeTo
-          ? `${user.partnerAgeFrom} - ${user.partnerAgeTo} Years`
-          : "Not Provided"
-      }
-    />
-    <InfoRow
-      label="Height"
-      value={user.partnerHeight ? `${user.partnerHeight} cm` : "Not Provided"}
-    />
-    <InfoRow label="Marital Status" value={user.partnerMaritalStatus} />
-    <InfoRow label="Mother Tongue" value={user.partnerMotherTongue} />
-    <InfoRow label="Caste" value={user.partnerCaste} />
-  </div>
-  <div className="col-md-6">
-    <InfoRow label="Physical Status" value={user.partnerPhysicalStatus} />
-    <InfoRow label="Eating Habits" value={user.partnerEatingHabits} />
-    <InfoRow label="Drinking Habits" value={user.partnerDrinkingHabits} />
-    <InfoRow label="Smoking Habits" value={user.partnerSmokingHabits} />
-    <InfoRow label="Denomination" value={user.partnerDenomination} />
-   
-  </div>
-</div>
+                    <h6 className="fw-bold mb-3" style={{ color: "#5c2a9d", display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ width: "4px", height: "18px", background: "#5c2a9d", borderRadius: "2px" }}></span>
+                        Basic & Religious
+                    </h6>
+                    <div className="row mb-4">
+                        <div className="col-md-6">
+                            <InfoRow
+                                label="Age Range"
+                                value={
+                                    user.partnerAgeFrom && user.partnerAgeTo
+                                        ? `${user.partnerAgeFrom} - ${user.partnerAgeTo} Years`
+                                        : "Not Provided"
+                                }
+                            />
+                            <InfoRow label="Marital Status" value={user.partnerMaritalStatus} />
+                            <InfoRow label="Caste" value={user.partnerCaste} />
+                            <InfoRow label="Eating Habits" value={user.partnerEatingHabits} />
+                            <InfoRow label="Smoking Habits" value={user.partnerSmokingHabits} />
+                            <InfoRow label="Spirituality" value={user.partnerSpirituality} />
+                        </div>
+                        <div className="col-md-6">
+                            <InfoRow
+                                label="Height"
+                                value={user.partnerHeight ? `${user.partnerHeight} cm` : "Not Provided"}
+                            />
+                            <InfoRow label="Mother Tongue" value={user.partnerMotherTongue} />
+                            <InfoRow label="Physical Status" value={user.partnerPhysicalStatus} />
+                            <InfoRow label="Drinking Habits" value={user.partnerDrinkingHabits} />
+                            <InfoRow label="Denomination" value={user.partnerDenomination} />
+                        </div>
+                    </div>
 
-{/* Professional & Location */}
-<div className="row mb-3">
-  <div className="col-md-6">
-    
-    <InfoRow label="Education" value={user.partnerEducation} />
-    <InfoRow label="Employment Type" value={user.partnerEmploymentType} />
-    <InfoRow label="Occupation" value={user.partnerOccupation} />
-    <InfoRow label="Annual Income" value={user.partnerAnnualIncome} />
-  </div>
-  <div className="col-md-6">
-    <InfoRow label="Country" value={user.partnerCountry} />
-    <InfoRow label="State" value={user.partnerState} />
-    <InfoRow label="District" value={user.partnerDistrict} />
-     <InfoRow label="Spirituality" value={user.partnerSpirituality} />
-  </div>
-</div>
+                    <h6 className="fw-bold mb-3" style={{ color: "#5c2a9d", display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ width: "4px", height: "18px", background: "#5c2a9d", borderRadius: "2px" }}></span>
+                        Professional & Location
+                    </h6>
+                    <div className="row mb-3">
+                        <div className="col-md-6">
+                            <InfoRow label="Education" value={user.partnerEducation} />
+                            <InfoRow label="Occupation" value={user.partnerOccupation} />
+                            <InfoRow label="Country" value={user.partnerCountry} />
+                            <InfoRow label="District" value={user.partnerDistrict} />
+                        </div>
+                        <div className="col-md-6">
+                            <InfoRow label="Employment Type" value={user.partnerEmploymentType} />
+                            <InfoRow label="Annual Income" value={user.partnerAnnualIncome} />
+                            <InfoRow label="State" value={user.partnerState} />
+                        </div>
+                    </div>
 
 <hr />
 

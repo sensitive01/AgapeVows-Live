@@ -10,7 +10,7 @@ import { getTheProfieMoreDetails, getUserProfile, viewContactDetails, sendChatMe
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { showAlert, confirmAction } from "../../utils/alertService";
 
-import { faChurch, faHeart, faBriefcase, faInfoCircle, faUsers, faAddressCard, faMusic, faVideo } from '@fortawesome/free-solid-svg-icons';
+import { faChurch, faHeart, faBriefcase, faInfoCircle, faUsers, faAddressCard, faMusic, faVideo, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import profImage from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
 
 // Helper Components
@@ -791,11 +791,15 @@ const MoreDetails = () => {
                     </span>
                   )}
 
-                  {userInfo?.fathersNative && (
-                    <span style={chipStyle}>
-                      📍 {userInfo.fathersNative}
-                    </span>
-                  )}
+                  {(() => {
+                    const locationArray = [userInfo?.city, userInfo?.state, userInfo?.citizenOf].filter(Boolean);
+                    const locationString = locationArray.length > 0 ? locationArray.join(", ") : userInfo?.fathersNative;
+                    return locationString ? (
+                      <span style={chipStyle}>
+                        🌍 {locationString}
+                      </span>
+                    ) : null;
+                  })()}
 
                   {userInfo?.maritalStatus && (
                     <span style={chipStyle}>
@@ -809,11 +813,7 @@ const MoreDetails = () => {
                     </span>
                   )}
 
-                  {userInfo?.religion && (
-                    <span style={chipStyle}>
-                      ⛪ {userInfo.religion}
-                    </span>
-                  )}
+
                 </div>
               </div>
             )}
@@ -877,6 +877,14 @@ const MoreDetails = () => {
                 ],
               },
               {
+                title: "Location Details",
+                icon: faMapMarkerAlt,
+                data: [
+                  { label: "Country", value: (userInfo?.currentAddress?.split('|||')[2]?.trim()) || userInfo?.citizenOf },
+                  { label: "State", value: (userInfo?.currentAddress?.split('|||')[3]?.trim()) || userInfo?.state },
+                ],
+              },
+              {
                 title: "Family Details",
                 icon: faUsers,
                 data: [
@@ -900,7 +908,7 @@ const MoreDetails = () => {
                 title: "Religious Information",
                 icon: faChurch,
                 data: [
-                  { label: "Religion", value: userInfo?.religion },
+
                   { label: "Denomination", value: userInfo?.denomination },
                   { label: "Church", value: userInfo?.church },
                   { label: "Church Activity", value: userInfo?.churchActivity },

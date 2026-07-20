@@ -149,6 +149,7 @@ userAuthRoutes.post(
   upload.fields([
     { name: "profileImage", maxCount: 1 },
     { name: "additionalImages", maxCount: 10 },
+    { name: "selfIntroductionVideo", maxCount: 1 },
   ]),
   userAuthController.completeProfileData
 );

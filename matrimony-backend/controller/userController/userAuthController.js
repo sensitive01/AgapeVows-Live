@@ -726,15 +726,19 @@ const getProfileMoreInformation = async (req, res) => {
         } else {
           if (!profileData.profileViews.some(id => String(id) === String(viewerId))) {
             profileData.profileViews.push(viewerId);
-            await profileData.save();
-            await userModel.findByIdAndUpdate(profileId, { $inc: { unreadViewsCount: 1 } });
+            await userModel.findByIdAndUpdate(profileId, {
+              $addToSet: { profileViews: viewerId },
+              $inc: { unreadViewsCount: 1 }
+            });
           }
         }
       } else {
         if (!profileData.profileViews.some(id => String(id) === String(viewerId))) {
           profileData.profileViews.push(viewerId);
-          await profileData.save();
-          await userModel.findByIdAndUpdate(profileId, { $inc: { unreadViewsCount: 1 } });
+          await userModel.findByIdAndUpdate(profileId, {
+            $addToSet: { profileViews: viewerId },
+            $inc: { unreadViewsCount: 1 }
+          });
         }
       }
     }

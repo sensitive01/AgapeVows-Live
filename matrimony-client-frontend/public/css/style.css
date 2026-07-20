@@ -9088,8 +9088,9 @@ span.mail::before {
 .db-new-pro .profile {
   width: 100%;
   border-radius: 15px;
-  height: 200px;
+  height: 280px;
   object-fit: cover;
+  object-position: center 20%;
   transition: all 0.4s ease;
 }
 .db-new-pro div {
