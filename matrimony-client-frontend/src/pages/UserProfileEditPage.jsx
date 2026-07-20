@@ -1646,7 +1646,7 @@ const UserProfileEditPage = () => {
       // Step 3: Handle profile image (with compression)
       // ========================
       const compressionOptions = {
-        maxSizeMB: 0.4, // compress to max 400KB to easily fit within Vercel's 4.5MB serverless payload limit for 5+ images
+        maxSizeMB: 0.1, // compress to max 100KB to fit under Nginx default 1MB limits for up to 10 images
         maxWidthOrHeight: 1280,
         useWebWorker: true,
       };
