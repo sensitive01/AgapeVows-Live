@@ -249,7 +249,7 @@ const UserSignUp = () => {
         <div className="max-w-[1440px] mx-auto w-full px-4 sm:px-6 lg:px-12 py-12 flex flex-col lg:flex-row items-center justify-between z-10 relative">
 
           {/* Left Text Content */}
-          <div className="w-full lg:w-7/12 mb-12 lg:mb-0 text-left self-start lg:mt-8 lg:pl-12 pr-4">
+          <div className="w-full lg:w-7/12 mb-12 lg:mb-0 text-left self-start lg:-mt-12 lg:pl-12 pr-4">
             <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold text-[#4a2580] mb-2 leading-snug font-cormorant tracking-normal">
               Begin Your Journey
               with AgapeVows.<br />
@@ -261,9 +261,7 @@ const UserSignUp = () => {
                 Need help registering?
               </h3>
               <p className="text-[20px] text-[#4a2580] font-normal opacity-90 leading-snug">
-                Email your profile with your latest photos to <a href="mailto:profiles@agapevows.com" className="font-semibold underline">profiles@agapevows.com</a><br className="hidden sm:block" />
-                or WhatsApp us at <a href="https://wa.me/919663796699" className="font-semibold underline">+91 96637 96699</a>, and we’ll assist you<br className="hidden sm:block" />
-                with your profile creation.
+                Download our Profile Template <a href="/Profile-template.docx" download="Profile-Template.docx" target="_blank" rel="noopener noreferrer" className="font-semibold underline">here</a>. Complete it with your details and email it along with your latest photos to <a href="mailto:profiles@agapevows.com" className="font-semibold underline">profiles@agapevows.com</a>, or send it to us on WhatsApp at <a href="https://wa.me/919663796699" className="font-semibold underline">+91 96637 96699</a>. Our team will create your profile and help you get started.
               </p>
             </div>
 
