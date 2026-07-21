@@ -3241,9 +3241,10 @@ const UserProfileEditPage = () => {
                               justifyContent: "center",
                               cursor: "pointer",
                               color: "#6b7280",
+                              zIndex: 5
                             }}
                           >
-                            <i className="fas fa-times"></i>
+                            <i className="fa fa-times"></i>
                           </button>
                         </div>
                       )}
@@ -3371,9 +3372,10 @@ const UserProfileEditPage = () => {
                               justifyContent: "center",
                               cursor: "pointer",
                               color: "#6b7280",
+                              zIndex: 5
                             }}
                           >
-                            <i className="fas fa-times"></i>
+                            <i className="fa fa-times"></i>
                           </button>
                         </div>
                       )}
@@ -3448,9 +3450,10 @@ const UserProfileEditPage = () => {
                               justifyContent: "center",
                               cursor: "pointer",
                               color: "#6b7280",
+                              zIndex: 5
                             }}
                           >
-                            <i className="fas fa-times"></i>
+                            <i className="fa fa-times"></i>
                           </button>
                         </div>
                       )}
@@ -3702,9 +3705,10 @@ const UserProfileEditPage = () => {
                               justifyContent: "center",
                               cursor: "pointer",
                               color: "#6b7280",
+                              zIndex: 5
                             }}
                           >
-                            <i className="fas fa-times"></i>
+                            <i className="fa fa-times"></i>
                           </button>
                         </div>
                       )}
