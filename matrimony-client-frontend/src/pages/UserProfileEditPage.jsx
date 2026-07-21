@@ -1032,7 +1032,8 @@ const UserProfileEditPage = () => {
   ];
 
   const parentOccupationOptions = [
-    "Retired", "Business", "Government Employee", "Private Employee",
+    "Retired", "Business", "Ministry",
+                            "Government Employee", "Private Employee",
     "Professional", "Farmer", "Homemaker", "Others",
   ];
 
@@ -1435,6 +1436,8 @@ const UserProfileEditPage = () => {
                           "Government",
                           "Self Employed",
                           "Business",
+                          "Ministry",
+                            "Ministry",
                           "Not Working",
                           "Others"
                         ].includes(loadedData.employmentType)) {
@@ -1453,8 +1456,16 @@ const UserProfileEditPage = () => {
                           "Banking Professional",
                           "Beautician",
                           "Biologist / Botanist",
-                          "Business",
-                          "Chartered Accountant",
+                          "Pastor",
+                            "Priest",
+                            "Worship Leader",
+                            "Evangelist",
+                            "Missionary",
+                            "Theology Professor",
+                            "Counsellor",
+                            "Business",
+                          "Ministry",
+                            "Chartered Accountant",
                           "Civil Engineer",
                           "Clerical Official",
                           "Commercial Pilot",
@@ -3429,7 +3440,8 @@ const UserProfileEditPage = () => {
                           "Government",
                           "Self Employed",
                           "Business",
-                          "Not Working",
+                          "Ministry",
+                            "Not Working",
                           "Others"].includes(formData.employmentType) || !formData.employmentType) ? (
                         <FormInput
                           label="Employment Type"
@@ -3449,7 +3461,8 @@ const UserProfileEditPage = () => {
                           "Government",
                           "Self Employed",
                           "Business",
-                          "Not Working",
+                          "Ministry",
+                            "Not Working",
                           "Others"]}
                         />
                       ) : (
@@ -3500,8 +3513,16 @@ const UserProfileEditPage = () => {
                           "Banking Professional",
                           "Beautician",
                           "Biologist / Botanist",
-                          "Business",
-                          "Chartered Accountant",
+                          "Pastor",
+                            "Priest",
+                            "Worship Leader",
+                            "Evangelist",
+                            "Missionary",
+                            "Theology Professor",
+                            "Counsellor",
+                            "Business",
+                          "Ministry",
+                            "Chartered Accountant",
                           "Civil Engineer",
                           "Clerical Official",
                           "Commercial Pilot",
@@ -3616,8 +3637,16 @@ const UserProfileEditPage = () => {
                           "Banking Professional",
                           "Beautician",
                           "Biologist / Botanist",
-                          "Business",
-                          "Chartered Accountant",
+                          "Pastor",
+                            "Priest",
+                            "Worship Leader",
+                            "Evangelist",
+                            "Missionary",
+                            "Theology Professor",
+                            "Counsellor",
+                            "Business",
+                          "Ministry",
+                            "Chartered Accountant",
                           "Civil Engineer",
                           "Clerical Official",
                           "Commercial Pilot",
@@ -4179,7 +4208,8 @@ const UserProfileEditPage = () => {
                           "Government",
                           "Self Employed",
                           "Business",
-                          "Not Working",
+                          "Ministry",
+                            "Not Working",
                         ]}
                       />
                       <FormInput
@@ -4204,8 +4234,16 @@ const UserProfileEditPage = () => {
                           "Banking Professional",
                           "Beautician",
                           "Biologist / Botanist",
-                          "Business",
-                          "Chartered Accountant",
+                          "Pastor",
+                            "Priest",
+                            "Worship Leader",
+                            "Evangelist",
+                            "Missionary",
+                            "Theology Professor",
+                            "Counsellor",
+                            "Business",
+                          "Ministry",
+                            "Chartered Accountant",
                           "Civil Engineer",
                           "Clerical Official",
                           "Commercial Pilot",
