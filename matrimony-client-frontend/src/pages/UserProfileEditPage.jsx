@@ -285,7 +285,7 @@ const BasicInfomation = ({
         boxShadow: "0 4px 6px rgba(0,0,0,0.05)"
       }}>
         <p style={{ color: "#581c87", fontSize: "17px", margin: 0, fontWeight: "600", lineHeight: "1.6" }}>
-          Profiles with clear photos receive up to <span style={{ fontWeight: "800", color: "#6b21a8", fontSize: "20px" }}>8x more interests</span> and profile views. Upload your photos now to find better matches!
+          Profiles with clear photos receive up to <span style={{ fontWeight: "800", color: "#6b21a8", fontSize: "20px" }}>5x more profile views and interests</span>. Upload your photos today to improve your chances of finding the right match!
         </p>
       </div>
 
