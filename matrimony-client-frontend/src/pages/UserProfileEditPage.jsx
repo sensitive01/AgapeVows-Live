@@ -990,6 +990,10 @@ const UserProfileEditPage = () => {
   });
 
   const [isFatherOther, setIsFatherOther] = useState(false);
+    const [isEducationOther, setIsEducationOther] = useState(false);
+    const [isAdditionalEducationOther, setIsAdditionalEducationOther] = useState(false);
+    const [isEmploymentTypeOther, setIsEmploymentTypeOther] = useState(false);
+    const [isOccupationOther, setIsOccupationOther] = useState(false);
   const [isMotherOther, setIsMotherOther] = useState(false);
 
   const [profileImageFile, setProfileImageFile] = useState(null);
@@ -1336,7 +1340,213 @@ const UserProfileEditPage = () => {
           setFormData(loadedData);
 
           // Check if occupations are "Others"
-          if (loadedData.fathersOccupation && !parentOccupationOptions.includes(loadedData.fathersOccupation)) {
+          if (loadedData.education && ![
+                          "B.Arch",
+                          "B.Com",
+                          "B.Ed",
+                          "B.Pharm",
+                          "B.Sc",
+                          "B.Sc (Hons)",
+                          "B.E",
+                          "B.Tech",
+                          "BA",
+                          "BBA",
+                          "BCA",
+                          "BDS",
+                          "BHM",
+                          "BAMS",
+                          "BHMS",
+                          "BSw",
+                          "LLB",
+                          "M.Arch",
+                          "M.Com",
+                          "M.Ed",
+                          "M.Pharm",
+                          "M.Sc",
+                          "M.E",
+                          "M.Tech",
+                          "MA",
+                          "MBA",
+                          "MCA",
+                          "MDS",
+                          "MHM",
+                          "MSW",
+                          "LLM",
+                          "MBBS",
+                          "MD",
+                          "MS",
+                          "Ph.D",
+                          "Diploma",
+                          "Polytechnic",
+                          "Trade School",
+                          "Higher Secondary / Plus Two",
+                          "SSLC / 10th",
+                          "Others"
+                        ].includes(loadedData.education)) {
+              setIsEducationOther(true);
+            }
+            if (loadedData.additionalEducation && ![
+                          "B.Arch",
+                          "B.Com",
+                          "B.Ed",
+                          "B.Pharm",
+                          "B.Sc",
+                          "B.E",
+                          "B.Tech",
+                          "BA",
+                          "BBA",
+                          "BCA",
+                          "BDS",
+                          "BHM",
+                          "BAMS",
+                          "BHMS",
+                          "BSw",
+                          "LLB",
+                          "M.Arch",
+                          "M.Com",
+                          "M.Ed",
+                          "M.Pharm",
+                          "M.Sc",
+                          "M.E",
+                          "M.Tech",
+                          "MA",
+                          "MBA",
+                          "MCA",
+                          "MDS",
+                          "MHM",
+                          "MSW",
+                          "LLM",
+                          "MBBS",
+                          "MD",
+                          "MS",
+                          "Ph.D",
+                          "Diploma",
+                          "Polytechnic",
+                          "Trade School",
+                          "Higher Secondary / Plus Two",
+                          "SSLC / 10th",
+                          "Others"
+                        ].includes(loadedData.additionalEducation)) {
+              setIsAdditionalEducationOther(true);
+            }
+            if (loadedData.employmentType && ![
+                          "Private Sector",
+                          "Government",
+                          "Self Employed",
+                          "Business",
+                          "Not Working",
+                          "Others"
+                        ].includes(loadedData.employmentType)) {
+              setIsEmploymentTypeOther(true);
+            }
+            if (loadedData.occupation && ![
+                          "Accountant",
+                          "Actor",
+                          "Administrative Professional",
+                          "Advertising Professional",
+                          "Agri-Business Professional",
+                          "Air Hostess / Flight Attendant",
+                          "Architect",
+                          "Artist",
+                          "Auditor",
+                          "Banking Professional",
+                          "Beautician",
+                          "Biologist / Botanist",
+                          "Business",
+                          "Chartered Accountant",
+                          "Civil Engineer",
+                          "Clerical Official",
+                          "Commercial Pilot",
+                          "Company Secretary",
+                          "Computer Professional",
+                          "Consultant",
+                          "Contractor",
+                          "Cost Accountant",
+                          "Creative Person",
+                          "Customer Support Professional",
+                          "Defense Employee",
+                          "Dentist",
+                          "Designer",
+                          "Doctor",
+                          "Economist",
+                          "Engineer",
+                          "Engineer (Mechanical)",
+                          "Engineer (Project)",
+                          "Entertainment Professional",
+                          "Event Manager",
+                          "Executive",
+                          "Factory Worker",
+                          "Farmer",
+                          "Fashion Designer",
+                          "Finance Professional",
+                          "Flight Attendant",
+                          "Government Employee",
+                          "Graphic Designer",
+                          "Health Care Professional",
+                          "Hotel Management Professional",
+                          "HR Professional",
+                          "Human Resources Professional",
+                          "Indian Administrative Services (IAS)",
+                          "Indian Foreign Services (IFS)",
+                          "Indian Police Services (IPS)",
+                          "Interior Designer",
+                          "Investment Professional",
+                          "IT Professional",
+                          "Journalist",
+                          "Lawyer",
+                          "Lecturer",
+                          "Legal Professional",
+                          "Manager",
+                          "Marketing Professional",
+                          "Media Professional",
+                          "Medical Professional",
+                          "Merchant Naval Officer",
+                          "Microbiologist",
+                          "Military",
+                          "Model",
+                          "Musician",
+                          "Nurse",
+                          "Nutritionist",
+                          "Occupational Therapist",
+                          "Optician",
+                          "Pharmacist",
+                          "Photographer",
+                          "Physical Therapist",
+                          "Physician",
+                          "Pilot",
+                          "Police",
+                          "Politician",
+                          "Professor",
+                          "Psychologist",
+                          "Public Relations Professional",
+                          "Real Estate Professional",
+                          "Researcher",
+                          "Retired",
+                          "Sales Professional",
+                          "Scientist",
+                          "Secretary",
+                          "Security Professional",
+                          "Self Employed",
+                          "Social Worker",
+                          "Software Consultant",
+                          "Software Engineer",
+                          "Sportsman",
+                          "Student",
+                          "Teacher",
+                          "Technician",
+                          "Training Professional",
+                          "Transportation Professional",
+                          "Veterinary Doctor",
+                          "Volunteer",
+                          "Writer",
+                          "Zoologist",
+                          "Not Working",
+                          "Others"
+                        ].includes(loadedData.occupation)) {
+              setIsOccupationOther(true);
+            }
+            
+            if (loadedData.fathersOccupation && !parentOccupationOptions.includes(loadedData.fathersOccupation)) {
             setIsFatherOther(true);
           }
           if (loadedData.mothersOccupation && !parentOccupationOptions.includes(loadedData.mothersOccupation)) {
@@ -2905,15 +3115,7 @@ const UserProfileEditPage = () => {
                   {/* Professional Information Section */}
                   <FormSection title="Professional Information" zIndex={16}>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-x-[120px] md:gap-y-6'>
-                      <FormInput
-                        label="Highest Education"
-                        name="education"
-                        type="select"
-                        searchable={true}
-                        value={formData.education}
-                        onChange={handleInputChange}
-                        options={[
-                          "B.Arch",
+                      {!isEducationOther && ( ["B.Arch",
                           "B.Com",
                           "B.Ed",
                           "B.Pharm",
@@ -2953,18 +3155,99 @@ const UserProfileEditPage = () => {
                           "Trade School",
                           "Higher Secondary / Plus Two",
                           "SSLC / 10th",
-                          "Other",
-                        ]}
-                      />
-                      <FormInput
-                        label="Additional Education"
-                        name="additionalEducation"
-                        type="select"
-                        searchable={true}
-                        value={formData.additionalEducation}
-                        onChange={handleInputChange}
-                        options={[
-                          "B.Arch",
+                          "Others",].includes(formData.education) || !formData.education) ? (
+                        <FormInput
+                          label="Highest Education"
+                          name="education"
+                          type="select"
+                          searchable={true}
+                          value={formData.education}
+                          onChange={(e) => {
+                            if (e.target.value === "Others") {
+                              setIsEducationOther(true);
+                              setFormData(prev => ({ ...prev, education: "" }));
+                            } else {
+                              handleInputChange(e);
+                            }
+                          }}
+                          options={["B.Arch",
+                          "B.Com",
+                          "B.Ed",
+                          "B.Pharm",
+                          "B.Sc",
+                          "B.Sc (Hons)",
+                          "B.E",
+                          "B.Tech",
+                          "BA",
+                          "BBA",
+                          "BCA",
+                          "BDS",
+                          "BHM",
+                          "BAMS",
+                          "BHMS",
+                          "BSw",
+                          "LLB",
+                          "M.Arch",
+                          "M.Com",
+                          "M.Ed",
+                          "M.Pharm",
+                          "M.Sc",
+                          "M.E",
+                          "M.Tech",
+                          "MA",
+                          "MBA",
+                          "MCA",
+                          "MDS",
+                          "MHM",
+                          "MSW",
+                          "LLM",
+                          "MBBS",
+                          "MD",
+                          "MS",
+                          "Ph.D",
+                          "Diploma",
+                          "Polytechnic",
+                          "Trade School",
+                          "Higher Secondary / Plus Two",
+                          "SSLC / 10th",
+                          "Others",]}
+                        />
+                      ) : (
+                        <div style={{ position: "relative" }}>
+                          <FormInput
+                            label="Highest Education"
+                            name="education"
+                            value={formData.education}
+                            onChange={handleInputChange}
+                            placeholder="Enter highest education"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsEducationOther(false);
+                              setFormData(prev => ({ ...prev, education: "" }));
+                            }}
+                            style={{
+                              position: "absolute",
+                              right: "12px",
+                              bottom: "22px",
+                              background: "#f3f4f6",
+                              border: "none",
+                              borderRadius: "4px",
+                              width: "24px",
+                              height: "24px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              cursor: "pointer",
+                              color: "#6b7280",
+                            }}
+                          >
+                            <i className="fas fa-times"></i>
+                          </button>
+                        </div>
+                      )}
+                      {!isAdditionalEducationOther && ( ["B.Arch",
                           "B.Com",
                           "B.Ed",
                           "B.Pharm",
@@ -3003,9 +3286,97 @@ const UserProfileEditPage = () => {
                           "Trade School",
                           "Higher Secondary / Plus Two",
                           "SSLC / 10th",
-                          "Other",
-                        ]}
-                      />
+                          "Others",].includes(formData.additionalEducation) || !formData.additionalEducation) ? (
+                        <FormInput
+                          label="Additional Education"
+                          name="additionalEducation"
+                          type="select"
+                          searchable={true}
+                          value={formData.additionalEducation}
+                          onChange={(e) => {
+                            if (e.target.value === "Others") {
+                              setIsAdditionalEducationOther(true);
+                              setFormData(prev => ({ ...prev, additionalEducation: "" }));
+                            } else {
+                              handleInputChange(e);
+                            }
+                          }}
+                          options={["B.Arch",
+                          "B.Com",
+                          "B.Ed",
+                          "B.Pharm",
+                          "B.Sc",
+                          "B.E",
+                          "B.Tech",
+                          "BA",
+                          "BBA",
+                          "BCA",
+                          "BDS",
+                          "BHM",
+                          "BAMS",
+                          "BHMS",
+                          "BSw",
+                          "LLB",
+                          "M.Arch",
+                          "M.Com",
+                          "M.Ed",
+                          "M.Pharm",
+                          "M.Sc",
+                          "M.E",
+                          "M.Tech",
+                          "MA",
+                          "MBA",
+                          "MCA",
+                          "MDS",
+                          "MHM",
+                          "MSW",
+                          "LLM",
+                          "MBBS",
+                          "MD",
+                          "MS",
+                          "Ph.D",
+                          "Diploma",
+                          "Polytechnic",
+                          "Trade School",
+                          "Higher Secondary / Plus Two",
+                          "SSLC / 10th",
+                          "Others",]}
+                        />
+                      ) : (
+                        <div style={{ position: "relative" }}>
+                          <FormInput
+                            label="Additional Education"
+                            name="additionalEducation"
+                            value={formData.additionalEducation}
+                            onChange={handleInputChange}
+                            placeholder="Enter additional education"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsAdditionalEducationOther(false);
+                              setFormData(prev => ({ ...prev, additionalEducation: "" }));
+                            }}
+                            style={{
+                              position: "absolute",
+                              right: "12px",
+                              bottom: "22px",
+                              background: "#f3f4f6",
+                              border: "none",
+                              borderRadius: "4px",
+                              width: "24px",
+                              height: "24px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              cursor: "pointer",
+                              color: "#6b7280",
+                            }}
+                          >
+                            <i className="fas fa-times"></i>
+                          </button>
+                        </div>
+                      )}
                       <FormInput
                         label="College"
                         name="college"
@@ -3021,30 +3392,69 @@ const UserProfileEditPage = () => {
                           onChange={handleInputChange}
                         />
                       </div>
-                      <FormInput
-                        label="Employment Type"
-                        name="employmentType"
-                        type="select"
-                        searchable={true}
-                        value={formData.employmentType}
-                        onChange={handleInputChange}
-                        options={[
-                          "Private Sector",
+                      {!isEmploymentTypeOther && ( ["Private Sector",
                           "Government",
                           "Self Employed",
                           "Business",
                           "Not Working",
-                        ]}
-                      />
-                      <FormInput
-                        label="Occupation"
-                        name="occupation"
-                        type="select"
-                        searchable={true}
-                        value={formData.occupation}
-                        onChange={handleInputChange}
-                        options={[
-                          "Accountant",
+                          "Others"].includes(formData.employmentType) || !formData.employmentType) ? (
+                        <FormInput
+                          label="Employment Type"
+                          name="employmentType"
+                          type="select"
+                          searchable={true}
+                          value={formData.employmentType}
+                          onChange={(e) => {
+                            if (e.target.value === "Others") {
+                              setIsEmploymentTypeOther(true);
+                              setFormData(prev => ({ ...prev, employmentType: "" }));
+                            } else {
+                              handleInputChange(e);
+                            }
+                          }}
+                          options={["Private Sector",
+                          "Government",
+                          "Self Employed",
+                          "Business",
+                          "Not Working",
+                          "Others"]}
+                        />
+                      ) : (
+                        <div style={{ position: "relative" }}>
+                          <FormInput
+                            label="Employment Type"
+                            name="employmentType"
+                            value={formData.employmentType}
+                            onChange={handleInputChange}
+                            placeholder="Enter employment type"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsEmploymentTypeOther(false);
+                              setFormData(prev => ({ ...prev, employmentType: "" }));
+                            }}
+                            style={{
+                              position: "absolute",
+                              right: "12px",
+                              bottom: "22px",
+                              background: "#f3f4f6",
+                              border: "none",
+                              borderRadius: "4px",
+                              width: "24px",
+                              height: "24px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              cursor: "pointer",
+                              color: "#6b7280",
+                            }}
+                          >
+                            <i className="fas fa-times"></i>
+                          </button>
+                        </div>
+                      )}
+                      {!isOccupationOther && ( ["Accountant",
                           "Actor",
                           "Administrative Professional",
                           "Advertising Professional",
@@ -3145,8 +3555,159 @@ const UserProfileEditPage = () => {
                           "Writer",
                           "Zoologist",
                           "Not Working",
-                        ]}
-                      />
+                          "Others"].includes(formData.occupation) || !formData.occupation) ? (
+                        <FormInput
+                          label="Occupation"
+                          name="occupation"
+                          type="select"
+                          searchable={true}
+                          value={formData.occupation}
+                          onChange={(e) => {
+                            if (e.target.value === "Others") {
+                              setIsOccupationOther(true);
+                              setFormData(prev => ({ ...prev, occupation: "" }));
+                            } else {
+                              handleInputChange(e);
+                            }
+                          }}
+                          options={["Accountant",
+                          "Actor",
+                          "Administrative Professional",
+                          "Advertising Professional",
+                          "Agri-Business Professional",
+                          "Air Hostess / Flight Attendant",
+                          "Architect",
+                          "Artist",
+                          "Auditor",
+                          "Banking Professional",
+                          "Beautician",
+                          "Biologist / Botanist",
+                          "Business",
+                          "Chartered Accountant",
+                          "Civil Engineer",
+                          "Clerical Official",
+                          "Commercial Pilot",
+                          "Company Secretary",
+                          "Computer Professional",
+                          "Consultant",
+                          "Contractor",
+                          "Cost Accountant",
+                          "Creative Person",
+                          "Customer Support Professional",
+                          "Defense Employee",
+                          "Dentist",
+                          "Designer",
+                          "Doctor",
+                          "Economist",
+                          "Engineer",
+                          "Engineer (Mechanical)",
+                          "Engineer (Project)",
+                          "Entertainment Professional",
+                          "Event Manager",
+                          "Executive",
+                          "Factory Worker",
+                          "Farmer",
+                          "Fashion Designer",
+                          "Finance Professional",
+                          "Flight Attendant",
+                          "Government Employee",
+                          "Graphic Designer",
+                          "Health Care Professional",
+                          "Hotel Management Professional",
+                          "HR Professional",
+                          "Human Resources Professional",
+                          "Indian Administrative Services (IAS)",
+                          "Indian Foreign Services (IFS)",
+                          "Indian Police Services (IPS)",
+                          "Interior Designer",
+                          "Investment Professional",
+                          "IT Professional",
+                          "Journalist",
+                          "Lawyer",
+                          "Lecturer",
+                          "Legal Professional",
+                          "Manager",
+                          "Marketing Professional",
+                          "Media Professional",
+                          "Medical Professional",
+                          "Merchant Naval Officer",
+                          "Microbiologist",
+                          "Military",
+                          "Model",
+                          "Musician",
+                          "Nurse",
+                          "Nutritionist",
+                          "Occupational Therapist",
+                          "Optician",
+                          "Pharmacist",
+                          "Photographer",
+                          "Physical Therapist",
+                          "Physician",
+                          "Pilot",
+                          "Police",
+                          "Politician",
+                          "Professor",
+                          "Psychologist",
+                          "Public Relations Professional",
+                          "Real Estate Professional",
+                          "Researcher",
+                          "Retired",
+                          "Sales Professional",
+                          "Scientist",
+                          "Secretary",
+                          "Security Professional",
+                          "Self Employed",
+                          "Social Worker",
+                          "Software Consultant",
+                          "Software Engineer",
+                          "Sportsman",
+                          "Student",
+                          "Teacher",
+                          "Technician",
+                          "Training Professional",
+                          "Transportation Professional",
+                          "Veterinary Doctor",
+                          "Volunteer",
+                          "Writer",
+                          "Zoologist",
+                          "Not Working",
+                          "Others"]}
+                        />
+                      ) : (
+                        <div style={{ position: "relative" }}>
+                          <FormInput
+                            label="Occupation"
+                            name="occupation"
+                            value={formData.occupation}
+                            onChange={handleInputChange}
+                            placeholder="Enter occupation"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsOccupationOther(false);
+                              setFormData(prev => ({ ...prev, occupation: "" }));
+                            }}
+                            style={{
+                              position: "absolute",
+                              right: "12px",
+                              bottom: "22px",
+                              background: "#f3f4f6",
+                              border: "none",
+                              borderRadius: "4px",
+                              width: "24px",
+                              height: "24px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              cursor: "pointer",
+                              color: "#6b7280",
+                            }}
+                          >
+                            <i className="fas fa-times"></i>
+                          </button>
+                        </div>
+                      )}
                       <FormInput
                         label="Position"
                         name="position"
