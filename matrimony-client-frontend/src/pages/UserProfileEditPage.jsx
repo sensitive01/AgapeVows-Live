@@ -1788,7 +1788,7 @@ const UserProfileEditPage = () => {
     if (!formData.contactPersonName) missingFields.push("Contact Person Name");
     if (!formData.relationship) missingFields.push("Relationship with Contact Person");
     if (!formData.contactEmail) missingFields.push("Contact Email");
-    if (!formData.contactPhone) missingFields.push("Alternate Mobile Number");
+    if (!formData.contactPhone) missingFields.push("Contact Number");
     if (!formData.currentDoorNo || !formData.currentLocality || !formData.currentCountry || !formData.currentState || !formData.currentDistrict) {
       missingFields.push("Current Address (all fields)");
     }
@@ -3032,7 +3032,7 @@ const UserProfileEditPage = () => {
                       <ul style={{ paddingLeft: "20px", margin: "0", fontSize: "1.05rem", lineHeight: "1.7", display: "flex", flexDirection: "column", gap: "10px", fontWeight: "500" }}>
                         <li style={{ color: "#5c2a9d" }}>To help protect your privacy and avoid unwanted spam or fraudulent calls, AgapeVows recommends providing an alternate contact number for communication with interested matches. This number should be different from the primary phone number you have used to create your profile (if the profile was created using Bride or Groom’s phone number).</li>
                         <li style={{ color: "#5c2a9d" }}>You may update the contact details of a parent, family member, guardian, or trusted representative who can communicate on behalf of you. Only users who express interest in connecting with you will be able to view these details.</li>
-                        <li style={{ color: "#5c2a9d" }}>If you prefer to communicate directly with interested matches, you may enter your own phone number in the Alternate Mobile Number field.</li>
+                        <li style={{ color: "#5c2a9d" }}>If you prefer to communicate directly with interested matches, you may enter your own phone number in the Contact Number field.</li>
                       </ul>
                     </div>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-x-[120px] md:gap-y-6'>
@@ -3064,7 +3064,7 @@ const UserProfileEditPage = () => {
                         onChange={handleInputChange}
                       />
                       <FormInput
-                        label="Alternate Mobile Number"
+                        label="Contact Number"
                         name="contactPhone"
                         required
                         type="tel"
