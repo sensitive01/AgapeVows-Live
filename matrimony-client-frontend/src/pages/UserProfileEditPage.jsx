@@ -2945,6 +2945,36 @@ const UserProfileEditPage = () => {
                           options={["Own House", "Rented House", "Company Lease"]}
                         />
                       </div>
+                      
+                      <div className="col-span-1 md:col-span-2">
+                        <label style={{
+                          display: "block",
+                          marginBottom: "8px",
+                          fontWeight: "600",
+                          color: "#374151",
+                          fontSize: "14px",
+                        }}>
+                          Family Details
+                        </label>
+                        <textarea
+                          name="familyDetails"
+                          value={formData.familyDetails}
+                          onChange={handleInputChange}
+                          placeholder="Enter any additional family details here..."
+                          rows="4"
+                          style={{
+                            width: "100%",
+                            padding: "12px",
+                            border: "1px solid #d1d5db",
+                            borderRadius: "8px",
+                            backgroundColor: "#f9fafb",
+                            fontSize: "15px",
+                            color: "#1f2937",
+                            outline: "none",
+                            resize: "vertical"
+                          }}
+                        ></textarea>
+                      </div>
                     </div>
                   </FormSection>
 
