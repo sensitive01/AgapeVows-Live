@@ -880,6 +880,7 @@ const MoreDetails = () => {
                 title: "Location Details",
                 icon: faMapMarkerAlt,
                 data: [
+                  { label: "City", value: (userInfo?.currentAddress?.split('|||')[4]?.trim()) || userInfo?.city },
                   { label: "Country", value: (userInfo?.currentAddress?.split('|||')[2]?.trim()) || userInfo?.citizenOf },
                   { label: "State", value: (userInfo?.currentAddress?.split('|||')[3]?.trim()) || userInfo?.state },
                 ],
@@ -903,6 +904,9 @@ const MoreDetails = () => {
                   { label: "Residence Type", value: userInfo?.residenceType },
                   { label: "Family Status", value: userInfo?.familyStatus },
                 ],
+                fullWidthData: userInfo?.familyDetails ? [
+                  { label: "Family Details", value: userInfo?.familyDetails }
+                ] : []
               },
               {
                 title: "Religious Information",
@@ -988,6 +992,20 @@ const MoreDetails = () => {
                         ))}
                       </div>
                     </div>
+                    {section.fullWidthData && section.fullWidthData.length > 0 && (
+                      <div className="mt-4 flex flex-col">
+                        {section.fullWidthData.map((item, i) => (
+                           <div key={i} className="flex flex-col mb-3">
+                             <span className="font-source text-[16px] text-[#4b5563] font-semibold mb-1">
+                               {item.label}
+                             </span>
+                             <span className="font-source text-[16px] text-[#111827] whitespace-pre-wrap">
+                               {item.value}
+                             </span>
+                           </div>
+                        ))}
+                      </div>
+                    )}
                   </ProfileSection>
                 </React.Fragment>
               );

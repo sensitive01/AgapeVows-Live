@@ -65,6 +65,15 @@ adminRoutes.post("/verify-admin", adminController.verifyAdmin);
 // ID PROOF UPLOAD (ADMIN)
 adminRoutes.post("/upload-id-proof/:userId", upload.single("idProof"), adminController.uploadIdProofAdmin);
 
+adminRoutes.post(
+  "/upload-user-images/:userId",
+  upload.fields([
+    { name: "profileImage", maxCount: 1 },
+    { name: "additionalImages", maxCount: 10 },
+  ]),
+  adminController.uploadUserImagesAdmin
+);
+
 /* =========================
    DASHBOARD & USERS
 ========================== */

@@ -53,7 +53,7 @@ const UserCardImageSlider = ({ user, height = "220px", blur = false, onImageClic
       onImageClick(e);
       return;
     }
-    if (blur) return; // Disable zoom for blurred images
+    if (blur) return;
     setIsZoomOpen(true);
   };
 

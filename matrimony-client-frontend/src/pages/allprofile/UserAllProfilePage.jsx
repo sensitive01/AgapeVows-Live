@@ -544,9 +544,9 @@ const UserAllProfilePage = () => {
                           <div
                             onClick={(e) => handleViewProfile(e, user)}
                             style={{
-                              height: "160px",
-                              width: "220px",
-                              flex: "0 0 220px",
+                              height: "220px",
+                              width: "160px",
+                              flex: "0 0 160px",
                               overflow: "hidden",
                               borderRadius: "8px",
                               border: "1px solid #eedc9a",

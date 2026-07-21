@@ -191,6 +191,35 @@ const saveSignUpData = async (req, res) => {
       { expiresIn: '21d' }
     );
 
+    try {
+      const smsPayload = {
+        "sender_id": "AGVOWS",
+        "template_id": "1777178453882115102", // DLT template ID
+        "priority": 0,
+        "dcs": 0,
+        "messages": [
+          {
+            "mobile": phone,
+            "message": "Welcome to AgapeVows! Your account has been successfully created.\n\nPlease complete your profile and upload your recent photographs at https://agapevows.com to receive your matching profiles.\n\nNeed help? Write to us at support@agapevows.com or WhatsApp at +91 96637 96699. Best wishes from AgapeVows team.",
+            "transaction_id": `TXN-${Date.now()}`
+          }
+        ]
+      };
+
+      const smsResponse = await fetch('https://portal.weformsolution.com/sms/api/send-campaign', {
+        method: 'POST',
+        headers: {
+          'X-API-Key': process.env.SMS_API_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(smsPayload)
+      });
+      const smsResponseText = await smsResponse.text();
+      console.log(`Registration Confirmation SMS API Response: [${smsResponse.status}]`, smsResponseText);
+    } catch (smsError) {
+      console.error("Failed to send Registration Confirmation SMS:", smsError);
+    }
+
     res.status(201).json({
       message: "User registered successfully",
       token,

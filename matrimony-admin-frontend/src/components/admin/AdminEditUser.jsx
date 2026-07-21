@@ -3,16 +3,13 @@ import React, { useEffect, useState, useCallback } from "react";
 import { DROPDOWN_OPTIONS } from "../../utils/dropdownOptions";
 import { useParams, useNavigate } from "react-router-dom";
 import NewLayout from "./layout/NewLayout";
-import { getUserById, updateUserById, uploadIdProofByAdmin, getAllMasterData } from "../../api/service/adminServices";
+import { getUserById, updateUserById, uploadIdProofByAdmin, getAllMasterData, uploadUserImagesAdmin } from "../../api/service/adminServices";
 import { confirmAction, showAlert } from "../../utils/alertService";
 import { Country, State, City } from "country-state-city";
 import BasicInfomation from "./BasicInfomation";
 import profImages from "/assets/images/profiles/1.jpg";
 
-// Define all options outside component to prevent inline array recreation
-// (Unused options removed, using DROPDOWN_OPTIONS from utils instead)
 
-// Memoized InputField component - prevents re-render on parent state changes
 const InputField = React.memo(({ label, name, type = "text", options = null, isMulti = false, col = "6", value, onChange }) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPasswordField = type === "password";
@@ -144,6 +141,7 @@ const AdminEditUser = () => {
     familyType: "",
     familyStatus: "",
     residenceType: "",
+    familyDetails: "",
     numberOfBrothers: "",
     marriedBrothers: "",
     numberOfSisters: "",
@@ -289,6 +287,9 @@ const AdminEditUser = () => {
             userName: userData.userName || "",
             userEmail: userData.userEmail || "",
             userMobile: userData.userMobile || "",
+            familyStatus: userData.familyStatus || "",
+            residenceType: userData.residenceType || "",
+            familyDetails: userData.familyDetails || "",
             dateOfBirth: userData.dateOfBirth?.split("T")[0] || "",
             hobbies: Array.isArray(userData.hobbies) ? userData.hobbies : [],
             idProofType: userData.idProofType || "",
@@ -362,6 +363,19 @@ const AdminEditUser = () => {
         const idFormData = new FormData();
         idFormData.append("idProof", idProofFile);
         await uploadIdProofByAdmin(id, idFormData);
+      }
+
+      if (profileImageFile || additionalImageFiles.length > 0) {
+        const imageFormData = new FormData();
+        if (profileImageFile) {
+          imageFormData.append("profileImage", profileImageFile);
+        }
+        if (additionalImageFiles.length > 0) {
+          additionalImageFiles.forEach(file => {
+            imageFormData.append("additionalImages", file);
+          });
+        }
+        await uploadUserImagesAdmin(id, imageFormData);
       }
 
       if (response.status === 200) {
@@ -512,6 +526,7 @@ const AdminEditUser = () => {
                 {renderField("Married Brothers", "marriedBrothers", "number", null, "6")}
                 {renderField("No. of Sisters", "numberOfSisters", "number", null, "6")}
                 {renderField("Married Sisters", "marriedSisters", "number", null, "6")}
+                {renderField("Additional Family Details", "familyDetails", "textarea", null, "12")}
               </FormSection>
 
               {/* RELIGIOUS */}

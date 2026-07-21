@@ -164,6 +164,7 @@ const completeProfileData = async (req, res) => {
       familyType: req.body.familyType,
       familyStatus: req.body.familyStatus,
       residenceType: req.body.residenceType,
+      familyDetails: req.body.familyDetails,
       numberOfBrothers: req.body.numberOfBrothers,
       marriedBrothers: req.body.marriedBrothers,
       numberOfSisters: req.body.numberOfSisters,

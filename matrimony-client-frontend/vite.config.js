@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 
 export default defineConfig({
+  assetsInclude: ['**/*.docx'],
   plugins: [
     react(),
     ViteImageOptimizer({

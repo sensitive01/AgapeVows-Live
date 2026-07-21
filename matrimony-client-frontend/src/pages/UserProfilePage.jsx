@@ -320,33 +320,33 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
   return (
     <div className="col-12 mb-4">
       {userInfo?.idVerificationStatus === "Rejected" && (
-                              <div
-                                className="alert alert-danger mt-3 mb-0"
-                                role="alert"
-                              >
-                                <h6 className="alert-heading font-weight-bold mb-1">
-                                  <i className="fa fa-exclamation-circle me-2"></i>
-                                  Verification Failed
-                                </h6>
-                                <p className="mb-0 small">
-                                  Your verification failed. Please re-upload
-                                  your document with a clear and visible
-                                  picture.
-                                </p>
-                              </div>
-                            )}
-                            
-                            {userInfo?.profileVisibility === 'Hidden' && (
-                              <div className="alert alert-danger mt-3 mb-0 shadow-sm" role="alert" style={{ backgroundColor: '#fff5f5', color: '#c53030', border: '1px solid #feb2b2', borderRadius: '8px', padding: '15px' }}>
-                                <div className="d-flex align-items-start">
-                                  <i className="fa fa-eye-slash" style={{ fontSize: '24px', marginRight: '15px', marginTop: '3px' }}></i>
-                                  <div style={{ fontSize: '15px' }}>
-                                    <h6 className="fw-bold mb-1">Your Profile is Hidden</h6>
-                                    <p className="mb-0">You cannot view other profiles while your profile is hidden. <Link to="/user/user-settings-page" style={{ color: '#c53030', textDecoration: 'underline', fontWeight: 'bold' }}>Unhide Profile</Link></p>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
+        <div
+          className="alert alert-danger mt-3 mb-0"
+          role="alert"
+        >
+          <h6 className="alert-heading font-weight-bold mb-1">
+            <i className="fa fa-exclamation-circle me-2"></i>
+            Verification Failed
+          </h6>
+          <p className="mb-0 small">
+            Your verification failed. Please re-upload
+            your document with a clear and visible
+            picture.
+          </p>
+        </div>
+      )}
+
+      {userInfo?.profileVisibility === 'Hidden' && (
+        <div className="alert alert-danger mt-3 mb-0 shadow-sm" role="alert" style={{ backgroundColor: '#fff5f5', color: '#c53030', border: '1px solid #feb2b2', borderRadius: '8px', padding: '15px' }}>
+          <div className="d-flex align-items-start">
+            <i className="fa fa-eye-slash" style={{ fontSize: '24px', marginRight: '15px', marginTop: '3px' }}></i>
+            <div style={{ fontSize: '15px' }}>
+              <h6 className="fw-bold mb-1">Your Profile is Hidden</h6>
+              <p className="mb-0">You cannot view other profiles while your profile is hidden. <Link to="/user/user-settings-page" style={{ color: '#c53030', textDecoration: 'underline', fontWeight: 'bold' }}>Unhide Profile</Link></p>
+            </div>
+          </div>
+        </div>
+      )}
       <div style={{
         background: "#fff",
         borderRadius: "12px",
@@ -1283,6 +1283,16 @@ const UserProfilePage = () => {
                       label="Married Sisters"
                       value={userInfo?.marriedSisters}
                     />
+                    {userInfo?.familyDetails && (
+                      <div className="grid-span-full mt-3 flex flex-col" style={{ gridColumn: '1 / -1' }}>
+                        <span className="font-source text-[16px] text-[#4b5563] font-semibold mb-1">
+                          Family Details
+                        </span>
+                        <span className="font-source text-[16px] text-[#111827] whitespace-pre-wrap">
+                          {userInfo.familyDetails}
+                        </span>
+                      </div>
+                    )}
                   </ProfileSection>
 
                   <ProfileSection
@@ -1382,6 +1392,7 @@ const UserProfilePage = () => {
                     />
                     <InfoRow label="Pincode" value={userInfo?.pincode} />
                     <InfoRow label="State" value={userInfo?.state} />
+                    <InfoRow label="City" value={userInfo?.city} />
 
                   </ProfileSection>
 

@@ -161,6 +161,15 @@ export const uploadIdProofByAdmin = async (userId, formData) => {
   });
 };
 
+// Upload User Images (Profile + Additional)
+export const uploadUserImagesAdmin = async (userId, formData) => {
+  return await adminInstance.post(`/upload-user-images/${userId}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
 /* =========================
    PLAN MANAGEMENT
 ========================== */

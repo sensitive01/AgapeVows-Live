@@ -1168,11 +1168,70 @@ const updateMasterData = async (req, res) => {
   }
 };
 
+/* =========================
+   UPLOAD USER IMAGES (Admin)
+========================== */
+const uploadUserImagesAdmin = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const files = req.files;
+
+    if (!files) {
+      return res.status(400).json({ success: false, message: "No files uploaded" });
+    }
+
+    const updates = {};
+    const fs = require('fs');
+
+    // Profile Image
+    if (files?.profileImage?.[0]) {
+      const profile = await cloudinary.uploader.upload(
+        files.profileImage[0].path,
+        {
+          folder: `matrimony/users/${userId}/profileImage`,
+          resource_type: "auto",
+        }
+      );
+      updates.profileImage = profile.secure_url;
+      try { fs.unlinkSync(files.profileImage[0].path); } catch (e) {}
+    }
+
+    // Additional Images
+    if (files?.additionalImages?.length > 0) {
+      const additionalImageUrls = [];
+      for (const file of files.additionalImages) {
+        const result = await cloudinary.uploader.upload(file.path, {
+          folder: `matrimony/users/${userId}/additionalImages`,
+          resource_type: "auto",
+        });
+        additionalImageUrls.push(result.secure_url);
+        try { fs.unlinkSync(file.path); } catch (e) {}
+      }
+      
+      const user = await userModel.findById(userId);
+      let existingImages = user.additionalImages || [];
+      updates.additionalImages = [...existingImages, ...additionalImageUrls];
+    }
+
+    if (Object.keys(updates).length > 0) {
+      const updatedUser = await userModel.findByIdAndUpdate(userId, updates, { new: true });
+      return res.status(200).json({ success: true, data: updatedUser, message: "Images uploaded successfully" });
+    } else {
+      return res.status(200).json({ success: true, message: "No new images uploaded" });
+    }
+
+  } catch (err) {
+    console.error("Error in uploadUserImagesAdmin:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 module.exports = {
   getPaidUsersData,
   registerAdmin,
   verifyAdmin,
   uploadIdProofAdmin,
+  uploadUserImagesAdmin,
   getAllUsersData,
   deleteUser,
   permanentDeleteUser,

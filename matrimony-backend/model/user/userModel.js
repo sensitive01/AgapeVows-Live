@@ -116,6 +116,7 @@ const userSchema = new mongoose.Schema(
       familyType: { type: String },
       familyStatus: { type: String },
       residenceType: { type: String },
+      familyDetails: { type: String },
 
       numberOfBrothers: { type: String },
       marriedBrothers: { type: String },

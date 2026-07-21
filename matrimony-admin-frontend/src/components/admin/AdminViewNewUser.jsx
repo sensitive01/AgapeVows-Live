@@ -463,6 +463,12 @@ export default function AdminViewNewUser() {
                         <InfoRow label="Married Sisters" value={user.marriedSisters} />
                     </div>
 
+                    {user.familyDetails && (
+                        <div className="col-12">
+                            <InfoRow label="Family Details" value={user.familyDetails} />
+                        </div>
+                    )}
+
                     <hr />
 
                     {/* ================= PROFESSIONAL INFORMATION ================= */}
