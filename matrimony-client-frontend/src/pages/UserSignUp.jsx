@@ -249,7 +249,7 @@ const UserSignUp = () => {
         <div className="max-w-[1440px] mx-auto w-full px-4 sm:px-6 lg:px-12 py-12 flex flex-col lg:flex-row items-center justify-between z-10 relative">
 
           {/* Left Text Content */}
-          <div className="w-full lg:w-7/12 mb-12 lg:mb-0 text-left self-start lg:-mt-12 lg:pl-12 pr-4">
+          <div className="w-full lg:w-7/12 mb-12 lg:mb-0 text-left self-start lg:mt-0 lg:pl-12 pr-4">
             <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold text-[#4a2580] mb-2 leading-snug font-cormorant tracking-normal">
               Begin Your Journey
               with AgapeVows.<br />
