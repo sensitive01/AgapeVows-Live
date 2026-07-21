@@ -1257,6 +1257,7 @@ const UserProfileEditPage = () => {
             familyType: userData.familyType || "",
             familyStatus: userData.familyStatus || "",
             residenceType: userData.residenceType || "",
+              familyDetails: userData.familyDetails || "",
             numberOfBrothers: userData.numberOfBrothers || "",
             marriedBrothers: userData.marriedBrothers || "",
             numberOfSisters: userData.numberOfSisters || "",
