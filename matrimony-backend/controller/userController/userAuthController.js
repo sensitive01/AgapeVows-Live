@@ -239,6 +239,7 @@ const completeProfileData = async (req, res) => {
       partnerCountry: req.body.partnerCountry,
       partnerState: req.body.partnerState,
       partnerDistrict: req.body.partnerDistrict,
+      aboutPartner: req.body.aboutPartner,
       profileVisibility: req.body.profileVisibility,
 
       isProfileCompleted: true,

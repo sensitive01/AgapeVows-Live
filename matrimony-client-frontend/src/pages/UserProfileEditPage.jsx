@@ -55,6 +55,22 @@ const BasicInfomation = ({
   };
 
   const handleChooseFilesClick = () => {
+    if (!profileImagePreview) {
+      showAlert({
+        title: "Profile Picture Required",
+        text: "Please upload a profile picture first before uploading additional photos.",
+        icon: "warning",
+      });
+      return;
+    }
+    if (additionalImagePreviews && additionalImagePreviews.length >= 8) {
+      showAlert({
+        title: "Limit Reached",
+        text: "You can upload a maximum of 8 additional photos.",
+        icon: "warning",
+      });
+      return;
+    }
     additionalImagesInputRef.current?.click();
   };
 
@@ -123,10 +139,13 @@ const BasicInfomation = ({
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      border: "3px solid #e5e7eb",
-      color: "#9ca3af",
-      fontSize: "14px",
-      fontWeight: "500",
+      textAlign: "center",
+      padding: "16px",
+      border: "3px dashed #cbd5e1",
+      color: "#6b7280",
+      fontSize: "12px",
+      fontWeight: "600",
+      lineHeight: "1.3",
     },
     editIconOverlay: {
       position: "absolute",
@@ -294,7 +313,11 @@ const BasicInfomation = ({
       <div style={styles.contentRow}>
         <div style={styles.leftColumn}>
           <label style={styles.label}>Profile Picture:</label>
-          <div style={styles.profileImageContainer}>
+          <div
+            style={{ ...styles.profileImageContainer, cursor: "pointer" }}
+            onClick={handleEditIconClick}
+            title="Click here to upload your profile pic"
+          >
             {profileImagePreview ? (
               <img
                 src={profileImagePreview}
@@ -302,7 +325,9 @@ const BasicInfomation = ({
                 style={styles.profileImage}
               />
             ) : (
-              <div style={styles.profileImagePlaceholder}>No Image</div>
+              <div style={styles.profileImagePlaceholder}>
+                Click here to upload your profile pic
+              </div>
             )}
 
             <div
@@ -310,7 +335,10 @@ const BasicInfomation = ({
                 ...styles.editIconOverlay,
                 ...(isEditHovered && styles.editIconOverlayHover),
               }}
-              onClick={handleEditIconClick}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleEditIconClick();
+              }}
               onMouseEnter={() => setIsEditHovered(true)}
               onMouseLeave={() => setIsEditHovered(false)}
               title="Change profile picture"
@@ -324,7 +352,10 @@ const BasicInfomation = ({
                   ...styles.deleteIconOverlay,
                   ...(isDeleteHovered && styles.deleteIconOverlayHover),
                 }}
-                onClick={handleDeleteProfileImage}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteProfileImage();
+                }}
                 onMouseEnter={() => setIsDeleteHovered(true)}
                 onMouseLeave={() => setIsDeleteHovered(false)}
                 title="Delete profile picture"
@@ -465,128 +496,163 @@ const FormInput = ({
   layout = "horizontal",
   max,
   onClick,
-}) => (
-  <div className={`flex ${layout === "vertical" ? "flex-col" : "flex-col md:flex-row"} ${layout === "vertical" || type === "textarea" ? "items-start" : "items-start md:items-center"} gap-1 md:gap-2 mb-3 w-full`}>
-    <label
-      className={`text-sm font-semibold text-gray-700 m-0 block ${layout === "vertical" ? "w-full" : "w-full md:min-w-[130px] md:max-w-[130px]"}`}
-      style={{
-        marginTop: (type === "textarea" && layout !== "vertical") ? "10px" : "0",
-      }}
-    >
-      {label}
-      {required && (
-        <span style={{ color: "#ef4444", marginLeft: "4px" }}>*</span>
-      )}
-    </label>
-    <div style={{ flex: 1, width: "100%" }}>
-      {type === "select" && searchable ? (
-        <SearchableSelect
-          name={name}
-          value={value}
-          onChange={onChange}
-          options={options}
-          placeholder={`Select ${label}`}
-          disabled={readOnly}
-          isMulti={isMulti}
-        />
-      ) : type === "select" ? (
-        <select
-          name={name}
-          value={value || ""}
-          onChange={onChange}
-          required={required}
-          disabled={readOnly}
-          style={{
-            width: "100%",
-            padding: "10px 14px",
-            border: "2px solid #e5e7eb",
-            borderRadius: "6px",
-            fontSize: "14px",
-            color: readOnly ? "#9ca3af" : "#374151",
-            background: readOnly ? "#f3f4f6" : "#fff",
-            cursor: readOnly ? "not-allowed" : "pointer",
-            transition: "border-color 0.2s ease",
-            maxHeight: "200px",
-            overflowY: "auto",
-          }}
-        >
-          <option value="">Select {label}</option>
-          {options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      ) : type === "radio" ? (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", marginTop: "4px" }}>
-          {options.map((option) => (
-            <label key={option} style={{ display: "flex", alignItems: "center", gap: "6px", cursor: readOnly ? "not-allowed" : "pointer", fontSize: "14px", color: "#374151", fontWeight: "normal" }}>
-              <input
-                type="radio"
-                name={name}
-                value={option}
-                checked={value === option}
-                onChange={onChange}
-                disabled={readOnly}
-                style={{ cursor: readOnly ? "not-allowed" : "pointer", width: "16px", height: "16px", accentColor: "#5c2a9d" }}
-              />
-              {option}
+}) => {
+  const otherOption = (type === "select" && Array.isArray(options) && !isMulti) 
+    ? options.find(opt => opt === "Others" || opt === "Other") 
+    : null;
+  const isCustomValue = Boolean(otherOption && value && !options.includes(value));
+  const isOtherSelected = Boolean(otherOption && (value === "Others" || value === "Other" || isCustomValue));
+  const selectDisplayValue = isCustomValue ? otherOption : (value || "");
+  const textDisplayValue = isCustomValue ? value : "";
+
+  return (
+    <div id={name ? `form-input-${name}` : undefined} className={`flex ${layout === "vertical" ? "flex-col" : "flex-col md:flex-row"} ${layout === "vertical" || type === "textarea" ? "items-start" : "items-start md:items-center"} gap-1 md:gap-2 mb-3 w-full`}>
+      <label
+        className={`text-sm font-semibold text-gray-700 m-0 block ${layout === "vertical" ? "w-full" : "w-full md:min-w-[130px] md:max-w-[130px]"}`}
+        style={{
+          marginTop: (type === "textarea" && layout !== "vertical") ? "10px" : "0",
+        }}
+      >
+        {label}
+        {required && (
+          <span style={{ color: "#ef4444", marginLeft: "4px" }}>*</span>
+        )}
+      </label>
+      <div style={{ flex: 1, width: "100%" }}>
+        {type === "select" && searchable ? (
+          <SearchableSelect
+            name={name}
+            value={selectDisplayValue}
+            onChange={onChange}
+            options={options}
+            placeholder={`Select ${label}`}
+            disabled={readOnly}
+            isMulti={isMulti}
+          />
+        ) : type === "select" ? (
+          <select
+            name={name}
+            value={selectDisplayValue}
+            onChange={onChange}
+            required={required}
+            disabled={readOnly}
+            style={{
+              width: "100%",
+              padding: "10px 14px",
+              border: "2px solid #e5e7eb",
+              borderRadius: "6px",
+              fontSize: "14px",
+              color: readOnly ? "#9ca3af" : "#374151",
+              background: readOnly ? "#f3f4f6" : "#fff",
+              cursor: readOnly ? "not-allowed" : "pointer",
+              transition: "border-color 0.2s ease",
+              maxHeight: "200px",
+              overflowY: "auto",
+            }}
+          >
+            <option value="">Select {label}</option>
+            {options.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        ) : type === "radio" ? (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", marginTop: "4px" }}>
+            {options.map((option) => (
+              <label key={option} style={{ display: "flex", alignItems: "center", gap: "6px", cursor: readOnly ? "not-allowed" : "pointer", fontSize: "14px", color: "#374151", fontWeight: "normal" }}>
+                <input
+                  type="radio"
+                  name={name}
+                  value={option}
+                  checked={value === option}
+                  onChange={onChange}
+                  disabled={readOnly}
+                  style={{ cursor: readOnly ? "not-allowed" : "pointer", width: "16px", height: "16px", accentColor: "#5c2a9d" }}
+                />
+                {option}
+              </label>
+            ))}
+          </div>
+        ) : type === "textarea" ? (
+          <textarea
+            name={name}
+            value={value || ""}
+            onChange={onChange}
+            required={required}
+            placeholder={placeholder}
+            readOnly={readOnly}
+            rows={4}
+            style={{
+              width: "100%",
+              padding: "10px 14px",
+              border: "2px solid #e5e7eb",
+              borderRadius: "6px",
+              fontSize: "14px",
+              color: readOnly ? "#9ca3af" : "#374151",
+              background: readOnly ? "#f3f4f6" : "#fff",
+              resize: "vertical",
+              transition: "border-color 0.2s ease",
+            }}
+          />
+        ) : (
+          <input
+            type={type}
+            name={name}
+            value={value || ""}
+            onChange={onChange}
+            onClick={onClick}
+            required={required}
+            placeholder={placeholder}
+            readOnly={readOnly}
+            max={max}
+            style={{
+              width: "100%",
+              padding: "10px 14px",
+              border: "2px solid #e5e7eb",
+              borderRadius: "6px",
+              fontSize: "14px",
+              color: readOnly ? "#9ca3af" : "#374151",
+              background: readOnly ? "#f3f4f6" : "#fff",
+              cursor: readOnly ? "not-allowed" : "text",
+              transition: "border-color 0.2s ease",
+            }}
+          />
+        )}
+        {isOtherSelected && (
+          <div className="mt-2 w-full">
+            <label className="text-xs font-bold text-gray-700 mb-1 block">
+              Please specify {label} <span style={{ color: "#ef4444", marginLeft: "2px" }}>*</span>
             </label>
-          ))}
-        </div>
-      ) : type === "textarea" ? (
-        <textarea
-          name={name}
-          value={value || ""}
-          onChange={onChange}
-          required={required}
-          placeholder={placeholder}
-          readOnly={readOnly}
-          rows={4}
-          style={{
-            width: "100%",
-            padding: "10px 14px",
-            border: "2px solid #e5e7eb",
-            borderRadius: "6px",
-            fontSize: "14px",
-            color: readOnly ? "#9ca3af" : "#374151",
-            background: readOnly ? "#f3f4f6" : "#fff",
-            resize: "vertical",
-            transition: "border-color 0.2s ease",
-          }}
-        />
-      ) : (
-        <input
-          type={type}
-          name={name}
-          value={value || ""}
-          onChange={onChange}
-          onClick={onClick}
-          required={required}
-          placeholder={placeholder}
-          readOnly={readOnly}
-          max={max}
-          style={{
-            width: "100%",
-            padding: "10px 14px",
-            border: "2px solid #e5e7eb",
-            borderRadius: "6px",
-            fontSize: "14px",
-            color: readOnly ? "#9ca3af" : "#374151",
-            background: readOnly ? "#f3f4f6" : "#fff",
-            cursor: readOnly ? "not-allowed" : "text",
-            transition: "border-color 0.2s ease",
-          }}
-        />
-      )}
-      {helpText && (
-        <p style={{ fontSize: "12px", color: "#6b7280", marginTop: "4px" }}>
-          {helpText}
-        </p>
-      )}
+            <input
+              type="text"
+              name={name}
+              value={textDisplayValue}
+              onChange={onChange}
+              required={true}
+              placeholder={`Enter ${label.toLowerCase()}`}
+              style={{
+                width: "100%",
+                padding: "10px 14px",
+                border: "2px solid #cbd5e1",
+                borderRadius: "6px",
+                fontSize: "14px",
+                color: "#111827",
+                backgroundColor: "#ffffff",
+                fontWeight: "500",
+              }}
+            />
+          </div>
+        )}
+        {helpText && (
+          <p style={{ fontSize: "12px", color: "#6b7280", marginTop: "4px" }}>
+            {helpText}
+          </p>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const InlineFormInput = ({
   label,
@@ -600,76 +666,111 @@ const InlineFormInput = ({
   searchable = false,
   readOnly = false,
   autoComplete,
-}) => (
-  <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-2 mb-3 w-full">
-    <label className="text-sm font-semibold text-gray-700 m-0 w-full md:min-w-[130px] md:max-w-[130px] block">
-      {label}
-      {required && <span style={{ color: "#ef4444", marginLeft: "4px" }}>*</span>}
-    </label>
-    <div style={{ flex: 1, width: "100%" }}>
-      {type === "select" && searchable ? (
-        <SearchableSelect
-          name={name}
-          value={value}
-          onChange={onChange}
-          options={options}
-          placeholder={`Select ${label}`}
-          disabled={readOnly}
-        />
-      ) : type === "select" ? (
-        <select
-          name={name}
-          value={value || ""}
-          onChange={onChange}
-          required={required}
-          disabled={readOnly}
-          style={{
-            width: "100%",
-            padding: "10px 14px",
-            border: "2px solid #e5e7eb",
-            borderRadius: "6px",
-            fontSize: "14px",
-            color: readOnly ? "#9ca3af" : "#374151",
-            background: readOnly ? "#f3f4f6" : "#fff",
-            cursor: readOnly ? "not-allowed" : "pointer",
-            transition: "border-color 0.2s ease",
-          }}
-        >
-          <option value="" disabled>Select {label}</option>
-          {options?.map((opt, i) => (
-            <option key={i} value={opt}>{opt}</option>
-          ))}
-        </select>
-      ) : (
-        <input
-          type={type}
-          name={name}
-          value={value || ""}
-          onChange={onChange}
-          required={required}
-          placeholder={placeholder}
-          readOnly={readOnly}
-          autoComplete={autoComplete}
-          style={{
-            width: "100%",
-            padding: "10px 14px",
-            border: "2px solid #e5e7eb",
-            borderRadius: "6px",
-            fontSize: "14px",
-            color: readOnly ? "#9ca3af" : "#374151",
-            background: readOnly ? "#f3f4f6" : "#fff",
-            cursor: readOnly ? "not-allowed" : "text",
-            transition: "border-color 0.2s ease",
-          }}
-        />
-      )}
+}) => {
+  const otherOption = (type === "select" && Array.isArray(options)) 
+    ? options.find(opt => opt === "Others" || opt === "Other") 
+    : null;
+  const isCustomValue = Boolean(otherOption && value && !options.includes(value));
+  const isOtherSelected = Boolean(otherOption && (value === "Others" || value === "Other" || isCustomValue));
+  const selectDisplayValue = isCustomValue ? otherOption : (value || "");
+  const textDisplayValue = isCustomValue ? value : "";
+
+  return (
+    <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-2 mb-3 w-full">
+      <label className="text-sm font-semibold text-gray-700 m-0 w-full md:min-w-[130px] md:max-w-[130px] block">
+        {label}
+        {required && <span style={{ color: "#ef4444", marginLeft: "4px" }}>*</span>}
+      </label>
+      <div style={{ flex: 1, width: "100%" }}>
+        {type === "select" && searchable ? (
+          <SearchableSelect
+            name={name}
+            value={selectDisplayValue}
+            onChange={onChange}
+            options={options}
+            placeholder={`Select ${label}`}
+            disabled={readOnly}
+          />
+        ) : type === "select" ? (
+          <select
+            name={name}
+            value={selectDisplayValue}
+            onChange={onChange}
+            required={required}
+            disabled={readOnly}
+            style={{
+              width: "100%",
+              padding: "10px 14px",
+              border: "2px solid #e5e7eb",
+              borderRadius: "6px",
+              fontSize: "14px",
+              color: readOnly ? "#9ca3af" : "#374151",
+              background: readOnly ? "#f3f4f6" : "#fff",
+              cursor: readOnly ? "not-allowed" : "pointer",
+              transition: "border-color 0.2s ease",
+            }}
+          >
+            <option value="" disabled>Select {label}</option>
+            {options?.map((opt, i) => (
+              <option key={i} value={opt}>{opt}</option>
+            ))}
+          </select>
+        ) : (
+          <input
+            type={type}
+            name={name}
+            value={value || ""}
+            onChange={onChange}
+            required={required}
+            placeholder={placeholder}
+            disabled={readOnly}
+            autoComplete={autoComplete}
+            style={{
+              width: "100%",
+              padding: "10px 14px",
+              border: "2px solid #e5e7eb",
+              borderRadius: "6px",
+              fontSize: "14px",
+              color: readOnly ? "#9ca3af" : "#374151",
+              background: readOnly ? "#f3f4f6" : "#fff",
+              cursor: readOnly ? "not-allowed" : "text",
+              transition: "border-color 0.2s ease",
+            }}
+          />
+        )}
+        {isOtherSelected && (
+          <div className="mt-2 w-full">
+            <label className="text-xs font-bold text-gray-700 mb-1 block">
+              Please specify {label} <span style={{ color: "#ef4444", marginLeft: "2px" }}>*</span>
+            </label>
+            <input
+              type="text"
+              name={name}
+              value={textDisplayValue}
+              onChange={onChange}
+              required={true}
+              placeholder={`Enter ${label.toLowerCase()}`}
+              style={{
+                width: "100%",
+                padding: "10px 14px",
+                border: "2px solid #cbd5e1",
+                borderRadius: "6px",
+                fontSize: "14px",
+                color: "#111827",
+                backgroundColor: "#ffffff",
+                fontWeight: "500",
+              }}
+            />
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const CheckboxGroup = ({ label, name, options, selectedValues, onChange }) => {
   const handleCheckboxChange = (option) => {
-    const exclusiveOptions = ["Any", "Doesn't Matter", "Don't wish to specify", "None"];
+    const exclusiveOptions = ["Any", "Doesn't Matter", "Do not wish to specify", "Don't wish to specify", "None"];
     let updatedValues;
 
     if (exclusiveOptions.includes(option)) {
@@ -1336,6 +1437,7 @@ const UserProfileEditPage = () => {
             partnerCountry: parseMulti(userData.partnerCountry),
             partnerState: parseMulti(userData.partnerState),
             partnerDistrict: parseMulti(userData.partnerDistrict),
+            aboutPartner: userData.aboutPartner || "",
             profileVisibility: userData.profileVisibility || "Public",
           };
 
@@ -1723,7 +1825,38 @@ const UserProfileEditPage = () => {
   };
 
   const handleAdditionalImagesChange = (e) => {
-    const files = Array.from(e.target.files);
+    if (!profileImagePreview) {
+      showAlert({
+        title: "Profile Picture Required",
+        text: "Please upload a profile picture first before uploading additional photos.",
+        icon: "warning",
+      });
+      if (e.target) e.target.value = "";
+      return;
+    }
+
+    const currentCount = additionalImagePreviews.length;
+    if (currentCount >= 8) {
+      showAlert({
+        title: "Limit Reached",
+        text: "You can upload a maximum of 8 additional photos.",
+        icon: "warning",
+      });
+      if (e.target) e.target.value = "";
+      return;
+    }
+
+    let files = Array.from(e.target.files);
+    if (currentCount + files.length > 8) {
+      const allowedCount = 8 - currentCount;
+      showAlert({
+        title: "Limit Exceeded",
+        text: `You can only upload up to ${allowedCount} more photo(s). Maximum allowed is 8 photos.`,
+        icon: "warning",
+      });
+      files = files.slice(0, allowedCount);
+    }
+
     if (files.length > 0) {
       setHasUnsavedChanges(true);
       setAdditionalImageFiles((prev) => [...prev, ...files]);
@@ -1743,6 +1876,7 @@ const UserProfileEditPage = () => {
         reader.readAsDataURL(file);
       });
     }
+    if (e.target) e.target.value = "";
   };
 
   const handleDeleteProfileImage = () => {
@@ -1777,40 +1911,69 @@ const UserProfileEditPage = () => {
     e.preventDefault();
 
     const missingFields = [];
-    if (!formData.profileCreatedFor) missingFields.push("Profile Created By");
-    if (!formData.gender) missingFields.push("Gender");
-    if (!formData.dateOfBirth) missingFields.push("Date of Birth");
-    if (!formData.age) missingFields.push("Age");
-    if (!formData.bodyType) missingFields.push("Body Type");
-    if (!formData.physicalStatus) missingFields.push("Physical Status");
-    if (!formData.complexion) missingFields.push("Complexion");
-    if (!formData.height) missingFields.push("Height");
-    if (!formData.weight) missingFields.push("Weight");
-    if (!formData.motherTongue) missingFields.push("Mother Tongue");
-    if (!formData.caste) missingFields.push("Caste");
-    if (!formData.maritalStatus) missingFields.push("Marital Status");
-    if (!formData.eatingHabits) missingFields.push("Eating Habits");
-    if (!formData.drinkingHabits) missingFields.push("Drinking Habits");
-    if (!formData.smokingHabits) missingFields.push("Smoking Habits");
+    if (!formData.profileCreatedFor) missingFields.push({ label: "Profile Created By", name: "profileCreatedFor" });
+    if (!formData.gender) missingFields.push({ label: "Gender", name: "gender" });
+    if (!formData.dateOfBirth) missingFields.push({ label: "Date of Birth", name: "dateOfBirth" });
+    if (!formData.age) missingFields.push({ label: "Age", name: "age" });
+    if (!formData.bodyType) missingFields.push({ label: "Body Type", name: "bodyType" });
+    if (!formData.physicalStatus) missingFields.push({ label: "Physical Status", name: "physicalStatus" });
+    if (!formData.complexion) missingFields.push({ label: "Complexion", name: "complexion" });
+    if (!formData.height) missingFields.push({ label: "Height", name: "height" });
+    if (!formData.weight) missingFields.push({ label: "Weight", name: "weight" });
+    if (!formData.motherTongue) missingFields.push({ label: "Mother Tongue", name: "motherTongue" });
+    if (!formData.caste) missingFields.push({ label: "Caste", name: "caste" });
+    if (!formData.maritalStatus) missingFields.push({ label: "Marital Status", name: "maritalStatus" });
+    if (!formData.eatingHabits) missingFields.push({ label: "Eating Habits", name: "eatingHabits" });
+    if (!formData.drinkingHabits) missingFields.push({ label: "Drinking Habits", name: "drinkingHabits" });
+    if (!formData.smokingHabits) missingFields.push({ label: "Smoking Habits", name: "smokingHabits" });
 
-    if (!formData.fathersName) missingFields.push("Father's Name");
-    if (!formData.mothersName) missingFields.push("Mother's Name");
-    if (!formData.denomination) missingFields.push("Denomination");
-    if (!formData.contactPersonName) missingFields.push("Contact Person Name");
-    if (!formData.relationship) missingFields.push("Relationship with Contact Person");
-    if (!formData.contactEmail) missingFields.push("Contact Email");
-    if (!formData.contactPhone) missingFields.push("Contact Number");
+    if (!formData.fathersName) missingFields.push({ label: "Father's Name", name: "fathersName" });
+    if (!formData.mothersName) missingFields.push({ label: "Mother's Name", name: "mothersName" });
+    if (!formData.denomination) missingFields.push({ label: "Denomination", name: "denomination" });
+    if (!formData.contactPersonName) missingFields.push({ label: "Contact Person Name", name: "contactPersonName" });
+    if (!formData.relationship) missingFields.push({ label: "Relationship with Contact Person", name: "relationship" });
+    if (!formData.contactEmail) missingFields.push({ label: "Contact Email", name: "contactEmail" });
+    if (!formData.contactPhone) missingFields.push({ label: "Contact Number", name: "contactPhone" });
     if (!formData.currentDoorNo || !formData.currentLocality || !formData.currentCountry || !formData.currentState || !formData.currentDistrict) {
-      missingFields.push("Current Address (all fields)");
+      missingFields.push({ label: "Current Address", name: "currentCountry" });
     }
 
     if (missingFields.length > 0) {
-      showAlert({
-        title: "Please Complete Your Profile",
-        html: `<div style="margin-top: -8px; font-size: 17px; color: #111; font-weight: bold;">
-                 Please fill all the mandatory<span style="color: red;">*</span> details to continue.
+      const missingListHtml = missingFields.map(f => `<li style="margin-bottom: 4px;">${f.label}</li>`).join('');
+      
+      Swal.fire({
+        title: "Incomplete Profile",
+        html: `<div style="text-align: left; margin-top: 10px; font-size: 15px; color: #333;">
+                 <p style="font-weight: bold; margin-bottom: 10px;">Please fill the following mandatory fields:</p>
+                 <ul style="padding-left: 20px; color: #d32f2f;">
+                   ${missingListHtml}
+                 </ul>
                </div>`,
-        icon: "warning"
+        icon: "warning",
+        confirmButtonColor: '#5c2a9d',
+        confirmButtonText: 'Ok, take me there',
+        returnFocus: false
+      }).then(() => {
+        setTimeout(() => {
+          const firstMissing = missingFields[0];
+          let element = document.getElementById(`form-input-${firstMissing.name}`);
+          
+          if (!element) {
+            element = document.getElementsByName(firstMissing.name)[0];
+          }
+          
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const focusable = element.querySelector('input, select, textarea') || element;
+            if (typeof focusable.focus === 'function') focusable.focus({ preventScroll: true });
+          } else {
+             const labels = Array.from(document.querySelectorAll('label'));
+             const label = labels.find(l => l.textContent.includes(firstMissing.label));
+             if (label) {
+               label.scrollIntoView({ behavior: 'smooth', block: 'center' });
+             }
+          }
+        }, 100);
       });
       return;
     }
@@ -2589,7 +2752,8 @@ const UserProfileEditPage = () => {
                         onChange={handleInputChange}
                         options={[
                           "Do not wish to specify",
-                          ...castes,
+                          "Christian",
+                          ...castes.filter((c) => c !== "Do not wish to specify" && c !== "Christian" && c !== "Other" && c !== "Others"),
                           "Other",
                         ]}
                       />
@@ -2734,113 +2898,23 @@ const UserProfileEditPage = () => {
                         value={formData.mothersName}
                         onChange={handleInputChange}
                       />
-                      {!isFatherOther && (parentOccupationOptions.includes(formData.fathersOccupation) || !formData.fathersOccupation) ? (
-                        <FormInput
-                          label="Father's Occupation"
-                          name="fathersOccupation"
-                          type="select"
-                          value={formData.fathersOccupation}
-                          onChange={(e) => {
-                            if (e.target.value === "Others") {
-                              setIsFatherOther(true);
-                              setFormData(prev => ({ ...prev, fathersOccupation: "" }));
-                            } else {
-                              handleInputChange(e);
-                            }
-                          }}
-                          options={parentOccupationOptions}
-                        />
-                      ) : (
-                        <div style={{ position: "relative" }}>
-                          <FormInput
-                            label="Father's Occupation"
-                            name="fathersOccupation"
-                            value={formData.fathersOccupation}
-                            onChange={handleInputChange}
-                            placeholder="Enter father's occupation"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setIsFatherOther(false);
-                              setFormData(prev => ({ ...prev, fathersOccupation: "" }));
-                            }}
-                            style={{
-                              position: "absolute",
-                              right: "12px",
-                              bottom: "22px",
-                              background: "#f3f4f6",
-                              border: "none",
-                              borderRadius: "4px",
-                              width: "24px",
-                              height: "24px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              cursor: "pointer",
-                              color: "#6b7280",
-                              zIndex: 5
-                            }}
-                            title="Back to list"
-                          >
-                            <i className="fa fa-times"></i>
-                          </button>
-                        </div>
-                      )}
+                      <FormInput
+                        label="Father's Occupation"
+                        name="fathersOccupation"
+                        type="select"
+                        value={formData.fathersOccupation}
+                        onChange={handleInputChange}
+                        options={parentOccupationOptions}
+                      />
 
-                      {!isMotherOther && (parentOccupationOptions.includes(formData.mothersOccupation) || !formData.mothersOccupation) ? (
-                        <FormInput
-                          label="Mother's Occupation"
-                          name="mothersOccupation"
-                          type="select"
-                          value={formData.mothersOccupation}
-                          onChange={(e) => {
-                            if (e.target.value === "Others") {
-                              setIsMotherOther(true);
-                              setFormData(prev => ({ ...prev, mothersOccupation: "" }));
-                            } else {
-                              handleInputChange(e);
-                            }
-                          }}
-                          options={parentOccupationOptions}
-                        />
-                      ) : (
-                        <div style={{ position: "relative" }}>
-                          <FormInput
-                            label="Mother's Occupation"
-                            name="mothersOccupation"
-                            value={formData.mothersOccupation}
-                            onChange={handleInputChange}
-                            placeholder="Enter mother's occupation"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setIsMotherOther(false);
-                              setFormData(prev => ({ ...prev, mothersOccupation: "" }));
-                            }}
-                            style={{
-                              position: "absolute",
-                              right: "12px",
-                              bottom: "22px",
-                              background: "#f3f4f6",
-                              border: "none",
-                              borderRadius: "4px",
-                              width: "24px",
-                              height: "24px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              cursor: "pointer",
-                              color: "#6b7280",
-                              zIndex: 5
-                            }}
-                            title="Back to list"
-                          >
-                            <i className="fa fa-times"></i>
-                          </button>
-                        </div>
-                      )}
+                      <FormInput
+                        label="Mother's Occupation"
+                        name="mothersOccupation"
+                        type="select"
+                        value={formData.mothersOccupation}
+                        onChange={handleInputChange}
+                        options={parentOccupationOptions}
+                      />
 
                       <FormInput
                         label="Father's Profession"
@@ -2964,7 +3038,7 @@ const UserProfileEditPage = () => {
                           color: "#374151",
                           fontSize: "14px",
                         }}>
-                          Family Details
+                          Additional Details
                         </label>
                         <textarea
                           name="familyDetails"
@@ -2977,7 +3051,7 @@ const UserProfileEditPage = () => {
                             padding: "12px",
                             border: "1px solid #d1d5db",
                             borderRadius: "8px",
-                            backgroundColor: "#f9fafb",
+                            backgroundColor: "#ffffff",
                             fontSize: "15px",
                             color: "#1f2937",
                             outline: "none",
@@ -3000,7 +3074,6 @@ const UserProfileEditPage = () => {
                         value={formData.denomination}
                         onChange={handleInputChange}
                         options={[
-                          "Don't wish to specify",
                           ...denominations,
                           "Other",
                         ]}
@@ -3156,270 +3229,36 @@ const UserProfileEditPage = () => {
                   {/* Professional Information Section */}
                   <FormSection title="Professional Information" zIndex={16}>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-x-[120px] md:gap-y-6'>
-                      {!isEducationOther && ( ["B.Arch",
-                          "B.Com",
-                          "B.Ed",
-                          "B.Pharm",
-                          "B.Sc",
-                          "B.Sc (Hons)",
-                          "B.E",
-                          "B.Tech",
-                          "BA",
-                          "BBA",
-                          "BCA",
-                          "BDS",
-                          "BHM",
-                          "BAMS",
-                          "BHMS",
-                          "BSw",
-                          "LLB",
-                          "M.Arch",
-                          "M.Com",
-                          "M.Ed",
-                          "M.Pharm",
-                          "M.Sc",
-                          "M.E",
-                          "M.Tech",
-                          "MA",
-                          "MBA",
-                          "MCA",
-                          "MDS",
-                          "MHM",
-                          "MSW",
-                          "LLM",
-                          "MBBS",
-                          "MD",
-                          "MS",
-                          "Ph.D",
-                          "Diploma",
-                          "Polytechnic",
-                          "Trade School",
-                          "Higher Secondary / Plus Two",
-                          "SSLC / 10th",
-                          "Others",].includes(formData.education) || !formData.education) ? (
-                        <FormInput
-                          label="Highest Education"
-                          name="education"
-                          type="select"
-                          searchable={true}
-                          value={formData.education}
-                          onChange={(e) => {
-                            if (e.target.value === "Others") {
-                              setIsEducationOther(true);
-                              setFormData(prev => ({ ...prev, education: "" }));
-                            } else {
-                              handleInputChange(e);
-                            }
-                          }}
-                          options={["B.Arch",
-                          "B.Com",
-                          "B.Ed",
-                          "B.Pharm",
-                          "B.Sc",
-                          "B.Sc (Hons)",
-                          "B.E",
-                          "B.Tech",
-                          "BA",
-                          "BBA",
-                          "BCA",
-                          "BDS",
-                          "BHM",
-                          "BAMS",
-                          "BHMS",
-                          "BSw",
-                          "LLB",
-                          "M.Arch",
-                          "M.Com",
-                          "M.Ed",
-                          "M.Pharm",
-                          "M.Sc",
-                          "M.E",
-                          "M.Tech",
-                          "MA",
-                          "MBA",
-                          "MCA",
-                          "MDS",
-                          "MHM",
-                          "MSW",
-                          "LLM",
-                          "MBBS",
-                          "MD",
-                          "MS",
-                          "Ph.D",
-                          "Diploma",
-                          "Polytechnic",
-                          "Trade School",
-                          "Higher Secondary / Plus Two",
-                          "SSLC / 10th",
-                          "Others",]}
-                        />
-                      ) : (
-                        <div style={{ position: "relative" }}>
-                          <FormInput
-                            label="Highest Education"
-                            name="education"
-                            value={formData.education}
-                            onChange={handleInputChange}
-                            placeholder="Enter highest education"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setIsEducationOther(false);
-                              setFormData(prev => ({ ...prev, education: "" }));
-                            }}
-                            style={{
-                              position: "absolute",
-                              right: "12px",
-                              bottom: "22px",
-                              background: "#f3f4f6",
-                              border: "none",
-                              borderRadius: "4px",
-                              width: "24px",
-                              height: "24px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              cursor: "pointer",
-                              color: "#6b7280",
-                              zIndex: 5
-                            }}
-                          >
-                            <i className="fa fa-times"></i>
-                          </button>
-                        </div>
-                      )}
-                      {!isAdditionalEducationOther && ( ["B.Arch",
-                          "B.Com",
-                          "B.Ed",
-                          "B.Pharm",
-                          "B.Sc",
-                          "B.E",
-                          "B.Tech",
-                          "BA",
-                          "BBA",
-                          "BCA",
-                          "BDS",
-                          "BHM",
-                          "BAMS",
-                          "BHMS",
-                          "BSw",
-                          "LLB",
-                          "M.Arch",
-                          "M.Com",
-                          "M.Ed",
-                          "M.Pharm",
-                          "M.Sc",
-                          "M.E",
-                          "M.Tech",
-                          "MA",
-                          "MBA",
-                          "MCA",
-                          "MDS",
-                          "MHM",
-                          "MSW",
-                          "LLM",
-                          "MBBS",
-                          "MD",
-                          "MS",
-                          "Ph.D",
-                          "Diploma",
-                          "Polytechnic",
-                          "Trade School",
-                          "Higher Secondary / Plus Two",
-                          "SSLC / 10th",
-                          "Others",].includes(formData.additionalEducation) || !formData.additionalEducation) ? (
-                        <FormInput
-                          label="Additional Education"
-                          name="additionalEducation"
-                          type="select"
-                          searchable={true}
-                          value={formData.additionalEducation}
-                          onChange={(e) => {
-                            if (e.target.value === "Others") {
-                              setIsAdditionalEducationOther(true);
-                              setFormData(prev => ({ ...prev, additionalEducation: "" }));
-                            } else {
-                              handleInputChange(e);
-                            }
-                          }}
-                          options={["B.Arch",
-                          "B.Com",
-                          "B.Ed",
-                          "B.Pharm",
-                          "B.Sc",
-                          "B.E",
-                          "B.Tech",
-                          "BA",
-                          "BBA",
-                          "BCA",
-                          "BDS",
-                          "BHM",
-                          "BAMS",
-                          "BHMS",
-                          "BSw",
-                          "LLB",
-                          "M.Arch",
-                          "M.Com",
-                          "M.Ed",
-                          "M.Pharm",
-                          "M.Sc",
-                          "M.E",
-                          "M.Tech",
-                          "MA",
-                          "MBA",
-                          "MCA",
-                          "MDS",
-                          "MHM",
-                          "MSW",
-                          "LLM",
-                          "MBBS",
-                          "MD",
-                          "MS",
-                          "Ph.D",
-                          "Diploma",
-                          "Polytechnic",
-                          "Trade School",
-                          "Higher Secondary / Plus Two",
-                          "SSLC / 10th",
-                          "Others",]}
-                        />
-                      ) : (
-                        <div style={{ position: "relative" }}>
-                          <FormInput
-                            label="Additional Education"
-                            name="additionalEducation"
-                            value={formData.additionalEducation}
-                            onChange={handleInputChange}
-                            placeholder="Enter additional education"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setIsAdditionalEducationOther(false);
-                              setFormData(prev => ({ ...prev, additionalEducation: "" }));
-                            }}
-                            style={{
-                              position: "absolute",
-                              right: "12px",
-                              bottom: "22px",
-                              background: "#f3f4f6",
-                              border: "none",
-                              borderRadius: "4px",
-                              width: "24px",
-                              height: "24px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              cursor: "pointer",
-                              color: "#6b7280",
-                              zIndex: 5
-                            }}
-                          >
-                            <i className="fa fa-times"></i>
-                          </button>
-                        </div>
-                      )}
+                      <FormInput
+                        label="Highest Education"
+                        name="education"
+                        type="select"
+                        searchable={true}
+                        value={formData.education}
+                        onChange={handleInputChange}
+                        options={[
+                          "B.Arch", "B.Com", "B.Ed", "B.Pharm", "B.Sc", "B.Sc (Hons)", "B.E", "B.Tech",
+                          "BA", "BBA", "BCA", "BDS", "BHM", "BAMS", "BHMS", "BSw", "LLB", "M.Arch",
+                          "M.Com", "M.Ed", "M.Pharm", "M.Sc", "M.E", "M.Tech", "MA", "MBA", "MCA",
+                          "MDS", "MHM", "MSW", "LLM", "MBBS", "MD", "MS", "Ph.D", "Diploma",
+                          "Polytechnic", "Trade School", "Higher Secondary / Plus Two", "SSLC / 10th", "Others"
+                        ]}
+                      />
+                      <FormInput
+                        label="Additional Education"
+                        name="additionalEducation"
+                        type="select"
+                        searchable={true}
+                        value={formData.additionalEducation}
+                        onChange={handleInputChange}
+                        options={[
+                          "B.Arch", "B.Com", "B.Ed", "B.Pharm", "B.Sc", "B.E", "B.Tech", "BA",
+                          "BBA", "BCA", "BDS", "BHM", "BAMS", "BHMS", "BSw", "LLB", "M.Arch",
+                          "M.Com", "M.Ed", "M.Pharm", "M.Sc", "M.E", "M.Tech", "MA", "MBA", "MCA",
+                          "MDS", "MHM", "MSW", "LLM", "MBBS", "MD", "MS", "Ph.D", "Diploma",
+                          "Polytechnic", "Trade School", "Higher Secondary / Plus Two", "SSLC / 10th", "Others"
+                        ]}
+                      />
                       <FormInput
                         label="College"
                         name="college"
@@ -3435,342 +3274,53 @@ const UserProfileEditPage = () => {
                           onChange={handleInputChange}
                         />
                       </div>
-                      {!isEmploymentTypeOther && ( ["Private Sector",
-                          "Government",
-                          "Self Employed",
-                          "Business",
-                          "Ministry",
-                            "Not Working",
-                          "Others"].includes(formData.employmentType) || !formData.employmentType) ? (
-                        <FormInput
-                          label="Employment Type"
-                          name="employmentType"
-                          type="select"
-                          searchable={true}
-                          value={formData.employmentType}
-                          onChange={(e) => {
-                            if (e.target.value === "Others") {
-                              setIsEmploymentTypeOther(true);
-                              setFormData(prev => ({ ...prev, employmentType: "" }));
-                            } else {
-                              handleInputChange(e);
-                            }
-                          }}
-                          options={["Private Sector",
-                          "Government",
-                          "Self Employed",
-                          "Business",
-                          "Ministry",
-                            "Not Working",
-                          "Others"]}
-                        />
-                      ) : (
-                        <div style={{ position: "relative" }}>
-                          <FormInput
-                            label="Employment Type"
-                            name="employmentType"
-                            value={formData.employmentType}
-                            onChange={handleInputChange}
-                            placeholder="Enter employment type"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setIsEmploymentTypeOther(false);
-                              setFormData(prev => ({ ...prev, employmentType: "" }));
-                            }}
-                            style={{
-                              position: "absolute",
-                              right: "12px",
-                              bottom: "22px",
-                              background: "#f3f4f6",
-                              border: "none",
-                              borderRadius: "4px",
-                              width: "24px",
-                              height: "24px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              cursor: "pointer",
-                              color: "#6b7280",
-                              zIndex: 5
-                            }}
-                          >
-                            <i className="fa fa-times"></i>
-                          </button>
-                        </div>
-                      )}
-                      {!isOccupationOther && ( ["Accountant",
-                          "Actor",
-                          "Administrative Professional",
-                          "Advertising Professional",
-                          "Agri-Business Professional",
-                          "Air Hostess / Flight Attendant",
-                          "Architect",
-                          "Artist",
-                          "Auditor",
-                          "Banking Professional",
-                          "Beautician",
-                          "Biologist / Botanist",
-                          "Pastor",
-                            "Priest",
-                            "Worship Leader",
-                            "Evangelist",
-                            "Missionary",
-                            "Theology Professor",
-                            "Counsellor",
-                            "Business",
-                          "Ministry",
-                            "Chartered Accountant",
-                          "Civil Engineer",
-                          "Clerical Official",
-                          "Commercial Pilot",
-                          "Company Secretary",
-                          "Computer Professional",
-                          "Consultant",
-                          "Contractor",
-                          "Cost Accountant",
-                          "Creative Person",
-                          "Customer Support Professional",
-                          "Defense Employee",
-                          "Dentist",
-                          "Designer",
-                          "Doctor",
-                          "Economist",
-                          "Engineer",
-                          "Engineer (Mechanical)",
-                          "Engineer (Project)",
-                          "Entertainment Professional",
-                          "Event Manager",
-                          "Executive",
-                          "Factory Worker",
-                          "Farmer",
-                          "Fashion Designer",
-                          "Finance Professional",
-                          "Flight Attendant",
-                          "Government Employee",
-                          "Graphic Designer",
-                          "Health Care Professional",
-                          "Hotel Management Professional",
-                          "HR Professional",
-                          "Human Resources Professional",
-                          "Indian Administrative Services (IAS)",
-                          "Indian Foreign Services (IFS)",
-                          "Indian Police Services (IPS)",
-                          "Interior Designer",
-                          "Investment Professional",
-                          "IT Professional",
-                          "Journalist",
-                          "Lawyer",
-                          "Lecturer",
-                          "Legal Professional",
-                          "Manager",
-                          "Marketing Professional",
-                          "Media Professional",
-                          "Medical Professional",
-                          "Merchant Naval Officer",
-                          "Microbiologist",
-                          "Military",
-                          "Model",
-                          "Musician",
-                          "Nurse",
-                          "Nutritionist",
-                          "Occupational Therapist",
-                          "Optician",
-                          "Pharmacist",
-                          "Photographer",
-                          "Physical Therapist",
-                          "Physician",
-                          "Pilot",
-                          "Police",
-                          "Politician",
-                          "Professor",
-                          "Psychologist",
-                          "Public Relations Professional",
-                          "Real Estate Professional",
-                          "Researcher",
-                          "Retired",
-                          "Sales Professional",
-                          "Scientist",
-                          "Secretary",
-                          "Security Professional",
-                          "Self Employed",
-                          "Social Worker",
-                          "Software Consultant",
-                          "Software Engineer",
-                          "Sportsman",
-                          "Student",
-                          "Teacher",
-                          "Technician",
-                          "Training Professional",
-                          "Transportation Professional",
-                          "Veterinary Doctor",
-                          "Volunteer",
-                          "Writer",
-                          "Zoologist",
-                          "Not Working",
-                          "Others"].includes(formData.occupation) || !formData.occupation) ? (
-                        <FormInput
-                          label="Occupation"
-                          name="occupation"
-                          type="select"
-                          searchable={true}
-                          value={formData.occupation}
-                          onChange={(e) => {
-                            if (e.target.value === "Others") {
-                              setIsOccupationOther(true);
-                              setFormData(prev => ({ ...prev, occupation: "" }));
-                            } else {
-                              handleInputChange(e);
-                            }
-                          }}
-                          options={["Accountant",
-                          "Actor",
-                          "Administrative Professional",
-                          "Advertising Professional",
-                          "Agri-Business Professional",
-                          "Air Hostess / Flight Attendant",
-                          "Architect",
-                          "Artist",
-                          "Auditor",
-                          "Banking Professional",
-                          "Beautician",
-                          "Biologist / Botanist",
-                          "Pastor",
-                            "Priest",
-                            "Worship Leader",
-                            "Evangelist",
-                            "Missionary",
-                            "Theology Professor",
-                            "Counsellor",
-                            "Business",
-                          "Ministry",
-                            "Chartered Accountant",
-                          "Civil Engineer",
-                          "Clerical Official",
-                          "Commercial Pilot",
-                          "Company Secretary",
-                          "Computer Professional",
-                          "Consultant",
-                          "Contractor",
-                          "Cost Accountant",
-                          "Creative Person",
-                          "Customer Support Professional",
-                          "Defense Employee",
-                          "Dentist",
-                          "Designer",
-                          "Doctor",
-                          "Economist",
-                          "Engineer",
-                          "Engineer (Mechanical)",
-                          "Engineer (Project)",
-                          "Entertainment Professional",
-                          "Event Manager",
-                          "Executive",
-                          "Factory Worker",
-                          "Farmer",
-                          "Fashion Designer",
-                          "Finance Professional",
-                          "Flight Attendant",
-                          "Government Employee",
-                          "Graphic Designer",
-                          "Health Care Professional",
-                          "Hotel Management Professional",
-                          "HR Professional",
-                          "Human Resources Professional",
-                          "Indian Administrative Services (IAS)",
-                          "Indian Foreign Services (IFS)",
-                          "Indian Police Services (IPS)",
-                          "Interior Designer",
-                          "Investment Professional",
-                          "IT Professional",
-                          "Journalist",
-                          "Lawyer",
-                          "Lecturer",
-                          "Legal Professional",
-                          "Manager",
-                          "Marketing Professional",
-                          "Media Professional",
-                          "Medical Professional",
-                          "Merchant Naval Officer",
-                          "Microbiologist",
-                          "Military",
-                          "Model",
-                          "Musician",
-                          "Nurse",
-                          "Nutritionist",
-                          "Occupational Therapist",
-                          "Optician",
-                          "Pharmacist",
-                          "Photographer",
-                          "Physical Therapist",
-                          "Physician",
-                          "Pilot",
-                          "Police",
-                          "Politician",
-                          "Professor",
-                          "Psychologist",
-                          "Public Relations Professional",
-                          "Real Estate Professional",
-                          "Researcher",
-                          "Retired",
-                          "Sales Professional",
-                          "Scientist",
-                          "Secretary",
-                          "Security Professional",
-                          "Self Employed",
-                          "Social Worker",
-                          "Software Consultant",
-                          "Software Engineer",
-                          "Sportsman",
-                          "Student",
-                          "Teacher",
-                          "Technician",
-                          "Training Professional",
-                          "Transportation Professional",
-                          "Veterinary Doctor",
-                          "Volunteer",
-                          "Writer",
-                          "Zoologist",
-                          "Not Working",
-                          "Others"]}
-                        />
-                      ) : (
-                        <div style={{ position: "relative" }}>
-                          <FormInput
-                            label="Occupation"
-                            name="occupation"
-                            value={formData.occupation}
-                            onChange={handleInputChange}
-                            placeholder="Enter occupation"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setIsOccupationOther(false);
-                              setFormData(prev => ({ ...prev, occupation: "" }));
-                            }}
-                            style={{
-                              position: "absolute",
-                              right: "12px",
-                              bottom: "22px",
-                              background: "#f3f4f6",
-                              border: "none",
-                              borderRadius: "4px",
-                              width: "24px",
-                              height: "24px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              cursor: "pointer",
-                              color: "#6b7280",
-                              zIndex: 5
-                            }}
-                          >
-                            <i className="fa fa-times"></i>
-                          </button>
-                        </div>
-                      )}
+                      <FormInput
+                        label="Employment Type"
+                        name="employmentType"
+                        type="select"
+                        searchable={true}
+                        value={formData.employmentType}
+                        onChange={handleInputChange}
+                        options={[
+                          "Private Sector", "Government", "Self Employed", "Business",
+                          "Ministry", "Not Working", "Others"
+                        ]}
+                      />
+                      <FormInput
+                        label="Occupation"
+                        name="occupation"
+                        type="select"
+                        searchable={true}
+                        value={formData.occupation}
+                        onChange={handleInputChange}
+                        options={[
+                          "Accountant", "Actor", "Administrative Professional", "Advertising Professional",
+                          "Agri-Business Professional", "Air Hostess / Flight Attendant", "Architect", "Artist",
+                          "Auditor", "Banking Professional", "Beautician", "Biologist / Botanist", "Pastor",
+                          "Priest", "Worship Leader", "Evangelist", "Missionary", "Theology Professor",
+                          "Counsellor", "Business", "Ministry", "Chartered Accountant", "Civil Engineer",
+                          "Clerical Official", "Commercial Pilot", "Company Secretary", "Computer Professional",
+                          "Consultant", "Contractor", "Cost Accountant", "Creative Person",
+                          "Customer Support Professional", "Defense Employee", "Dentist", "Designer",
+                          "Doctor", "Economist", "Engineer", "Engineer (Mechanical)", "Engineer (Project)",
+                          "Entertainment Professional", "Event Manager", "Executive", "Factory Worker", "Farmer",
+                          "Fashion Designer", "Finance Professional", "Flight Attendant", "Government Employee",
+                          "Graphic Designer", "Health Care Professional", "Hotel Management Professional",
+                          "HR Professional", "Human Resources Professional", "Indian Administrative Services (IAS)",
+                          "Indian Foreign Services (IFS)", "Indian Police Services (IPS)", "Interior Designer",
+                          "Investment Professional", "IT Professional", "Journalist", "Lawyer", "Lecturer",
+                          "Legal Professional", "Manager", "Marketing Professional", "Media Professional",
+                          "Medical Professional", "Merchant Naval Officer", "Microbiologist", "Military",
+                          "Model", "Musician", "Nurse", "Nutritionist", "Occupational Therapist", "Optician",
+                          "Pharmacist", "Photographer", "Physical Therapist", "Physician", "Pilot", "Police",
+                          "Politician", "Professor", "Psychologist", "Public Relations Professional",
+                          "Real Estate Professional", "Researcher", "Retired", "Sales Professional", "Scientist",
+                          "Secretary", "Security Professional", "Self Employed", "Social Worker",
+                          "Software Consultant", "Software Engineer", "Sportsman", "Student", "Teacher",
+                          "Technician", "Training Professional", "Transportation Professional",
+                          "Veterinary Doctor", "Volunteer", "Writer", "Zoologist", "Not Working", "Others"
+                        ]}
+                      />
                       <FormInput
                         label="Position"
                         name="position"
@@ -3900,6 +3450,37 @@ const UserProfileEditPage = () => {
 
                   {/* Partner Preferences */}
                   <FormSection title="Partner Preference" zIndex={14}>
+                    {/* About Partner */}
+                    <div style={{ marginBottom: "24px" }}>
+                      <label style={{
+                        display: "block",
+                        marginBottom: "8px",
+                        fontWeight: "600",
+                        color: "#374151",
+                        fontSize: "14px",
+                      }}>
+                        About Partner
+                      </label>
+                      <textarea
+                        name="aboutPartner"
+                        value={formData.aboutPartner}
+                        onChange={handleInputChange}
+                        placeholder="Describe your partner preferences"
+                        rows="4"
+                        style={{
+                          width: "100%",
+                          padding: "12px",
+                          border: "1px solid #d1d5db",
+                          borderRadius: "8px",
+                          backgroundColor: "#ffffff",
+                          fontSize: "15px",
+                          color: "#1f2937",
+                          outline: "none",
+                          resize: "vertical",
+                        }}
+                      ></textarea>
+                    </div>
+
                     <div
                       style={{
                         background: "#fff",
@@ -4039,9 +3620,9 @@ const UserProfileEditPage = () => {
                         value={formData.partnerCaste}
                         onChange={handleInputChange}
                         options={[
-                          "Doesn't Matter",
                           "Any",
-                          ...castes,
+                          "Christian",
+                          ...castes.filter((c) => c !== "Do not wish to specify" && c !== "Doesn't Matter" && c !== "Any" && c !== "Christian" && c !== "Other" && c !== "Others"),
                           "Other",
                         ]}
                       />
@@ -4055,7 +3636,7 @@ const UserProfileEditPage = () => {
                         onChange={handleInputChange}
                         options={[
                           "Any",
-                          ...denominations,
+                          ...denominations.filter((d) => d !== "Any" && d !== "Other" && d !== "Others"),
                           "Other",
                         ]}
                       />

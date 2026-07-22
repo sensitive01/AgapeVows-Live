@@ -8,23 +8,52 @@ import { confirmAction, showAlert } from "../../utils/alertService";
 import { Country, State, City } from "country-state-city";
 import BasicInfomation from "./BasicInfomation";
 import profImages from "/assets/images/profiles/1.jpg";
+import imageCompression from "browser-image-compression";
+
+const compressionOptions = {
+  maxSizeMB: 0.8,
+  maxWidthOrHeight: 1920,
+  useWebWorker: true,
+};
 
 
-const InputField = React.memo(({ label, name, type = "text", options = null, isMulti = false, col = "6", value, onChange }) => {
+const InputField = React.memo(({ label, name, type = "text", options = null, isMulti = false, col = "6", required = false, value, onChange }) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPasswordField = type === "password";
   const inputType = isPasswordField ? (showPassword ? "text" : "password") : type;
+
+  const otherOption = (options && !isMulti) ? options.find(opt => opt === "Others" || opt === "Other") : null;
+  const isCustomValue = Boolean(otherOption && value && !options.includes(value));
+  const isOtherSelected = Boolean(otherOption && (value === "Others" || value === "Other" || isCustomValue));
+  const selectDisplayValue = isCustomValue ? otherOption : (value || "");
+  const textDisplayValue = isCustomValue ? value : "";
+
   const customStyles = {
-    control: (base) => ({
+    control: (base, state) => ({
       ...base,
       minHeight: '38px',
-      borderColor: '#dee2e6',
-      boxShadow: 'none',
+      backgroundColor: required ? '#f8fafc' : '#ffffff',
+      borderColor: state.isFocused ? '#0d6efd' : (required ? '#cbd5e1' : '#dee2e6'),
+      borderWidth: required ? '1.5px' : '1px',
+      borderRadius: '8px',
+      boxShadow: state.isFocused ? '0 0 0 3px rgba(13, 110, 253, 0.15)' : 'none',
       '&:hover': {
-        borderColor: '#dee2e6'
+        borderColor: required ? '#94a3b8' : '#ced4da'
       }
     }),
     menuPortal: base => ({ ...base, zIndex: 9999 })
+  };
+
+  const inputStyle = {
+    backgroundColor: required ? '#f8fafc' : '#ffffff',
+    borderColor: required ? '#cbd5e1' : '#dee2e6',
+    borderWidth: required ? '1.5px' : '1px',
+    borderRadius: '8px',
+    color: '#0f172a',
+    fontSize: '0.9rem',
+    fontWeight: '500',
+    minHeight: type === 'textarea' ? 'auto' : '38px',
+    ...(isPasswordField ? { paddingRight: "40px" } : {})
   };
 
   const getSelectValue = () => {
@@ -34,36 +63,64 @@ const InputField = React.memo(({ label, name, type = "text", options = null, isM
       }
       return [];
     }
-    return value ? { value: value, label: value } : null;
+    return selectDisplayValue ? { value: selectDisplayValue, label: selectDisplayValue } : null;
   };
 
   return (
     <div className={`col-md-${col}`}>
-      <label className="form-label small fw-bold text-muted">{label}</label>
+      <label className="form-label small fw-bold text-muted mb-1">{label} {required && <span className="text-danger fw-bold">*</span>}</label>
       {options ? (
-        <Select
-          isMulti={isMulti}
-          options={options.map(opt => ({ value: opt, label: opt }))}
-          value={getSelectValue()}
-          onChange={(selectedOption) => {
-            let val;
-            if (isMulti) {
-              val = selectedOption ? selectedOption.map(opt => opt.value) : [];
-            } else {
-              val = selectedOption ? selectedOption.value : '';
-            }
-            onChange({ target: { name, value: val } });
-          }}
-          placeholder={`Select ${label}`}
-          styles={customStyles}
-          isClearable
-          menuPortalTarget={document.body}
-        />
+        <div>
+          <Select
+            isMulti={isMulti}
+            options={options.map(opt => ({ value: opt, label: opt }))}
+            value={getSelectValue()}
+            onChange={(selectedOption) => {
+              let val;
+              if (isMulti) {
+                val = selectedOption ? selectedOption.map(opt => opt.value) : [];
+              } else {
+                val = selectedOption ? selectedOption.value : '';
+              }
+              onChange({ target: { name, value: val } });
+            }}
+            placeholder={`Select ${label}`}
+            styles={customStyles}
+            isClearable
+            menuPortalTarget={document.body}
+          />
+          {isOtherSelected && (
+            <div className="mt-2">
+              <label className="form-label small fw-bold text-muted mb-1">
+                Please specify {label} <span className="text-danger fw-bold">*</span>
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                name={name}
+                value={textDisplayValue}
+                onChange={(e) => onChange({ target: { name, value: e.target.value } })}
+                placeholder={`Enter ${label.toLowerCase()}`}
+                required={true}
+                style={{
+                  backgroundColor: '#ffffff',
+                  borderColor: '#cbd5e1',
+                  borderWidth: '1.5px',
+                  borderRadius: '8px',
+                  color: '#0f172a',
+                  fontSize: '0.9rem',
+                  fontWeight: '500',
+                  minHeight: '40px'
+                }}
+              />
+            </div>
+          )}
+        </div>
       ) : type === "textarea" ? (
-        <textarea className="form-control" name={name} value={value || ""} onChange={onChange} rows="3" />
+        <textarea className="form-control" name={name} value={value || ""} onChange={onChange} rows="3" required={required} style={inputStyle} />
       ) : (
         <div className="position-relative">
-          <input type={inputType} className="form-control" name={name} value={value || ""} onChange={onChange} style={isPasswordField ? { paddingRight: "40px" } : {}} />
+          <input type={inputType} className="form-control" name={name} value={value || ""} onChange={onChange} required={required} style={inputStyle} />
           {isPasswordField && (
             <button
               type="button"
@@ -82,12 +139,10 @@ const InputField = React.memo(({ label, name, type = "text", options = null, isM
 
 InputField.displayName = 'InputField';
 
-const FormSection = ({ title, children, id, activeTab }) => (
-  <div className={`tab-pane fade ${activeTab === id ? "show active" : ""}`} id={id} role="tabpanel">
-    <div className="card border-0 p-4">
-      <h5 className="fw-bold mb-4 border-bottom pb-2">{title}</h5>
-      <div className="row g-3">{children}</div>
-    </div>
+const FormSection = ({ title, children, id }) => (
+  <div id={id} className="card border-0 p-4 shadow-sm mb-4">
+    <h5 className="fw-bold mb-4 border-bottom pb-2">{title}</h5>
+    <div className="row g-3">{children}</div>
   </div>
 );
 
@@ -225,6 +280,7 @@ const AdminEditUser = () => {
     partnerCountry: "",
     partnerState: "",
     partnerDistrict: "",
+    aboutPartner: "",
 
     // --- Profile Visibility ---
     profileVisibility: "Public",
@@ -241,13 +297,16 @@ const AdminEditUser = () => {
   const [additionalImagePreviews, setAdditionalImagePreviews] = useState([]);
   const [idProofFile, setIdProofFile] = useState(null);
   const [deletedAdditionalImages, setDeletedAdditionalImages] = useState([]);
+  const [deleteProfileImageFlag, setDeleteProfileImageFlag] = useState(false);
 
   // --- Location Helpers (simplified for now to avoid complexity of nested loops) ---
   const allCountries = Country.getAllCountries();
 
   // --- Master Data ---
   const [casteOptions, setCasteOptions] = useState([]);
+  const [partnerCasteOptions, setPartnerCasteOptions] = useState([]);
   const [denominationOptions, setDenominationOptions] = useState([]);
+  const [partnerDenominationOptions, setPartnerDenominationOptions] = useState([]);
 
   useEffect(() => {
     const fetchMasterData = async () => {
@@ -262,8 +321,14 @@ const AdminEditUser = () => {
             .filter((d) => d.type === "denomination" && d.isActive)
             .map((d) => d.name)
             .sort((a, b) => a.localeCompare(b));
-          setCasteOptions(fetchedCastes);
-          setDenominationOptions(fetchedDenominations);
+
+          const cleanCastes = fetchedCastes.filter((c) => c !== "Do not wish to specify" && c !== "Doesn't Matter" && c !== "Any" && c !== "Christian" && c !== "Others" && c !== "Other");
+          setCasteOptions(["Do not wish to specify", "Christian", ...cleanCastes, "Others"]);
+          setPartnerCasteOptions(["Any", "Christian", ...cleanCastes, "Others"]);
+
+          const cleanDenominations = fetchedDenominations.filter((d) => d !== "Do not wish to specify" && d !== "Any" && d !== "Others" && d !== "Other");
+          setDenominationOptions([...cleanDenominations, "Others"]);
+          setPartnerDenominationOptions(["Any", ...cleanDenominations, "Others"]);
         }
       } catch (err) {
         console.error("Failed to fetch master data", err);
@@ -330,15 +395,33 @@ const AdminEditUser = () => {
   };
 
   const handleDeleteProfileImage = () => {
+    setDeleteProfileImageFlag(true);
     setProfileImageFile(null);
     setProfileImagePreview(null);
   };
 
   const handleAdditionalImagesChange = (e) => {
-    const files = Array.from(e.target.files);
+    if (!profileImagePreview) {
+      alert("Please upload a profile picture first before uploading additional photos.");
+      if (e.target) e.target.value = "";
+      return;
+    }
+    const currentCount = additionalImagePreviews.length;
+    if (currentCount >= 8) {
+      alert("You can upload a maximum of 8 additional photos.");
+      if (e.target) e.target.value = "";
+      return;
+    }
+    let files = Array.from(e.target.files);
+    if (currentCount + files.length > 8) {
+      const allowed = 8 - currentCount;
+      alert(`You can only upload up to ${allowed} more photo(s). Maximum allowed is 8 photos.`);
+      files = files.slice(0, allowed);
+    }
     const newPreviews = files.map(file => ({ url: URL.createObjectURL(file), file }));
     setAdditionalImageFiles(prev => [...prev, ...files]);
     setAdditionalImagePreviews(prev => [...prev, ...newPreviews]);
+    if (e.target) e.target.value = "";
   };
 
   const removeAdditionalImage = (index) => {
@@ -365,15 +448,46 @@ const AdminEditUser = () => {
         await uploadIdProofByAdmin(id, idFormData);
       }
 
-      if (profileImageFile || additionalImageFiles.length > 0) {
+      if (profileImageFile || additionalImageFiles.length > 0 || deleteProfileImageFlag || deletedAdditionalImages.length > 0) {
         const imageFormData = new FormData();
+        
+        if (deleteProfileImageFlag) {
+          imageFormData.append("deleteProfileImage", "true");
+        }
+
+        if (deletedAdditionalImages.length > 0) {
+          deletedAdditionalImages.forEach((imgUrl) => {
+            imageFormData.append("deletedAdditionalImages", imgUrl);
+          });
+        }
+
         if (profileImageFile) {
-          imageFormData.append("profileImage", profileImageFile);
+          try {
+            if (profileImageFile.type.startsWith('image/')) {
+              const compressedFile = await imageCompression(profileImageFile, compressionOptions);
+              imageFormData.append("profileImage", compressedFile, profileImageFile.name);
+            } else {
+              imageFormData.append("profileImage", profileImageFile);
+            }
+          } catch (compErr) {
+            console.error("Error compressing profile image:", compErr);
+            imageFormData.append("profileImage", profileImageFile);
+          }
         }
         if (additionalImageFiles.length > 0) {
-          additionalImageFiles.forEach(file => {
-            imageFormData.append("additionalImages", file);
-          });
+          for (const file of additionalImageFiles) {
+            try {
+              if (file.type.startsWith('image/')) {
+                const compressedFile = await imageCompression(file, compressionOptions);
+                imageFormData.append("additionalImages", compressedFile, file.name);
+              } else {
+                imageFormData.append("additionalImages", file);
+              }
+            } catch (compErr) {
+              console.error("Error compressing additional image:", compErr);
+              imageFormData.append("additionalImages", file);
+            }
+          }
         }
         await uploadUserImagesAdmin(id, imageFormData);
       }
@@ -410,14 +524,16 @@ const AdminEditUser = () => {
 
 
   // Helper to create InputField with automatic props
-  const renderField = (label, name, type = "text", options = null, col = "6", isMulti = false) => (
+  const renderField = (label, name, type = "text", options = null, col = "6", isMulti = false, required = false) => (
     <InputField
       key={name}
       label={label}
       name={name}
       type={type}
       options={options}
+      isMulti={isMulti}
       col={col}
+      required={required}
       value={formData[name]}
       onChange={handleChange}
     />
@@ -442,59 +558,36 @@ const AdminEditUser = () => {
             </div>
 
             <div className="px-4 pt-4">
-              <ul className="nav nav-tabs border-0" id="profileTabs" role="tablist">
-                {[
-                  { id: "basic", label: "Basic Details", icon: "fa-user-plus" },
-                  { id: "gallery", label: "Gallery", icon: "fa-image" },
-                  { id: "family", label: "Family Details", icon: "fa-users" },
-                  { id: "religious", label: "Religious Information", icon: "fa-book" },
-                  { id: "professional", label: "Professional Information", icon: "fa-briefcase" },
-                  { id: "contact", label: "Contact Information", icon: "fa-phone" },
-                  { id: "lifestyle", label: "Life style", icon: "fa-heart" },
-                  { id: "partner", label: "Partner preference", icon: "fa-handshake-o" },
-                  { id: "partner_professional", label: "Partner Preferences - Professional", icon: "fa-briefcase" },
-                  { id: "partner_location", label: "Partner Preferences - location", icon: "fa-map-marker" },
-                  { id: "upload_proof", label: "Upload Proof", icon: "fa-id-card" }
-                ].map((tab) => (
-                  <li className="nav-item" key={tab.id}>
-                    <button
-                      className={`nav-link border-0 rounded-top-4 px-4 py-3 ${activeTab === tab.id ? "active bg-white fw-bold shadow-sm" : "text-muted"}`}
-                      onClick={() => setActiveTab(tab.id)}
-                    >
-                      <i className={`fa ${tab.icon} me-2`}></i>{tab.label}
-                    </button>
-                  </li>
-                ))}
-              </ul>
+              
             </div>
 
-            <div className="tab-content" id="profileTabsContent">
+            <div className="d-flex flex-column gap-4" id="profileSections">
               {/* AUTH & BASIC INFO */}
-              <FormSection title="Basic Details" id="basic" activeTab={activeTab}>
-                {renderField("Full Name", "userName", "text", null, "6")}
-                {renderField("Email Address", "userEmail", "email", null, "6")}
-                {renderField("Mobile Number", "userMobile", "text", null, "6")}
-                {renderField("Account Password", "password", "password", null, "6")}
+              <FormSection title="Basic Details" id="basic" >
+                <InputField label="Full Name" name="userName" col="6" required value={formData.userName} onChange={handleChange} />
+                <InputField label="Email Address" name="userEmail" type="email" col="6" required value={formData.userEmail} onChange={handleChange} />
+                <InputField label="Mobile Number" name="userMobile" col="6" required value={formData.userMobile} onChange={handleChange} />
+                <InputField label="Account Password" name="password" type="password" col="6" required value={formData.password} onChange={handleChange} />
                 {renderField("About Me", "aboutMe", "textarea", null, "12")}
-                {renderField("Date of Birth", "dateOfBirth", "date", null, "6")}
-                {renderField("Gender", "gender", "text", DROPDOWN_OPTIONS.gender, "6")}
-                {renderField("Profile Created By", "profileCreatedFor", "text", DROPDOWN_OPTIONS.profileCreatedFor, "6")}
-                {renderField("Marital Status", "maritalStatus", "text", DROPDOWN_OPTIONS.maritalStatus, "6")}
-                {renderField("Height", "height", "text", DROPDOWN_OPTIONS.height, "6")}
-                {renderField("Weight", "weight", "text", Array.from({ length: 101 }, (_, i) => String(i + 40)), "6")}
-                {renderField("Body Type", "bodyType", "text", DROPDOWN_OPTIONS.bodyType, "6")}
-                {renderField("Complexion", "complexion", "text", DROPDOWN_OPTIONS.complexion, "6")}
-                {renderField("Physical State", "physicalStatus", "text", DROPDOWN_OPTIONS.physicalStatus, "6")}
-                {renderField("Age", "age", "text", Array.from({ length: 53 }, (_, i) => String(i + 18)), "6")}
-                {renderField("Eating Habits", "eatingHabits", "text", DROPDOWN_OPTIONS.eatingHabits, "6")}
-                {renderField("Drinking Habits", "drinkingHabits", "text", DROPDOWN_OPTIONS.drinkingHabits, "6")}
-                {renderField("Smoking Habits", "smokingHabits", "text", DROPDOWN_OPTIONS.smokingHabits, "6")}
-                {renderField("Mother Tongue", "motherTongue", "text", DROPDOWN_OPTIONS.motherTongue, "6")}
-                {renderField("Caste", "caste", "text", casteOptions, "6")}
+                <InputField label="Date of Birth" name="dateOfBirth" type="date" col="6" required value={formData.dateOfBirth} onChange={handleChange} />
+                <InputField label="Gender" name="gender" options={DROPDOWN_OPTIONS.gender} col="6" required value={formData.gender} onChange={handleChange} />
+                <InputField label="Profile Created By" name="profileCreatedFor" options={DROPDOWN_OPTIONS.profileCreatedFor} col="6" required value={formData.profileCreatedFor} onChange={handleChange} />
+                <InputField label="Marital Status" name="maritalStatus" options={DROPDOWN_OPTIONS.maritalStatus} col="6" required value={formData.maritalStatus} onChange={handleChange} />
+                <InputField label="Height" name="height" options={DROPDOWN_OPTIONS.height} col="6" required value={formData.height} onChange={handleChange} />
+                <InputField label="Weight" name="weight" options={Array.from({ length: 101 }, (_, i) => String(i + 40))} col="6" required value={formData.weight} onChange={handleChange} />
+                <InputField label="Body Type" name="bodyType" options={DROPDOWN_OPTIONS.bodyType} col="6" required value={formData.bodyType} onChange={handleChange} />
+                <InputField label="Complexion" name="complexion" options={DROPDOWN_OPTIONS.complexion} col="6" required value={formData.complexion} onChange={handleChange} />
+                <InputField label="Physical State" name="physicalStatus" options={DROPDOWN_OPTIONS.physicalStatus} col="6" required value={formData.physicalStatus} onChange={handleChange} />
+                <InputField label="Age" name="age" options={Array.from({ length: 53 }, (_, i) => String(i + 18))} col="6" required value={formData.age} onChange={handleChange} />
+                <InputField label="Eating Habits" name="eatingHabits" options={DROPDOWN_OPTIONS.eatingHabits} col="6" required value={formData.eatingHabits} onChange={handleChange} />
+                <InputField label="Drinking Habits" name="drinkingHabits" options={DROPDOWN_OPTIONS.drinkingHabits} col="6" required value={formData.drinkingHabits} onChange={handleChange} />
+                <InputField label="Smoking Habits" name="smokingHabits" options={DROPDOWN_OPTIONS.smokingHabits} col="6" required value={formData.smokingHabits} onChange={handleChange} />
+                <InputField label="Mother Tongue" name="motherTongue" options={DROPDOWN_OPTIONS.motherTongue} col="6" required value={formData.motherTongue} onChange={handleChange} />
+                <InputField label="Caste" name="caste" options={casteOptions} col="6" required value={formData.caste} onChange={handleChange} />
               </FormSection>
 
               {/* GALLERY */}
-              <div className={`tab-pane fade ${activeTab === "gallery" ? "show active" : ""}`} id="gallery">
+              <div id="gallery" className="mb-4">
                 <div className="card border-0 p-4 text-center">
                   <p className="text-muted mb-4 small">Upload a profile picture and additional gallery images.</p>
                   <BasicInfomation
@@ -509,10 +602,10 @@ const AdminEditUser = () => {
               </div>
 
               {/* FAMILY */}
-              <FormSection title="Family Details" id="family" activeTab={activeTab}>
-                {renderField("Father's Name", "fathersName", "text", null, "6")}
+              <FormSection title="Family Details" id="family" >
+                <InputField label="Father's Name" name="fathersName" col="6" required value={formData.fathersName} onChange={handleChange} />
                 {renderField("Father's Occupation", "fathersOccupation", "text", ["Retired", "Business", "Government Employee", "Private Employee", "Professional", "Farmer", "Homemaker", "Others"], "6")}
-                {renderField("Mother's Name", "mothersName", "text", null, "6")}
+                <InputField label="Mother's Name" name="mothersName" col="6" required value={formData.mothersName} onChange={handleChange} />
                 {renderField("Mother's Occupation", "mothersOccupation", "text", ["Retired", "Business", "Government Employee", "Private Employee", "Professional", "Farmer", "Homemaker", "Others"], "6")}
                 {renderField("Father's Profession", "fathersProfession", "text", null, "6")}
                 {renderField("Mother's Profession", "mothersProfession", "text", null, "6")}
@@ -526,12 +619,12 @@ const AdminEditUser = () => {
                 {renderField("Married Brothers", "marriedBrothers", "number", null, "6")}
                 {renderField("No. of Sisters", "numberOfSisters", "number", null, "6")}
                 {renderField("Married Sisters", "marriedSisters", "number", null, "6")}
-                {renderField("Additional Family Details", "familyDetails", "textarea", null, "12")}
+                {renderField("Additional Details", "familyDetails", "textarea", null, "12")}
               </FormSection>
 
               {/* RELIGIOUS */}
-              <FormSection title="Religious Information" id="religious" activeTab={activeTab}>
-                {renderField("Denomination", "denomination", "text", denominationOptions, "6")}
+              <FormSection title="Religious Information" id="religious" >
+                {renderField("Denomination", "denomination", "text", denominationOptions, "6", false, true)}
                 {renderField("Church Name", "church", "text", null, "6")}
                 {renderField("Church Activity", "churchActivity", "text", DROPDOWN_OPTIONS.churchActivity, "6")}
                 {renderField("Pastors Name", "pastorsName", "text", null, "6")}
@@ -540,7 +633,7 @@ const AdminEditUser = () => {
               </FormSection>
 
               {/* PROFESSIONAL */}
-              <FormSection title="Professional Information" id="professional" activeTab={activeTab}>
+              <FormSection title="Professional Information" id="professional" >
                 {renderField("Highest Education", "education", "text", DROPDOWN_OPTIONS.education, "6")}
                 {renderField("Additional Education", "additionalEducation", "text", DROPDOWN_OPTIONS.additionalEducation, "6")}
                 {renderField("College", "college", "text", null, "6")}
@@ -553,21 +646,21 @@ const AdminEditUser = () => {
               </FormSection>
 
               {/* CONTACT */}
-              <FormSection title="Contact Information" id="contact" activeTab={activeTab}>
-                {renderField("Contact Person Name", "contactPersonName", "text", null, "6")}
-                {renderField("Relationship", "relationship", "text", DROPDOWN_OPTIONS.relationship, "6")}
+              <FormSection title="Contact Information" id="contact" >
+                {renderField("Contact Person Name", "contactPersonName", "text", null, "6", false, true)}
+                {renderField("Relationship", "relationship", "text", DROPDOWN_OPTIONS.relationship, "6", false, true)}
                 {renderField("Citizen Of", "citizenOf", "text", Country.getAllCountries().map(c => c.name), "6")}
-                {renderField("Alternate Mobile", "alternateMobile", "text", null, "6")}
-                {renderField("Alternate Email", "alternateEmail", "email", null, "6")}
+                {renderField("Alternate Mobile", "alternateMobile", "text", null, "6", false, true)}
+                {renderField("Alternate Email", "alternateEmail", "email", null, "6", false, true)}
                 {renderField("Landline", "landlineNumber", "text", null, "6")}
                 <div className="col-12 mt-4">
                   <h6 className="fw-bold border-bottom pb-2">Current Address</h6>
                 </div>
-                {renderField("Door / Flat No (Name), Street", "currentDoorNo", "text", null, "6")}
-                {renderField("Locality / Area", "currentLocality", "text", null, "6")}
-                {renderField("Country", "currentCountry", "text", Country.getAllCountries().map(c => c.name), "6")}
-                {renderField("State", "currentState", "text", formData.currentCountry ? State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "").map(s => s.name) : [], "6")}
-                {renderField("District", "currentDistrict", "text", formData.currentState ? City.getCitiesOfState(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "", State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "").find(s => s.name === formData.currentState)?.isoCode || "").map(city => city.name) : [], "6")}
+                {renderField("Door / Flat No (Name), Street", "currentDoorNo", "text", null, "6", false, true)}
+                {renderField("Locality / Area", "currentLocality", "text", null, "6", false, true)}
+                {renderField("Country", "currentCountry", "text", Country.getAllCountries().map(c => c.name), "6", false, true)}
+                {renderField("State", "currentState", "text", formData.currentCountry ? State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "").map(s => s.name) : [], "6", false, true)}
+                {renderField("District", "currentDistrict", "text", formData.currentState ? City.getCitiesOfState(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "", State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "").find(s => s.name === formData.currentState)?.isoCode || "").map(city => city.name) : [], "6", false, true)}
                 {renderField("Pincode", "currentPincode", "text", null, "6")}
 
                 <div className="col-12 mt-4">
@@ -618,7 +711,7 @@ const AdminEditUser = () => {
               </FormSection>
 
               {/* LIFESTYLE */}
-              <FormSection title="Life style" id="lifestyle" activeTab={activeTab}>
+              <FormSection title="Life style" id="lifestyle" >
                 {renderField("Hobbies", "hobbies", "text", ["Reading", "Sports", "Music", "Traveling", "Cooking", "Photography", "Dancing", "Gaming", "Painting", "Writing", "Gardening", "Yoga"], "6", true)}
                 {renderField("Interests", "interests", "text", null, "6")}
                 {renderField("Music", "music", "text", null, "6")}
@@ -630,24 +723,25 @@ const AdminEditUser = () => {
               </FormSection>
 
               {/* PARTNER PREFERENCES */}
-              <FormSection title="Partner preference" id="partner" activeTab={activeTab}>
+              <FormSection title="Partner preference" id="partner" >
+                {renderField("About Partner", "aboutPartner", "textarea", null, "12")}
                 {renderField("Age From", "partnerAgeFrom", "text", Array.from({ length: 53 }, (_, i) => String(i + 18)), "6")}
                 {renderField("Age To", "partnerAgeTo", "text", Array.from({ length: 53 }, (_, i) => String(i + 18)), "6")}
                 {renderField("Desired Height From", "partnerHeight", "text", DROPDOWN_OPTIONS.height, "6")}
                 {renderField("Desired Height To", "partnerHeightTo", "text", DROPDOWN_OPTIONS.height, "6")}
                 {renderField("Preferred Marital Status", "partnerMaritalStatus", "text", DROPDOWN_OPTIONS.partnerMaritalStatus, "6", true)}
                 {renderField("Preferred Mother Tongue", "partnerMotherTongue", "text", DROPDOWN_OPTIONS.partnerMotherTongue, "6", true)}
-                {renderField("Preferred Caste", "partnerCaste", "text", casteOptions, "6", true)}
+                {renderField("Preferred Caste", "partnerCaste", "text", partnerCasteOptions, "6", true)}
                 {renderField("Preferred Physical Status", "partnerPhysicalStatus", "text", DROPDOWN_OPTIONS.partnerPhysicalStatus, "6", true)}
                 {renderField("Preferred Eating Habits", "partnerEatingHabits", "text", DROPDOWN_OPTIONS.partnerEatingHabits, "6", true)}
                 {renderField("Preferred Drinking Habits", "partnerDrinkingHabits", "text", DROPDOWN_OPTIONS.partnerDrinkingHabits, "6", true)}
                 {renderField("Preferred Smoking Habits", "partnerSmokingHabits", "text", DROPDOWN_OPTIONS.partnerSmokingHabits, "6", true)}
-                {renderField("Preferred Denomination", "partnerDenomination", "text", denominationOptions, "6", true)}
+                {renderField("Preferred Denomination", "partnerDenomination", "text", partnerDenominationOptions, "6", true)}
                 {renderField("Preferred Spirituality", "partnerSpirituality", "text", DROPDOWN_OPTIONS.partnerSpirituality, "6", true)}
               </FormSection>
 
               {/* PARTNER PREFERENCES - PROFESSIONAL */}
-              <FormSection title="Partner Preferences - Professional" id="partner_professional" activeTab={activeTab}>
+              <FormSection title="Partner Preferences - Professional" id="partner_professional" >
                 {renderField("Preferred Education", "partnerEducation", "text", DROPDOWN_OPTIONS.partnerEducation, "6", true)}
                 {renderField("Preferred Employment Type", "partnerEmploymentType", "text", DROPDOWN_OPTIONS.partnerEmploymentType, "6", true)}
                 {renderField("Preferred Occupation", "partnerOccupation", "text", DROPDOWN_OPTIONS.partnerOccupation, "6", true)}
@@ -656,7 +750,7 @@ const AdminEditUser = () => {
               </FormSection>
 
               {/* PARTNER PREFERENCES - LOCATION */}
-                <FormSection title="Partner Preferences - location" id="partner_location" activeTab={activeTab}>
+                <FormSection title="Partner Preferences - location" id="partner_location" >
                   <InputField 
                     label="Preferred Country" 
                     name="partnerCountry" 
@@ -704,7 +798,7 @@ const AdminEditUser = () => {
                 </FormSection>
 
               {/* UPLOAD PROOF */}
-              <FormSection title="Upload Proof" id="upload_proof" activeTab={activeTab}>
+              <FormSection title="Upload Proof" id="upload_proof" >
                 {renderField("ID Proof Type", "idProofType", "text", ["Aadhar Card", "Passport"], "6")}
                 {renderField("ID Proof Number", "idProofNumber", "text", null, "6")}
                 <div className="col-md-6 mb-3">

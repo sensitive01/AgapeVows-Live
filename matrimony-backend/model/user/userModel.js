@@ -212,6 +212,7 @@ const userSchema = new mongoose.Schema(
       partnerCountry: { type: [String] },
       partnerState: { type: [String] },
       partnerDistrict: { type: [String] },
+      aboutPartner: { type: String },
 
       /* =========================
          SUBSCRIPTION & PAYMENTS

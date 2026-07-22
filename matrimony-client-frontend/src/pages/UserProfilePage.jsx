@@ -1268,6 +1268,10 @@ const UserProfilePage = () => {
                       value={userInfo?.residenceType}
                     />
                     <InfoRow
+                      label="Additional Details"
+                      value={userInfo?.familyDetails}
+                    />
+                    <InfoRow
                       label="No. of Brothers"
                       value={userInfo?.numberOfBrothers}
                     />
@@ -1432,6 +1436,16 @@ const UserProfilePage = () => {
 
                   {/* Partner Preferences Section */}
                   <ProfileSection title="Partner Preferences" icon="fa-heart">
+                    {userInfo?.aboutPartner && (
+                      <div className="grid-span-full" style={{ marginBottom: "15px" }}>
+                        <h6 style={{ fontSize: "14px", fontWeight: "600", color: "#6b7280", marginBottom: "4px" }}>
+                          About Partner
+                        </h6>
+                        <p style={{ fontSize: "15px", color: "#1f2937", lineHeight: "1.5" }}>
+                          {userInfo.aboutPartner}
+                        </p>
+                      </div>
+                    )}
                     <div className="grid-span-full" style={{ marginBottom: "10px" }}>
                       <h5
                         style={{

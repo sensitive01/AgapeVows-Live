@@ -64,7 +64,7 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
     const optValue = typeof option === "string" ? option : option.value;
     
     if (isMulti) {
-      const exclusiveOptions = ["Doesn't Matter", "Any", "Don't wish to specify", "Caste No Bar", "None"];
+      const exclusiveOptions = ["Doesn't Matter", "Any", "Do not wish to specify", "Don't wish to specify", "Caste No Bar", "None"];
       const currentValues = Array.isArray(value) ? value : [];
       let newValues;
 

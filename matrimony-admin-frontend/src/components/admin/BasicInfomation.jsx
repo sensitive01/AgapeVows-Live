@@ -16,7 +16,17 @@ const BasicInfomation = ({
     profileImageInputRef.current?.click();
   };
 
-  const handleChooseFilesClick = () => {
+  const handleChooseFilesClick = (e) => {
+    if (!profileImagePreview) {
+      alert("Please upload a profile picture first before uploading additional photos.");
+      if (e) e.preventDefault();
+      return;
+    }
+    if (additionalImagePreviews && additionalImagePreviews.length >= 8) {
+      alert("You can upload a maximum of 8 additional photos.");
+      if (e) e.preventDefault();
+      return;
+    }
     additionalImagesInputRef.current?.click();
   };
 
@@ -43,6 +53,7 @@ const BasicInfomation = ({
                 cursor: "pointer",
               }}
               onClick={handleEditIconClick}
+              title="Click here to upload your profile pic"
             >
               {profileImagePreview ? (
                 <>
@@ -87,13 +98,20 @@ const BasicInfomation = ({
                     width: "100%",
                     height: "100%",
                     borderRadius: "50%",
-                    border: "2px dashed #ccc",
+                    border: "2px dashed #cbd5e1",
+                    background: "#f8fafc",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    textAlign: "center",
+                    padding: "16px",
+                    color: "#64748b",
+                    fontSize: "12px",
+                    fontWeight: "600",
+                    lineHeight: "1.3",
                   }}
                 >
-                  + Upload Photo
+                  Click here to upload your profile pic
                 </div>
               )}
 

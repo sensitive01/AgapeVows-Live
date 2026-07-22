@@ -8,15 +8,20 @@ import BasicInfomation from "./BasicInfomation";
 import * as XLSX from "xlsx";
 import { Modal } from "react-bootstrap";
 import CustomTable from "./common/CustomTable";
-import { registerUserByAdmin, bulkRegisterUsersByAdmin, uploadIdProofByAdmin, getAllMasterData } from "../../api/service/adminServices";
+import { registerUserByAdmin, bulkRegisterUsersByAdmin, uploadIdProofByAdmin, getAllMasterData, uploadUserImagesAdmin } from "../../api/service/adminServices";
 import { showAlert } from "../../utils/alertService";
+import imageCompression from "browser-image-compression";
 
-const FormSection = ({ title, children, id, activeTab }) => (
-  <div className={`tab-pane fade ${activeTab === id ? "show active" : ""}`} id={id} role="tabpanel">
-    <div className="card border-0 p-4">
-      <h5 className="fw-bold mb-4 border-bottom pb-2">{title}</h5>
-      <div className="row g-3">{children}</div>
-    </div>
+const compressionOptions = {
+  maxSizeMB: 0.8,
+  maxWidthOrHeight: 1920,
+  useWebWorker: true,
+};
+
+const FormSection = ({ title, children, id }) => (
+  <div id={id} className="card border-0 p-4 shadow-sm mb-4">
+    <h5 className="fw-bold mb-4 border-bottom pb-2">{title}</h5>
+    <div className="row g-3">{children}</div>
   </div>
 );
 
@@ -24,17 +29,40 @@ const InputField = ({ label, name, type = "text", options = null, isMulti = fals
   const [showPassword, setShowPassword] = useState(false);
   const isPasswordField = type === "password";
   const inputType = isPasswordField ? (showPassword ? "text" : "password") : type;
+
+  const value = formData[name];
+  const otherOption = (options && !isMulti) ? options.find(opt => opt === "Others" || opt === "Other") : null;
+  const isCustomValue = Boolean(otherOption && value && !options.includes(value));
+  const isOtherSelected = Boolean(otherOption && (value === "Others" || value === "Other" || isCustomValue));
+  const selectDisplayValue = isCustomValue ? otherOption : (value || "");
+  const textDisplayValue = isCustomValue ? value : "";
+
   const customStyles = {
-    control: (base) => ({
+    control: (base, state) => ({
       ...base,
       minHeight: '38px',
-      borderColor: '#dee2e6',
-      boxShadow: 'none',
+      backgroundColor: required ? '#f8fafc' : '#ffffff',
+      borderColor: state.isFocused ? '#0d6efd' : (required ? '#cbd5e1' : '#dee2e6'),
+      borderWidth: required ? '1.5px' : '1px',
+      borderRadius: '8px',
+      boxShadow: state.isFocused ? '0 0 0 3px rgba(13, 110, 253, 0.15)' : 'none',
       '&:hover': {
-        borderColor: '#dee2e6'
+        borderColor: required ? '#94a3b8' : '#ced4da'
       }
     }),
     menuPortal: base => ({ ...base, zIndex: 9999 })
+  };
+
+  const inputStyle = {
+    backgroundColor: required ? '#f8fafc' : '#ffffff',
+    borderColor: required ? '#cbd5e1' : '#dee2e6',
+    borderWidth: required ? '1.5px' : '1px',
+    borderRadius: '8px',
+    color: '#0f172a',
+    fontSize: '0.9rem',
+    fontWeight: '500',
+    minHeight: type === 'textarea' ? 'auto' : '38px',
+    ...(isPasswordField ? { paddingRight: "40px" } : {})
   };
 
   const getSelectValue = () => {
@@ -44,36 +72,64 @@ const InputField = ({ label, name, type = "text", options = null, isMulti = fals
       }
       return [];
     }
-    return formData[name] ? { value: formData[name], label: formData[name] } : null;
+    return selectDisplayValue ? { value: selectDisplayValue, label: selectDisplayValue } : null;
   };
 
   return (
     <div className={`col-md-${col}`}>
-      <label className="form-label small fw-bold text-muted">{label} {required && <span className="text-danger">*</span>}</label>
+      <label className="form-label small fw-bold text-muted mb-1">{label} {required && <span className="text-danger fw-bold">*</span>}</label>
       {options ? (
-        <Select
-          isMulti={isMulti}
-          options={options.map(opt => ({ value: opt, label: opt }))}
-          value={getSelectValue()}
-          onChange={(selectedOption) => {
-            let value;
-            if (isMulti) {
-              value = selectedOption ? selectedOption.map(opt => opt.value) : [];
-            } else {
-              value = selectedOption ? selectedOption.value : '';
-            }
-            handleChange({ target: { name, value } });
-          }}
-          placeholder={`Select ${label}`}
-          styles={customStyles}
-          isClearable
-          menuPortalTarget={document.body}
-        />
+        <div>
+          <Select
+            isMulti={isMulti}
+            options={options.map(opt => ({ value: opt, label: opt }))}
+            value={getSelectValue()}
+            onChange={(selectedOption) => {
+              let val;
+              if (isMulti) {
+                val = selectedOption ? selectedOption.map(opt => opt.value) : [];
+              } else {
+                val = selectedOption ? selectedOption.value : '';
+              }
+              handleChange({ target: { name, value: val } });
+            }}
+            placeholder={`Select ${label}`}
+            styles={customStyles}
+            isClearable
+            menuPortalTarget={document.body}
+          />
+          {isOtherSelected && (
+            <div className="mt-2">
+              <label className="form-label small fw-bold text-muted mb-1">
+                Please specify {label} <span className="text-danger fw-bold">*</span>
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                name={name}
+                value={textDisplayValue}
+                onChange={(e) => handleChange({ target: { name, value: e.target.value } })}
+                placeholder={`Enter ${label.toLowerCase()}`}
+                required={true}
+                style={{
+                  backgroundColor: '#ffffff',
+                  borderColor: '#cbd5e1',
+                  borderWidth: '1.5px',
+                  borderRadius: '8px',
+                  color: '#0f172a',
+                  fontSize: '0.9rem',
+                  fontWeight: '500',
+                  minHeight: '40px'
+                }}
+              />
+            </div>
+          )}
+        </div>
       ) : type === "textarea" ? (
-        <textarea className="form-control" name={name} value={formData[name] || ""} onChange={handleChange} rows="3" />
+        <textarea className="form-control" name={name} value={formData[name] || ""} onChange={handleChange} rows="3" required={required} style={inputStyle} />
       ) : (
         <div className="position-relative">
-          <input type={inputType} className="form-control" name={name} value={formData[name] || ""} onChange={handleChange} required={required} style={isPasswordField ? { paddingRight: "40px" } : {}} />
+          <input type={inputType} className="form-control" name={name} value={formData[name] || ""} onChange={handleChange} required={required} style={inputStyle} />
           {isPasswordField && (
             <button
               type="button"
@@ -152,6 +208,7 @@ const AdminAddNewUser = () => {
     marriedBrothers: "",
     numberOfSisters: "",
     marriedSisters: "",
+    familyDetails: "",
 
     // --- Religious Info ---
     religion: "",
@@ -231,6 +288,7 @@ const AdminAddNewUser = () => {
     partnerCountry: "",
     partnerState: "",
     partnerDistrict: "",
+    aboutPartner: "",
 
     // --- Profile Visibility ---
     profileVisibility: "Public",
@@ -248,7 +306,9 @@ const AdminAddNewUser = () => {
   const [idProofFile, setIdProofFile] = useState(null);
 
   const [casteOptions, setCasteOptions] = useState([]);
+  const [partnerCasteOptions, setPartnerCasteOptions] = useState([]);
   const [denominationOptions, setDenominationOptions] = useState([]);
+  const [partnerDenominationOptions, setPartnerDenominationOptions] = useState([]);
 
   useEffect(() => {
     const fetchMasterData = async () => {
@@ -263,8 +323,14 @@ const AdminAddNewUser = () => {
             .filter((d) => d.type === "denomination" && d.isActive)
             .map((d) => d.name)
             .sort((a, b) => a.localeCompare(b));
-          setCasteOptions(fetchedCastes);
-          setDenominationOptions(fetchedDenominations);
+
+          const cleanCastes = fetchedCastes.filter((c) => c !== "Do not wish to specify" && c !== "Doesn't Matter" && c !== "Any" && c !== "Christian" && c !== "Others" && c !== "Other");
+          setCasteOptions(["Do not wish to specify", "Christian", ...cleanCastes, "Others"]);
+          setPartnerCasteOptions(["Any", "Christian", ...cleanCastes, "Others"]);
+
+          const cleanDenominations = fetchedDenominations.filter((d) => d !== "Do not wish to specify" && d !== "Any" && d !== "Others" && d !== "Other");
+          setDenominationOptions([...cleanDenominations, "Others"]);
+          setPartnerDenominationOptions(["Any", ...cleanDenominations, "Others"]);
         }
       } catch (err) {
         console.error("Failed to fetch master data", err);
@@ -292,10 +358,27 @@ const AdminAddNewUser = () => {
   };
 
   const handleAdditionalImagesChange = (e) => {
-    const files = Array.from(e.target.files);
+    if (!profileImagePreview) {
+      alert("Please upload a profile picture first before uploading additional photos.");
+      if (e.target) e.target.value = "";
+      return;
+    }
+    const currentCount = additionalImagePreviews.length;
+    if (currentCount >= 8) {
+      alert("You can upload a maximum of 8 additional photos.");
+      if (e.target) e.target.value = "";
+      return;
+    }
+    let files = Array.from(e.target.files);
+    if (currentCount + files.length > 8) {
+      const allowed = 8 - currentCount;
+      alert(`You can only upload up to ${allowed} more photo(s). Maximum allowed is 8 photos.`);
+      files = files.slice(0, allowed);
+    }
     const newPreviews = files.map(file => ({ url: URL.createObjectURL(file), file }));
     setAdditionalImageFiles(prev => [...prev, ...files]);
     setAdditionalImagePreviews(prev => [...prev, ...newPreviews]);
+    if (e.target) e.target.value = "";
   };
 
   const removeAdditionalImage = (index) => {
@@ -314,8 +397,54 @@ const AdminAddNewUser = () => {
       const wb = XLSX.read(bstr, { type: "binary" });
       const wsname = wb.SheetNames[0];
       const ws = wb.Sheets[wsname];
-      const data = XLSX.utils.sheet_to_json(ws);
-      setBulkData(data);
+
+      // Parse 2D raw array to check layout
+      const rawRows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      if (!rawRows || rawRows.length === 0) {
+        setBulkData([]);
+        return;
+      }
+
+      // Check if vertical: first column contains field names like "userName", "userEmail", "Field Name", "Field", etc.
+      const isVertical = rawRows.some(row =>
+        row && row[0] && (
+          row[0].toString().trim().toLowerCase() === 'username' ||
+          row[0].toString().trim().toLowerCase() === 'useremail' ||
+          row[0].toString().trim().toLowerCase() === 'field name' ||
+          row[0].toString().trim().toLowerCase() === 'field'
+        )
+      );
+
+      if (isVertical) {
+        const parsedUsers = [];
+        const maxCols = Math.max(...rawRows.map(r => r ? r.length : 0));
+
+        // Column 0 is Field Names. Column 1..maxCols are User 1, User 2, etc.
+        for (let col = 1; col < maxCols; col++) {
+          const userObj = {};
+          let hasVal = false;
+
+          rawRows.forEach(row => {
+            if (!row || row[0] === undefined || row[0] === null) return;
+            const fieldKey = row[0].toString().trim();
+            const val = row[col] !== undefined && row[col] !== null ? row[col].toString().trim() : "";
+
+            if (fieldKey && fieldKey.toLowerCase() !== 'field name' && fieldKey.toLowerCase() !== 'field') {
+              userObj[fieldKey] = val;
+              if (val !== "") hasVal = true;
+            }
+          });
+
+          if (hasVal && (userObj.userName || userObj.userEmail || userObj.userMobile)) {
+            parsedUsers.push(userObj);
+          }
+        }
+        setBulkData(parsedUsers);
+      } else {
+        // Standard horizontal layout
+        const data = XLSX.utils.sheet_to_json(ws);
+        setBulkData(data);
+      }
     };
     reader.readAsBinaryString(file);
   };
@@ -445,12 +574,29 @@ const AdminAddNewUser = () => {
       partnerCountry: "India",
       partnerState: "Kerala",
       partnerDistrict: "Ernakulam",
-
     };
 
-    const ws = XLSX.utils.json_to_sheet([allFields]);
+    // Format template vertically (Top to Bottom):
+    // Column A: Field Name
+    // Column B: User 1 Sample Data
+    // Column C: User 2 (Optional)
+    const verticalData = Object.entries(allFields).map(([fieldName, sampleVal]) => ({
+      "Field Name": fieldName,
+      "User 1": sampleVal,
+      "User 2 (Optional)": ""
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(verticalData);
+    
+    // Auto-fit column widths
+    ws['!cols'] = [
+      { wch: 30 },
+      { wch: 35 },
+      { wch: 25 }
+    ];
+
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Users");
+    XLSX.utils.book_append_sheet(wb, ws, "Bulk_Users_Template");
     XLSX.writeFile(wb, "Full_Bulk_User_Template.xlsx");
   };
 
@@ -528,6 +674,39 @@ const AdminAddNewUser = () => {
           const idFormData = new FormData();
           idFormData.append("idProof", idProofFile);
           await uploadIdProofByAdmin(newUserId, idFormData);
+        }
+
+        if ((profileImageFile || additionalImageFiles.length > 0) && newUserId) {
+          const imageFormData = new FormData();
+          if (profileImageFile) {
+            try {
+              if (profileImageFile.type.startsWith('image/')) {
+                const compressedFile = await imageCompression(profileImageFile, compressionOptions);
+                imageFormData.append("profileImage", compressedFile, profileImageFile.name);
+              } else {
+                imageFormData.append("profileImage", profileImageFile);
+              }
+            } catch (compErr) {
+              console.error("Error compressing profile image:", compErr);
+              imageFormData.append("profileImage", profileImageFile);
+            }
+          }
+          if (additionalImageFiles.length > 0) {
+            for (const file of additionalImageFiles) {
+              try {
+                if (file.type.startsWith('image/')) {
+                  const compressedFile = await imageCompression(file, compressionOptions);
+                  imageFormData.append("additionalImages", compressedFile, file.name);
+                } else {
+                  imageFormData.append("additionalImages", file);
+                }
+              } catch (compErr) {
+                console.error("Error compressing additional image:", compErr);
+                imageFormData.append("additionalImages", file);
+              }
+            }
+          }
+          await uploadUserImagesAdmin(newUserId, imageFormData);
         }
 
         showAlert({
@@ -628,33 +807,10 @@ const AdminAddNewUser = () => {
             </div>
 
             <div className="bg-light px-4 pt-4">
-              <ul className="nav nav-tabs border-0" id="profileTabs" role="tablist">
-                {[
-                  { id: "basic", label: "Basic Details", icon: "fa-user-plus" },
-                  { id: "gallery", label: "Gallery", icon: "fa-image" },
-                  { id: "family", label: "Family Details", icon: "fa-users" },
-                  { id: "religious", label: "Religious Information", icon: "fa-book" },
-                  { id: "professional", label: "Professional Information", icon: "fa-briefcase" },
-                  { id: "contact", label: "Contact Information", icon: "fa-phone" },
-                  { id: "lifestyle", label: "Life style", icon: "fa-heart" },
-                  { id: "partner", label: "Partner preference", icon: "fa-handshake-o" },
-                  { id: "partner_professional", label: "Partner Preferences - Professional", icon: "fa-briefcase" },
-                  { id: "partner_location", label: "Partner Preferences - location", icon: "fa-map-marker" },
-                  { id: "upload_proof", label: "Upload Proof", icon: "fa-id-card" }
-                ].map((tab) => (
-                  <li className="nav-item" key={tab.id}>
-                    <button
-                      className={`nav-link border-0 rounded-top-4 px-4 py-3 ${activeTab === tab.id ? "active bg-white fw-bold shadow-sm" : "text-muted"}`}
-                      onClick={() => setActiveTab(tab.id)}
-                    >
-                      <i className={`fa ${tab.icon} me-2`}></i>{tab.label}
-                    </button>
-                  </li>
-                ))}
-              </ul>
+              
             </div>
 
-            <div className="tab-content" id="profileTabsContent">
+            <div className="d-flex flex-column gap-4" id="profileSections">
               {/* BASIC PERSONAL DETAILS */}
               <FormSection title="Basic Personal Details" id="basic" activeTab={activeTab}>
                 <InputField label="About Me" name="aboutMe" type="textarea" col="12" formData={formData} handleChange={handleChange} />
@@ -662,25 +818,25 @@ const AdminAddNewUser = () => {
                 <InputField label="Email" name="userEmail" type="email" required formData={formData} handleChange={handleChange} />
                 <InputField label="Phone" name="userMobile" required formData={formData} handleChange={handleChange} />
                 <InputField label="Account Password" name="password" type="password" required formData={formData} handleChange={handleChange} />
-                <InputField label="Date of Birth" name="dateOfBirth" type="date" formData={formData} handleChange={handleChange} />
-                <InputField label="Gender" name="gender" options={DROPDOWN_OPTIONS.gender} formData={formData} handleChange={handleChange} />
-                <InputField label="Profile Created By" name="profileCreatedFor" options={DROPDOWN_OPTIONS.profileCreatedFor} formData={formData} handleChange={handleChange} />
-                <InputField label="Marital Status" name="maritalStatus" options={DROPDOWN_OPTIONS.maritalStatus} formData={formData} handleChange={handleChange} />
-                <InputField label="Height" name="height" options={DROPDOWN_OPTIONS.height} formData={formData} handleChange={handleChange} />
-                <InputField label="Weight" name="weight" options={Array.from({ length: 101 }, (_, i) => String(i + 40))} formData={formData} handleChange={handleChange} />
-                <InputField label="Body Type" name="bodyType" options={DROPDOWN_OPTIONS.bodyType} formData={formData} handleChange={handleChange} />
-                <InputField label="Complexion" name="complexion" options={DROPDOWN_OPTIONS.complexion} formData={formData} handleChange={handleChange} />
-                <InputField label="Physical State" name="physicalStatus" options={DROPDOWN_OPTIONS.physicalStatus} formData={formData} handleChange={handleChange} />
-                <InputField label="Age" name="age" options={Array.from({ length: 53 }, (_, i) => String(i + 18))} formData={formData} handleChange={handleChange} />
-                <InputField label="Eating Habits" name="eatingHabits" options={DROPDOWN_OPTIONS.eatingHabits} formData={formData} handleChange={handleChange} />
-                <InputField label="Drinking Habits" name="drinkingHabits" options={DROPDOWN_OPTIONS.drinkingHabits} formData={formData} handleChange={handleChange} />
-                <InputField label="Smoking Habits" name="smokingHabits" options={DROPDOWN_OPTIONS.smokingHabits} formData={formData} handleChange={handleChange} />
-                <InputField label="Mother Tongue" name="motherTongue" options={DROPDOWN_OPTIONS.motherTongue} formData={formData} handleChange={handleChange} />
-                <InputField label="Caste" name="caste" options={casteOptions} formData={formData} handleChange={handleChange} />
+                <InputField label="Date of Birth" name="dateOfBirth" required type="date" formData={formData} handleChange={handleChange} />
+                <InputField label="Gender" name="gender" required options={DROPDOWN_OPTIONS.gender} formData={formData} handleChange={handleChange} />
+                <InputField label="Profile Created By" name="profileCreatedFor" required options={DROPDOWN_OPTIONS.profileCreatedFor} formData={formData} handleChange={handleChange} />
+                <InputField label="Marital Status" name="maritalStatus" required options={DROPDOWN_OPTIONS.maritalStatus} formData={formData} handleChange={handleChange} />
+                <InputField label="Height" name="height" required options={DROPDOWN_OPTIONS.height} formData={formData} handleChange={handleChange} />
+                <InputField label="Weight" name="weight" required options={Array.from({ length: 101 }, (_, i) => String(i + 40))} formData={formData} handleChange={handleChange} />
+                <InputField label="Body Type" name="bodyType" required options={DROPDOWN_OPTIONS.bodyType} formData={formData} handleChange={handleChange} />
+                <InputField label="Complexion" name="complexion" required options={DROPDOWN_OPTIONS.complexion} formData={formData} handleChange={handleChange} />
+                <InputField label="Physical State" name="physicalStatus" required options={DROPDOWN_OPTIONS.physicalStatus} formData={formData} handleChange={handleChange} />
+                <InputField label="Age" name="age" required options={Array.from({ length: 53 }, (_, i) => String(i + 18))} formData={formData} handleChange={handleChange} />
+                <InputField label="Eating Habits" name="eatingHabits" required options={DROPDOWN_OPTIONS.eatingHabits} formData={formData} handleChange={handleChange} />
+                <InputField label="Drinking Habits" name="drinkingHabits" required options={DROPDOWN_OPTIONS.drinkingHabits} formData={formData} handleChange={handleChange} />
+                <InputField label="Smoking Habits" name="smokingHabits" required options={DROPDOWN_OPTIONS.smokingHabits} formData={formData} handleChange={handleChange} />
+                <InputField label="Mother Tongue" name="motherTongue" required options={DROPDOWN_OPTIONS.motherTongue} formData={formData} handleChange={handleChange} />
+                <InputField label="Caste" name="caste" required options={casteOptions} formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* GALLERY */}
-              <div className={`tab-pane fade ${activeTab === "gallery" ? "show active" : ""}`} id="gallery">
+              <div id="gallery" className="mb-4">
                 <div className="card border-0 p-4 text-center">
                   <p className="text-muted mb-4 small">Upload a profile picture and additional gallery images.</p>
                   <BasicInfomation
@@ -696,9 +852,9 @@ const AdminAddNewUser = () => {
 
               {/* FAMILY */}
               <FormSection title="Family Details" id="family" activeTab={activeTab}>
-                <InputField label="Father's Name" name="fathersName" formData={formData} handleChange={handleChange} />
+                <InputField label="Father's Name" name="fathersName" required formData={formData} handleChange={handleChange} />
                 <InputField label="Father's Occupation" name="fathersOccupation" options={["Retired", "Business", "Government Employee", "Private Employee", "Professional", "Farmer", "Homemaker", "Others"]} formData={formData} handleChange={handleChange} />
-                <InputField label="Mother's Name" name="mothersName" formData={formData} handleChange={handleChange} />
+                <InputField label="Mother's Name" name="mothersName" required formData={formData} handleChange={handleChange} />
                 <InputField label="Mother's Occupation" name="mothersOccupation" options={["Retired", "Business", "Government Employee", "Private Employee", "Professional", "Farmer", "Homemaker", "Others"]} formData={formData} handleChange={handleChange} />
                 <InputField label="Father's Profession" name="fathersProfession" formData={formData} handleChange={handleChange} />
                 <InputField label="Mother's Profession" name="mothersProfession" formData={formData} handleChange={handleChange} />
@@ -712,11 +868,12 @@ const AdminAddNewUser = () => {
                 <InputField label="Married Brothers" name="marriedBrothers" options={DROPDOWN_OPTIONS.marriedBrothers} formData={formData} handleChange={handleChange} />
                 <InputField label="No. of Sisters" name="numberOfSisters" options={DROPDOWN_OPTIONS.numberOfSisters} formData={formData} handleChange={handleChange} />
                 <InputField label="Married Sisters" name="marriedSisters" options={DROPDOWN_OPTIONS.marriedSisters} formData={formData} handleChange={handleChange} />
+                <InputField label="Additional Details" name="familyDetails" type="textarea" col="12" formData={formData} handleChange={handleChange} />
               </FormSection>
 
               {/* RELIGIOUS */}
               <FormSection title="Religious Information" id="religious" activeTab={activeTab}>
-                <InputField label="Denomination" name="denomination" options={denominationOptions} formData={formData} handleChange={handleChange} />
+                <InputField label="Denomination" name="denomination" required options={denominationOptions} formData={formData} handleChange={handleChange} />
                 <InputField label="Church Name" name="church" formData={formData} handleChange={handleChange} />
                 <InputField label="Church Activity" name="churchActivity" options={DROPDOWN_OPTIONS.churchActivity} formData={formData} handleChange={handleChange} />
                 <InputField label="Pastors Name" name="pastorsName" formData={formData} handleChange={handleChange} />
@@ -739,20 +896,20 @@ const AdminAddNewUser = () => {
 
               {/* CONTACT */}
               <FormSection title="Contact Information" id="contact" activeTab={activeTab}>
-                <InputField label="Contact Person Name" name="contactPersonName" formData={formData} handleChange={handleChange} />
-                <InputField label="Relationship" name="relationship" options={DROPDOWN_OPTIONS.relationship} formData={formData} handleChange={handleChange} />
+                <InputField label="Contact Person Name" name="contactPersonName" required formData={formData} handleChange={handleChange} />
+                <InputField label="Relationship" name="relationship" required options={DROPDOWN_OPTIONS.relationship} formData={formData} handleChange={handleChange} />
                 <InputField label="Citizen Of" name="citizenOf" options={Country.getAllCountries().map(c => c.name)} formData={formData} handleChange={handleChange} />
-                  <InputField label="Alternate Mobile" name="alternateMobile" formData={formData} handleChange={handleChange} />
-                <InputField label="Alternate Email" name="alternateEmail" type="email" formData={formData} handleChange={handleChange} />
+                <InputField label="Alternate Mobile" name="alternateMobile" required formData={formData} handleChange={handleChange} />
+                <InputField label="Alternate Email" name="alternateEmail" type="email" required formData={formData} handleChange={handleChange} />
                 <InputField label="Landline" name="landlineNumber" formData={formData} handleChange={handleChange} />
                 <div className="col-12 mt-4">
                   <h6 className="fw-bold border-bottom pb-2">Current Address</h6>
                 </div>
-                <InputField label="Door / Flat No (Name), Street" name="currentDoorNo" formData={formData} handleChange={handleChange} />
-                <InputField label="Locality / Area" name="currentLocality" formData={formData} handleChange={handleChange} />
-                <InputField label="Country" name="currentCountry" options={Country.getAllCountries().map(c => c.name)} formData={formData} handleChange={handleChange} />
-                <InputField label="State" name="currentState" options={formData.currentCountry ? State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "").map(s => s.name) : []} formData={formData} handleChange={handleChange} />
-                <InputField label="District" name="currentDistrict" options={formData.currentState ? City.getCitiesOfState(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "", State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "").find(s => s.name === formData.currentState)?.isoCode || "").map(city => city.name) : []} formData={formData} handleChange={handleChange} />
+                <InputField label="Door / Flat No (Name), Street" name="currentDoorNo" required formData={formData} handleChange={handleChange} />
+                <InputField label="Locality / Area" name="currentLocality" required formData={formData} handleChange={handleChange} />
+                <InputField label="Country" name="currentCountry" required options={Country.getAllCountries().map(c => c.name)} formData={formData} handleChange={handleChange} />
+                <InputField label="State" name="currentState" required options={formData.currentCountry ? State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "").map(s => s.name) : []} formData={formData} handleChange={handleChange} />
+                <InputField label="District" name="currentDistrict" required options={formData.currentState ? City.getCitiesOfState(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "", State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "").find(s => s.name === formData.currentState)?.isoCode || "").map(city => city.name) : []} formData={formData} handleChange={handleChange} />
                 <InputField label="Pincode" name="currentPincode" formData={formData} handleChange={handleChange} />
 
                 <div className="col-12 mt-4">
@@ -813,18 +970,19 @@ const AdminAddNewUser = () => {
 
               {/* PARTNER PREFERENCES */}
               <FormSection title="Partner preference" id="partner" activeTab={activeTab}>
+                <InputField label="About Partner" name="aboutPartner" type="textarea" col="12" formData={formData} handleChange={handleChange} />
                 <InputField label="Age From" name="partnerAgeFrom" options={Array.from({ length: 53 }, (_, i) => String(i + 18))} formData={formData} handleChange={handleChange} />
                 <InputField label="Age To" name="partnerAgeTo" options={Array.from({ length: 53 }, (_, i) => String(i + 18))} formData={formData} handleChange={handleChange} />
                 <InputField label="Desired Height From" name="partnerHeight" options={DROPDOWN_OPTIONS.height} formData={formData} handleChange={handleChange} />
                 <InputField label="Desired Height To" name="partnerHeightTo" options={DROPDOWN_OPTIONS.height} formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred Marital Status" name="partnerMaritalStatus" isMulti options={DROPDOWN_OPTIONS.partnerMaritalStatus} formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred Mother Tongue" name="partnerMotherTongue" isMulti options={DROPDOWN_OPTIONS.partnerMotherTongue} formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred Caste" name="partnerCaste" isMulti options={casteOptions} formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Caste" name="partnerCaste" isMulti options={partnerCasteOptions} formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred Physical Status" name="partnerPhysicalStatus" isMulti options={DROPDOWN_OPTIONS.partnerPhysicalStatus} formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred Eating Habits" name="partnerEatingHabits" isMulti options={DROPDOWN_OPTIONS.partnerEatingHabits} formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred Drinking Habits" name="partnerDrinkingHabits" isMulti options={DROPDOWN_OPTIONS.partnerDrinkingHabits} formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred Smoking Habits" name="partnerSmokingHabits" isMulti options={DROPDOWN_OPTIONS.partnerSmokingHabits} formData={formData} handleChange={handleChange} />
-                <InputField label="Preferred Denomination" name="partnerDenomination" isMulti options={denominationOptions} formData={formData} handleChange={handleChange} />
+                <InputField label="Preferred Denomination" name="partnerDenomination" isMulti options={partnerDenominationOptions} formData={formData} handleChange={handleChange} />
                 <InputField label="Preferred Spirituality" name="partnerSpirituality" isMulti options={DROPDOWN_OPTIONS.partnerSpirituality} formData={formData} handleChange={handleChange} />
               </FormSection>
 

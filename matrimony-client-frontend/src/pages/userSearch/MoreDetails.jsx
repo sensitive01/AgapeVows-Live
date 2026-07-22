@@ -906,7 +906,7 @@ const MoreDetails = () => {
                   { label: "Family Status", value: userInfo?.familyStatus },
                 ],
                 fullWidthData: userInfo?.familyDetails ? [
-                  { label: "Family Details", value: userInfo?.familyDetails }
+                  { label: "Additional Details", value: userInfo?.familyDetails }
                 ] : []
               },
               {
@@ -974,6 +974,9 @@ const MoreDetails = () => {
                   { label: "State", value: userInfo?.partnerState },
                   { label: "District", value: userInfo?.partnerDistrict },
                 ],
+                fullWidthData: userInfo?.aboutPartner ? [
+                  { label: "About Partner", value: userInfo?.aboutPartner }
+                ] : []
               },
             ].map((section, idx) => {
               const half = Math.ceil(section.data.length / 2);

@@ -142,6 +142,7 @@ export const DROPDOWN_OPTIONS = {
   ],
   "caste": [
     "Do not wish to specify",
+    "Christian",
     "Achari",
     "Adhi Karnataka",
     "Adhi Dravidar",
@@ -751,7 +752,8 @@ export const DROPDOWN_OPTIONS = {
     "Other"
   ],
   "partnerCaste": [
-    "Doesn't Matter",
+    "Any",
+    "Christian",
     "Achari",
     "Adhi Karnataka",
     "Adhi Dravidar",

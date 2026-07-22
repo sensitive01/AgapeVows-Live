@@ -54,6 +54,10 @@ const AdminIncompleteUsers = () => {
         if (response.status === 200) {
           const mappedUsers = response.data.data
             .filter(user => {
+              // Exclude deactivated users
+              if (user.profileStatus === "Deactivated" || user.deactivatedAt) {
+                return false;
+              }
               // A profile is incomplete if the flag is false, or if key mandatory fields are missing
               return user.isProfileCompleted === false || !user.gender || !user.dateOfBirth || !user.maritalStatus || !user.motherTongue;
             })

@@ -465,7 +465,7 @@ export default function AdminViewNewUser() {
 
                     {user.familyDetails && (
                         <div className="col-12">
-                            <InfoRow label="Family Details" value={user.familyDetails} />
+                            <InfoRow label="Additional Details" value={user.familyDetails} />
                         </div>
                     )}
 
@@ -529,6 +529,13 @@ export default function AdminViewNewUser() {
 
                     {/* ================= PARTNER PREFERENCES ================= */}
                     <h5 className="fw-bold mb-3">Partner Preferences</h5>
+
+                    {user.aboutPartner && (
+                        <div className="mb-4">
+                            <h6 className="fw-bold" style={{ color: "#5c2a9d", marginBottom: "4px" }}>About Partner</h6>
+                            <p className="mb-0 text-dark">{user.aboutPartner}</p>
+                        </div>
+                    )}
 
                     <h6 className="fw-bold mb-3" style={{ color: "#5c2a9d", display: "flex", alignItems: "center", gap: "8px" }}>
                         <span style={{ width: "4px", height: "18px", background: "#5c2a9d", borderRadius: "2px" }}></span>

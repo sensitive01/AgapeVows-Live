@@ -125,6 +125,8 @@ const getAllUsersData = async (req, res) => {
           dateOfBirth: 1,
           maritalStatus: 1,
           motherTongue: 1,
+          profileStatus: 1,
+          deactivatedAt: 1,
         }
       )
       .sort({ createdAt: -1 });
@@ -1176,14 +1178,31 @@ const uploadUserImagesAdmin = async (req, res) => {
     const { userId } = req.params;
     const files = req.files;
 
-    if (!files) {
-      return res.status(400).json({ success: false, message: "No files uploaded" });
+    if (!files && !req.body.deleteProfileImage && !req.body.deletedAdditionalImages) {
+      return res.status(400).json({ success: false, message: "No files or deletions provided" });
     }
 
     const updates = {};
     const fs = require('fs');
 
-    // Profile Image
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Handle Profile Image Deletion
+    if (req.body.deleteProfileImage === 'true') {
+      updates.profileImage = "";
+      if (user.profileImage) {
+        const cloudinaryRegex = /https?:\/\/res\.cloudinary\.com\/[^/]+\/(?:image|raw|upload)\/(?:v\d+\/)?(.+)\.[a-zA-Z0-9]+$/;
+        const match = user.profileImage.match(cloudinaryRegex);
+        if (match && match[1]) {
+          try { await cloudinary.uploader.destroy(match[1]); } catch (e) { console.error("Error deleting profile image from Cloudinary:", e); }
+        }
+      }
+    }
+
+    // Profile Image Upload
     if (files?.profileImage?.[0]) {
       const profile = await cloudinary.uploader.upload(
         files.profileImage[0].path,
@@ -1196,7 +1215,23 @@ const uploadUserImagesAdmin = async (req, res) => {
       try { fs.unlinkSync(files.profileImage[0].path); } catch (e) {}
     }
 
-    // Additional Images
+    // Handle Additional Images Deletion
+    let existingImages = user.additionalImages || [];
+    if (req.body.deletedAdditionalImages) {
+      const deletedImages = Array.isArray(req.body.deletedAdditionalImages) ? req.body.deletedAdditionalImages : [req.body.deletedAdditionalImages];
+      existingImages = existingImages.filter(img => !deletedImages.includes(img));
+      
+      for (const imgUrl of deletedImages) {
+        const cloudinaryRegex = /https?:\/\/res\.cloudinary\.com\/[^/]+\/(?:image|raw|upload)\/(?:v\d+\/)?(.+)\.[a-zA-Z0-9]+$/;
+        const match = imgUrl.match(cloudinaryRegex);
+        if (match && match[1]) {
+          try { await cloudinary.uploader.destroy(match[1]); } catch (e) { console.error("Error deleting additional image from Cloudinary:", e); }
+        }
+      }
+      updates.additionalImages = existingImages;
+    }
+
+    // Additional Images Upload
     if (files?.additionalImages?.length > 0) {
       const additionalImageUrls = [];
       for (const file of files.additionalImages) {
@@ -1207,9 +1242,6 @@ const uploadUserImagesAdmin = async (req, res) => {
         additionalImageUrls.push(result.secure_url);
         try { fs.unlinkSync(file.path); } catch (e) {}
       }
-      
-      const user = await userModel.findById(userId);
-      let existingImages = user.additionalImages || [];
       updates.additionalImages = [...existingImages, ...additionalImageUrls];
     }
 
