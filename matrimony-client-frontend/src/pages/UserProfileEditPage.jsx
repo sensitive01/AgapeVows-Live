@@ -3501,7 +3501,7 @@ const UserProfileEditPage = () => {
                         }}
                       >
                         <span style={{ fontSize: "14px", fontWeight: "700", color: "#374151" }}>
-                          Basic & Religion Preferences
+                          Basic Preferences
                         </span>
                       </div>
 

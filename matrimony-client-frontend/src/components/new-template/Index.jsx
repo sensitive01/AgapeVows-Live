@@ -878,19 +878,7 @@ export default function Index() {
                         </select>
                       </div>
                     </li>
-                    <li className="sr-reli">
-                      <div className="form-group">
-                        <label>Religion</label>
-                        <select className="chosen-select">
-                          <option>Religion</option>
-                          <option>Any</option>
-                          <option>Hindu</option>
-                          <option>Muslim</option>
-                          <option>Jain</option>
-                          <option>Christian</option>
-                        </select>
-                      </div>
-                    </li>
+
                     <li className="sr-cit">
                       <div className="form-group">
                         <label>City</label>

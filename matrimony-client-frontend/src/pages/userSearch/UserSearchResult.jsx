@@ -566,8 +566,7 @@ const UserSearchResult = () => {
                                 >
                                   <div className="mb-1">
                                     {[
-                                      user.religion,
-                                      user.caste,
+                                      user.denomination,
                                       user.city,
                                       user.state,
                                       user.citizenOf,

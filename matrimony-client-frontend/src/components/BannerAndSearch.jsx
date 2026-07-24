@@ -93,7 +93,7 @@ const BannerAndSearch = () => {
                       </li>
                       <li className="sr-reli">
                         <div className="form-group">
-                          <label>Religion</label>
+                          <label>Community</label>
                           <select
                             className="chosen-select"
                             name="community"

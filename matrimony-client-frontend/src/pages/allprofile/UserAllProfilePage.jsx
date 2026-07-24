@@ -110,8 +110,6 @@ const UserAllProfilePage = () => {
       if (user.age < minAge || user.age > maxAge) return false;
     }
 
-    if (filters.religion && filters.religion !== "Any" && user.religion !== filters.religion)
-      return false;
 
     if (filters.location && user.city !== filters.location) return false;
 
@@ -299,27 +297,7 @@ const UserAllProfilePage = () => {
                     </select>
                   </div>
                 </div>
-                <div className="filt-com lhs-cate">
-                  <h4>
-                    <i className="fa fa-bell-o" aria-hidden="true"></i>Select
-                    Religion
-                  </h4>
-                  <div className="form-group">
-                    <select
-                      className="chosen-select"
-                      name="religion"
-                      value={filters.religion}
-                      onChange={handleFilterChange}
-                    >
-                      <option value="">Religion</option>
-                      <option value="Any">Any</option>
-                      <option value="Hindu">Hindu</option>
-                      <option value="Muslim">Muslim</option>
-                      <option value="Jain">Jain</option>
-                      <option value="Christian">Christian</option>
-                    </select>
-                  </div>
-                </div>
+
                 <div className="filt-com lhs-cate">
                   <h4>
                     <i className="fa fa-map-marker" aria-hidden="true"></i>
@@ -608,8 +586,8 @@ const UserAllProfilePage = () => {
                               >
                                 <div className="mb-1">
                                   {[
-                                    user.religion,
-                                    user.caste,
+
+                                    user.denomination,
                                     user.city,
                                     user.state,
                                     user.citizenOf,
