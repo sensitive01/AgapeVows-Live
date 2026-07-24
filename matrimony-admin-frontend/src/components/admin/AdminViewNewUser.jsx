@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import NewLayout from "./layout/NewLayout";
 import {
     getUserById,
@@ -353,7 +353,14 @@ export default function AdminViewNewUser() {
     return (
         <NewLayout>
             {/* <div className="container mt-4 mb-5"> */}
-            <div className="card shadow-lg p-4 border-0 rounded-4">
+            <div className="card shadow-lg p-4 border-0 rounded-4 position-relative">
+                {/* ================= EDIT PROFILE BUTTON ================= */}
+                <div className="position-absolute" style={{ top: "20px", right: "20px" }}>
+                    <Link to={`/admin/edit-user/${id}`} className="btn btn-primary shadow-sm rounded-pill px-4">
+                        <i className="fa fa-edit me-2"></i>
+                        Edit Profile
+                    </Link>
+                </div>
 
                 {/* ================= PROFILE HEADER ================= */}
                 <div className="text-center mb-4">
@@ -390,6 +397,8 @@ export default function AdminViewNewUser() {
                     <div className="col-md-6">
                         <InfoRow label="Profile Created By" value={user.profileCreatedFor} />
                         <InfoRow label="Name" value={user.userName} />
+                        <InfoRow label="Primary Mobile" value={user.userMobile} />
+                        <InfoRow label="Primary Email" value={user.userEmail} />
                         <InfoRow label="Age" value={user.age ? `${user.age} Years` : "Not Provided"} />
                         <InfoRow
                             label="DOB"

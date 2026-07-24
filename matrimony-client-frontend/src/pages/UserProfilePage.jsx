@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./UserProfile.css";
 import UserSideBar from "../components/UserSideBar";
 import Footer from "../components/Footer";
@@ -384,7 +384,7 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
         </div>
 
         {/* Right Side: Form */}
-        <div className="doc-verify-right" style={{
+        <div id="id-proof-upload" className="doc-verify-right" style={{
           flex: "2 1 500px",
           padding: "40px"
         }}>
@@ -492,6 +492,7 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
 
 const UserProfilePage = () => {
   const userId = localStorage.getItem("userId");
+  const location = useLocation();
 
   const [userInfo, setUserInfo] = useState(null);
   const [visibility, setVisibility] = useState("Public"); // 👈 FIRST
@@ -507,6 +508,17 @@ const UserProfilePage = () => {
     };
     fetchData();
   }, [userId]);
+
+  useEffect(() => {
+    if (location.hash === '#id-proof-upload') {
+      setTimeout(() => {
+        const element = document.getElementById('id-proof-upload');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
+    }
+  }, [location.hash]);
 
   useEffect(() => {
     if (userInfo?.profileVisibility) {

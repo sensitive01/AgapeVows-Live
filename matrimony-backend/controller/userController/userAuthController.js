@@ -1282,12 +1282,12 @@ const getNewProfileMatches = async (req, res) => {
 
       rawMatches = await userModel.aggregate([
         { $match: matchQuery },
-        { $limit: 30 } // Fetch up to 30 matches instead of just 5
+        { $limit: 50 } // Fetch up to 50 matches
       ]);
     }
 
-    // If less than 10 matches found, fill the rest with random profiles to ensure the carousel scrolls nicely
-    if (rawMatches.length < 10) {
+    // If less than 50 matches found, fill the rest with random profiles to ensure the carousel scrolls nicely
+    if (rawMatches.length < 50) {
       const existingMatchIds = rawMatches.map(m => m._id);
       const allExcludedIds = [...blockedIds, ...existingMatchIds];
 
@@ -1296,7 +1296,7 @@ const getNewProfileMatches = async (req, res) => {
         _id: { $ne: new mongoose.Types.ObjectId(userId), $nin: allExcludedIds }
       };
 
-      const needed = 10 - rawMatches.length;
+      const needed = 50 - rawMatches.length;
       const additionalMatches = await userModel.aggregate([
         { $match: fallbackQuery },
         { $sample: { size: needed } }

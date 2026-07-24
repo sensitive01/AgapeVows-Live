@@ -3,7 +3,7 @@ import LayoutComponent from "../../components/layouts/LayoutComponent";
 import ShowInterest from "./ShowInterest";
 import Footer from "../../components/Footer";
 import CopyRights from "../../components/CopyRights";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import {
   fetchSearchedProfileData,
   saveTheProfileAsShortlisted,
@@ -327,8 +327,16 @@ const UserSearchResult = () => {
               <div className="d-none col-md-3 fil-mob-view"></div>
               <div className="col-md-12">
                 <div className="short-all">
-                  <div className="short-lhs">
-                    Showing <b>{users.length}</b> profiles
+                  <div className="short-lhs" style={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+                    <span>Showing <b style={{ margin: "0 4px" }}>{users.length}</b> profiles</span>
+                    <Link
+                      to="/user/find-matches"
+                      style={{ marginLeft: '15px', fontSize: '14px', color: '#00bcd5', cursor: 'pointer', fontWeight: '600', textDecoration: 'underline', transition: 'color 0.3s ease', position: 'relative', zIndex: 50, pointerEvents: 'auto' }}
+                      onMouseEnter={(e) => e.target.style.color = '#008ba3'}
+                      onMouseLeave={(e) => e.target.style.color = '#00bcd5'}
+                    >
+                      Search more profiles
+                    </Link>
                     {loading && <span className="ml-2">Loading...</span>}
                   </div>
                   <div className="short-rhs">

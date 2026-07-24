@@ -390,7 +390,7 @@ const GlobalSearchModal = () => {
   const [formData, setFormData] = useState({
     // Quick Search
     ageFrom: "18",
-    ageTo: "30",
+    ageTo: "40",
     caste: "",
     maritalStatus: [], // changed to array for multiple selection
     denomination: "",

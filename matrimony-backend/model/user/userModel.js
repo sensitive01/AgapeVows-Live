@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema(
       ========================== */
       profileCreatedFor: {
          type: String,
-         enum: ["Self", "Son", "Daughter", "Brother", "Sister", "Friend", "Relative"],
+         enum: ["Self", "Son", "Daughter", "Brother", "Sister", "Friend", "Relative", "Sibling", "Parents/Guardian", "Pastor"],
       },
 
       gender: { type: String, enum: ["Male", "Female", "Other"] },

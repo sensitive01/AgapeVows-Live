@@ -174,7 +174,7 @@ const UserDashboardPage = () => {
             // Determine how many slides we have in the DOM. 
             // We'll duplicate the array in the render function to ensure there are always > 5 items if we have at least 1 match.
             window.$(sliderRef.current).slick({
-              infinite: false,
+              infinite: true,
               accessibility: false,
               slidesToShow: 5,
               arrows: true,
@@ -490,7 +490,7 @@ const UserDashboardPage = () => {
                     <i className="fa fa-exclamation-triangle" style={{ fontSize: '24px', marginRight: '15px', marginTop: '6px' }}></i>
                     <div style={{ fontSize: '15px' }}>
                       <p className="mb-2">
-                        <strong>Action Required:</strong> Complete your profile verification and receive the 'Verified' badge today! Please submit your Government-issued masked ID to verify your profile immediately. Accounts that remain unverified after the grace period may be suspended without prior notice. Please <Link to="/user/user-profile-page" style={{ color: '#0056b3', textDecoration: 'underline', fontWeight: 'bold' }}>click here</Link> to upload your ID proof.
+                        <strong>Action Required:</strong> Complete your profile verification and receive the <b>'Verified'</b> badge today! Please submit your Government-issued masked ID to verify your profile immediately. Accounts that remain unverified after the grace period may be suspended without prior notice. Please <Link to="/user/user-profile-page#id-proof-upload" style={{ color: '#0056b3', textDecoration: 'underline', fontWeight: 'bold' }}>click here</Link> to upload your ID proof.
                       </p>
                       <p className="mb-0">
                         Thank you for helping us keep AgapeVows safe and trusted for everyone. Your Government-issued ID will be stored securely, used only for verification purposes, and will never be shared with anyone.

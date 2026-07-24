@@ -18,6 +18,21 @@ const compressionOptions = {
   useWebWorker: true,
 };
 
+const getCitiesList = (countryName, stateName) => {
+  if (!countryName || !stateName) return [];
+  const countryCode = Country.getAllCountries().find(c => c.name === countryName)?.isoCode || "";
+  if (!countryCode) return [];
+  const stateCode = State.getStatesOfCountry(countryCode).find(s => s.name === stateName)?.isoCode || "";
+  if (!stateCode) return [];
+  let cities = City.getCitiesOfState(countryCode, stateCode).map(city => city.name);
+  if (stateName === "Karnataka") {
+    if (!cities.includes("Hubballi")) cities.push("Hubballi");
+    if (!cities.includes("Vijayanagara")) cities.push("Vijayanagara");
+    cities.sort();
+  }
+  return cities;
+};
+
 const FormSection = ({ title, children, id }) => (
   <div id={id} className="card border-0 p-4 shadow-sm mb-4">
     <h5 className="fw-bold mb-4 border-bottom pb-2">{title}</h5>
@@ -495,6 +510,7 @@ const AdminAddNewUser = () => {
       marriedBrothers: "0",
       numberOfSisters: "0",
       marriedSisters: "0",
+      familyDetails: "We are a close-knit nuclear family...", 
 
       // --- Religious Info ---
       religion: "Christian",
@@ -574,6 +590,7 @@ const AdminAddNewUser = () => {
       partnerCountry: "India",
       partnerState: "Kerala",
       partnerDistrict: "Ernakulam",
+      aboutPartner: "Looking for a well-educated, kind partner.",
     };
 
     // Format template vertically (Top to Bottom):
@@ -909,7 +926,7 @@ const AdminAddNewUser = () => {
                 <InputField label="Locality / Area" name="currentLocality" required formData={formData} handleChange={handleChange} />
                 <InputField label="Country" name="currentCountry" required options={Country.getAllCountries().map(c => c.name)} formData={formData} handleChange={handleChange} />
                 <InputField label="State" name="currentState" required options={formData.currentCountry ? State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "").map(s => s.name) : []} formData={formData} handleChange={handleChange} />
-                <InputField label="District" name="currentDistrict" required options={formData.currentState ? City.getCitiesOfState(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "", State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "").find(s => s.name === formData.currentState)?.isoCode || "").map(city => city.name) : []} formData={formData} handleChange={handleChange} />
+                <InputField label="District" name="currentDistrict" required options={getCitiesList(formData.currentCountry, formData.currentState)} formData={formData} handleChange={handleChange} />
                 <InputField label="Pincode" name="currentPincode" formData={formData} handleChange={handleChange} />
 
                 <div className="col-12 mt-4">
@@ -952,7 +969,7 @@ const AdminAddNewUser = () => {
                 <InputField label="Locality / Area" name="permanentLocality" formData={formData} handleChange={handleChange} />
                 <InputField label="Country" name="permanentCountry" options={Country.getAllCountries().map(c => c.name)} formData={formData} handleChange={handleChange} />
                 <InputField label="State" name="permanentState" options={formData.permanentCountry ? State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.permanentCountry)?.isoCode || "").map(s => s.name) : []} formData={formData} handleChange={handleChange} />
-                <InputField label="District" name="permanentDistrict" options={formData.permanentState ? City.getCitiesOfState(Country.getAllCountries().find(c => c.name === formData.permanentCountry)?.isoCode || "", State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.permanentCountry)?.isoCode || "").find(s => s.name === formData.permanentState)?.isoCode || "").map(city => city.name) : []} formData={formData} handleChange={handleChange} />
+                <InputField label="District" name="permanentDistrict" required options={getCitiesList(formData.permanentCountry, formData.permanentState)} formData={formData} handleChange={handleChange} />
                 <InputField label="Pincode" name="permanentPincode" formData={formData} handleChange={handleChange} />
               </FormSection>
 
@@ -1032,8 +1049,7 @@ const AdminAddNewUser = () => {
                               ? allCountries.filter(c => formData.partnerCountry.includes(c.name))
                               : allCountries.filter(c => c.isoCode === "IN");
                             return countriesToSearch.flatMap(c => {
-                              const s = State.getStatesOfCountry(c.isoCode).find(state => state.name === sName);
-                              return s ? City.getCitiesOfState(c.isoCode, s.isoCode).map(city => city.name) : [];
+                              return getCitiesList(c.name, sName);
                             });
                           })))
                         : []

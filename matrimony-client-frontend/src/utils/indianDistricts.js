@@ -356,6 +356,7 @@ export const indianDistricts = {
         "Gadag",
         "Hassan",
         "Haveri",
+        "Hubballi",
         "Kalaburagi (Gulbarga)",
         "Kodagu",
         "Kolar",
@@ -368,6 +369,7 @@ export const indianDistricts = {
         "Tumakuru (Tumkur)",
         "Udupi",
         "Uttara Kannada (Karwar)",
+        "Vijayanagara",
         "Vijayapura (Bijapur)",
         "Yadgir"
       ]

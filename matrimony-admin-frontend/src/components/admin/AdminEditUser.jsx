@@ -16,6 +16,21 @@ const compressionOptions = {
   useWebWorker: true,
 };
 
+const getCitiesList = (countryName, stateName) => {
+  if (!countryName || !stateName) return [];
+  const countryCode = Country.getAllCountries().find(c => c.name === countryName)?.isoCode || "";
+  if (!countryCode) return [];
+  const stateCode = State.getStatesOfCountry(countryCode).find(s => s.name === stateName)?.isoCode || "";
+  if (!stateCode) return [];
+  let cities = City.getCitiesOfState(countryCode, stateCode).map(city => city.name);
+  if (stateName === "Karnataka") {
+    if (!cities.includes("Hubballi")) cities.push("Hubballi");
+    if (!cities.includes("Vijayanagara")) cities.push("Vijayanagara");
+    cities.sort();
+  }
+  return cities;
+};
+
 
 const InputField = React.memo(({ label, name, type = "text", options = null, isMulti = false, col = "6", required = false, value, onChange }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -660,7 +675,7 @@ const AdminEditUser = () => {
                 {renderField("Locality / Area", "currentLocality", "text", null, "6", false, true)}
                 {renderField("Country", "currentCountry", "text", Country.getAllCountries().map(c => c.name), "6", false, true)}
                 {renderField("State", "currentState", "text", formData.currentCountry ? State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "").map(s => s.name) : [], "6", false, true)}
-                {renderField("District", "currentDistrict", "text", formData.currentState ? City.getCitiesOfState(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "", State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.currentCountry)?.isoCode || "").find(s => s.name === formData.currentState)?.isoCode || "").map(city => city.name) : [], "6", false, true)}
+                {renderField("District", "currentDistrict", "text", getCitiesList(formData.currentCountry, formData.currentState), "6", false, true)}
                 {renderField("Pincode", "currentPincode", "text", null, "6")}
 
                 <div className="col-12 mt-4">
@@ -706,7 +721,7 @@ const AdminEditUser = () => {
                 {renderField("Locality / Area", "permanentLocality", "text", null, "6")}
                 {renderField("Country", "permanentCountry", "text", Country.getAllCountries().map(c => c.name), "6")}
                 {renderField("State", "permanentState", "text", formData.permanentCountry ? State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.permanentCountry)?.isoCode || "").map(s => s.name) : [], "6")}
-                {renderField("District", "permanentDistrict", "text", formData.permanentState ? City.getCitiesOfState(Country.getAllCountries().find(c => c.name === formData.permanentCountry)?.isoCode || "", State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.permanentCountry)?.isoCode || "").find(s => s.name === formData.permanentState)?.isoCode || "").map(city => city.name) : [], "6")}
+                {renderField("District", "permanentDistrict", "text", getCitiesList(formData.permanentCountry, formData.permanentState), "6", false, true)}
                 {renderField("Pincode", "permanentPincode", "text", null, "6")}
               </FormSection>
 
@@ -786,8 +801,7 @@ const AdminEditUser = () => {
                               ? allCountries.filter(c => formData.partnerCountry.includes(c.name))
                               : allCountries.filter(c => c.isoCode === "IN");
                             return countriesToSearch.flatMap(c => {
-                              const s = State.getStatesOfCountry(c.isoCode).find(state => state.name === sName);
-                              return s ? City.getCitiesOfState(c.isoCode, s.isoCode).map(city => city.name) : [];
+                              return getCitiesList(c.name, sName);
                             });
                           })))
                         : []

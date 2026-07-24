@@ -786,9 +786,9 @@ const MoreDetails = () => {
                     </span>
                   )}
 
-                  {userInfo?.caste && (
+                  {userInfo?.denomination && (
                     <span style={chipStyle}>
-                      🧬 {userInfo.caste}
+                      ⛪ {userInfo.denomination}
                     </span>
                   )}
 
