@@ -2514,9 +2514,10 @@ const uploadIdProof = async (req, res) => {
     }
 
     // Upload to Cloudinary
+    const isPdf = file.originalname.toLowerCase().endsWith('.pdf');
     const result = await cloudinary.uploader.upload(file.path, {
       folder: `matrimony/users/${userId}/idProof`,
-      resource_type: "auto",
+      resource_type: isPdf ? "raw" : "auto",
     });
 
     const { idProofType, idProofNumber } = req.body;

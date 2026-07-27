@@ -11,8 +11,8 @@ import profImages from "/assets/images/profiles/1.jpg";
 import imageCompression from "browser-image-compression";
 
 const compressionOptions = {
-  maxSizeMB: 0.8,
-  maxWidthOrHeight: 1920,
+  maxSizeMB: 0.1,
+  maxWidthOrHeight: 1280,
   useWebWorker: true,
 };
 
@@ -174,7 +174,7 @@ const AdminEditUser = () => {
     userName: "",
     userEmail: "",
     userMobile: "",
-// --- Basic Info ---
+    // --- Basic Info ---
     aboutMe: "",
     gender: "",
     profileCreatedFor: "",
@@ -361,7 +361,29 @@ const AdminEditUser = () => {
           const userData = response.data.data;
           console.log("AdminEditUser: Fetched user data:", userData);
 
-          // Map backend fields to local formData
+          const parseAddress = (addrStr) => {
+            if (!addrStr) return {};
+            const parts = addrStr.split('|||');
+            if (parts.length >= 6) {
+              return {
+                doorNo: parts[0] || "",
+                locality: parts[1] || "",
+                country: parts[2] || "",
+                state: parts[3] || "",
+                district: parts[4] || "",
+                pincode: parts[5] || ""
+              };
+            }
+            return { doorNo: addrStr }; // Legacy fallback
+          };
+          const parsedCurrent = parseAddress(userData.currentAddress);
+          const parsedPermanent = parseAddress(userData.permanentAddress);
+
+          const safeSplit = (val) => {
+            if (Array.isArray(val)) return val;
+            return (typeof val === 'string' && val.trim() !== '') ? val.split(',').map(s => s.trim()) : [];
+          };
+
           setFormData({
             ...userData,
             userName: userData.userName || "",
@@ -374,6 +396,34 @@ const AdminEditUser = () => {
             hobbies: Array.isArray(userData.hobbies) ? userData.hobbies : [],
             idProofType: userData.idProofType || "",
             idProofNumber: userData.idProofNumber || "",
+            currentDoorNo: parsedCurrent.doorNo || "",
+            currentLocality: parsedCurrent.locality || "",
+            currentCountry: parsedCurrent.country || "",
+            currentState: parsedCurrent.state || "",
+            currentDistrict: parsedCurrent.district || "",
+            currentPincode: parsedCurrent.pincode || "",
+            permanentDoorNo: parsedPermanent.doorNo || "",
+            permanentLocality: parsedPermanent.locality || "",
+            permanentCountry: parsedPermanent.country || "",
+            permanentState: parsedPermanent.state || "",
+            permanentDistrict: parsedPermanent.district || "",
+            permanentPincode: parsedPermanent.pincode || "",
+            sameAsCurrentAddress: false,
+            partnerMaritalStatus: safeSplit(userData.partnerMaritalStatus),
+            partnerMotherTongue: safeSplit(userData.partnerMotherTongue),
+            partnerCaste: safeSplit(userData.partnerCaste),
+            partnerPhysicalStatus: safeSplit(userData.partnerPhysicalStatus),
+            partnerEatingHabits: safeSplit(userData.partnerEatingHabits),
+            partnerDrinkingHabits: safeSplit(userData.partnerDrinkingHabits),
+            partnerSmokingHabits: safeSplit(userData.partnerSmokingHabits),
+            partnerDenomination: safeSplit(userData.partnerDenomination),
+            partnerSpirituality: safeSplit(userData.partnerSpirituality),
+            partnerEducation: safeSplit(userData.partnerEducation),
+            partnerEmploymentType: safeSplit(userData.partnerEmploymentType),
+            partnerOccupation: safeSplit(userData.partnerOccupation),
+            partnerCountry: safeSplit(userData.partnerCountry),
+            partnerState: safeSplit(userData.partnerState),
+            partnerDistrict: safeSplit(userData.partnerDistrict),
           });
 
           if (userData.profileImage) setProfileImagePreview(userData.profileImage);
@@ -455,17 +505,51 @@ const AdminEditUser = () => {
     setUpdating(true);
 
     try {
-      const response = await updateUserById(id, formData);
-        
+      const submitCurrentAddress = `${formData.currentDoorNo || ""}|||${formData.currentLocality || ""}|||${formData.currentCountry || ""}|||${formData.currentState || ""}|||${formData.currentDistrict || ""}|||${formData.currentPincode || ""}`;
+      const submitPermanentAddress = formData.sameAsCurrentAddress
+        ? submitCurrentAddress
+        : `${formData.permanentDoorNo || ""}|||${formData.permanentLocality || ""}|||${formData.permanentCountry || ""}|||${formData.permanentState || ""}|||${formData.permanentDistrict || ""}|||${formData.permanentPincode || ""}`;
+
+      const modifiedFormData = { ...formData };
+      modifiedFormData.currentAddress = submitCurrentAddress;
+      modifiedFormData.permanentAddress = submitPermanentAddress;
+
+      const arrayFields = [
+        "hobbies",
+        "partnerEducation",
+        "partnerEmploymentType",
+        "partnerOccupation",
+        "partnerCountry",
+        "partnerState",
+        "partnerDistrict"
+      ];
+
+      Object.keys(modifiedFormData).forEach(key => {
+        if (Array.isArray(modifiedFormData[key]) && !arrayFields.includes(key)) {
+          modifiedFormData[key] = modifiedFormData[key].join(",");
+        }
+      });
+
+      const response = await updateUserById(id, modifiedFormData);
+
       if (idProofFile) {
         const idFormData = new FormData();
         idFormData.append("idProof", idProofFile);
-        await uploadIdProofByAdmin(id, idFormData);
+        try {
+          await uploadIdProofByAdmin(id, idFormData);
+        } catch (idErr) {
+          console.error("Error uploading ID Proof:", idErr);
+          showAlert({
+            title: "Warning",
+            text: "Profile updated, but failed to upload ID Proof.",
+            icon: "warning",
+          });
+        }
       }
 
       if (profileImageFile || additionalImageFiles.length > 0 || deleteProfileImageFlag || deletedAdditionalImages.length > 0) {
         const imageFormData = new FormData();
-        
+
         if (deleteProfileImageFlag) {
           imageFormData.append("deleteProfileImage", "true");
         }
@@ -573,7 +657,7 @@ const AdminEditUser = () => {
             </div>
 
             <div className="px-4 pt-4">
-              
+
             </div>
 
             <div className="d-flex flex-column gap-4" id="profileSections">
@@ -665,10 +749,10 @@ const AdminEditUser = () => {
                 {renderField("Contact Person Name", "contactPersonName", "text", null, "6", false, true)}
                 {renderField("Relationship", "relationship", "text", DROPDOWN_OPTIONS.relationship, "6", false, true)}
                 {renderField("Citizen Of", "citizenOf", "text", Country.getAllCountries().map(c => c.name), "6")}
-                {renderField("Alternate Mobile", "alternateMobile", "text", null, "6", false, true)}
-                {renderField("Alternate Email", "alternateEmail", "email", null, "6", false, true)}
+                {renderField("Alternate Mobile", "contactPhone", "text", null, "6", false, true)}
+                {renderField("Alternate Email", "contactEmail", "email", null, "6", false, true)}
                 {renderField("Landline", "landlineNumber", "text", null, "6")}
-                <div className="col-12 mt-4">
+                <div className="col-12 mt-4"> 
                   <h6 className="fw-bold border-bottom pb-2">Current Address</h6>
                 </div>
                 {renderField("Door / Flat No (Name), Street", "currentDoorNo", "text", null, "6", false, true)}
@@ -682,10 +766,10 @@ const AdminEditUser = () => {
                   <div className="d-flex align-items-center border-bottom pb-2">
                     <h6 className="fw-bold mb-0">Permanent Address</h6>
                     <div className="form-check ms-3">
-                      <input 
-                        className="form-check-input" 
-                        type="checkbox" 
-                        id="sameAsCurrentAddress" 
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="sameAsCurrentAddress"
                         name="sameAsCurrentAddress"
                         checked={formData.sameAsCurrentAddress}
                         onChange={(e) => {
@@ -765,51 +849,51 @@ const AdminEditUser = () => {
               </FormSection>
 
               {/* PARTNER PREFERENCES - LOCATION */}
-                <FormSection title="Partner Preferences - location" id="partner_location" >
-                  <InputField 
-                    label="Preferred Country" 
-                    name="partnerCountry" 
-                    isMulti 
-                    options={Country.getAllCountries().map(c => c.name)} 
-                    value={formData.partnerCountry} 
-                    onChange={handleChange} 
-                  />
-                  <InputField 
-                    label="Preferred State" 
-                    name="partnerState" 
-                    isMulti 
-                    options={
-                      (formData.partnerCountry && formData.partnerCountry.length > 0)
-                        ? Array.from(new Set(formData.partnerCountry.flatMap(cName => {
-                            const c = Country.getAllCountries().find(curr => curr.name === cName);
-                            return c ? State.getStatesOfCountry(c.isoCode).map(s => s.name) : [];
-                          })))
-                        : State.getStatesOfCountry("IN").map(s => s.name)
-                    } 
-                    value={formData.partnerState} 
-                    onChange={handleChange} 
-                  />
-                  <InputField 
-                    label="Preferred District" 
-                    name="partnerDistrict" 
-                    isMulti 
-                    options={
-                      (formData.partnerState && formData.partnerState.length > 0)
-                        ? Array.from(new Set(formData.partnerState.flatMap(sName => {
-                            const allCountries = Country.getAllCountries();
-                            const countriesToSearch = (formData.partnerCountry && formData.partnerCountry.length > 0)
-                              ? allCountries.filter(c => formData.partnerCountry.includes(c.name))
-                              : allCountries.filter(c => c.isoCode === "IN");
-                            return countriesToSearch.flatMap(c => {
-                              return getCitiesList(c.name, sName);
-                            });
-                          })))
-                        : []
-                    }
-                    value={formData.partnerDistrict} 
-                    onChange={handleChange} 
-                  />
-                </FormSection>
+              <FormSection title="Partner Preferences - location" id="partner_location" >
+                <InputField
+                  label="Preferred Country"
+                  name="partnerCountry"
+                  isMulti
+                  options={Country.getAllCountries().map(c => c.name)}
+                  value={formData.partnerCountry}
+                  onChange={handleChange}
+                />
+                <InputField
+                  label="Preferred State"
+                  name="partnerState"
+                  isMulti
+                  options={
+                    (formData.partnerCountry && formData.partnerCountry.length > 0)
+                      ? Array.from(new Set(formData.partnerCountry.flatMap(cName => {
+                        const c = Country.getAllCountries().find(curr => curr.name === cName);
+                        return c ? State.getStatesOfCountry(c.isoCode).map(s => s.name) : [];
+                      })))
+                      : State.getStatesOfCountry("IN").map(s => s.name)
+                  }
+                  value={formData.partnerState}
+                  onChange={handleChange}
+                />
+                <InputField
+                  label="Preferred District"
+                  name="partnerDistrict"
+                  isMulti
+                  options={
+                    (formData.partnerState && formData.partnerState.length > 0)
+                      ? Array.from(new Set(formData.partnerState.flatMap(sName => {
+                        const allCountries = Country.getAllCountries();
+                        const countriesToSearch = (formData.partnerCountry && formData.partnerCountry.length > 0)
+                          ? allCountries.filter(c => formData.partnerCountry.includes(c.name))
+                          : allCountries.filter(c => c.isoCode === "IN");
+                        return countriesToSearch.flatMap(c => {
+                          return getCitiesList(c.name, sName);
+                        });
+                      })))
+                      : []
+                  }
+                  value={formData.partnerDistrict}
+                  onChange={handleChange}
+                />
+              </FormSection>
 
               {/* UPLOAD PROOF */}
               <FormSection title="Upload Proof" id="upload_proof" >
@@ -830,7 +914,7 @@ const AdminEditUser = () => {
                 </div>
               </FormSection>
             </div>
-            
+
             <div className="card-footer bg-white p-4 border-0 d-flex justify-content-end gap-3 mt-4">
               <button className="btn btn-light px-5 rounded-pill" onClick={() => navigate(-1)}>Discard</button>
               <button className="btn btn-primary px-5 rounded-pill shadow" onClick={handleSubmit} disabled={updating}>

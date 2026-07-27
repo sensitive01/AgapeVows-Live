@@ -424,18 +424,17 @@ export default function AdminViewNewUser() {
                 <div className="row">
                     <div className="col-md-6">
                         <InfoRow label="Contact Person" value={user.contactPersonName} />
-                        <InfoRow label="Mobile Number" value={user.userMobile} />
-                        <InfoRow label="Alternate Mobile" value={user.alternateMobile} />
-                        <InfoRow label="Landline" value={user.landlineNumber} />
+                        <InfoRow label="Alternate Mobile" value={user.contactPhone} />
                         <InfoRow label="Current Address" value={user.currentAddress} />
-                        <InfoRow label="Pincode" value={user.pincode} />
+                        <InfoRow label="Citizen Of" value={user.citizenOf} /> 
+
                     </div>
                     <div className="col-md-6">
                         <InfoRow label="Relationship" value={user.relationship} />
-                        <InfoRow label="Email" value={user.contactEmail} />
-                        <InfoRow label="Citizen Of" value={user.citizenOf} />
+                        <InfoRow label="Alternate Email" value={user.contactEmail} />
                         <InfoRow label="Permanent Address" value={user.permanentAddress} />
-                        <InfoRow label="State" value={user.state} />
+                        <InfoRow label="Landline" value={user.landlineNumber} />
+
                     </div>
                 </div>
 
@@ -489,7 +488,7 @@ export default function AdminViewNewUser() {
                             <InfoRow label="College/Institution" value={user.college} />
                             <InfoRow label="Education in Detail" value={user.educationDetail} />
                             <InfoRow label="Employment Type" value={user.employmentType} />
-                           
+
                         </div>
                         <div className="col-md-6">
                             <InfoRow label="Occupation" value={user.occupation} />
@@ -596,15 +595,14 @@ export default function AdminViewNewUser() {
                         </div>
                     </div>
 
-<hr />
+                    <hr />
 
                     {/* ================= ID VERIFICATION ================= */}
                     <div className="mb-4">
                         <div className="d-flex justify-content-between align-items-center mb-3">
                             <h5 className="fw-bold m-0">Mobile Number Verification</h5>
-                            <span className={`badge rounded-pill ${
-                                user.isPhoneVerified ? 'bg-success' : 'bg-danger'
-                            }`}>
+                            <span className={`badge rounded-pill ${user.isPhoneVerified ? 'bg-success' : 'bg-danger'
+                                }`}>
                                 {user.isPhoneVerified ? 'Verified' : 'Unverified'}
                             </span>
                         </div>
@@ -631,11 +629,10 @@ export default function AdminViewNewUser() {
                     <div className="mb-4">
                         <div className="d-flex justify-content-between align-items-center mb-3">
                             <h5 className="fw-bold m-0">Government ID Verification</h5>
-                            <span className={`badge rounded-pill ${
-                                user.idVerificationStatus === 'Verified' ? 'bg-success' :
-                                user.idVerificationStatus === 'Rejected' ? 'bg-danger' :
-                                user.idVerificationStatus === 'Uploaded' ? 'bg-warning text-dark' : 'bg-secondary'
-                            }`}>
+                            <span className={`badge rounded-pill ${user.idVerificationStatus === 'Verified' ? 'bg-success' :
+                                    user.idVerificationStatus === 'Rejected' ? 'bg-danger' :
+                                        user.idVerificationStatus === 'Uploaded' ? 'bg-warning text-dark' : 'bg-secondary'
+                                }`}>
                                 {user.idVerificationStatus || 'Pending'}
                             </span>
                         </div>
@@ -675,7 +672,7 @@ export default function AdminViewNewUser() {
                                 </div>
                                 {user.idProofDocument.toLowerCase().endsWith('.pdf') ? (
                                     <div className="mt-3 text-center border p-4 bg-white rounded">
-                                        <i className="fa fa-file-pdf-o text-danger font-large mb-2" style={{fontSize: '48px'}}></i>
+                                        <i className="fa fa-file-pdf-o text-danger font-large mb-2" style={{ fontSize: '48px' }}></i>
                                         <p className="m-0 text-muted">PDF Document Attached</p>
                                     </div>
                                 ) : (

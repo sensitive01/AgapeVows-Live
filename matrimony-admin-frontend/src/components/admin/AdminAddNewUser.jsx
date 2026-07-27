@@ -13,8 +13,8 @@ import { showAlert } from "../../utils/alertService";
 import imageCompression from "browser-image-compression";
 
 const compressionOptions = {
-  maxSizeMB: 0.8,
-  maxWidthOrHeight: 1920,
+  maxSizeMB: 0.1,
+  maxWidthOrHeight: 1280,
   useWebWorker: true,
 };
 
@@ -675,12 +675,43 @@ const AdminAddNewUser = () => {
 
     // Sanitize data: remove ALL empty strings to avoid Mongoose validation errors
     // for fields like age (Number), dateOfBirth (Date), or Enums (gender, etc.)
+    const arrayFields = [
+      "hobbies",
+      "partnerEducation",
+      "partnerEmploymentType",
+      "partnerOccupation",
+      "partnerCountry",
+      "partnerState",
+      "partnerDistrict"
+    ];
+
     const sanitizedData = Object.entries(formData).reduce((acc, [key, value]) => {
       if (value !== "") {
-        acc[key] = value;
+        if (Array.isArray(value) && !arrayFields.includes(key)) {
+          acc[key] = value.join(",");
+        } else {
+          acc[key] = value;
+        }
       }
       return acc;
     }, {});
+
+    // Format Addresses
+    const submitCurrentAddress = `${formData.currentDoorNo || ""}|||${formData.currentLocality || ""}|||${formData.currentCountry || ""}|||${formData.currentState || ""}|||${formData.currentDistrict || ""}|||${formData.currentPincode || ""}`;
+    const submitPermanentAddress = formData.sameAsCurrentAddress
+      ? submitCurrentAddress
+      : `${formData.permanentDoorNo || ""}|||${formData.permanentLocality || ""}|||${formData.permanentCountry || ""}|||${formData.permanentState || ""}|||${formData.permanentDistrict || ""}|||${formData.permanentPincode || ""}`;
+    
+    sanitizedData.currentAddress = submitCurrentAddress;
+    sanitizedData.permanentAddress = submitPermanentAddress;
+
+    // Map alternate contact fields to match backend schema
+    if (formData.alternateMobile) {
+      sanitizedData.contactPhone = formData.alternateMobile;
+    }
+    if (formData.alternateEmail) {
+      sanitizedData.contactEmail = formData.alternateEmail;
+    }
 
     try {
       const response = await registerUserByAdmin(sanitizedData);
@@ -690,7 +721,16 @@ const AdminAddNewUser = () => {
         if (idProofFile && newUserId) {
           const idFormData = new FormData();
           idFormData.append("idProof", idProofFile);
-          await uploadIdProofByAdmin(newUserId, idFormData);
+          try {
+            await uploadIdProofByAdmin(newUserId, idFormData);
+          } catch (idErr) {
+            console.error("Error uploading ID Proof:", idErr);
+            showAlert({
+              title: "Warning",
+              text: "Profile created, but failed to upload ID Proof.",
+              icon: "warning",
+            });
+          }
         }
 
         if ((profileImageFile || additionalImageFiles.length > 0) && newUserId) {

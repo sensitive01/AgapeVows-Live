@@ -29,7 +29,6 @@ const Sidebar = () => {
   };
 
   useEffect(() => {
-    // Automatically expand the "Users" menu if any sub-route related to users is active
     const usersRoutes = [
       "/admin/all-user-list",
       "/admin/paid-user-list",
@@ -39,7 +38,8 @@ const Sidebar = () => {
       "/admin/id-verification-requests",
       "/admin/verified-id-users",
       "/admin/contact-update-requests",
-      "/admin/deactivated-users"
+      "/admin/deactivated-users",
+      "/admin/incomplete-users"
     ];
     if (usersRoutes.some(route => location.pathname.startsWith(route))) {
       setExpandedMenus(prev => ({ ...prev, users: true }));

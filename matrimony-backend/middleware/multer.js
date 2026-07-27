@@ -53,14 +53,15 @@ const storage = multer.diskStorage({
 // Allow images (jpeg, jpg, png) and videos (mp4, mov, avi)
 // ==========================
 const fileFilter = (req, file, cb) => {
-    const allowedImageTypes = /jpeg|jpg|png/;
+    const allowedImageTypes = /jpeg|jpg|png|webp|heic|heif|bmp|gif/;
     const allowedVideoTypes = /mp4|mov|avi/;
+    const allowedDocTypes = /pdf/;
 
     const ext = path.extname(file.originalname).toLowerCase();
-    if (allowedImageTypes.test(ext) || allowedVideoTypes.test(ext)) {
+    if (allowedImageTypes.test(ext) || allowedVideoTypes.test(ext) || allowedDocTypes.test(ext)) {
         cb(null, true);
     } else {
-        cb(new Error("Only images (jpeg, jpg, png) and videos (mp4, mov, avi) are allowed"));
+        cb(new Error("Only images, videos, and PDFs are allowed"));
     }
 };
 

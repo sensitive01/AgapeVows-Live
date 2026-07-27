@@ -1082,10 +1082,11 @@ const uploadIdProofAdmin = async (req, res) => {
       });
     }
 
-    // Upload to Cloudinary
+    // Upload to Cloudinary (use "auto" which works for images/video, but for PDF we should specify raw if auto fails, or just use auto and let multer handle it. Actually for Cloudinary, if we want to allow raw docs like PDF, we can use "auto" but we must ensure Cloudinary allows it. Let's explicitly check if it's pdf and use raw, otherwise auto)
+    const isPdf = file.originalname.toLowerCase().endsWith('.pdf');
     const result = await cloudinary.uploader.upload(file.path, {
       folder: `matrimony/users/${userId}/idProof`,
-      resource_type: "auto",
+      resource_type: isPdf ? "raw" : "auto",
     });
 
     const { idProofType, idProofNumber } = req.body;

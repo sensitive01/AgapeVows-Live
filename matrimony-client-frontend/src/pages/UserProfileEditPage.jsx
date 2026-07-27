@@ -497,8 +497,8 @@ const FormInput = ({
   max,
   onClick,
 }) => {
-  const otherOption = (type === "select" && Array.isArray(options) && !isMulti) 
-    ? options.find(opt => opt === "Others" || opt === "Other") 
+  const otherOption = (type === "select" && Array.isArray(options) && !isMulti)
+    ? options.find(opt => opt === "Others" || opt === "Other")
     : null;
   const isCustomValue = Boolean(otherOption && value && !options.includes(value));
   const isOtherSelected = Boolean(otherOption && (value === "Others" || value === "Other" || isCustomValue));
@@ -667,8 +667,8 @@ const InlineFormInput = ({
   readOnly = false,
   autoComplete,
 }) => {
-  const otherOption = (type === "select" && Array.isArray(options)) 
-    ? options.find(opt => opt === "Others" || opt === "Other") 
+  const otherOption = (type === "select" && Array.isArray(options))
+    ? options.find(opt => opt === "Others" || opt === "Other")
     : null;
   const isCustomValue = Boolean(otherOption && value && !options.includes(value));
   const isOtherSelected = Boolean(otherOption && (value === "Others" || value === "Other" || isCustomValue));
@@ -1091,10 +1091,10 @@ const UserProfileEditPage = () => {
   });
 
   const [isFatherOther, setIsFatherOther] = useState(false);
-    const [isEducationOther, setIsEducationOther] = useState(false);
-    const [isAdditionalEducationOther, setIsAdditionalEducationOther] = useState(false);
-    const [isEmploymentTypeOther, setIsEmploymentTypeOther] = useState(false);
-    const [isOccupationOther, setIsOccupationOther] = useState(false);
+  const [isEducationOther, setIsEducationOther] = useState(false);
+  const [isAdditionalEducationOther, setIsAdditionalEducationOther] = useState(false);
+  const [isEmploymentTypeOther, setIsEmploymentTypeOther] = useState(false);
+  const [isOccupationOther, setIsOccupationOther] = useState(false);
   const [isMotherOther, setIsMotherOther] = useState(false);
 
   const [profileImageFile, setProfileImageFile] = useState(null);
@@ -1134,7 +1134,7 @@ const UserProfileEditPage = () => {
 
   const parentOccupationOptions = [
     "Retired", "Business", "Ministry",
-                            "Government Employee", "Private Employee",
+    "Government Employee", "Private Employee",
     "Professional", "Farmer", "Homemaker", "Others",
   ];
 
@@ -1359,7 +1359,7 @@ const UserProfileEditPage = () => {
             familyType: userData.familyType || "",
             familyStatus: userData.familyStatus || "",
             residenceType: userData.residenceType || "",
-              familyDetails: userData.familyDetails || "",
+            familyDetails: userData.familyDetails || "",
             numberOfBrothers: userData.numberOfBrothers || "",
             marriedBrothers: userData.marriedBrothers || "",
             numberOfSisters: userData.numberOfSisters || "",
@@ -1445,221 +1445,221 @@ const UserProfileEditPage = () => {
 
           // Check if occupations are "Others"
           if (loadedData.education && ![
-                          "B.Arch",
-                          "B.Com",
-                          "B.Ed",
-                          "B.Pharm",
-                          "B.Sc",
-                          "B.Sc (Hons)",
-                          "B.E",
-                          "B.Tech",
-                          "BA",
-                          "BBA",
-                          "BCA",
-                          "BDS",
-                          "BHM",
-                          "BAMS",
-                          "BHMS",
-                          "BSw",
-                          "LLB",
-                          "M.Arch",
-                          "M.Com",
-                          "M.Ed",
-                          "M.Pharm",
-                          "M.Sc",
-                          "M.E",
-                          "M.Tech",
-                          "MA",
-                          "MBA",
-                          "MCA",
-                          "MDS",
-                          "MHM",
-                          "MSW",
-                          "LLM",
-                          "MBBS",
-                          "MD",
-                          "MS",
-                          "Ph.D",
-                          "Diploma",
-                          "Polytechnic",
-                          "Trade School",
-                          "Higher Secondary / Plus Two",
-                          "SSLC / 10th",
-                          "Others"
-                        ].includes(loadedData.education)) {
-              setIsEducationOther(true);
-            }
-            if (loadedData.additionalEducation && ![
-                          "B.Arch",
-                          "B.Com",
-                          "B.Ed",
-                          "B.Pharm",
-                          "B.Sc",
-                          "B.E",
-                          "B.Tech",
-                          "BA",
-                          "BBA",
-                          "BCA",
-                          "BDS",
-                          "BHM",
-                          "BAMS",
-                          "BHMS",
-                          "BSw",
-                          "LLB",
-                          "M.Arch",
-                          "M.Com",
-                          "M.Ed",
-                          "M.Pharm",
-                          "M.Sc",
-                          "M.E",
-                          "M.Tech",
-                          "MA",
-                          "MBA",
-                          "MCA",
-                          "MDS",
-                          "MHM",
-                          "MSW",
-                          "LLM",
-                          "MBBS",
-                          "MD",
-                          "MS",
-                          "Ph.D",
-                          "Diploma",
-                          "Polytechnic",
-                          "Trade School",
-                          "Higher Secondary / Plus Two",
-                          "SSLC / 10th",
-                          "Others"
-                        ].includes(loadedData.additionalEducation)) {
-              setIsAdditionalEducationOther(true);
-            }
-            if (loadedData.employmentType && ![
-                          "Private Sector",
-                          "Government",
-                          "Self Employed",
-                          "Business",
-                          "Ministry",
-                          "Not Working",
-                          "Others"
-                        ].includes(loadedData.employmentType)) {
-              setIsEmploymentTypeOther(true);
-            }
-            if (loadedData.occupation && ![
-                          "Accountant",
-                          "Actor",
-                          "Administrative Professional",
-                          "Advertising Professional",
-                          "Agri-Business Professional",
-                          "Air Hostess / Flight Attendant",
-                          "Architect",
-                          "Artist",
-                          "Auditor",
-                          "Banking Professional",
-                          "Beautician",
-                          "Biologist / Botanist",
-                          "Pastor",
-                            "Priest",
-                            "Worship Leader",
-                            "Evangelist",
-                            "Missionary",
-                            "Theology Professor",
-                            "Counsellor",
-                            "Business",
-                          "Ministry",
-                            "Chartered Accountant",
-                          "Civil Engineer",
-                          "Clerical Official",
-                          "Commercial Pilot",
-                          "Company Secretary",
-                          "Computer Professional",
-                          "Consultant",
-                          "Contractor",
-                          "Cost Accountant",
-                          "Creative Person",
-                          "Customer Support Professional",
-                          "Defense Employee",
-                          "Dentist",
-                          "Designer",
-                          "Doctor",
-                          "Economist",
-                          "Engineer",
-                          "Engineer (Mechanical)",
-                          "Engineer (Project)",
-                          "Entertainment Professional",
-                          "Event Manager",
-                          "Executive",
-                          "Factory Worker",
-                          "Farmer",
-                          "Fashion Designer",
-                          "Finance Professional",
-                          "Flight Attendant",
-                          "Government Employee",
-                          "Graphic Designer",
-                          "Health Care Professional",
-                          "Hotel Management Professional",
-                          "HR Professional",
-                          "Human Resources Professional",
-                          "Indian Administrative Services (IAS)",
-                          "Indian Foreign Services (IFS)",
-                          "Indian Police Services (IPS)",
-                          "Interior Designer",
-                          "Investment Professional",
-                          "IT Professional",
-                          "Journalist",
-                          "Lawyer",
-                          "Lecturer",
-                          "Legal Professional",
-                          "Manager",
-                          "Marketing Professional",
-                          "Media Professional",
-                          "Medical Professional",
-                          "Merchant Naval Officer",
-                          "Microbiologist",
-                          "Military",
-                          "Model",
-                          "Musician",
-                          "Nurse",
-                          "Nutritionist",
-                          "Occupational Therapist",
-                          "Optician",
-                          "Pharmacist",
-                          "Photographer",
-                          "Physical Therapist",
-                          "Physician",
-                          "Pilot",
-                          "Police",
-                          "Politician",
-                          "Professor",
-                          "Psychologist",
-                          "Public Relations Professional",
-                          "Real Estate Professional",
-                          "Researcher",
-                          "Retired",
-                          "Sales Professional",
-                          "Scientist",
-                          "Secretary",
-                          "Security Professional",
-                          "Self Employed",
-                          "Social Worker",
-                          "Software Consultant",
-                          "Software Engineer",
-                          "Sportsman",
-                          "Student",
-                          "Teacher",
-                          "Technician",
-                          "Training Professional",
-                          "Transportation Professional",
-                          "Veterinary Doctor",
-                          "Volunteer",
-                          "Writer",
-                          "Zoologist",
-                          "Not Working",
-                          "Others"
-                        ].includes(loadedData.occupation)) {
-              setIsOccupationOther(true);
-            }
-            
-            if (loadedData.fathersOccupation && !parentOccupationOptions.includes(loadedData.fathersOccupation)) {
+            "B.Arch",
+            "B.Com",
+            "B.Ed",
+            "B.Pharm",
+            "B.Sc",
+            "B.Sc (Hons)",
+            "B.E",
+            "B.Tech",
+            "BA",
+            "BBA",
+            "BCA",
+            "BDS",
+            "BHM",
+            "BAMS",
+            "BHMS",
+            "BSw",
+            "LLB",
+            "M.Arch",
+            "M.Com",
+            "M.Ed",
+            "M.Pharm",
+            "M.Sc",
+            "M.E",
+            "M.Tech",
+            "MA",
+            "MBA",
+            "MCA",
+            "MDS",
+            "MHM",
+            "MSW",
+            "LLM",
+            "MBBS",
+            "MD",
+            "MS",
+            "Ph.D",
+            "Diploma",
+            "Polytechnic",
+            "Trade School",
+            "Higher Secondary / Plus Two",
+            "SSLC / 10th",
+            "Others"
+          ].includes(loadedData.education)) {
+            setIsEducationOther(true);
+          }
+          if (loadedData.additionalEducation && ![
+            "B.Arch",
+            "B.Com",
+            "B.Ed",
+            "B.Pharm",
+            "B.Sc",
+            "B.E",
+            "B.Tech",
+            "BA",
+            "BBA",
+            "BCA",
+            "BDS",
+            "BHM",
+            "BAMS",
+            "BHMS",
+            "BSw",
+            "LLB",
+            "M.Arch",
+            "M.Com",
+            "M.Ed",
+            "M.Pharm",
+            "M.Sc",
+            "M.E",
+            "M.Tech",
+            "MA",
+            "MBA",
+            "MCA",
+            "MDS",
+            "MHM",
+            "MSW",
+            "LLM",
+            "MBBS",
+            "MD",
+            "MS",
+            "Ph.D",
+            "Diploma",
+            "Polytechnic",
+            "Trade School",
+            "Higher Secondary / Plus Two",
+            "SSLC / 10th",
+            "Others"
+          ].includes(loadedData.additionalEducation)) {
+            setIsAdditionalEducationOther(true);
+          }
+          if (loadedData.employmentType && ![
+            "Private Sector",
+            "Government",
+            "Self Employed",
+            "Business",
+            "Ministry",
+            "Not Working",
+            "Others"
+          ].includes(loadedData.employmentType)) {
+            setIsEmploymentTypeOther(true);
+          }
+          if (loadedData.occupation && ![
+            "Accountant",
+            "Actor",
+            "Administrative Professional",
+            "Advertising Professional",
+            "Agri-Business Professional",
+            "Air Hostess / Flight Attendant",
+            "Architect",
+            "Artist",
+            "Auditor",
+            "Banking Professional",
+            "Beautician",
+            "Biologist / Botanist",
+            "Pastor",
+            "Priest",
+            "Worship Leader",
+            "Evangelist",
+            "Missionary",
+            "Theology Professor",
+            "Counsellor",
+            "Business",
+            "Ministry",
+            "Chartered Accountant",
+            "Civil Engineer",
+            "Clerical Official",
+            "Commercial Pilot",
+            "Company Secretary",
+            "Computer Professional",
+            "Consultant",
+            "Contractor",
+            "Cost Accountant",
+            "Creative Person",
+            "Customer Support Professional",
+            "Defense Employee",
+            "Dentist",
+            "Designer",
+            "Doctor",
+            "Economist",
+            "Engineer",
+            "Engineer (Mechanical)",
+            "Engineer (Project)",
+            "Entertainment Professional",
+            "Event Manager",
+            "Executive",
+            "Factory Worker",
+            "Farmer",
+            "Fashion Designer",
+            "Finance Professional",
+            "Flight Attendant",
+            "Government Employee",
+            "Graphic Designer",
+            "Health Care Professional",
+            "Hotel Management Professional",
+            "HR Professional",
+            "Human Resources Professional",
+            "Indian Administrative Services (IAS)",
+            "Indian Foreign Services (IFS)",
+            "Indian Police Services (IPS)",
+            "Interior Designer",
+            "Investment Professional",
+            "IT Professional",
+            "Journalist",
+            "Lawyer",
+            "Lecturer",
+            "Legal Professional",
+            "Manager",
+            "Marketing Professional",
+            "Media Professional",
+            "Medical Professional",
+            "Merchant Naval Officer",
+            "Microbiologist",
+            "Military",
+            "Model",
+            "Musician",
+            "Nurse",
+            "Nutritionist",
+            "Occupational Therapist",
+            "Optician",
+            "Pharmacist",
+            "Photographer",
+            "Physical Therapist",
+            "Physician",
+            "Pilot",
+            "Police",
+            "Politician",
+            "Professor",
+            "Psychologist",
+            "Public Relations Professional",
+            "Real Estate Professional",
+            "Researcher",
+            "Retired",
+            "Sales Professional",
+            "Scientist",
+            "Secretary",
+            "Security Professional",
+            "Self Employed",
+            "Social Worker",
+            "Software Consultant",
+            "Software Engineer",
+            "Sportsman",
+            "Student",
+            "Teacher",
+            "Technician",
+            "Training Professional",
+            "Transportation Professional",
+            "Veterinary Doctor",
+            "Volunteer",
+            "Writer",
+            "Zoologist",
+            "Not Working",
+            "Others"
+          ].includes(loadedData.occupation)) {
+            setIsOccupationOther(true);
+          }
+
+          if (loadedData.fathersOccupation && !parentOccupationOptions.includes(loadedData.fathersOccupation)) {
             setIsFatherOther(true);
           }
           if (loadedData.mothersOccupation && !parentOccupationOptions.includes(loadedData.mothersOccupation)) {
@@ -1940,7 +1940,7 @@ const UserProfileEditPage = () => {
 
     if (missingFields.length > 0) {
       const missingListHtml = missingFields.map(f => `<li style="margin-bottom: 4px;">${f.label}</li>`).join('');
-      
+
       Swal.fire({
         title: "Incomplete Profile",
         html: `<div style="text-align: left; margin-top: 10px; font-size: 15px; color: #333;">
@@ -1957,21 +1957,21 @@ const UserProfileEditPage = () => {
         setTimeout(() => {
           const firstMissing = missingFields[0];
           let element = document.getElementById(`form-input-${firstMissing.name}`);
-          
+
           if (!element) {
             element = document.getElementsByName(firstMissing.name)[0];
           }
-          
+
           if (element) {
             element.scrollIntoView({ behavior: 'smooth', block: 'center' });
             const focusable = element.querySelector('input, select, textarea') || element;
             if (typeof focusable.focus === 'function') focusable.focus({ preventScroll: true });
           } else {
-             const labels = Array.from(document.querySelectorAll('label'));
-             const label = labels.find(l => l.textContent.includes(firstMissing.label));
-             if (label) {
-               label.scrollIntoView({ behavior: 'smooth', block: 'center' });
-             }
+            const labels = Array.from(document.querySelectorAll('label'));
+            const label = labels.find(l => l.textContent.includes(firstMissing.label));
+            if (label) {
+              label.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
           }
         }, 100);
       });
@@ -2113,16 +2113,16 @@ const UserProfileEditPage = () => {
       console.error("Error submitting profile:", error);
       let errorMessage =
         error.response?.data?.message || error.message || "Error updating profile. Please try again.";
-      
+
       // If the backend provided a specific error reason, append it or use it
       if (error.response?.data?.error) {
         errorMessage = `${errorMessage}: ${error.response.data.error}`;
       }
-        
+
       if (errorMessage === "Network Error") {
         errorMessage = "Failed to connect to the server. Your images might be too large, or your internet connection was interrupted. Please try uploading fewer images.";
       }
-      
+
       showAlert({ text: errorMessage, icon: "error" });
     } finally {
       setIsSubmitting(false);
@@ -3029,7 +3029,7 @@ const UserProfileEditPage = () => {
                           options={["Own House", "Rented House", "Company Lease"]}
                         />
                       </div>
-                      
+
                       <div className="col-span-1 md:col-span-2">
                         <label style={{
                           display: "block",
@@ -3789,7 +3789,7 @@ const UserProfileEditPage = () => {
                           "Self Employed",
                           "Business",
                           "Ministry",
-                            "Not Working",
+                          "Not Working",
                         ]}
                       />
                       <FormInput
