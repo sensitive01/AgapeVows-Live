@@ -11,6 +11,7 @@ import CustomTable from "./common/CustomTable";
 import { registerUserByAdmin, bulkRegisterUsersByAdmin, uploadIdProofByAdmin, getAllMasterData, uploadUserImagesAdmin } from "../../api/service/adminServices";
 import { showAlert } from "../../utils/alertService";
 import imageCompression from "browser-image-compression";
+import AdminViewNewUser from "./AdminViewNewUser";
 
 const compressionOptions = {
   maxSizeMB: 0.1,
@@ -307,7 +308,7 @@ const AdminAddNewUser = () => {
 
     // --- Profile Visibility ---
     profileVisibility: "Public",
-    
+
     // --- Upload Proof ---
     idProofType: "",
     idProofNumber: "",
@@ -420,12 +421,12 @@ const AdminAddNewUser = () => {
         return;
       }
 
-      // Check if vertical: first column contains field names like "userName", "userEmail", "Field Name", "Field", etc.
+      // Check if vertical: first column contains field names like "userName", "userEmail", "Field Name", "Field Name (Database)"
       const isVertical = rawRows.some(row =>
         row && row[0] && (
           row[0].toString().trim().toLowerCase() === 'username' ||
           row[0].toString().trim().toLowerCase() === 'useremail' ||
-          row[0].toString().trim().toLowerCase() === 'field name' ||
+          row[0].toString().trim().toLowerCase().includes('field name') ||
           row[0].toString().trim().toLowerCase() === 'field'
         )
       );
@@ -434,8 +435,14 @@ const AdminAddNewUser = () => {
         const parsedUsers = [];
         const maxCols = Math.max(...rawRows.map(r => r ? r.length : 0));
 
-        // Column 0 is Field Names. Column 1..maxCols are User 1, User 2, etc.
-        for (let col = 1; col < maxCols; col++) {
+        // Find the starting column for user data
+        let startCol = 1;
+        if (rawRows[0] && rawRows[0][1] && rawRows[0][1].toString().trim().toLowerCase().includes('reference field name')) {
+          startCol = 2;
+        }
+
+        // Column 0 is Field Names. Column startCol..maxCols are User 1, User 2, etc.
+        for (let col = startCol; col < maxCols; col++) {
           const userObj = {};
           let hasVal = false;
 
@@ -444,13 +451,22 @@ const AdminAddNewUser = () => {
             const fieldKey = row[0].toString().trim();
             const val = row[col] !== undefined && row[col] !== null ? row[col].toString().trim() : "";
 
-            if (fieldKey && fieldKey.toLowerCase() !== 'field name' && fieldKey.toLowerCase() !== 'field') {
+            const lowerKey = fieldKey.toLowerCase();
+            if (fieldKey && !lowerKey.includes('field name') && lowerKey !== 'field') {
               userObj[fieldKey] = val;
               if (val !== "") hasVal = true;
             }
           });
 
           if (hasVal && (userObj.userName || userObj.userEmail || userObj.userMobile)) {
+            // Serialize addresses
+            userObj.currentAddress = `${userObj.currentDoorNo || ""}|||${userObj.currentLocality || ""}|||${userObj.currentCountry || ""}|||${userObj.currentState || ""}|||${userObj.currentDistrict || ""}|||${userObj.currentPincode || ""}`;
+            
+            const isSame = String(userObj.sameAsCurrentAddress).trim().toLowerCase() === 'true' || String(userObj.sameAsCurrentAddress).trim().toLowerCase() === 'yes';
+            userObj.permanentAddress = isSame
+              ? userObj.currentAddress
+              : `${userObj.permanentDoorNo || ""}|||${userObj.permanentLocality || ""}|||${userObj.permanentCountry || ""}|||${userObj.permanentState || ""}|||${userObj.permanentDistrict || ""}|||${userObj.permanentPincode || ""}`;
+
             parsedUsers.push(userObj);
           }
         }
@@ -458,7 +474,15 @@ const AdminAddNewUser = () => {
       } else {
         // Standard horizontal layout
         const data = XLSX.utils.sheet_to_json(ws);
-        setBulkData(data);
+        const serializedData = data.map(userObj => {
+            userObj.currentAddress = `${userObj.currentDoorNo || ""}|||${userObj.currentLocality || ""}|||${userObj.currentCountry || ""}|||${userObj.currentState || ""}|||${userObj.currentDistrict || ""}|||${userObj.currentPincode || ""}`;
+            const isSame = String(userObj.sameAsCurrentAddress).trim().toLowerCase() === 'true' || String(userObj.sameAsCurrentAddress).trim().toLowerCase() === 'yes';
+            userObj.permanentAddress = isSame
+              ? userObj.currentAddress
+              : `${userObj.permanentDoorNo || ""}|||${userObj.permanentLocality || ""}|||${userObj.permanentCountry || ""}|||${userObj.permanentState || ""}|||${userObj.permanentDistrict || ""}|||${userObj.permanentPincode || ""}`;
+            return userObj;
+        });
+        setBulkData(serializedData);
       }
     };
     reader.readAsBinaryString(file);
@@ -467,9 +491,9 @@ const AdminAddNewUser = () => {
   const downloadTemplate = () => {
     const allFields = {
       userName: "John Doe",
-      userEmail: "john@example123.com", 
+      userEmail: "john@example123.com",
       userMobile: "9876543222",
-      password: "password123", 
+      password: "password123",
 
       aboutMe: "I am a software engineer looking for a life partner.",
       gender: "Male",
@@ -510,7 +534,7 @@ const AdminAddNewUser = () => {
       marriedBrothers: "0",
       numberOfSisters: "0",
       marriedSisters: "0",
-      familyDetails: "We are a close-knit nuclear family...", 
+      familyDetails: "We are a close-knit nuclear family...",
 
       // --- Religious Info ---
       religion: "Christian",
@@ -522,18 +546,16 @@ const AdminAddNewUser = () => {
       religiousDetail: "Regular church goer",
 
       // --- Contact Info ---
-      alternateMobile: "9000000000",
-      alternateEmail: "alternate@example.com",
+      contactPhone: "9000000000",
+      contactEmail: "alternate@example.com",
       landlineNumber: "04842345678",
-      currentAddress: "123 Main St, Kochi, Kerala",
       currentDoorNo: "123",
       currentLocality: "Main St",
       currentCountry: "India",
       currentState: "Kerala",
       currentDistrict: "Ernakulam",
       currentPincode: "682001",
-      permanentAddress: "456 Side St, Kochi, Kerala",
-      sameAsCurrentAddress: false,
+      sameAsCurrentAddress: "false",
       permanentDoorNo: "456",
       permanentLocality: "Side St",
       permanentCountry: "India",
@@ -593,18 +615,137 @@ const AdminAddNewUser = () => {
       aboutPartner: "Looking for a well-educated, kind partner.",
     };
 
+    const getReferenceName = (fieldName) => {
+      const referenceMap = {
+        userName: "Full Name",
+        userEmail: "Email",
+        userMobile: "Phone",
+        password: "Account Password",
+        aboutMe: "About Me",
+        gender: "Gender",
+        profileCreatedFor: "Profile Created For",
+        dateOfBirth: "Date of Birth",
+        age: "Age",
+        bodyType: "Body Type",
+        physicalStatus: "Physical Status",
+        complexion: "Complexion",
+        height: "Height",
+        weight: "Weight",
+        maritalStatus: "Marital Status",
+        marriedMonthYear: "Married Month & Year",
+        livingTogetherPeriod: "Living Together Period",
+        divorcedMonthYear: "Divorced Month & Year",
+        reasonForDivorce: "Reason for Divorce",
+        childStatus: "Child Status",
+        numberOfChildren: "Number of Children",
+        eatingHabits: "Eating Habits",
+        drinkingHabits: "Drinking Habits",
+        smokingHabits: "Smoking Habits",
+        motherTongue: "Mother Tongue",
+        caste: "Caste",
+        fathersName: "Father's Name",
+        mothersName: "Mother's Name",
+        fathersOccupation: "Father's Occupation",
+        fathersProfession: "Father's Profession",
+        mothersOccupation: "Mother's Occupation",
+        mothersProfession: "Mother's Profession",
+        fathersNative: "Father's Native",
+        mothersNative: "Mother's Native",
+        familyValue: "Family Value",
+        familyType: "Family Type",
+        familyStatus: "Family Status",
+        residenceType: "Residence Type",
+        numberOfBrothers: "Number of Brothers",
+        marriedBrothers: "Married Brothers",
+        numberOfSisters: "Number of Sisters",
+        marriedSisters: "Married Sisters",
+        familyDetails: "Family Details",
+        religion: "Religion",
+        denomination: "Denomination",
+        church: "Church",
+        churchActivity: "Church Activity",
+        pastorsName: "Pastor's Name",
+        spirituality: "Spirituality",
+        religiousDetail: "Religious Detail",
+        alternateMobile: "Alternate Mobile",
+        alternateEmail: "Alternate Email",
+        landlineNumber: "Landline Number",
+        currentDoorNo: "Current Door No",
+        currentLocality: "Current Locality",
+        currentCountry: "Current Country",
+        currentState: "Current State",
+        currentDistrict: "Current District",
+        currentPincode: "Current Pincode",
+        sameAsCurrentAddress: "Same as Current Address",
+        permanentDoorNo: "Permanent Door No",
+        permanentLocality: "Permanent Locality",
+        permanentCountry: "Permanent Country",
+        permanentState: "Permanent State",
+        permanentDistrict: "Permanent District",
+        permanentPincode: "Permanent Pincode",
+        contactPersonName: "Contact Person Name",
+        relationship: "Relationship",
+        citizenOf: "Citizen Of",
+        city: "City",
+        state: "State",
+        pincode: "Pincode",
+        education: "Highest Education",
+        additionalEducation: "Additional Education",
+        college: "College / Institution",
+        educationDetail: "Education Detail",
+        employmentType: "Employment Type",
+        occupation: "Occupation",
+        position: "Position",
+        companyName: "Company Name",
+        annualIncome: "Annual Income",
+        exercise: "Exercise",
+        hobbies: "Hobbies",
+        interests: "Interests",
+        music: "Music",
+        favouriteReads: "Favourite Reads",
+        favouriteCuisines: "Favourite Cuisines",
+        sportsActivities: "Sports Activities",
+        dressStyles: "Dress Styles",
+        partnerAgeFrom: "Preferred Partner Age From",
+        partnerAgeTo: "Preferred Partner Age To",
+        partnerHeight: "Preferred Partner Height From",
+        partnerHeightTo: "Preferred Partner Height To",
+        partnerMaritalStatus: "Preferred Marital Status",
+        partnerMotherTongue: "Preferred Mother Tongue",
+        partnerCaste: "Preferred Caste",
+        partnerPhysicalStatus: "Preferred Physical Status",
+        partnerEatingHabits: "Preferred Eating Habits",
+        partnerDrinkingHabits: "Preferred Drinking Habits",
+        partnerSmokingHabits: "Preferred Smoking Habits",
+        partnerDenomination: "Preferred Denomination",
+        partnerSpirituality: "Preferred Spirituality",
+        partnerEducation: "Preferred Education",
+        partnerEmploymentType: "Preferred Employment Type",
+        partnerOccupation: "Preferred Occupation",
+        partnerAnnualIncomeFrom: "Preferred Annual Income From",
+        partnerAnnualIncomeTo: "Preferred Annual Income To",
+        partnerCountry: "Preferred Country",
+        partnerState: "Preferred State",
+        partnerDistrict: "Preferred District",
+        aboutPartner: "About Partner"
+      };
+      if (referenceMap[fieldName]) return referenceMap[fieldName];
+      const withSpaces = fieldName.replace(/([A-Z])/g, ' $1');
+      return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
+    };
+
     // Format template vertically (Top to Bottom):
-    // Column A: Field Name
-    // Column B: User 1 Sample Data
-    // Column C: User 2 (Optional)
+    // Column A: Field Name (Database)
+    // Column B: Reference Field Name
+    // Column C: User 1 (Fill Data Here)
     const verticalData = Object.entries(allFields).map(([fieldName, sampleVal]) => ({
-      "Field Name": fieldName,
-      "User 1": sampleVal,
-      "User 2 (Optional)": ""
+      "Field Name (Database)": fieldName,
+      "Reference Field Name": getReferenceName(fieldName),
+      "User 1 (Fill Data Here)": sampleVal
     }));
 
     const ws = XLSX.utils.json_to_sheet(verticalData);
-    
+
     // Auto-fit column widths
     ws['!cols'] = [
       { wch: 30 },
@@ -701,7 +842,7 @@ const AdminAddNewUser = () => {
     const submitPermanentAddress = formData.sameAsCurrentAddress
       ? submitCurrentAddress
       : `${formData.permanentDoorNo || ""}|||${formData.permanentLocality || ""}|||${formData.permanentCountry || ""}|||${formData.permanentState || ""}|||${formData.permanentDistrict || ""}|||${formData.permanentPincode || ""}`;
-    
+
     sanitizedData.currentAddress = submitCurrentAddress;
     sanitizedData.permanentAddress = submitPermanentAddress;
 
@@ -810,10 +951,11 @@ const AdminAddNewUser = () => {
     {
       name: "ACTION",
       cell: (row) => (
-        <button 
+        <button
           className="btn btn-sm btn-outline-primary fw-bold"
           onClick={() => {
             setSelectedBulkUser(row);
+            setShowBulkModal(false);
             setShowBulkViewModal(true);
           }}
         >
@@ -839,8 +981,24 @@ const AdminAddNewUser = () => {
       },
     },
   };
-
-
+  if (showBulkViewModal && selectedBulkUser) {
+    return (
+      <NewLayout>
+        <div className="container-fluid py-4">
+          <button 
+            className="btn btn-secondary mb-4 shadow-sm rounded-pill px-4 fw-bold" 
+            onClick={() => {
+              setShowBulkViewModal(false);
+              setShowBulkModal(true);
+            }}
+          >
+            <i className="fa fa-arrow-left me-2"></i> Back to Bulk Upload
+          </button>
+          <AdminViewNewUser previewUser={selectedBulkUser} />
+        </div>
+      </NewLayout>
+    );
+  }
 
   return (
     <NewLayout>
@@ -864,7 +1022,7 @@ const AdminAddNewUser = () => {
             </div>
 
             <div className="bg-light px-4 pt-4">
-              
+
             </div>
 
             <div className="d-flex flex-column gap-4" id="profileSections">
@@ -973,10 +1131,10 @@ const AdminAddNewUser = () => {
                   <div className="d-flex align-items-center border-bottom pb-2">
                     <h6 className="fw-bold mb-0">Permanent Address</h6>
                     <div className="form-check ms-3">
-                      <input 
-                        className="form-check-input" 
-                        type="checkbox" 
-                        id="sameAsCurrentAddress" 
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="sameAsCurrentAddress"
                         name="sameAsCurrentAddress"
                         checked={formData.sameAsCurrentAddress}
                         onChange={(e) => {
@@ -1053,51 +1211,51 @@ const AdminAddNewUser = () => {
               </FormSection>
 
               {/* PARTNER PREFERENCES - LOCATION */}
-                <FormSection title="Partner Preferences - location" id="partner_location" activeTab={activeTab}>
-                  <InputField 
-                    label="Preferred Country" 
-                    name="partnerCountry" 
-                    isMulti 
-                    options={Country.getAllCountries().map(c => c.name)} 
-                    formData={formData} 
-                    handleChange={handleChange} 
-                  />
-                  <InputField 
-                    label="Preferred State" 
-                    name="partnerState" 
-                    isMulti 
-                    options={
-                      (formData.partnerCountry && formData.partnerCountry.length > 0)
-                        ? Array.from(new Set(formData.partnerCountry.flatMap(cName => {
-                            const c = Country.getAllCountries().find(curr => curr.name === cName);
-                            return c ? State.getStatesOfCountry(c.isoCode).map(s => s.name) : [];
-                          })))
-                        : State.getStatesOfCountry("IN").map(s => s.name)
-                    } 
-                    formData={formData} 
-                    handleChange={handleChange} 
-                  />
-                  <InputField 
-                    label="Preferred District" 
-                    name="partnerDistrict" 
-                    isMulti 
-                    options={
-                      (formData.partnerState && formData.partnerState.length > 0)
-                        ? Array.from(new Set(formData.partnerState.flatMap(sName => {
-                            const allCountries = Country.getAllCountries();
-                            const countriesToSearch = (formData.partnerCountry && formData.partnerCountry.length > 0)
-                              ? allCountries.filter(c => formData.partnerCountry.includes(c.name))
-                              : allCountries.filter(c => c.isoCode === "IN");
-                            return countriesToSearch.flatMap(c => {
-                              return getCitiesList(c.name, sName);
-                            });
-                          })))
-                        : []
-                    }
-                    formData={formData} 
-                    handleChange={handleChange} 
-                  />
-                </FormSection>
+              <FormSection title="Partner Preferences - location" id="partner_location" activeTab={activeTab}>
+                <InputField
+                  label="Preferred Country"
+                  name="partnerCountry"
+                  isMulti
+                  options={Country.getAllCountries().map(c => c.name)}
+                  formData={formData}
+                  handleChange={handleChange}
+                />
+                <InputField
+                  label="Preferred State"
+                  name="partnerState"
+                  isMulti
+                  options={
+                    (formData.partnerCountry && formData.partnerCountry.length > 0)
+                      ? Array.from(new Set(formData.partnerCountry.flatMap(cName => {
+                        const c = Country.getAllCountries().find(curr => curr.name === cName);
+                        return c ? State.getStatesOfCountry(c.isoCode).map(s => s.name) : [];
+                      })))
+                      : State.getStatesOfCountry("IN").map(s => s.name)
+                  }
+                  formData={formData}
+                  handleChange={handleChange}
+                />
+                <InputField
+                  label="Preferred District"
+                  name="partnerDistrict"
+                  isMulti
+                  options={
+                    (formData.partnerState && formData.partnerState.length > 0)
+                      ? Array.from(new Set(formData.partnerState.flatMap(sName => {
+                        const allCountries = Country.getAllCountries();
+                        const countriesToSearch = (formData.partnerCountry && formData.partnerCountry.length > 0)
+                          ? allCountries.filter(c => formData.partnerCountry.includes(c.name))
+                          : allCountries.filter(c => c.isoCode === "IN");
+                        return countriesToSearch.flatMap(c => {
+                          return getCitiesList(c.name, sName);
+                        });
+                      })))
+                      : []
+                  }
+                  formData={formData}
+                  handleChange={handleChange}
+                />
+              </FormSection>
 
               {/* UPLOAD PROOF */}
               <FormSection title="Upload Proof" id="upload_proof" activeTab={activeTab}>
@@ -1177,32 +1335,6 @@ const AdminAddNewUser = () => {
           >
             {isBulkUploading ? "Processing..." : `Import ${bulkData.length} Users`}
           </button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* BULK VIEW PROFILE MODAL */}
-      <Modal show={showBulkViewModal} onHide={() => setShowBulkViewModal(false)} size="lg" centered>
-        <Modal.Header closeButton className="border-0 pb-0">
-          <Modal.Title className="fw-bold text-success fs-4">View User Data</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="p-4" style={{ maxHeight: "70vh", overflowY: "auto" }}>
-          {selectedBulkUser && (
-            <div className="row g-3">
-              {Object.entries(selectedBulkUser).map(([key, value]) => (
-                <div className="col-md-6" key={key}>
-                  <div className="p-3 border rounded bg-light h-100 shadow-sm">
-                    <strong className="text-capitalize text-muted mb-1 d-block" style={{ fontSize: "0.85rem" }}>
-                      {key.replace(/([A-Z])/g, ' $1').trim().toUpperCase()}
-                    </strong>
-                    <span className="fw-bold text-dark">{value !== "" && value !== null && value !== undefined ? String(value) : "N/A"}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </Modal.Body>
-        <Modal.Footer className="border-0 p-4">
-          <button className="btn btn-secondary rounded-pill px-4 shadow-sm fw-bold" onClick={() => setShowBulkViewModal(false)}>Close</button>
         </Modal.Footer>
       </Modal>
     </NewLayout>

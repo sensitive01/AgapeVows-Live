@@ -510,10 +510,6 @@ const AdminEditUser = () => {
         ? submitCurrentAddress
         : `${formData.permanentDoorNo || ""}|||${formData.permanentLocality || ""}|||${formData.permanentCountry || ""}|||${formData.permanentState || ""}|||${formData.permanentDistrict || ""}|||${formData.permanentPincode || ""}`;
 
-      const modifiedFormData = { ...formData };
-      modifiedFormData.currentAddress = submitCurrentAddress;
-      modifiedFormData.permanentAddress = submitPermanentAddress;
-
       const arrayFields = [
         "hobbies",
         "partnerEducation",
@@ -524,13 +520,33 @@ const AdminEditUser = () => {
         "partnerDistrict"
       ];
 
-      Object.keys(modifiedFormData).forEach(key => {
-        if (Array.isArray(modifiedFormData[key]) && !arrayFields.includes(key)) {
-          modifiedFormData[key] = modifiedFormData[key].join(",");
+      const sanitizedData = Object.entries(formData).reduce((acc, [key, value]) => {
+        if (value !== "") {
+          if (Array.isArray(value) && !arrayFields.includes(key)) {
+            // Only join if it's an array of strings. Protect arrays of objects like paymentDetails.
+            if (value.length === 0 || typeof value[0] === 'string') {
+              acc[key] = value.join(",");
+            } else {
+              acc[key] = value;
+            }
+          } else {
+            acc[key] = value;
+          }
         }
-      });
+        return acc;
+      }, {});
 
-      const response = await updateUserById(id, modifiedFormData);
+      sanitizedData.currentAddress = submitCurrentAddress;
+      sanitizedData.permanentAddress = submitPermanentAddress;
+
+      if (formData.alternateMobile) {
+        sanitizedData.contactPhone = formData.alternateMobile;
+      }
+      if (formData.alternateEmail) {
+        sanitizedData.contactEmail = formData.alternateEmail;
+      }
+
+      const response = await updateUserById(id, sanitizedData);
 
       if (idProofFile) {
         const idFormData = new FormData();
@@ -603,7 +619,7 @@ const AdminEditUser = () => {
       console.error("Update error:", err);
       showAlert({
         title: "Error",
-        text: "Failed to update user",
+        text: err.response?.data?.message || "Failed to update user",
         icon: "error",
       });
     } finally {

@@ -8,11 +8,12 @@ import {
 } from "../../api/service/adminServices";
 import { confirmAction, showAlert } from "../../utils/alertService";
 
-export default function AdminViewNewUser() {
+export default function AdminViewNewUser({ previewUser }) {
     const { id } = useParams();
+    const isPreview = !!previewUser;
 
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState(previewUser || null);
+    const [loading, setLoading] = useState(!previewUser);
     const [profileCompletion, setProfileCompletion] = useState(0);
 
     // =========================
@@ -27,23 +28,38 @@ export default function AdminViewNewUser() {
         const isSerializedAddress = typeof displayValue === "string" && displayValue.includes("|||");
 
         if (isSerializedAddress) {
-            const parts = String(displayValue).split("|||").map((p) => p && p.trim()).filter(Boolean);
-            const lines = [];
-            if (parts[0]) lines.push(parts[0]);
-            if (parts[1]) lines.push(parts[1]);
-            const cityStatePincode = [parts[4], parts[3], parts[5]].filter(Boolean).join(", ");
-            if (cityStatePincode) lines.push(cityStatePincode);
-            if (parts[2] && !lines.includes(parts[2])) lines.push(parts[2]);
+            const rawParts = String(displayValue).split("|||");
+            const doorNo = rawParts[0]?.trim();
+            const locality = rawParts[1]?.trim();
+            const country = rawParts[2]?.trim();
+            const state = rawParts[3]?.trim();
+            const district = rawParts[4]?.trim();
+            const pincode = rawParts[5]?.trim();
 
             return (
-                <p>
-                    <strong>{label}:</strong> {lines.map((ln, idx) => (
-                        <span key={idx}>
-                            {idx > 0 && <br />}
-                            {ln}
-                        </span>
-                    ))}
-                </p>
+                <div className="mb-3 p-3 bg-white rounded border">
+                    <h6 className="fw-bold mb-3 text-secondary border-bottom pb-2">{label}</h6>
+                    <div className="row">
+                        <div className="col-12 mb-2">
+                            <strong>Door / Flat No, Street:</strong> <br /> {doorNo || "Not Provided"}
+                        </div>
+                        <div className="col-12 mb-2">
+                            <strong>Locality / Area:</strong> <br /> {locality || "Not Provided"}
+                        </div>
+                        <div className="col-12 mb-2">
+                            <strong>Country:</strong> <br /> {country || "Not Provided"}
+                        </div>
+                        <div className="col-12 mb-2">
+                            <strong>State:</strong> <br /> {state || "Not Provided"}
+                        </div>
+                        <div className="col-12 mb-2">
+                            <strong>District:</strong> <br /> {district || "Not Provided"}
+                        </div>
+                        <div className="col-12 mb-2">
+                            <strong>Pincode:</strong> <br /> {pincode || "Not Provided"}
+                        </div>
+                    </div>
+                </div>
             );
         }
 
@@ -248,6 +264,11 @@ export default function AdminViewNewUser() {
     // 🔥 FETCH USER
     // =========================
     useEffect(() => {
+        if (isPreview) {
+            setProfileCompletion(calculateProfileCompletion(previewUser));
+            return;
+        }
+
         const fetchUser = async () => {
             try {
                 const res = await getUserById(id);
@@ -265,21 +286,17 @@ export default function AdminViewNewUser() {
         };
 
         if (id) fetchUser();
-    }, [id]);
+    }, [id, isPreview, previewUser]);
 
-    if (loading)
-        return (
-            <NewLayout>
-                <p className="text-center mt-4">Loading...</p>
-            </NewLayout>
-        );
+    if (loading) {
+        const loadingContent = <p className="text-center mt-4">Loading...</p>;
+        return isPreview ? loadingContent : <NewLayout>{loadingContent}</NewLayout>;
+    }
 
-    if (!user)
-        return (
-            <NewLayout>
-                <p className="text-center mt-4">User not found</p>
-            </NewLayout>
-        );
+    if (!user) {
+        const errorContent = <p className="text-center mt-4">User not found</p>;
+        return isPreview ? errorContent : <NewLayout>{errorContent}</NewLayout>;
+    }
     // Add this inside your AdminViewNewUser component, above the return
     const calculateAge = (dob) => {
         if (!dob) return null;
@@ -350,17 +367,17 @@ export default function AdminViewNewUser() {
         }
     };
 
-    return (
-        <NewLayout>
-            {/* <div className="container mt-4 mb-5"> */}
+    const content = (
             <div className="card shadow-lg p-4 border-0 rounded-4 position-relative">
                 {/* ================= EDIT PROFILE BUTTON ================= */}
-                <div className="position-absolute" style={{ top: "20px", right: "20px" }}>
-                    <Link to={`/admin/edit-user/${id}`} className="btn btn-primary shadow-sm rounded-pill px-4">
-                        <i className="fa fa-edit me-2"></i>
-                        Edit Profile
-                    </Link>
-                </div>
+                {!isPreview && (
+                    <div className="position-absolute" style={{ top: "20px", right: "20px" }}>
+                        <Link to={`/admin/edit-user/${id}`} className="btn btn-primary shadow-sm rounded-pill px-4">
+                            <i className="fa fa-edit me-2"></i>
+                            Edit Profile
+                        </Link>
+                    </div>
+                )}
 
                 {/* ================= PROFILE HEADER ================= */}
                 <div className="text-center mb-4">
@@ -590,158 +607,215 @@ export default function AdminViewNewUser() {
                         </div>
                         <div className="col-md-6">
                             <InfoRow label="Employment Type" value={user.partnerEmploymentType} />
-                            <InfoRow label="Annual Income" value={user.partnerAnnualIncome} />
+                            <InfoRow 
+                                label="Annual Income" 
+                                value={user.partnerAnnualIncomeFrom || user.partnerAnnualIncomeTo 
+                                    ? `${user.partnerAnnualIncomeFrom || "Any"} - ${user.partnerAnnualIncomeTo || "Any"}`
+                                    : "Not Provided"
+                                } 
+                            />
                             <InfoRow label="State" value={user.partnerState} />
                         </div>
                     </div>
 
-                    <hr />
+                    {!isPreview && (
+                        <>
+                            <hr />
 
-                    {/* ================= ID VERIFICATION ================= */}
-                    <div className="mb-4">
-                        <div className="d-flex justify-content-between align-items-center mb-3">
-                            <h5 className="fw-bold m-0">Mobile Number Verification</h5>
-                            <span className={`badge rounded-pill ${user.isPhoneVerified ? 'bg-success' : 'bg-danger'
-                                }`}>
-                                {user.isPhoneVerified ? 'Verified' : 'Unverified'}
-                            </span>
-                        </div>
-                        <div className="card border p-3 bg-light">
-                            <div className="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <p className="mb-0"><strong>Mobile Number:</strong> {formatMobile(user.userMobile)}</p>
-                                    <p className="mb-0 text-muted small">Verify after manual check or OTP.</p>
+                            {/* ================= MOBILE VERIFICATION ================= */}
+                            <div className="mb-4">
+                                <div className="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 className="fw-bold m-0">Mobile Number Verification</h5>
+                                    <span className={`badge rounded-pill ${user.isPhoneVerified ? 'bg-success' : 'bg-danger'
+                                        }`}>
+                                        {user.isPhoneVerified ? 'Verified' : 'Unverified'}
+                                    </span>
                                 </div>
-                                <button
-                                    className={`btn ${user.isPhoneVerified ? 'btn-outline-danger' : 'btn-success'}`}
-                                    onClick={() => handleVerifyMobile(!user.isPhoneVerified)}
-                                >
-                                    <i className={`fa ${user.isPhoneVerified ? 'fa-times' : 'fa-check'} me-1`}></i>
-                                    {user.isPhoneVerified ? 'Unverify Mobile' : 'Verify Mobile'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr />
-
-                    {/* ================= ID VERIFICATION ================= */}
-                    <div className="mb-4">
-                        <div className="d-flex justify-content-between align-items-center mb-3">
-                            <h5 className="fw-bold m-0">Government ID Verification</h5>
-                            <span className={`badge rounded-pill ${user.idVerificationStatus === 'Verified' ? 'bg-success' :
-                                    user.idVerificationStatus === 'Rejected' ? 'bg-danger' :
-                                        user.idVerificationStatus === 'Uploaded' ? 'bg-warning text-dark' : 'bg-secondary'
-                                }`}>
-                                {user.idVerificationStatus || 'Pending'}
-                            </span>
-                        </div>
-
-                        {user.idProofDocument ? (
-                            <div className="card border p-3 bg-light">
-                                <div className="row align-items-center">
-                                    <div className="col-md-6">
-                                        <p className="mb-2"><strong>ID Document:</strong></p>
-                                        <a
-                                            href={user.idProofDocument}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="btn btn-outline-primary btn-sm"
+                                <div className="card border p-3 bg-light">
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <p className="mb-0"><strong>Mobile Number:</strong> {formatMobile(user.userMobile)}</p>
+                                            <p className="mb-0 text-muted small">Verify after manual check or OTP.</p>
+                                        </div>
+                                        <button
+                                            className={`btn ${user.isPhoneVerified ? 'btn-outline-danger' : 'btn-success'}`}
+                                            onClick={() => handleVerifyMobile(!user.isPhoneVerified)}
                                         >
-                                            <i className="fa fa-eye me-2"></i> View Document
-                                        </a>
-                                    </div>
-                                    <div className="col-md-6 text-md-end mt-3 mt-md-0">
-                                        {user.idVerificationStatus !== 'Verified' && (
-                                            <button
-                                                className="btn btn-success me-2"
-                                                onClick={() => handleVerifyId('Verified')}
-                                            >
-                                                <i className="fa fa-check me-1"></i> Approve
-                                            </button>
-                                        )}
-                                        {user.idVerificationStatus !== 'Rejected' && (
-                                            <button
-                                                className="btn btn-danger"
-                                                onClick={() => handleVerifyId('Rejected')}
-                                            >
-                                                <i className="fa fa-times me-1"></i> Reject
-                                            </button>
-                                        )}
+                                            <i className={`fa ${user.isPhoneVerified ? 'fa-times' : 'fa-check'} me-1`}></i>
+                                            {user.isPhoneVerified ? 'Unverify Mobile' : 'Verify Mobile'}
+                                        </button>
                                     </div>
                                 </div>
-                                {user.idProofDocument.toLowerCase().endsWith('.pdf') ? (
-                                    <div className="mt-3 text-center border p-4 bg-white rounded">
-                                        <i className="fa fa-file-pdf-o text-danger font-large mb-2" style={{ fontSize: '48px' }}></i>
-                                        <p className="m-0 text-muted">PDF Document Attached</p>
+                            </div>
+
+                            <hr />
+
+                            {/* ================= ID VERIFICATION ================= */}
+                            <div className="mb-4">
+                                <div className="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 className="fw-bold m-0">Government ID Verification</h5>
+                                    <span className={`badge rounded-pill ${user.idVerificationStatus === 'Verified' ? 'bg-success' :
+                                            user.idVerificationStatus === 'Rejected' ? 'bg-danger' :
+                                                user.idVerificationStatus === 'Uploaded' ? 'bg-warning text-dark' : 'bg-secondary'
+                                        }`}>
+                                        {user.idVerificationStatus || 'Pending'}
+                                    </span>
+                                </div>
+
+                                {user.idProofDocument ? (
+                                    <div className="card border p-3 bg-light">
+                                        <div className="row align-items-center">
+                                            <div className="col-md-6">
+                                                <p className="mb-2"><strong>ID Document:</strong></p>
+                                                <a
+                                                    href={user.idProofDocument}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="btn btn-outline-primary btn-sm"
+                                                >
+                                                    <i className="fa fa-eye me-2"></i> View Document
+                                                </a>
+                                            </div>
+                                            {!isPreview && (
+                                                <div className="col-md-6 text-md-end mt-3 mt-md-0">
+                                                    {user.idVerificationStatus !== 'Verified' && (
+                                                        <button
+                                                            className="btn btn-success me-2"
+                                                            onClick={() => handleVerifyId('Verified')}
+                                                        >
+                                                            <i className="fa fa-check me-1"></i> Approve
+                                                        </button>
+                                                    )}
+                                                    {user.idVerificationStatus !== 'Rejected' && (
+                                                        <button
+                                                            className="btn btn-danger"
+                                                            onClick={() => handleVerifyId('Rejected')}
+                                                        >
+                                                            <i className="fa fa-times me-1"></i> Reject
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                        {user.idProofDocument.toLowerCase().endsWith('.pdf') ? (
+                                            <div className="mt-3 text-center border p-4 bg-white rounded">
+                                                <i className="fa fa-file-pdf-o text-danger font-large mb-2" style={{ fontSize: '48px' }}></i>
+                                                <p className="m-0 text-muted">PDF Document Attached</p>
+                                            </div>
+                                        ) : (
+                                            <div className="mt-3 text-center">
+                                                <img
+                                                    src={user.idProofDocument}
+                                                    alt="ID Preview"
+                                                    className="img-fluid rounded border shadow-sm"
+                                                    style={{ maxHeight: '300px' }}
+                                                />
+                                            </div>
+                                        )}
+                                        <div className="mt-3 text-center">
+                                            {!isPreview && !previewUser && (
+                                                <>
+                                                    {user.isPhoneVerified ? (
+                                                        <button
+                                                            className="btn btn-warning me-2 shadow-sm fw-bold"
+                                                            onClick={() => handleVerifyMobile(false)}
+                                                        >
+                                                            <i className="fa fa-times me-2"></i> Unverify Phone
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            className="btn btn-success me-2 shadow-sm fw-bold"
+                                                            onClick={() => handleVerifyMobile(true)}
+                                                        >
+                                                            <i className="fa fa-check me-2"></i> Verify Phone
+                                                        </button>
+                                                    )}
+                                                    {user.isActive ? (
+                                                        <button
+                                                            className="btn btn-danger shadow-sm fw-bold"
+                                                            onClick={() => handleAccountStatus(false)}
+                                                        >
+                                                            <i className="fa fa-ban me-2"></i> Deactivate Account
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            className="btn btn-success shadow-sm fw-bold"
+                                                            onClick={() => handleAccountStatus(true)}
+                                                        >
+                                                            <i className="fa fa-check-circle me-2"></i> Activate Account
+                                                        </button>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                 ) : (
-                                    <div className="mt-3 text-center">
-                                        <img
-                                            src={user.idProofDocument}
-                                            alt="ID Preview"
-                                            className="img-fluid rounded border shadow-sm"
-                                            style={{ maxHeight: '300px' }}
-                                        />
+                                    <div className="alert alert-info py-2">
+                                        <i className="fa fa-info-circle me-2"></i> No ID proof uploaded yet.
                                     </div>
                                 )}
                             </div>
-                        ) : (
-                            <div className="alert alert-info py-2">
-                                <i className="fa fa-info-circle me-2"></i> No ID proof uploaded yet.
-                            </div>
-                        )}
-                    </div>
 
-                    <hr />
+                            <hr />
 
-                    {/* ================= SUBSCRIPTION ================= */}
-                    <h5 className="fw-bold mb-3">Subscription Details</h5>
+                            {/* ================= SUBSCRIPTION ================= */}
+                            <h5 className="fw-bold mb-3">Subscription Details</h5>
 
-                    {user.paymentDetails?.length > 0 ? (
-                        user.paymentDetails.map((plan) => (
-                            <div
-                                key={plan._id}
-                                className="card p-3 mb-3 shadow-sm border-0 rounded-3"
-                            >
-                                <div className="row">
-                                    <div className="col-md-6">
-                                        <InfoRow label="Plan" value={plan.subscriptionType} />
-                                        <p>
-                                            <strong>Status:</strong>
-                                            <span className="badge bg-success ms-2">
-                                                {plan.subscriptionStatus}
-                                            </span>
-                                        </p>
-                                        <InfoRow label="Amount" value={`₹${plan.subscriptionAmount}`} />
+                            {user.paymentDetails?.length > 0 ? (
+                                user.paymentDetails.map((plan) => (
+                                    <div
+                                        key={plan._id}
+                                        className="card p-3 mb-3 shadow-sm border-0 rounded-3"
+                                    >
+                                        <div className="row">
+                                            <div className="col-md-6">
+                                                <InfoRow label="Plan" value={plan.subscriptionType} />
+                                                <p>
+                                                    <strong>Status:</strong>
+                                                    <span className="badge bg-success ms-2">
+                                                        {plan.subscriptionStatus}
+                                                    </span>
+                                                </p>
+                                                <InfoRow label="Amount" value={`₹${plan.subscriptionAmount}`} />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <InfoRow
+                                                    label="From"
+                                                    value={
+                                                        formatDateDDMMYYYY(plan.subscriptionValidFrom)
+                                                    }
+                                                />
+                                                <InfoRow
+                                                    label="To"
+                                                    value={
+                                                        formatDateDDMMYYYY(plan.subscriptionValidTo)
+                                                    }
+                                                />
+                                                <InfoRow
+                                                    label="Txn ID"
+                                                    value={plan.subscriptionTransactionId}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="col-md-6">
-                                        <InfoRow
-                                            label="From"
-                                            value={
-                                                formatDateDDMMYYYY(plan.subscriptionValidFrom)
-                                            }
-                                        />
-                                        <InfoRow
-                                            label="To"
-                                            value={
-                                                formatDateDDMMYYYY(plan.subscriptionValidTo)
-                                            }
-                                        />
-                                        <InfoRow
-                                            label="Txn ID"
-                                            value={plan.subscriptionTransactionId}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <p className="text-muted">No subscription taken</p>
+                                ))
+                            ) : (
+                                <p className="text-muted">No subscription taken</p>
+                            )}
+                        </>
                     )}
 
                 </div>
             </div>
+    );
+
+    if (isPreview) {
+        return content;
+    }
+
+    return (
+        <NewLayout>
+            {content}
         </NewLayout>
     );
 }
