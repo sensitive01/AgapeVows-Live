@@ -5,6 +5,7 @@ import defaultProfileImg from "../../assets/images/blue-circle-with-white-user_7
 const UserCardImageSlider = ({ user, height = "220px", blur = false, onImageClick }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const allImages = useMemo(() => {
     const defaultImg = defaultProfileImg;
@@ -31,6 +32,7 @@ const UserCardImageSlider = ({ user, height = "220px", blur = false, onImageClic
       e.preventDefault();
       e.stopPropagation();
     }
+    setImageError(false);
     setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
   };
 
@@ -39,6 +41,7 @@ const UserCardImageSlider = ({ user, height = "220px", blur = false, onImageClic
       e.preventDefault();
       e.stopPropagation();
     }
+    setImageError(false);
     setCurrentImageIndex((prev) =>
       prev === 0 ? allImages.length - 1 : prev - 1,
     );
@@ -72,14 +75,17 @@ const UserCardImageSlider = ({ user, height = "220px", blur = false, onImageClic
             src={allImages[currentImageIndex]}
             alt={user.userName}
             onError={(e) => {
+              setImageError(true);
               e.target.src = defaultProfileImg;
+              e.target.style.objectFit = "contain";
             }}
             style={{
               width: "100%",
               height: "100%",
-              objectFit: "cover",
-              objectPosition: "center",
+              objectFit: (imageError || allImages[currentImageIndex] === defaultProfileImg) ? "contain" : "cover",
+              objectPosition: (imageError || allImages[currentImageIndex] === defaultProfileImg) ? "center" : "top",
               display: "block",
+              backgroundColor: "#ffffff",
               filter: blur ? "blur(8px)" : "none",
               transition: "filter 0.3s ease"
             }}
@@ -87,38 +93,39 @@ const UserCardImageSlider = ({ user, height = "220px", blur = false, onImageClic
         </div>
 
         {/* Watermark Overlay on the Right Side */}
-        <div
-          style={{
-            position: "absolute",
-            right: "5px",
-            top: 0,
-            bottom: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            pointerEvents: "none",
-            userSelect: "none",
-            zIndex: 5,
-          }}
-        >
-          <span
+        {(!imageError && allImages[currentImageIndex] !== defaultProfileImg) && (
+          <div
             style={{
-              color: "rgba(255, 255, 255, 0.45)",
-              fontFamily: "'Outfit', 'Inter', sans-serif",
-              fontSize: "14px",
-              fontWeight: "600",
-              letterSpacing: "3px",
-              whiteSpace: "nowrap",
-              textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
-              writingMode: "vertical-rl",
-              transform: "rotate(180deg)",
-              opacity: blur ? 0 : 1,
-              transition: "opacity 0.3s ease"
+              position: "absolute",
+              right: "5px",
+              top: 0,
+              bottom: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              pointerEvents: "none",
+              userSelect: "none",
+              zIndex: 5,
             }}
           >
-            AgapeVows.com
-          </span>
-        </div>
+            <span
+              style={{
+                color: "rgba(255, 255, 255, 0.45)",
+                fontFamily: "'Outfit', 'Inter', sans-serif",
+                fontSize: "14px",
+                fontWeight: "600",
+                letterSpacing: "3px",
+                whiteSpace: "nowrap",
+                textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
+                writingMode: "vertical-rl",
+                textOrientation: "mixed",
+                transform: "rotate(180deg)",
+              }}
+            >
+              AgapeVows.com
+            </span>
+          </div>
+        )}
 
         {allImages.length > 1 && (
           <>

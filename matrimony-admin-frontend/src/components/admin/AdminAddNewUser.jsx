@@ -27,6 +27,8 @@ const getCitiesList = (countryName, stateName) => {
   if (!stateCode) return [];
   let cities = City.getCitiesOfState(countryCode, stateCode).map(city => city.name);
   if (stateName === "Karnataka") {
+    cities = cities.filter(city => !city.toLowerCase().includes("bengaluru") && !city.toLowerCase().includes("bangalore"));
+    cities.push("Bangalore");
     if (!cities.includes("Hubballi")) cities.push("Hubballi");
     if (!cities.includes("Vijayanagara")) cities.push("Vijayanagara");
     cities.sort();
@@ -357,7 +359,18 @@ const AdminAddNewUser = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "dateOfBirth" && value) {
+      const birthDate = new Date(value);
+      const today = new Date();
+      let calculatedAge = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        calculatedAge--;
+      }
+      setFormData((prev) => ({ ...prev, [name]: value, age: calculatedAge.toString() }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleProfileImageChange = (e) => {
@@ -845,6 +858,9 @@ const AdminAddNewUser = () => {
 
     sanitizedData.currentAddress = submitCurrentAddress;
     sanitizedData.permanentAddress = submitPermanentAddress;
+    sanitizedData.city = formData.currentDistrict;
+    sanitizedData.state = formData.currentState;
+    sanitizedData.country = formData.currentCountry;
 
     // Map alternate contact fields to match backend schema
     if (formData.alternateMobile) {

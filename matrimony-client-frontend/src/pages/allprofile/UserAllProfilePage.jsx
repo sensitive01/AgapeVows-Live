@@ -39,6 +39,9 @@ const UserAllProfilePage = () => {
   const [showUpgradePopup, setShowUpgradePopup] = useState(false);
   const { navigateToProfile, renderLimitPopup } = useProfileNavigation();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const profilesPerPage = 10;
+
   const isPaidUser = useMemo(() => {
     if (!currentUserPlan) return false;
     return currentUserPlan.subscriptionStatus?.toLowerCase() === "active";
@@ -464,8 +467,19 @@ const UserAllProfilePage = () => {
                   </div>
                 </div>
                 <div className="all-list-sh">
-                  <ul>
-                    {sortedFilteredUsers.map((user) => (<li key={user._id} style={{ width: "100%", marginBottom: "20px" }}>
+                  
+                  {/* Pagination Logic */}
+                  {(() => {
+                    const indexOfLastProfile = currentPage * profilesPerPage;
+                    const indexOfFirstProfile = indexOfLastProfile - profilesPerPage;
+                    const currentProfiles = sortedFilteredUsers.slice(indexOfFirstProfile, indexOfLastProfile);
+                    const totalPages = Math.ceil(sortedFilteredUsers.length / profilesPerPage);
+                    const paginate = (pageNumber) => { setCurrentPage(pageNumber); setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50); };
+
+                    return (
+                      <>
+                        <ul style={{ overflow: "hidden" }}>
+                          {currentProfiles.map((user) => (<li key={user._id} style={{ width: "100%", marginBottom: "20px", float: "none" }}>
                       <div
                         className="search-result-card"
                         style={{
@@ -585,15 +599,13 @@ const UserAllProfilePage = () => {
                                 }}
                               >
                                 <div className="mb-1">
-                                  {[
-
-                                    user.denomination,
-                                    user.city,
-                                    user.state,
-                                    user.citizenOf,
-                                  ]
-                                    .filter((item) => item && item !== "NA")
-                                    .join(", ")}
+                                  {(() => {
+                                    const addressParts = user.currentAddress ? user.currentAddress.split('|||') : [];
+                                    const district = addressParts[4]?.trim() || user.city || "";
+                                    const state = addressParts[3]?.trim() || user.state || "";
+                                    const country = addressParts[2]?.trim() || user.country;
+                                    return [district, state, country].filter((item) => item && item !== "NA").join(", ");
+                                  })()}
                                 </div>
                                 <div className="mb-1">
                                   {[
@@ -663,7 +675,31 @@ const UserAllProfilePage = () => {
                       </div>
                     </li>
                     ))}
-                  </ul>
+                        </ul>
+
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                          <div style={{ clear: "both", width: "100%", display: "flex", justifyContent: "center", paddingTop: "30px", paddingBottom: "20px" }}>
+                            <nav>
+                              <ul style={{ display: "flex", listStyle: "none", padding: 0, margin: 0, gap: "8px" }}>
+                                <li>
+                                  <button onClick={() => paginate(Math.max(1, currentPage - 1))} disabled={currentPage === 1} style={{ padding: "8px 12px", border: "1px solid #ddd", background: currentPage === 1 ? "#f5f5f5" : "#fff", color: currentPage === 1 ? "#999" : "#333", borderRadius: "4px", cursor: currentPage === 1 ? "not-allowed" : "pointer", fontWeight: "600" }}>Prev</button>
+                                </li>
+                                {[...Array(totalPages)].map((_, index) => (
+                                  <li key={index + 1}>
+                                    <button onClick={() => paginate(index + 1)} style={{ padding: "8px 12px", border: "1px solid #ddd", background: currentPage === index + 1 ? "#00bcd5" : "#fff", color: currentPage === index + 1 ? "#fff" : "#333", borderRadius: "4px", cursor: "pointer", fontWeight: "600" }}>{index + 1}</button>
+                                  </li>
+                                ))}
+                                <li>
+                                  <button onClick={() => paginate(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages} style={{ padding: "8px 12px", border: "1px solid #ddd", background: currentPage === totalPages ? "#f5f5f5" : "#fff", color: currentPage === totalPages ? "#999" : "#333", borderRadius: "4px", cursor: currentPage === totalPages ? "not-allowed" : "pointer", fontWeight: "600" }}>Next</button>
+                                </li>
+                              </ul>
+                            </nav>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
             </div>

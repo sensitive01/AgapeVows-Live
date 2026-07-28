@@ -1330,6 +1330,7 @@ const getNewProfileMatches = async (req, res) => {
         height: user.height,
         religion: user.religion,
         caste: user.caste,
+        denomination: user.denomination,
         education: user.education,
         degree: user.degree,
         occupation: user.occupation,

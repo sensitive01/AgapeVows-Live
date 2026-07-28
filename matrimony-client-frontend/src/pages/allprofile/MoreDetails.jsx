@@ -792,11 +792,15 @@ const MoreDetails = () => {
                   )}
 
                   {(() => {
-                    const locationArray = [userInfo?.city, userInfo?.state, userInfo?.citizenOf].filter(Boolean);
+                    const addressParts = userInfo?.currentAddress ? userInfo.currentAddress.split('|||') : [];
+                    const district = addressParts[4]?.trim() || userInfo?.city || "";
+                    const state = addressParts[3]?.trim() || userInfo?.state || "";
+                    const country = addressParts[2]?.trim() || userInfo?.country;
+                    const locationArray = [district, state, country].filter(Boolean);
                     const locationString = locationArray.length > 0 ? locationArray.join(", ") : userInfo?.fathersNative;
                     return locationString ? (
                       <span style={chipStyle}>
-                        🌍 {locationString}
+                        <i className="fa fa-map-marker" aria-hidden="true" style={{ color: '#007bff', fontSize: '14px' }}></i> {locationString}
                       </span>
                     ) : null;
                   })()}

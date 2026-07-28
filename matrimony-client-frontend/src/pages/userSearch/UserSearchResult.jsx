@@ -57,9 +57,10 @@ const UserSearchResult = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [currentUserPlan, setCurrentUserPlan] = useState(null);
 
-  /* Add viewType state */
   const [viewType, setViewType] = useState("list");
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const profilesPerPage = 10;
 
   // Function to fetch filtered data from API
   const fetchFilteredData = useCallback(
@@ -331,7 +332,7 @@ const UserSearchResult = () => {
                     <span>Showing <b style={{ margin: "0 4px" }}>{users.length}</b> profiles</span>
                     <Link
                       to="/user/find-matches"
-                      style={{ marginLeft: '15px', fontSize: '14px', color: '#00bcd5', cursor: 'pointer', fontWeight: '600', textDecoration: 'underline', transition: 'color 0.3s ease', position: 'relative', zIndex: 50, pointerEvents: 'auto' }}
+                      style={{ marginLeft: '30px', fontSize: '18px', color: '#00bcd5', cursor: 'pointer', fontWeight: '700', textDecoration: 'underline', transition: 'color 0.3s ease', position: 'relative', zIndex: 50, pointerEvents: 'auto' }}
                       onMouseEnter={(e) => e.target.style.color = '#008ba3'}
                       onMouseLeave={(e) => e.target.style.color = '#00bcd5'}
                     >
@@ -418,256 +419,126 @@ const UserSearchResult = () => {
                 )}
 
                 <div className="all-list-sh">
-                  <ul
-                    style={
-                      viewType === "grid"
-                        ? {
-                          display: "flex",
-                          flexWrap: "wrap",
-                          margin: "0 -10px",
-                        }
-                        : {}
-                    }
-                  >
-                    {Array.isArray(sortedUsers) && sortedUsers.map((user) => (
-                      <li
-                        key={user._id}
-                        style={
-                          viewType === "grid"
-                            ? {
-                              width: "50%",
-                              padding: "0 10px",
-                              marginBottom: "20px",
-                              display: "flex",
-                            }
-                            : { width: "100%", marginBottom: "20px", display: "flex" }
-                        }
-                      >
-                        <div
-                          className="search-result-card w-100 d-flex flex-column"
-                          style={{
-                            border: "1px solid #ddd",
-                            padding: "15px",
-                            backgroundColor: "#fff",
-                            borderRadius: "4px",
-                            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                            flexGrow: 1,
-                          }}
-                        >
-                          <div
-                            className="d-flex justify-content-between align-items-center mb-3"
-                            style={{
-                              borderBottom: "1px dashed #ccc",
-                              paddingBottom: "8px",
-                            }}
-                          >
-                            <div className="d-flex align-items-center gap-2">
-                              <h5
-                                style={{
-                                  color: "#C2185B",
-                                  fontWeight: "bold",
-                                  margin: 0,
-                                  fontSize: "16px",
-                                }}
-                              >
-                                {user.agwid}
-                              </h5>
-                            </div>
-                            <span
-                              style={{
-                                fontSize: "13px",
-                                color: "#888",
-                                fontStyle: "italic",
-                              }}
-                            >
-                              Last login:{" "}
-                              {new Date(user.lastLogin || user.createdAt || Date.now()).toLocaleDateString(
-                                "en-GB",
-                                {
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                }
-                              )}
-                            </span>
-                          </div>
+                  
+                  {/* Pagination Logic */}
+                  {(() => {
+                    const indexOfLastProfile = currentPage * profilesPerPage;
+                    const indexOfFirstProfile = indexOfLastProfile - profilesPerPage;
+                    const currentProfiles = sortedUsers.slice(indexOfFirstProfile, indexOfLastProfile);
+                    const totalPages = Math.ceil(sortedUsers.length / profilesPerPage);
+                    const paginate = (pageNumber) => { setCurrentPage(pageNumber); setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50); };
 
-                          <div className={`d-flex ${viewType === "grid" ? "flex-column" : "flex-column flex-sm-row"} align-items-sm-center gap-3`} style={{ flexGrow: 1 }}>
-                            {/* Left: Image */}
-                            <div
-                              onClick={(e) => handleViewProfile(user, e)}
-                              style={{
-                                height: "220px",
-                                width: "160px",
-                                flex: "0 0 160px",
-                                overflow: "hidden",
-                                borderRadius: "8px",
-                                border: "1px solid #eedc9a",
-                                cursor: "pointer",
-                                position: 'relative'
-                              }}
-                            >
-                              <UserCardImageSlider
-                                user={user}
-                                isAccepted={
-                                  user.interestStatus === "accepted"
-                                }
-                                height="100%"
-                                blur={!userId}
-                                onImageClick={(e) => handleViewProfile(user, e)}
-                              />
-                              <div style={{
-                                position: 'absolute',
-                                top: '5px',
-                                left: '5px',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '6px',
-                                zIndex: 10,
-                                alignItems: 'flex-start'
-                              }}>
-                                <MembershipBadge user={user} isMini={true} />
-                                {user.idVerificationStatus === 'Verified' && (
-                                  <div className="membership-badge badge-verified badge-mini shadow-sm">
-                                    <i className="fa fa-check-circle badge-icon"></i>
-                                    <span className="badge-text">Verified</span>
+                    return (
+                      <>
+                        {currentProfiles.length > 0 ? (
+                          viewType === "list" ? (
+                            <ul style={{ overflow: "hidden" }}>
+                              {currentProfiles.map((user) => (
+                                <li key={user._id} style={{ width: "100%", marginBottom: "20px", display: "flex", float: "none" }}>
+                                  <div className="search-result-card w-100 d-flex flex-column" style={{ border: "1px solid #ddd", padding: "15px", backgroundColor: "#fff", borderRadius: "4px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
+                                    <div className="d-flex justify-content-between align-items-center mb-3" style={{ borderBottom: "1px dashed #ccc", paddingBottom: "8px" }}>
+                                      <h5 style={{ color: "#C2185B", fontWeight: "bold", margin: 0, fontSize: "16px" }}>{user.agwid}</h5>
+                                      <span style={{ fontSize: "13px", color: "#888", fontStyle: "italic" }}>Last login: {new Date(user.lastLogin || user.createdAt || Date.now()).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>
+                                    </div>
+                                    <div className="d-flex flex-column flex-sm-row gap-3">
+                                      <div onClick={(e) => handleViewProfile(user, e)} style={{ height: "220px", width: "160px", flex: "0 0 160px", overflow: "hidden", borderRadius: "8px", border: "1px solid #eedc9a", cursor: "pointer", position: 'relative' }}>
+                                        <UserCardImageSlider user={user} isAccepted={user.interestStatus === "accepted"} height="100%" blur={!userId} onImageClick={(e) => handleViewProfile(user, e)} />
+                                        <div style={{ position: 'absolute', top: '5px', left: '5px', display: 'flex', flexDirection: 'column', gap: '6px', zIndex: 10 }}>
+                                          <MembershipBadge user={user} isMini={true} />
+                                          {user.idVerificationStatus === 'Verified' && <div className="membership-badge badge-verified badge-mini shadow-sm"><i className="fa fa-check-circle badge-icon"></i><span className="badge-text">Verified</span></div>}
+                                        </div>
+                                      </div>
+                                      <div className="flex-grow-1" style={{ cursor: 'pointer' }} onClick={(e) => handleViewProfile(user, e)}>
+                                        <h4 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "8px", color: "#333" }}>{[user.motherTongue, user.age && `${user.age} Yrs`, user.height].filter(Boolean).join(", ")}</h4>
+                                        <div style={{ fontSize: "14px", color: "#555", lineHeight: "1.8" }}>
+                                          <div className="mb-1">
+                                            {(() => {
+                                              const addressParts = user.currentAddress ? user.currentAddress.split('|||') : [];
+                                              const district = addressParts[4]?.trim() || user.city || "";
+                                              const state = addressParts[3]?.trim() || user.state || "";
+                                              const country = addressParts[2]?.trim() || user.country;
+                                              return [user.denomination, district, state, country].filter((item) => item && item !== "NA").join(", ");
+                                            })()}
+                                          </div>
+                                          <div className="mb-1">{[user.education || user.degree, user.occupation || user.jobType].filter(Boolean).join(", ")}</div>
+                                          <div style={{ color: "#777", marginTop: "8px", fontSize: "13px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{user.jobDetails ? `${user.jobDetails} - ` : ""}{user.aboutMe || "No description available."}</div>
+                                        </div>
+                                      </div>
+                                      <div className="d-flex align-items-center justify-content-center gap-2 mt-3 mt-sm-0" style={{ flexShrink: 0 }}>
+                                        <button className="btn btn-sm text-white" style={{ backgroundColor: "#00bcd5", border: "none", borderRadius: "4px", padding: "6px 15px" }} onClick={(e) => { e.stopPropagation(); handleViewProfile(user, e); }}>View Profile</button>
+                                        <button className="btn btn-sm text-white" style={{ backgroundColor: "#00bcd5", border: "none", borderRadius: "4px", padding: "6px 15px" }} onClick={(e) => { e.stopPropagation(); shortListProfile(user); }}>Shortlist</button>
+                                      </div>
+                                    </div>
                                   </div>
-                                )}
-
-                              </div>
-                            </div>
-
-                            {/* Center: Details */}
-                            <div className="flex-grow-1" style={{ cursor: 'pointer' }} onClick={(e) => handleViewProfile(user, e)}>
-                              <div>
-                                <h4
-                                  style={{
-                                    fontSize: "16px",
-                                    fontWeight: "600",
-                                    marginBottom: "8px",
-                                    color: "#333",
-                                  }}
-                                >
-                                  {[
-                                    user.motherTongue,
-                                    user.age && `${user.age} Yrs`,
-                                    user.height,
-                                  ]
-                                    .filter(Boolean)
-                                    .join(", ")}
-                                </h4>
-
-                                <div
-                                  style={{
-                                    fontSize: "14px",
-                                    color: "#555",
-                                    lineHeight: "1.8",
-                                  }}
-                                >
-                                  <div className="mb-1">
-                                    {[
-                                      user.denomination,
-                                      user.city,
-                                      user.state,
-                                      user.citizenOf,
-                                    ]
-                                      .filter((item) => item && item !== "NA")
-                                      .join(", ")}
-                                  </div>
-                                  <div className="mb-1">
-                                    {[
-                                      user.education || user.degree,
-                                      user.occupation || user.jobType,
-                                    ]
-                                      .filter(Boolean)
-                                      .join(", ")}
-                                  </div>
-                                  <div
-                                    style={{
-                                      color: "#777",
-                                      marginTop: "8px",
-                                      fontSize: "13px",
-                                      display: "-webkit-box",
-                                      WebkitLineClamp: 2,
-                                      WebkitBoxOrient: "vertical",
-                                      overflow: "hidden",
-                                    }}
-                                  >
-                                    {user.jobDetails
-                                      ? `${user.jobDetails} - `
-                                      : ""}
-                                    {user.aboutMe ||
-                                      "No description available."}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <div className="row" style={{ margin: "0 -10px" }}>
+                              {currentProfiles.map((user) => (
+                                <div key={user._id} style={{ width: "50%", padding: "0 10px", marginBottom: "20px", display: "flex" }}>
+                                  <div className="search-result-card w-100 d-flex flex-column" style={{ border: "1px solid #ddd", padding: "15px", backgroundColor: "#fff", borderRadius: "4px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
+                                    <div className="d-flex justify-content-between align-items-center mb-3" style={{ borderBottom: "1px dashed #ccc", paddingBottom: "8px" }}>
+                                      <h5 style={{ color: "#C2185B", fontWeight: "bold", margin: 0, fontSize: "16px" }}>{user.agwid}</h5>
+                                    </div>
+                                    <div className="flex-column align-items-center gap-3">
+                                      <div onClick={(e) => handleViewProfile(user, e)} style={{ height: "220px", width: "100%", overflow: "hidden", borderRadius: "8px", border: "1px solid #eedc9a", cursor: "pointer", position: 'relative' }}>
+                                        <UserCardImageSlider user={user} isAccepted={user.interestStatus === "accepted"} height="100%" blur={!userId} onImageClick={(e) => handleViewProfile(user, e)} />
+                                      </div>
+                                      <div className="text-center" style={{ cursor: 'pointer' }} onClick={(e) => handleViewProfile(user, e)}>
+                                        <h4 style={{ fontSize: "16px", fontWeight: "600", marginTop: "10px", marginBottom: "8px", color: "#333" }}>{[user.motherTongue, user.age && `${user.age} Yrs`].filter(Boolean).join(", ")}</h4>
+                                        <div style={{ fontSize: "14px", color: "#555" }}>{[user.denomination, user.city].filter(Boolean).join(", ")}</div>
+                                      </div>
+                                      <div className="d-flex justify-content-center gap-2 mt-2">
+                                        <button className="btn btn-sm text-white" style={{ backgroundColor: "#00bcd5", border: "none", borderRadius: "4px", padding: "6px 15px" }} onClick={(e) => { e.stopPropagation(); handleViewProfile(user, e); }}>View</button>
+                                        <button className="btn btn-sm text-white" style={{ backgroundColor: "#00bcd5", border: "none", borderRadius: "4px", padding: "6px 15px" }} onClick={(e) => { e.stopPropagation(); shortListProfile(user); }}>Shortlist</button>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
+                              ))}
                             </div>
-
-                            {/* Right: Buttons */}
-                            <div className={`d-flex align-items-center justify-content-center gap-2 mt-3 mt-sm-0 ${viewType === "grid" ? "pb-2" : "px-sm-2 pe-sm-5"}`} style={{ alignSelf: viewType === "grid" ? "center" : "center", flexShrink: 0 }}>
-                              <button
-                                className="btn btn-sm text-white"
-                                style={{
-                                  backgroundColor: "#00bcd5", // Cyan matching screenshot
-                                  border: "none",
-                                  borderRadius: "4px",
-                                  padding: "6px 15px",
-                                  fontWeight: "500",
-                                  whiteSpace: "nowrap"
-                                }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleViewProfile(user, e);
-                                }}
-                              >
-                                View Profile
-                              </button>
-
-                              <button
-                                className="btn btn-sm text-white"
-                                style={{
-                                  backgroundColor: "#00bcd5", // Cyan matching screenshot
-                                  border: "none",
-                                  borderRadius: "4px",
-                                  padding: "6px 15px",
-                                  fontWeight: "500",
-                                  whiteSpace: "nowrap"
-                                }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  shortListProfile(user);
-                                }}
-                              >
-                                Shortlist Profile
-                              </button>
-                            </div>
+                          )
+                        ) : (
+                          <div className="text-center py-5">
+                            {state?.searchType === "bnr" ? (
+                              <>
+                                <h4 className="text-danger font-weight-bold">The AV ID is incorrect</h4>
+                                <p className="text-muted mt-2">We couldn't find any profile with the ID "<strong>{state?.bnrId}</strong>".</p>
+                              </>
+                            ) : (
+                              <>
+                                <h4>No profiles found</h4>
+                                <p>Try adjusting your search filters</p>
+                              </>
+                            )}
                           </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                        )}
 
-                {/* No Results Message */}
-                {!loading && users.length === 0 && (
-                  <div className="text-center py-5">
-                    {state?.searchType === "bnr" ? (
-                      <>
-                        <h4 className="text-danger font-weight-bold" style={{ fontSize: "1.25rem" }}>
-                          The AV ID is incorrect
-                        </h4>
-                        <p className="text-muted mt-2">
-                          We couldn't find any profile with the ID "<strong>{state?.bnrId}</strong>". Please check the ID and try again.
-                        </p>
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                          <div style={{ clear: "both", width: "100%", display: "flex", justifyContent: "center", paddingTop: "30px", paddingBottom: "20px" }}>
+                            <nav>
+                              <ul style={{ display: "flex", listStyle: "none", padding: 0, margin: 0, gap: "8px" }}>
+                                <li>
+                                  <button onClick={() => paginate(Math.max(1, currentPage - 1))} disabled={currentPage === 1} style={{ padding: "8px 12px", border: "1px solid #ddd", background: currentPage === 1 ? "#f5f5f5" : "#fff", color: currentPage === 1 ? "#999" : "#333", borderRadius: "4px", cursor: currentPage === 1 ? "not-allowed" : "pointer", fontWeight: "600" }}>Prev</button>
+                                </li>
+                                {[...Array(totalPages)].map((_, index) => (
+                                  <li key={index + 1}>
+                                    <button onClick={() => paginate(index + 1)} style={{ padding: "8px 12px", border: "1px solid #ddd", background: currentPage === index + 1 ? "#00bcd5" : "#fff", color: currentPage === index + 1 ? "#fff" : "#333", borderRadius: "4px", cursor: "pointer", fontWeight: "600" }}>{index + 1}</button>
+                                  </li>
+                                ))}
+                                <li>
+                                  <button onClick={() => paginate(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages} style={{ padding: "8px 12px", border: "1px solid #ddd", background: currentPage === totalPages ? "#f5f5f5" : "#fff", color: currentPage === totalPages ? "#999" : "#333", borderRadius: "4px", cursor: currentPage === totalPages ? "not-allowed" : "pointer", fontWeight: "600" }}>Next</button>
+                                </li>
+                              </ul>
+                            </nav>
+                          </div>
+                        )}
                       </>
-                    ) : (
-                      <>
-                        <h4>No profiles found</h4>
-                        <p>Try adjusting your search filters</p>
-                      </>
-                    )}
-                  </div>
-                )}
+                    );
+                  })()}
+                </div>
               </div>
             </div>
           </div>

@@ -484,7 +484,7 @@ const UserDashboardPage = () => {
                 className="col-md-9 col-lg-10"
                 style={{ paddingLeft: "20px", paddingRight: "15px" }}
               >
-                
+
                 {userInfo && userInfo.idVerificationStatus !== 'Verified' && (
                   <div className="alert alert-warning d-flex align-items-start mb-4" role="alert" style={{ backgroundColor: '#fff3cd', color: '#664d03', border: '1px solid #ffeeba', borderRadius: '8px', padding: '15px' }}>
                     <i className="fa fa-exclamation-triangle" style={{ fontSize: '24px', marginRight: '15px', marginTop: '6px' }}></i>
@@ -670,22 +670,49 @@ const UserDashboardPage = () => {
                                         bottom: 0,
                                         left: 0,
                                         right: 0,
-                                        width: '100%',
+                                        boxSizing: 'border-box',
                                         background: 'transparent',
-                                        padding: '20px 35px 15px',
+                                        padding: '20px 25px 15px',
                                         color: '#fff',
                                         borderBottomLeftRadius: '10px',
                                         borderBottomRightRadius: '10px',
                                         zIndex: 10,
                                       }}
                                     >
-                                      <h5 style={{ position: 'static', display: 'block', width: '100%', margin: '0 0 8px', fontSize: '16px', fontWeight: 'bold', textAlign: 'center', color: '#fff', float: 'none', clear: 'both' }}>
-                                        {profile.agwid}
-                                      </h5>
-                                      
-                                      <div style={{ position: 'static', display: 'flex', width: '100%', justifyContent: 'space-between', fontSize: '13px', color: '#eee', float: 'none', clear: 'both' }}>
-                                        <span>{profile.city}</span>
-                                        <span>{profile.age && `${profile.age} Years old`}</span>
+                                      <div style={{ margin: '0 15px', width: 'calc(100% - 30px)', boxSizing: 'border-box' }}>
+                                        <h5 style={{ position: 'static', display: 'block', width: '100%', margin: '0 0 8px', fontSize: '16px', fontWeight: 'bold', textAlign: 'center', color: '#fff', float: 'none', clear: 'both' }}>
+                                          {profile.agwid}
+                                        </h5>
+
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px', color: '#eee' }}>
+                                          {/* Left Side (City, State, Denomination) */}
+                                          <div style={{ display: 'flex', flexDirection: 'column', width: 'calc(100% - 70px)', lineHeight: '1.3' }}>
+                                            {profile.denomination && (
+                                              <span style={{ display: 'block', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left', fontSize: '11px', fontWeight: '600', color: '#00bcd5', marginBottom: '2px' }}>
+                                                {profile.denomination}
+                                              </span>
+                                            )}
+                                            <span style={{ display: 'block', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left' }}>
+                                              {(() => {
+                                                const addressParts = profile.currentAddress ? profile.currentAddress.split('|||') : [];
+                                                return addressParts[4]?.trim() || profile.city || "";
+                                              })()}
+                                            </span>
+                                            <span style={{ display: 'block', width: '100%', fontSize: '11px', opacity: 0.85, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left' }}>
+                                              {(() => {
+                                                const addressParts = profile.currentAddress ? profile.currentAddress.split('|||') : [];
+                                                return addressParts[3]?.trim() || profile.state || "";
+                                              })()}
+                                            </span>
+                                          </div>
+
+                                          {/* Right Side (Age) */}
+                                          <div style={{ flexShrink: 0, textAlign: 'right' }}>
+                                            <span style={{ display: 'block', whiteSpace: 'nowrap', fontWeight: '500' }}>
+                                              {profile.age && `${profile.age} Yrs old`}
+                                            </span>
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
                                     <div

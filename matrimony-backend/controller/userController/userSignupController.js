@@ -237,8 +237,12 @@ const saveSignUpData = async (req, res) => {
 
 const verifyLogin = async (req, res) => {
   try {
-    const { formData } = req.body;
+    const formData = req.body.formData || {};
     const { email, password, rememberMe } = formData;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
 
     // Try matching exactly, or adjusting for common India country code issue
     let phoneQueryWith91 = email;

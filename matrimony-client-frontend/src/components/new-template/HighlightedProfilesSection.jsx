@@ -89,6 +89,65 @@ const SearchDropdown = ({
   );
 };
 
+const ProfileImage = ({ profile }) => {
+  const [hasError, setHasError] = useState(false);
+  const imgSrc = profile.profileImage || defaultProfileImg;
+  const isDefault = hasError || !profile.profileImage;
+  const blurClass = !localStorage.getItem("userId") ? "blur-[8px]" : "blur-none";
+
+  return (
+    <>
+      <img
+        src={imgSrc}
+        alt={profile.userName}
+        className={`w-full h-full scale-110 group-hover:scale-105 transition-transform duration-500 ${blurClass}`}
+        style={{
+          objectFit: isDefault ? 'contain' : 'cover',
+          objectPosition: isDefault ? 'center' : 'top',
+          backgroundColor: '#ffffff'
+        }}
+        onError={(e) => {
+          setHasError(true);
+          e.target.src = defaultProfileImg;
+        }}
+      />
+      
+      {!isDefault && (
+        <div
+          style={{
+            position: "absolute",
+            right: "8px",
+            top: 0,
+            bottom: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            pointerEvents: "none",
+            userSelect: "none",
+            zIndex: 5,
+          }}
+        >
+          <span
+            style={{
+              color: "rgba(255, 255, 255, 0.45)",
+              fontFamily: "'Outfit', 'Inter', sans-serif",
+              fontSize: "26px",
+              fontWeight: "900",
+              letterSpacing: "3px",
+              whiteSpace: "nowrap",
+              textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
+              writingMode: "vertical-rl",
+              transform: "rotate(180deg)",
+            }}
+          >
+            AgapeVows.com
+          </span>
+        </div>
+      )}
+    </>
+  );
+};
+
 const HighlightedProfilesSection = () => {
   const [allProfiles, setAllProfiles] = useState([]);
   const [filteredProfiles, setFilteredProfiles] = useState([]);
@@ -305,46 +364,7 @@ const HighlightedProfilesSection = () => {
                     className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-100 transform hover:-translate-y-1 h-full flex flex-col"
                   >
                     <div className="relative h-[280px] overflow-hidden">
-                      <img
-                        src={profile.profileImage || defaultProfileImg}
-                        alt={profile.userName}
-                        className={`w-full h-full object-cover ${!localStorage.getItem("userId") ? "blur-[8px]" : "blur-none"} scale-110 group-hover:scale-105 transition-transform duration-500`}
-                        onError={(e) => {
-                          e.target.src = defaultProfileImg;
-                        }}
-                      />
-
-                      {/* Watermark Overlay on the Right Side */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          right: "8px",
-                          top: 0,
-                          bottom: 0,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          pointerEvents: "none",
-                          userSelect: "none",
-                          zIndex: 5,
-                        }}
-                      >
-                        <span
-                          style={{
-                            color: "rgba(255, 255, 255, 0.45)",// 0.45 - 0.7
-                            fontFamily: "'Outfit', 'Inter', sans-serif",
-                            fontSize: "26px",
-                            fontWeight: "900",
-                            letterSpacing: "3px",
-                            whiteSpace: "nowrap",
-                            textShadow: "1px 1px 3px rgba(0, 0, 0, 0.6)",
-                            writingMode: "vertical-rl",
-                            transform: "rotate(180deg)",
-                          }}
-                        >
-                          AgapeVows.com
-                        </span>
-                      </div>
+                      <ProfileImage profile={profile} />
                       <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
 
                     </div>
