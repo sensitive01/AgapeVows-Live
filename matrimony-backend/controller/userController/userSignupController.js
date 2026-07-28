@@ -123,7 +123,7 @@ const saveSignUpData = async (req, res) => {
     try {
       const welcomePlan = await planModel.findOne({ name: "Welcome plan", status: "Active" });
       if (welcomePlan) {
-          assignedWelcomePlan = welcomePlan;
+        assignedWelcomePlan = welcomePlan;
         // Auto-assign welcome plan
         const orderId = `AV${Math.floor(100000 + Math.random() * 900000)}`;
         const payment = new paymentModel({
@@ -227,7 +227,7 @@ const saveSignUpData = async (req, res) => {
       userName: newUser.userName,
       gender: newUser.gender,
       isProfileCompleted: newUser.isProfileCompleted,
-        welcomePlan: assignedWelcomePlan
+      welcomePlan: assignedWelcomePlan
     });
   } catch (err) {
     console.error("Error in saving the signup data", err);
@@ -251,7 +251,7 @@ const verifyLogin = async (req, res) => {
 
     const user = await userModel.findOne({
       $or: [
-        { userEmail: email }, 
+        { userEmail: email },
         { userMobile: email },
         { userMobile: phoneQueryWith91 },
         { userMobile: phoneQueryWithout91 }
@@ -275,8 +275,7 @@ const verifyLogin = async (req, res) => {
       return res.status(401).json({ message: "Invalid password" });
     }
 
-    user.lastLogin = new Date();
-    await user.save();
+    await userModel.updateOne({ _id: user._id }, { $set: { lastLogin: new Date() } });
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'agape_vows_secret_key_2026', { expiresIn: '21d' });
 
@@ -314,7 +313,7 @@ const userForgotPassword = async (req, res) => {
 
     const user = await userModel.findOne({
       $or: [
-        { userEmail: emailOrPhone }, 
+        { userEmail: emailOrPhone },
         { userMobile: emailOrPhone },
         { userMobile: phoneQueryWith91 },
         { userMobile: phoneQueryWithout91 }

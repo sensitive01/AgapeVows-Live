@@ -301,10 +301,15 @@ const completeProfileData = async (req, res) => {
 
     // Include existing images that weren't deleted
     if (req.body.existingAdditionalImages) {
-      const existingImages = Array.isArray(req.body.existingAdditionalImages)
+      let existingImages = Array.isArray(req.body.existingAdditionalImages)
         ? req.body.existingAdditionalImages
         : [req.body.existingAdditionalImages];
-      additionalImages = [...existingImages];
+        
+      // Handle case where it was sent as a comma-separated string
+      if (existingImages.length === 1 && typeof existingImages[0] === 'string' && existingImages[0].includes(',')) {
+        existingImages = existingImages[0].split(',').map(u => u.trim()).filter(u => u !== "");
+      }
+      additionalImages = [...existingImages].filter(u => u !== "");
     }
 
     // Add newly uploaded images

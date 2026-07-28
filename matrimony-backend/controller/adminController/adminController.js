@@ -624,8 +624,24 @@ const verifyMobile = async (req, res) => {
 ========================== */
 const registerUser = async (req, res) => {
   try {
-    const userData = req.body;
-    const { userEmail, userMobile, password } = userData;
+    const rawData = req.body;
+    
+    // Sanitize data: remove empty strings, nulls, and undefined values
+    const sanitizedData = {};
+    for (const [key, value] of Object.entries(rawData)) {
+       if (value !== "" && value !== null && value !== undefined) {
+          sanitizedData[key] = value;
+       }
+    }
+
+    const { userEmail, userMobile, password } = sanitizedData;
+
+    if (!userEmail || !userMobile) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and Mobile are required",
+      });
+    }
 
     const existingUser = await userModel.findOne({
       $or: [{ userEmail }, { userMobile }],
@@ -642,7 +658,7 @@ const registerUser = async (req, res) => {
     const agwid = await generateAgwid();
 
     const newUser = new userModel({
-      ...userData,
+      ...sanitizedData,
       userPassword: hashedPassword,
       agwid,
 
@@ -1218,8 +1234,18 @@ const uploadUserImagesAdmin = async (req, res) => {
 
     // Handle Additional Images Deletion
     let existingImages = user.additionalImages || [];
+    if (existingImages.length === 1 && typeof existingImages[0] === 'string' && existingImages[0].includes(',')) {
+      existingImages = existingImages[0].split(',').map(u => u.trim()).filter(u => u !== "");
+    }
+    
     if (req.body.deletedAdditionalImages) {
-      const deletedImages = Array.isArray(req.body.deletedAdditionalImages) ? req.body.deletedAdditionalImages : [req.body.deletedAdditionalImages];
+      let deletedImages = Array.isArray(req.body.deletedAdditionalImages) ? req.body.deletedAdditionalImages : [req.body.deletedAdditionalImages];
+      
+      // Handle comma-separated deleted images too
+      if (deletedImages.length === 1 && typeof deletedImages[0] === 'string' && deletedImages[0].includes(',')) {
+        deletedImages = deletedImages[0].split(',').map(u => u.trim()).filter(u => u !== "");
+      }
+      
       existingImages = existingImages.filter(img => !deletedImages.includes(img));
       
       for (const imgUrl of deletedImages) {

@@ -590,18 +590,22 @@ const AdminEditUser = () => {
           }
         }
         if (additionalImageFiles.length > 0) {
-          for (const file of additionalImageFiles) {
-            try {
-              if (file.type.startsWith('image/')) {
-                const compressedFile = await imageCompression(file, compressionOptions);
-                imageFormData.append("additionalImages", compressedFile, file.name);
-              } else {
-                imageFormData.append("additionalImages", file);
+          const compressedFiles = await Promise.all(
+            additionalImageFiles.map(async (file) => {
+              try {
+                if (file.type.startsWith('image/')) {
+                  const compressedFile = await imageCompression(file, compressionOptions);
+                  return { file: compressedFile, name: file.name };
+                }
+                return { file, name: file.name };
+              } catch (compErr) {
+                console.error("Error compressing additional image:", compErr);
+                return { file, name: file.name };
               }
-            } catch (compErr) {
-              console.error("Error compressing additional image:", compErr);
-              imageFormData.append("additionalImages", file);
-            }
+            })
+          );
+          for (const { file, name } of compressedFiles) {
+            imageFormData.append("additionalImages", file, name);
           }
         }
         await uploadUserImagesAdmin(id, imageFormData);

@@ -39,6 +39,13 @@ const getDistrictsForState = (countryName, stateName, allCountries) => {
   return s ? City.getCitiesOfState(c.isoCode, s.isoCode).map((city) => city.name) : [];
 };
 
+const getImageUrl = (url) => {
+  if (!url) return url;
+  if (url.startsWith("http") || url.startsWith("data:") || url.startsWith("blob:")) return url;
+  const baseUrl = import.meta.env.VITE_BASE_ROUTE || "";
+  return `${baseUrl.replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
+};
+
 const BasicInfomation = ({
   profileImagePreview,
   handleProfileImageChange,
@@ -320,7 +327,7 @@ const BasicInfomation = ({
           >
             {profileImagePreview ? (
               <img
-                src={profileImagePreview}
+                src={getImageUrl(profileImagePreview)}
                 alt="Profile Preview"
                 style={styles.profileImage}
               />
@@ -411,7 +418,7 @@ const BasicInfomation = ({
                 {imagePreviews.map((preview, index) => (
                   <div key={index} style={styles.imagePreviewItem}>
                     <img
-                      src={preview.url}
+                      src={getImageUrl(preview.url)}
                       alt={`Additional ${index + 1}`}
                       style={styles.imagePreview}
                     />
@@ -2057,18 +2064,22 @@ const UserProfileEditPage = () => {
       // Step 4: Handle additional images (with compression)
       // ========================
       if (additionalImageFiles.length > 0) {
-        for (const file of additionalImageFiles) {
-          try {
-            if (file.type.startsWith('image/')) {
-              const compressedFile = await imageCompression(file, compressionOptions);
-              submitFormData.append("additionalImages", compressedFile, file.name);
-            } else {
-              submitFormData.append("additionalImages", file);
+        const compressedFiles = await Promise.all(
+          additionalImageFiles.map(async (file) => {
+            try {
+              if (file.type.startsWith('image/')) {
+                const compressedFile = await imageCompression(file, compressionOptions);
+                return { file: compressedFile, name: file.name };
+              }
+              return { file, name: file.name };
+            } catch (error) {
+              console.error("Error compressing additional image:", error);
+              return { file, name: file.name };
             }
-          } catch (error) {
-            console.error("Error compressing additional image:", error);
-            submitFormData.append("additionalImages", file);
-          }
+          })
+        );
+        for (const { file, name } of compressedFiles) {
+          submitFormData.append("additionalImages", file, name);
         }
       }
 

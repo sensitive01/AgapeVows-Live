@@ -14,6 +14,13 @@ const BasicInfomation = ({
   const additionalImagesInputRef = useRef(null);
   const [hoveredRemoveIndex, setHoveredRemoveIndex] = useState(null);
 
+  const getImageUrl = (url) => {
+    if (!url) return url;
+    if (url.startsWith("http") || url.startsWith("data:") || url.startsWith("blob:")) return url;
+    const baseUrl = import.meta.env.VITE_BASE_ROUTE || "";
+    return `${baseUrl.replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
+  };
+
   const handleEditIconClick = () => {
     profileImageInputRef.current?.click();
   };

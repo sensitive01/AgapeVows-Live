@@ -325,4 +325,47 @@ const userSchema = new mongoose.Schema(
    { timestamps: true }
 );
 
+// Pre-validate hook to clean up corrupt legacy data
+userSchema.pre("validate", function (next) {
+   // Fix for ValidationError: Parameter "obj" to Document() must be an object, got "" (type string)
+   if (this.paymentDetails === "" || typeof this.paymentDetails === "string") {
+      this.paymentDetails = [];
+   }
+   if (this.blockedUsers === "" || typeof this.blockedUsers === "string") {
+      this.blockedUsers = [];
+   }
+   if (Array.isArray(this.additionalImages)) {
+      this.additionalImages = this.additionalImages.filter(img => img && typeof img === "string" && img.trim() !== "");
+   }
+   next();
+});
+
+// Hook for findOneAndUpdate to intercept direct database updates (e.g. from admin panel)
+userSchema.pre("findOneAndUpdate", function (next) {
+   const update = this.getUpdate();
+   if (update) {
+      if (update.paymentDetails === "" || typeof update.paymentDetails === "string") {
+         update.paymentDetails = [];
+      }
+      if (update.$set && (update.$set.paymentDetails === "" || typeof update.$set.paymentDetails === "string")) {
+         update.$set.paymentDetails = [];
+      }
+      
+      if (update.blockedUsers === "" || typeof update.blockedUsers === "string") {
+         update.blockedUsers = [];
+      }
+      if (update.$set && (update.$set.blockedUsers === "" || typeof update.$set.blockedUsers === "string")) {
+         update.$set.blockedUsers = [];
+      }
+
+      if (update.additionalImages && Array.isArray(update.additionalImages)) {
+         update.additionalImages = update.additionalImages.filter(img => img && typeof img === "string" && img.trim() !== "");
+      }
+      if (update.$set && update.$set.additionalImages && Array.isArray(update.$set.additionalImages)) {
+         update.$set.additionalImages = update.$set.additionalImages.filter(img => img && typeof img === "string" && img.trim() !== "");
+      }
+   }
+   next();
+});
+
 module.exports = mongoose.model("UserModel", userSchema);
