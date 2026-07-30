@@ -16,12 +16,12 @@ export const useProfileNavigation = () => {
             e.preventDefault();
         }
 
-        
+
         if (isChecking) return; // Prevent double clicks
-        
+
         try {
             setIsChecking(true);
-            
+
             // 1. Check if the user's own profile is hidden
             if (viewerId) {
                 try {
@@ -53,7 +53,7 @@ export const useProfileNavigation = () => {
 
             // 2. Check view limit
             await checkProfileViewLimit(profileId, viewerId);
-            
+
             // Limit check passed, we can navigate
             if (e && (e.ctrlKey || e.metaKey)) {
                 const newTab = window.open(`/profile-more-details/${profileId}`, '_blank');
@@ -82,8 +82,8 @@ export const useProfileNavigation = () => {
     const renderLimitPopup = () => {
         if (!showUpgradePopup) return null;
         return (
-            <UpgradePopup 
-                onClose={() => setShowUpgradePopup(false)} 
+            <UpgradePopup
+                onClose={() => setShowUpgradePopup(false)}
                 type={upgradePopupType}
             />
         );

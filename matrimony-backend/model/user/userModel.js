@@ -350,7 +350,7 @@ userSchema.pre("findOneAndUpdate", function (next) {
       if (update.$set && (update.$set.paymentDetails === "" || typeof update.$set.paymentDetails === "string")) {
          update.$set.paymentDetails = [];
       }
-      
+
       if (update.blockedUsers === "" || typeof update.blockedUsers === "string") {
          update.blockedUsers = [];
       }

@@ -160,9 +160,9 @@ const getPaidUsersData = async (req, res) => {
           gender: 1,
           city: 1,
           profileImage: 1,
-            agwid: 1,
-            createdAt: 1,
-            isAnySubscriptionTaken: 1,
+          agwid: 1,
+          createdAt: 1,
+          isAnySubscriptionTaken: 1,
           "paymentDetails.subscriptionValidFrom": 1,
           "paymentDetails.subscriptionValidTo": 1,
           "paymentDetails.subscriptionType": 1,
@@ -405,9 +405,9 @@ const getDeactivatedUsers = async (req, res) => {
           gender: 1,
           city: 1,
           profileImage: 1,
-            agwid: 1,
-            createdAt: 1,
-            deactivatedAt: 1,
+          agwid: 1,
+          createdAt: 1,
+          deactivatedAt: 1,
           deactivationReason: 1,
           deactivationDescription: 1,
           whatsapp: 1,
@@ -625,13 +625,13 @@ const verifyMobile = async (req, res) => {
 const registerUser = async (req, res) => {
   try {
     const rawData = req.body;
-    
+
     // Sanitize data: remove empty strings, nulls, and undefined values
     const sanitizedData = {};
     for (const [key, value] of Object.entries(rawData)) {
-       if (value !== "" && value !== null && value !== undefined) {
-          sanitizedData[key] = value;
-       }
+      if (value !== "" && value !== null && value !== undefined) {
+        sanitizedData[key] = value;
+      }
     }
 
     const { userEmail, userMobile, password } = sanitizedData;
@@ -701,13 +701,13 @@ const bulkRegisterUsers = async (req, res) => {
       try {
         const sanitizedData = {};
         for (const [key, value] of Object.entries(userData)) {
-           if (value !== "" && value !== null && value !== undefined) {
-              sanitizedData[key] = value;
-           }
+          if (value !== "" && value !== null && value !== undefined) {
+            sanitizedData[key] = value;
+          }
         }
 
         const { userEmail, userMobile, password } = sanitizedData;
-        
+
         if (!userEmail || !userMobile) {
           results.failCount++;
           results.errors.push({ email: userEmail || "Unknown", reason: "Missing email or mobile" });
@@ -801,7 +801,7 @@ const getContactUpdateRequests = async (req, res) => {
 const approveContactUpdate = async (req, res) => {
   try {
     const { userId } = req.params;
-    
+
     const user = await userModel.findById(userId);
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
@@ -888,7 +888,7 @@ const upgradeUserPlan = async (req, res) => {
     }
 
     const validFrom = new Date();
-    
+
     // calculate Valid To
     const date = new Date(validFrom);
     const dur = parseInt(plan.duration) || 0;
@@ -991,20 +991,20 @@ const updateAdminProfile = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, email, password } = req.body;
-    
+
     const updateData = {};
     if (name) updateData.adminName = name;
     if (email) updateData.adminEmail = email;
-    
+
     if (password) {
       updateData.adminPassword = await bcrypt.hash(password, 10);
     }
-    
+
     const updatedAdmin = await adminModel.findByIdAndUpdate(id, updateData, { new: true }).select("-adminPassword");
     if (!updatedAdmin) {
       return res.status(404).json({ success: false, message: "Admin not found" });
     }
-    
+
     res.status(200).json({ success: true, message: "Admin profile updated successfully", data: updatedAdmin });
   } catch (err) {
     console.error("Error updating admin profile:", err);
@@ -1015,12 +1015,12 @@ const updateAdminProfile = async (req, res) => {
 const createSubadmin = async (req, res) => {
   try {
     const { email, password, permissions } = req.body;
-    
+
     const existingAdmin = await adminModel.findOne({ adminEmail: email });
     if (existingAdmin) {
       return res.status(400).json({ success: false, message: "Admin email already exists" });
     }
-    
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const newSubadmin = new adminModel({
       adminEmail: email,
@@ -1028,7 +1028,7 @@ const createSubadmin = async (req, res) => {
       role: 'subadmin',
       permissions: permissions || []
     });
-    
+
     await newSubadmin.save();
     res.status(201).json({ success: true, message: "Subadmin created successfully" });
   } catch (err) {
@@ -1051,17 +1051,17 @@ const updateSubadmin = async (req, res) => {
   try {
     const { id } = req.params;
     const { email, password, permissions } = req.body;
-    
+
     const updateData = { adminEmail: email, permissions: permissions || [] };
     if (password) {
       updateData.adminPassword = await bcrypt.hash(password, 10);
     }
-    
+
     const updatedSubadmin = await adminModel.findByIdAndUpdate(id, updateData, { new: true }).select("-adminPassword");
     if (!updatedSubadmin) {
       return res.status(404).json({ success: false, message: "Subadmin not found" });
     }
-    
+
     res.status(200).json({ success: true, message: "Subadmin updated successfully", data: updatedSubadmin });
   } catch (err) {
     console.error("Error updating subadmin:", err);
@@ -1148,7 +1148,7 @@ const getAllMasterData = async (req, res) => {
 const addMasterData = async (req, res) => {
   try {
     const { name, type } = req.body;
-    
+
     // Check if it already exists
     const existing = await masterDataModel.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') }, type });
     if (existing) {
@@ -1157,7 +1157,7 @@ const addMasterData = async (req, res) => {
 
     const newData = new masterDataModel({ name, type });
     await newData.save();
-    
+
     res.status(201).json({ success: true, message: `${type} added successfully`, data: newData });
   } catch (err) {
     console.error("Error adding master data:", err);
@@ -1169,17 +1169,17 @@ const updateMasterData = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, isActive } = req.body;
-    
+
     const updateData = {};
     if (name !== undefined) updateData.name = name;
     if (isActive !== undefined) updateData.isActive = isActive;
-    
+
     const updated = await masterDataModel.findByIdAndUpdate(id, updateData, { new: true });
-    
+
     if (!updated) {
       return res.status(404).json({ success: false, message: "Master data not found" });
     }
-    
+
     res.status(200).json({ success: true, message: "Updated successfully", data: updated });
   } catch (err) {
     console.error("Error updating master data:", err);
@@ -1229,7 +1229,7 @@ const uploadUserImagesAdmin = async (req, res) => {
         }
       );
       updates.profileImage = profile.secure_url;
-      try { fs.unlinkSync(files.profileImage[0].path); } catch (e) {}
+      try { fs.unlinkSync(files.profileImage[0].path); } catch (e) { }
     }
 
     // Handle Additional Images Deletion
@@ -1237,17 +1237,17 @@ const uploadUserImagesAdmin = async (req, res) => {
     if (existingImages.length === 1 && typeof existingImages[0] === 'string' && existingImages[0].includes(',')) {
       existingImages = existingImages[0].split(',').map(u => u.trim()).filter(u => u !== "");
     }
-    
+
     if (req.body.deletedAdditionalImages) {
       let deletedImages = Array.isArray(req.body.deletedAdditionalImages) ? req.body.deletedAdditionalImages : [req.body.deletedAdditionalImages];
-      
+
       // Handle comma-separated deleted images too
       if (deletedImages.length === 1 && typeof deletedImages[0] === 'string' && deletedImages[0].includes(',')) {
         deletedImages = deletedImages[0].split(',').map(u => u.trim()).filter(u => u !== "");
       }
-      
+
       existingImages = existingImages.filter(img => !deletedImages.includes(img));
-      
+
       for (const imgUrl of deletedImages) {
         const cloudinaryRegex = /https?:\/\/res\.cloudinary\.com\/[^/]+\/(?:image|raw|upload)\/(?:v\d+\/)?(.+)\.[a-zA-Z0-9]+$/;
         const match = imgUrl.match(cloudinaryRegex);
@@ -1267,7 +1267,7 @@ const uploadUserImagesAdmin = async (req, res) => {
           resource_type: "auto",
         });
         additionalImageUrls.push(result.secure_url);
-        try { fs.unlinkSync(file.path); } catch (e) {}
+        try { fs.unlinkSync(file.path); } catch (e) { }
       }
       updates.additionalImages = [...existingImages, ...additionalImageUrls];
     }

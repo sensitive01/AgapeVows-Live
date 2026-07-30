@@ -467,7 +467,7 @@ const UserAllProfilePage = () => {
                   </div>
                 </div>
                 <div className="all-list-sh">
-                  
+
                   {/* Pagination Logic */}
                   {(() => {
                     const indexOfLastProfile = currentPage * profilesPerPage;
@@ -480,201 +480,201 @@ const UserAllProfilePage = () => {
                       <>
                         <ul style={{ overflow: "hidden" }}>
                           {currentProfiles.map((user) => (<li key={user._id} style={{ width: "100%", marginBottom: "20px", float: "none" }}>
-                      <div
-                        className="search-result-card"
-                        style={{
-                          border: "1px solid #ddd",
-                          padding: "15px",
-                          backgroundColor: "#fff",
-                          borderRadius: "4px",
-                          boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                        }}
-                      >
-
-                        <div
-                          className="d-flex justify-content-between align-items-center mb-3"
-                          style={{
-                            borderBottom: "1px dashed #ccc",
-                            paddingBottom: "8px",
-                          }}
-                        >
-                          <div className="d-flex align-items-center gap-2">
-                            <h5
+                            <div
+                              className="search-result-card"
                               style={{
-                                color: "#C2185B",
-                                fontWeight: "bold",
-                                margin: 0,
-                                fontSize: "16px",
+                                border: "1px solid #ddd",
+                                padding: "15px",
+                                backgroundColor: "#fff",
+                                borderRadius: "4px",
+                                boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
                               }}
                             >
-                              {user.agwid}
-                            </h5>
-                          </div>
-                          <span
-                            style={{
-                              fontSize: "13px",
-                              color: "#888",
-                              fontStyle: "italic",
-                            }}
-                          >
-                            Last login:{" "}
-                            {user.lastLogin
-                              ? new Date(user.lastLogin).toLocaleDateString(
-                                "en-GB",
-                                {
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                },
-                              )
-                              : "Recently"}
-                          </span>
-                        </div>
 
-                        <div className="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
-
-                          <div
-                            onClick={(e) => handleViewProfile(e, user)}
-                            style={{
-                              height: "220px",
-                              width: "160px",
-                              flex: "0 0 160px",
-                              overflow: "hidden",
-                              borderRadius: "8px",
-                              border: "1px solid #eedc9a",
-                              cursor: "pointer",
-                              position: 'relative'
-                            }}
-                          >
-                            <UserCardImageSlider
-                              user={user}
-                              height="100%"
-                              onImageClick={(e) => handleViewProfile(e, user)}
-                            />
-                            <div style={{
-                              position: 'absolute',
-                              top: '5px',
-                              left: '5px',
-                              display: 'flex',
-                              flexDirection: 'column',
-                              gap: '6px',
-                              zIndex: 10,
-                              alignItems: 'flex-start'
-                            }}>
-                              <MembershipBadge user={user} isMini={true} />
-                              {user.idVerificationStatus === 'Verified' && (
-                                <div className="membership-badge badge-verified badge-mini shadow-sm">
-                                  <i className="fa fa-check-circle badge-icon"></i>
-                                  <span className="badge-text">Verified</span>
-                                </div>
-                              )}
-
-                            </div>
-                          </div>
-
-
-                          <div className="flex-grow-1" style={{ cursor: 'pointer' }} onClick={(e) => handleViewProfile(e, user)}>
-                            <div>
-                              <h4
-                                style={{
-                                  fontSize: "16px",
-                                  fontWeight: "600",
-                                  marginBottom: "8px",
-                                  color: "#333",
-                                }}
-                              >
-                                {[
-                                  user.motherTongue,
-                                  user.age && `${user.age} Yrs`,
-                                  user.height,
-                                ]
-                                  .filter(Boolean)
-                                  .join(", ")}
-                              </h4>
                               <div
+                                className="d-flex justify-content-between align-items-center mb-3"
                                 style={{
-                                  fontSize: "14px",
-                                  color: "#555",
-                                  lineHeight: "1.8",
+                                  borderBottom: "1px dashed #ccc",
+                                  paddingBottom: "8px",
                                 }}
                               >
-                                <div className="mb-1">
-                                  {(() => {
-                                    const addressParts = user.currentAddress ? user.currentAddress.split('|||') : [];
-                                    const district = addressParts[4]?.trim() || user.city || "";
-                                    const state = addressParts[3]?.trim() || user.state || "";
-                                    const country = addressParts[2]?.trim() || user.country;
-                                    return [district, state, country].filter((item) => item && item !== "NA").join(", ");
-                                  })()}
+                                <div className="d-flex align-items-center gap-2">
+                                  <h5
+                                    style={{
+                                      color: "#C2185B",
+                                      fontWeight: "bold",
+                                      margin: 0,
+                                      fontSize: "16px",
+                                    }}
+                                  >
+                                    {user.agwid}
+                                  </h5>
                                 </div>
-                                <div className="mb-1">
-                                  {[
-                                    user.education || user.degree,
-                                    user.occupation || user.jobType,
-                                  ]
-                                    .filter(Boolean)
-                                    .join(", ")}
-                                </div>
-                                <div
+                                <span
                                   style={{
-                                    color: "#777",
-                                    marginTop: "8px",
                                     fontSize: "13px",
-                                    display: "-webkit-box",
-                                    WebkitLineClamp: 2,
-                                    WebkitBoxOrient: "vertical",
-                                    overflow: "hidden",
+                                    color: "#888",
+                                    fontStyle: "italic",
                                   }}
                                 >
-                                  {user.jobDetails
-                                    ? `${user.jobDetails} - `
-                                    : ""}
-                                  {user.aboutMe ||
-                                    "No description available."}
+                                  Last login:{" "}
+                                  {user.lastLogin
+                                    ? new Date(user.lastLogin).toLocaleDateString(
+                                      "en-GB",
+                                      {
+                                        day: "2-digit",
+                                        month: "short",
+                                        year: "numeric",
+                                      },
+                                    )
+                                    : "Recently"}
+                                </span>
+                              </div>
+
+                              <div className="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+
+                                <div
+                                  onClick={(e) => handleViewProfile(e, user)}
+                                  style={{
+                                    height: "220px",
+                                    width: "160px",
+                                    flex: "0 0 160px",
+                                    overflow: "hidden",
+                                    borderRadius: "8px",
+                                    border: "1px solid #eedc9a",
+                                    cursor: "pointer",
+                                    position: 'relative'
+                                  }}
+                                >
+                                  <UserCardImageSlider
+                                    user={user}
+                                    height="100%"
+                                    onImageClick={(e) => handleViewProfile(e, user)}
+                                  />
+                                  <div style={{
+                                    position: 'absolute',
+                                    top: '5px',
+                                    left: '5px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '6px',
+                                    zIndex: 10,
+                                    alignItems: 'flex-start'
+                                  }}>
+                                    <MembershipBadge user={user} isMini={true} />
+                                    {user.idVerificationStatus === 'Verified' && (
+                                      <div className="membership-badge badge-verified badge-mini shadow-sm">
+                                        <i className="fa fa-check-circle badge-icon"></i>
+                                        <span className="badge-text">Verified</span>
+                                      </div>
+                                    )}
+
+                                  </div>
+                                </div>
+
+
+                                <div className="flex-grow-1" style={{ cursor: 'pointer' }} onClick={(e) => handleViewProfile(e, user)}>
+                                  <div>
+                                    <h4
+                                      style={{
+                                        fontSize: "16px",
+                                        fontWeight: "600",
+                                        marginBottom: "8px",
+                                        color: "#333",
+                                      }}
+                                    >
+                                      {[
+                                        user.motherTongue,
+                                        user.age && `${user.age} Yrs`,
+                                        user.height,
+                                      ]
+                                        .filter(Boolean)
+                                        .join(", ")}
+                                    </h4>
+                                    <div
+                                      style={{
+                                        fontSize: "14px",
+                                        color: "#555",
+                                        lineHeight: "1.8",
+                                      }}
+                                    >
+                                      <div className="mb-1">
+                                        {(() => {
+                                          const addressParts = user.currentAddress ? user.currentAddress.split('|||') : [];
+                                          const district = addressParts[4]?.trim() || user.city || "";
+                                          const state = addressParts[3]?.trim() || user.state || "";
+                                          const country = addressParts[2]?.trim() || user.country;
+                                          return [district, state, country].filter((item) => item && item !== "NA").join(", ");
+                                        })()}
+                                      </div>
+                                      <div className="mb-1">
+                                        {[
+                                          user.education || user.degree,
+                                          user.occupation || user.jobType,
+                                        ]
+                                          .filter(Boolean)
+                                          .join(", ")}
+                                      </div>
+                                      <div
+                                        style={{
+                                          color: "#777",
+                                          marginTop: "8px",
+                                          fontSize: "13px",
+                                          display: "-webkit-box",
+                                          WebkitLineClamp: 2,
+                                          WebkitBoxOrient: "vertical",
+                                          overflow: "hidden",
+                                        }}
+                                      >
+                                        {user.jobDetails
+                                          ? `${user.jobDetails} - `
+                                          : ""}
+                                        {user.aboutMe ||
+                                          "No description available."}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="d-flex align-items-center justify-content-md-end justify-content-center gap-2 mt-3 mt-sm-0 px-sm-2 pe-sm-5" style={{ alignSelf: "center", flexShrink: 0 }}>
+                                  <button
+                                    className="btn btn-sm text-white px-3 py-2"
+                                    style={{
+                                      backgroundColor: "#00bcd5", // Cyan matching screenshot
+                                      border: "none",
+                                      borderRadius: "4px",
+                                      fontWeight: "500",
+                                      whiteSpace: "nowrap"
+                                    }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleViewProfile(e, user);
+                                    }}
+                                  >
+                                    View Profile
+                                  </button>
+
+                                  <button
+                                    className="btn btn-sm text-white px-3 py-2"
+                                    style={{
+                                      backgroundColor: "#00bcd5", // Cyan matching screenshot
+                                      border: "none",
+                                      borderRadius: "4px",
+                                      fontWeight: "500",
+                                      whiteSpace: "nowrap"
+                                    }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      shortListProfile(user);
+                                    }}
+                                  >
+                                    Shortlist Profile
+                                  </button>
                                 </div>
                               </div>
                             </div>
-                          </div>
-
-                          <div className="d-flex align-items-center justify-content-md-end justify-content-center gap-2 mt-3 mt-sm-0 px-sm-2 pe-sm-5" style={{ alignSelf: "center", flexShrink: 0 }}>
-                            <button
-                              className="btn btn-sm text-white px-3 py-2"
-                              style={{
-                                backgroundColor: "#00bcd5", // Cyan matching screenshot
-                                border: "none",
-                                borderRadius: "4px",
-                                fontWeight: "500",
-                                whiteSpace: "nowrap"
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleViewProfile(e, user);
-                              }}
-                            >
-                              View Profile
-                            </button>
-
-                            <button
-                              className="btn btn-sm text-white px-3 py-2"
-                              style={{
-                                backgroundColor: "#00bcd5", // Cyan matching screenshot
-                                border: "none",
-                                borderRadius: "4px",
-                                fontWeight: "500",
-                                whiteSpace: "nowrap"
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                shortListProfile(user);
-                              }}
-                            >
-                              Shortlist Profile
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                    ))}
+                          </li>
+                          ))}
                         </ul>
 
                         {/* Pagination Controls */}

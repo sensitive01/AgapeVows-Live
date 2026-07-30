@@ -419,7 +419,7 @@ const UserSearchResult = () => {
                 )}
 
                 <div className="all-list-sh">
-                  
+
                   {/* Pagination Logic */}
                   {(() => {
                     const indexOfLastProfile = currentPage * profilesPerPage;

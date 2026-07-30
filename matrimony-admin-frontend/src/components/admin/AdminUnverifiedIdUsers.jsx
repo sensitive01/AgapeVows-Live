@@ -63,10 +63,10 @@ export default function AdminUnverifiedIdUsers() {
       wrap: true,
       cell: row => (
         <div className="d-flex align-items-center py-2" style={{ wordBreak: "break-word", minWidth: "250px" }}>
-          <img 
-            src={row.profileImage || "/assets/images/user-placeholder.png"} 
-            alt="" 
-            style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", marginRight: "10px" }} 
+          <img
+            src={row.profileImage || "/assets/images/user-placeholder.png"}
+            alt=""
+            style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", marginRight: "10px" }}
             onError={(e) => e.target.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
           />
           <div className="text-start" style={{ minWidth: 0 }}>
@@ -83,10 +83,9 @@ export default function AdminUnverifiedIdUsers() {
       sortable: true,
       width: "90px",
       cell: row => (
-        <span className={`badge text-white ${ 
-          row.idVerificationStatus === 'Uploaded' ? 'bg-info' : 
-          row.idVerificationStatus === 'Rejected' ? 'bg-danger' : 'bg-warning'
-        }`}>
+        <span className={`badge text-white ${row.idVerificationStatus === 'Uploaded' ? 'bg-info' :
+            row.idVerificationStatus === 'Rejected' ? 'bg-danger' : 'bg-warning'
+          }`}>
           {row.idVerificationStatus || 'Pending'}
         </span>
       ),
@@ -106,7 +105,7 @@ export default function AdminUnverifiedIdUsers() {
       )
     },
     {
-      name: "ID Number", 
+      name: "ID Number",
       selector: row => row.idProofNumber || "N/A",
       sortable: true,
       center: true,
@@ -122,7 +121,7 @@ export default function AdminUnverifiedIdUsers() {
       name: "Document",
       width: "90px",
       cell: row => row.idProofDocument ? (
-        <button 
+        <button
           className="btn btn-sm btn-outline-info"
           onClick={() => handleViewProof(row.idProofDocument)}
         >
@@ -147,14 +146,14 @@ export default function AdminUnverifiedIdUsers() {
       cell: row => (
         <div className="d-flex flex-column gap-2 align-items-center">
           <div className="d-flex justify-content-center gap-2 w-100">
-            <button 
+            <button
               className="btn btn-sm btn-success text-white w-50"
               disabled={processingUsers.has(row._id)}
               onClick={() => handleVerifyId(row._id, "Verified")}
             >
               {processingUsers.has(row._id) ? "..." : "Verify"}
             </button>
-            <button 
+            <button
               className="btn btn-sm btn-danger text-white w-50"
               disabled={processingUsers.has(row._id)}
               onClick={() => handleVerifyId(row._id, "Rejected")}
@@ -162,10 +161,10 @@ export default function AdminUnverifiedIdUsers() {
               {processingUsers.has(row._id) ? "..." : "Reject"}
             </button>
           </div>
-          <Link 
-            to={`/admin/new-user/${row._id}`} 
-            target="_blank" 
-            rel="noopener noreferrer" 
+          <Link
+            to={`/admin/new-user/${row._id}`}
+            target="_blank"
+            rel="noopener noreferrer"
             className="btn btn-sm btn-outline-primary px-2 py-1 w-100"
             style={{ fontSize: "12px" }}
           >
@@ -209,7 +208,7 @@ export default function AdminUnverifiedIdUsers() {
       });
       if (!confirmed) return;
     }
-    
+
     setProcessingUsers((prev) => new Set(prev).add(userId));
     try {
       const response = await verifyIdProof(userId, status);
@@ -314,7 +313,7 @@ export default function AdminUnverifiedIdUsers() {
               </div>
               <div className="modal-body text-center">
                 {selectedProof?.endsWith(".pdf") ? (
-                   <iframe src={selectedProof} width="100%" height="500px" title="PDF ID"></iframe>
+                  <iframe src={selectedProof} width="100%" height="500px" title="PDF ID"></iframe>
                 ) : (
                   <img src={selectedProof} alt="ID Proof" className="img-fluid" />
                 )}

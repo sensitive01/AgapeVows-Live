@@ -64,10 +64,10 @@ export default function AdminVerifiedIdUsers() {
       wrap: true,
       cell: row => (
         <div className="d-flex align-items-center py-2" style={{ wordBreak: "break-word", minWidth: "250px" }}>
-          <img 
-            src={row.profileImage || "/assets/images/user-placeholder.png"} 
-            alt="" 
-            style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", marginRight: "10px" }} 
+          <img
+            src={row.profileImage || "/assets/images/user-placeholder.png"}
+            alt=""
+            style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", marginRight: "10px" }}
             onError={(e) => e.target.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
           />
           <div className="text-start" style={{ minWidth: 0 }}>
@@ -108,7 +108,7 @@ export default function AdminVerifiedIdUsers() {
       name: "Document",
       width: "100px",
       cell: row => row.idProofDocument ? (
-        <button 
+        <button
           className="btn btn-sm btn-outline-info"
           onClick={() => handleViewProof(row.idProofDocument)}
         >
@@ -145,17 +145,17 @@ export default function AdminVerifiedIdUsers() {
       width: "120px",
       cell: row => (
         <div className="d-flex flex-column gap-2 align-items-center">
-          <button 
+          <button
             className="btn btn-sm btn-primary rounded-pill px-3 w-100 text-light"
             disabled={processingUsers.has(row._id)}
             onClick={() => handleUndoVerification(row._id)}
           >
             {processingUsers.has(row._id) ? "..." : "Undo"}
           </button>
-          <Link 
-            to={`/admin/new-user/${row._id}`} 
-            target="_blank" 
-            rel="noopener noreferrer" 
+          <Link
+            to={`/admin/new-user/${row._id}`}
+            target="_blank"
+            rel="noopener noreferrer"
             className="btn btn-sm btn-outline-primary px-2 py-1 w-100"
             style={{ fontSize: "12px" }}
           >
@@ -196,7 +196,7 @@ export default function AdminVerifiedIdUsers() {
       confirmButtonText: "Yes, Undo",
     });
     if (!confirmed) return;
-    
+
     setProcessingUsers((prev) => new Set(prev).add(userId));
     try {
       const response = await verifyIdProof(userId, "Uploaded");
@@ -320,7 +320,7 @@ export default function AdminVerifiedIdUsers() {
               </div>
               <div className="modal-body text-center">
                 {selectedProof?.endsWith(".pdf") ? (
-                   <iframe src={selectedProof} width="100%" height="500px" title="PDF ID"></iframe>
+                  <iframe src={selectedProof} width="100%" height="500px" title="PDF ID"></iframe>
                 ) : (
                   <img src={selectedProof} alt="ID Proof" className="img-fluid" />
                 )}
