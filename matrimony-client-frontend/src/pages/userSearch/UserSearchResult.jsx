@@ -19,7 +19,7 @@ import { useProfileNavigation } from "../../hooks/useProfileNavigation";
 
 const UserSearchResult = () => {
   const location = useLocation();
-  const { navigateToProfile, renderLimitPopup } = useProfileNavigation();
+  const { navigateToProfile, renderLimitPopup, executeIfUnrestricted } = useProfileNavigation();
   const state = location.state;
   const navigate = useNavigate();
 

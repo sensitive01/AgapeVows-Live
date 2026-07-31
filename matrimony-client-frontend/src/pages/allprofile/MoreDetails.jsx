@@ -109,6 +109,7 @@ const MoreDetails = () => {
   const [zoomImage, setZoomImage] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [loadingUser, setLoadingUser] = useState(true);
+  const [loadingProfile, setLoadingProfile] = useState(true);
   const [isContactLoading, setIsContactLoading] = useState(false);
   const [showContact, setShowContact] = useState(false);
   const [showUpgradePopup, setShowUpgradePopup] = useState(false);
@@ -287,6 +288,7 @@ const MoreDetails = () => {
     const fetchProfile = async () => {
       if (!profileId) return;
       try {
+        setLoadingProfile(true);
         const response = await getTheProfieMoreDetails(profileId, currentUserId);
         if (response.status === 200) {
           setUserInfo(response.data.data);
@@ -304,6 +306,8 @@ const MoreDetails = () => {
         } else {
           console.error("Error fetching profile details:", err);
         }
+      } finally {
+        setLoadingProfile(false);
       }
     };
     fetchProfile();
@@ -330,7 +334,21 @@ const MoreDetails = () => {
     }, 50);
   };
 
-  if (loadingUser) return null;
+  if (loadingUser || loadingProfile) {
+    return (
+      <div className="profile-page">
+        <div className="fixed-header">
+          <LayoutComponent />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+          <div className="spinner-border" role="status" style={{ color: '#4b1e7a' }}>
+            <span className="sr-only">Loading...</span>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   const handleContactClick = async () => {
     if (!isPaidUser) {

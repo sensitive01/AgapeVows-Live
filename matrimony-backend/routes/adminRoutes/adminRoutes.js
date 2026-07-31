@@ -124,6 +124,11 @@ adminRoutes.put(
   adminController.verifyMobile
 );
 
+adminRoutes.put(
+  "/toggle-restriction/:userId",
+  adminController.toggleUserRestriction
+);
+
 adminRoutes.get("/contact-update-requests", adminController.getContactUpdateRequests);
 adminRoutes.put("/approve-contact-update/:userId", adminController.approveContactUpdate);
 adminRoutes.put("/reject-contact-update/:userId", adminController.rejectContactUpdate);

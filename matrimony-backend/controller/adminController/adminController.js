@@ -127,6 +127,8 @@ const getAllUsersData = async (req, res) => {
           motherTongue: 1,
           profileStatus: 1,
           deactivatedAt: 1,
+          idVerificationStatus: 1,
+          paymentDetails: 1,
         }
       )
       .sort({ createdAt: -1 });
@@ -452,6 +454,7 @@ const verifyIdProof = async (req, res) => {
     const updateData = { idVerificationStatus: status };
     if (status === "Verified") {
       updateData.idVerifiedAt = new Date();
+      updateData.isRestricted = false;
     } else if (status === "Pending" || status === "Uploaded") {
       // Clear the verified date if undoing
       updateData.idVerifiedAt = null;
@@ -525,6 +528,7 @@ const getUnverifiedIdProofUsers = async (req, res) => {
           idVerificationStatus: 1,
           createdAt: 1,
           agwid: 1,
+          isRestricted: 1,
         },
       },
     ]);
@@ -571,6 +575,8 @@ const getVerifiedIdProofUsers = async (req, res) => {
           createdAt: 1,
           idVerifiedAt: 1,
           agwid: 1,
+          isRestricted: 1,
+          paymentDetails: 1,
         },
       },
     ]);
@@ -1285,6 +1291,35 @@ const uploadUserImagesAdmin = async (req, res) => {
   }
 };
 
+/* =========================
+   TOGGLE RESTRICTION
+========================== */
+const toggleUserRestriction = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { isRestricted } = req.body;
+
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      { isRestricted },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User restriction updated successfully",
+      data: updatedUser,
+    });
+  } catch (err) {
+    console.error("Error toggling user restriction:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 module.exports = {
   getPaidUsersData,
   registerAdmin,
@@ -1310,6 +1345,7 @@ module.exports = {
   approveContactUpdate,
   rejectContactUpdate,
   getVerifiedIdProofUsers,
+  toggleUserRestriction,
   upgradeUserPlan,
   getAdminProfile,
   createSubadmin,

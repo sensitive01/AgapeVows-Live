@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
-import { getUnverifiedIdUsers, verifyIdProof, deleteUserById } from "../../api/service/adminServices";
+import { getUnverifiedIdUsers, verifyIdProof, deleteUserById, toggleUserRestrictionAPI } from "../../api/service/adminServices";
 import { useNavigate, Link } from "react-router-dom";
 import { confirmAction, showAlert } from "../../utils/alertService";
 import CustomTable from "./common/CustomTable";
@@ -33,18 +33,54 @@ export default function AdminUnverifiedIdUsers() {
   }, []);
 
   useEffect(() => {
-    let filtered = [...users];
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (user) =>
-          user.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.userEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.userMobile?.includes(searchTerm) || (user.agwid || "").toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
+    const filtered = users.filter((user) =>
+      user.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.userEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.agwid?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
     setFilteredUsers(filtered);
   }, [searchTerm, users]);
+
+  const handleToggleRestriction = async (id, isRestricted) => {
+    const action = isRestricted ? "restrict" : "unrestrict";
+    const confirmed = await confirmAction({
+      title: `${isRestricted ? "Restrict" : "Unrestrict"} Profile?`,
+      text: `Are you sure you want to ${action} this user?`,
+      icon: "warning",
+      confirmButtonText: `Yes, ${action}`,
+    });
+
+    if (!confirmed) return;
+
+    setProcessingUsers(prev => new Set(prev).add(id));
+    try {
+      const response = await toggleUserRestrictionAPI(id, isRestricted);
+      if (response.status === 200) {
+        showAlert({
+          title: "Success",
+          text: `User profile ${action}ed successfully!`,
+          icon: "success",
+        });
+
+        setUsers(users.map(user =>
+          user._id === id ? { ...user, isRestricted } : user
+        ));
+      }
+    } catch (error) {
+      console.error("Error toggling restriction:", error);
+      showAlert({
+        title: "Error",
+        text: "Error updating status.",
+        icon: "error",
+      });
+    } finally {
+      setProcessingUsers(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(id);
+        return newSet;
+      });
+    }
+  };
 
   const columns = [
     {
@@ -84,7 +120,7 @@ export default function AdminUnverifiedIdUsers() {
       width: "90px",
       cell: row => (
         <span className={`badge text-white ${row.idVerificationStatus === 'Uploaded' ? 'bg-info' :
-            row.idVerificationStatus === 'Rejected' ? 'bg-danger' : 'bg-warning'
+          row.idVerificationStatus === 'Rejected' ? 'bg-danger' : 'bg-warning'
           }`}>
           {row.idVerificationStatus || 'Pending'}
         </span>
@@ -141,35 +177,79 @@ export default function AdminUnverifiedIdUsers() {
       center: true,
     },
     {
-      name: "Actions",
-      width: "140px",
+      name: "Profile",
+      width: "100px",
       cell: row => (
-        <div className="d-flex flex-column gap-2 align-items-center">
-          <div className="d-flex justify-content-center gap-2 w-100">
-            <button
-              className="btn btn-sm btn-success text-white w-50"
-              disabled={processingUsers.has(row._id)}
-              onClick={() => handleVerifyId(row._id, "Verified")}
-            >
-              {processingUsers.has(row._id) ? "..." : "Verify"}
-            </button>
-            <button
-              className="btn btn-sm btn-danger text-white w-50"
-              disabled={processingUsers.has(row._id)}
-              onClick={() => handleVerifyId(row._id, "Rejected")}
-            >
-              {processingUsers.has(row._id) ? "..." : "Reject"}
-            </button>
-          </div>
-          <Link
-            to={`/admin/new-user/${row._id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-sm btn-outline-primary px-2 py-1 w-100"
-            style={{ fontSize: "12px" }}
+        <Link
+          to={`/admin/new-user/${row._id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-sm btn-outline-primary"
+          title="View Profile"
+        >
+          <i className="fa fa-user me-1"></i> View
+        </Link>
+      ),
+      center: true,
+    },
+    {
+      name: "Actions",
+      width: "100px",
+      allowOverflow: true,
+      cell: row => (
+        <div className="dropdown text-center">
+          <button
+            className="btn btn-sm btn-outline-secondary"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            style={{ borderRadius: "50%", width: "35px", height: "35px", padding: 0, display: "inline-flex", alignItems: "center", justifyContent: "center" }}
           >
-            <i className="fa fa-user me-1"></i> Profile
-          </Link>
+            <i className="fa fa-ellipsis-v"></i>
+          </button>
+          <ul className="dropdown-menu dropdown-menu-end shadow-sm" style={{ zIndex: 9999 }}>
+            <li>
+              <a
+                className="dropdown-item text-success"
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!processingUsers.has(row._id)) handleVerifyId(row._id, "Verified");
+                }}
+                style={{ opacity: processingUsers.has(row._id) ? 0.5 : 1, cursor: processingUsers.has(row._id) ? "not-allowed" : "pointer" }}
+              >
+                <i className="fa fa-check-circle me-2" style={{ border: "none", width: "auto", height: "auto", padding: 0, borderRadius: 0, lineHeight: "inherit" }}></i>
+                {processingUsers.has(row._id) ? "Processing..." : "Verify"}
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item text-danger"
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!processingUsers.has(row._id)) handleVerifyId(row._id, "Rejected");
+                }}
+                style={{ opacity: processingUsers.has(row._id) ? 0.5 : 1, cursor: processingUsers.has(row._id) ? "not-allowed" : "pointer" }}
+              >
+                <i className="fa fa-times-circle me-2" style={{ border: "none", width: "auto", height: "auto", padding: 0, borderRadius: 0, lineHeight: "inherit" }}></i>
+                {processingUsers.has(row._id) ? "Processing..." : "Reject"}
+              </a>
+            </li>
+            <li>
+              <a
+                className={`dropdown-item ${row.isRestricted ? 'text-success' : 'text-warning'}`}
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleToggleRestriction(row._id, !row.isRestricted);
+                }}
+              >
+                <i className={`fa ${row.isRestricted ? 'fa-unlock' : 'fa-lock'} me-2`} style={{ border: "none", width: "auto", height: "auto", padding: 0, borderRadius: 0, lineHeight: "inherit" }}></i>
+                {row.isRestricted ? 'Unrestrict' : 'Restrict'}
+              </a>
+            </li>
+          </ul>
         </div>
       ),
       center: true,

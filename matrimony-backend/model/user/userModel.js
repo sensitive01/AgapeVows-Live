@@ -290,6 +290,8 @@ const userSchema = new mongoose.Schema(
          default: "Pending",
       },
 
+      isRestricted: { type: Boolean, default: true },
+
       /* =========================
          MEDIA
       ========================== */

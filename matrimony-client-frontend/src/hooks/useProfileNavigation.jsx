@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { checkProfileViewLimit, getUserProfile } from '../api/axiosService/userAuthService';
 import UpgradePopup from '../components/common/UpgradePopup';
+import RestrictionPopup from '../components/common/RestrictionPopup';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 
@@ -9,13 +10,35 @@ export const useProfileNavigation = () => {
     const navigate = useNavigate();
     const [showUpgradePopup, setShowUpgradePopup] = useState(false);
     const [upgradePopupType, setUpgradePopupType] = useState('limit');
+    const [showRestrictionPopup, setShowRestrictionPopup] = useState(false);
     const [isChecking, setIsChecking] = useState(false);
+
+    const executeIfUnrestricted = async (action) => {
+        if (isChecking) return;
+        setIsChecking(true);
+        try {
+            const viewerId = localStorage.getItem("userId");
+            if (viewerId) {
+                const userRes = await getUserProfile(viewerId);
+                const userData = userRes?.data?.data || userRes?.data;
+                if (userData?.isRestricted) {
+                    setShowRestrictionPopup(true);
+                    return;
+                }
+            }
+            action();
+        } catch (err) {
+            console.error("Error checking restriction status:", err);
+            action(); // Fallback to allow action on error
+        } finally {
+            setIsChecking(false);
+        }
+    };
 
     const navigateToProfile = async (profileId, viewerId, e) => {
         if (e && e.preventDefault) {
             e.preventDefault();
         }
-
 
         if (isChecking) return; // Prevent double clicks
 
@@ -27,6 +50,13 @@ export const useProfileNavigation = () => {
                 try {
                     const userRes = await getUserProfile(viewerId);
                     const userData = userRes?.data?.data || userRes?.data;
+                    
+                    if (userData?.isRestricted) {
+                        setShowRestrictionPopup(true);
+                        setIsChecking(false);
+                        return;
+                    }
+
                     if (userData?.profileVisibility === 'Hidden') {
                         Swal.fire({
                             title: "Profile Hidden",
@@ -80,6 +110,9 @@ export const useProfileNavigation = () => {
     };
 
     const renderLimitPopup = () => {
+        if (showRestrictionPopup) {
+            return <RestrictionPopup onClose={() => setShowRestrictionPopup(false)} />;
+        }
         if (!showUpgradePopup) return null;
         return (
             <UpgradePopup
@@ -89,5 +122,5 @@ export const useProfileNavigation = () => {
         );
     };
 
-    return { navigateToProfile, renderLimitPopup };
+    return { navigateToProfile, renderLimitPopup, executeIfUnrestricted };
 };

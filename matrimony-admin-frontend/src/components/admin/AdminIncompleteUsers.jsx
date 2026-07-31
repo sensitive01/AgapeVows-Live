@@ -58,8 +58,7 @@ const AdminIncompleteUsers = () => {
               if (user.profileStatus === "Deactivated" || user.deactivatedAt) {
                 return false;
               }
-              // A profile is incomplete if the flag is false, or if key mandatory fields are missing
-              return user.isProfileCompleted === false || !user.gender || !user.dateOfBirth || !user.maritalStatus || !user.motherTongue;
+              return !user.gender || !user.dateOfBirth || !user.maritalStatus || !user.motherTongue;
             })
             .map((user) => ({
               ...user,
@@ -234,14 +233,12 @@ const AdminIncompleteUsers = () => {
     }
   };
 
-
-
   const columns = [
     {
       name: "S.NO",
+      width: "120px",
       selector: (row, index) => index + 1,
       sortable: false,
-      width: "80px",
       center: true,
     },
     {
@@ -283,6 +280,7 @@ const AdminIncompleteUsers = () => {
     },
     {
       name: "AV ID",
+      width: "100px",
       selector: row => row.agwid || "N/A",
       sortable: true,
       cell: row => <span className="fw-bold text-primary">{row.agwid || "N/A"}</span>,
@@ -295,6 +293,7 @@ const AdminIncompleteUsers = () => {
     },
     {
       name: "CITY",
+      width: "120px",
       selector: row => row.city,
       sortable: true,
       hide: "lg",
@@ -308,6 +307,7 @@ const AdminIncompleteUsers = () => {
     },
     {
       name: "VIEW PROFILE",
+      width: "120px",
       cell: row => (
         <button
           className="btn btn-sm btn-outline-primary rounded-pill px-2 py-1"
@@ -326,6 +326,7 @@ const AdminIncompleteUsers = () => {
     },
     {
       name: "MORE",
+      width: "60px",
       cell: (row, index) => (
         <div className={`dropdown ${index >= 2 ? "dropup" : ""}`}>
           <button

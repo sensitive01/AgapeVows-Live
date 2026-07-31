@@ -200,6 +200,7 @@ const AdminDeletedUsers = () => {
     },
     {
       name: "CITY",
+      width: "120px",
       selector: row => row.city || "N/A",
       sortable: true,
       hide: "lg",
@@ -221,6 +222,7 @@ const AdminDeletedUsers = () => {
     },
     {
       name: "MORE",
+      width: "200px",
       cell: row => (
         <div className="d-flex gap-2 justify-content-center">
           <button
@@ -241,7 +243,6 @@ const AdminDeletedUsers = () => {
       ),
       center: true,
       ignoreRowClick: true,
-      minWidth: "200px",
     }
   ];
 

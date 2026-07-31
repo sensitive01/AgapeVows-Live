@@ -615,6 +615,52 @@ img {
 .main-head .breadcrumb * {
   font-size: 13px;
 }
+.custom-scroll-container {
+  overflow-x: auto !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  scrollbar-width: auto;
+  scrollbar-color: #007ec4 #f1f1f1;
+}
+
+.custom-scroll-container::-webkit-scrollbar {
+  height: 12px !important;
+  display: block !important;
+}
+
+.custom-scroll-container::-webkit-scrollbar-track {
+  background: #f1f1f1 !important; 
+  border-radius: 10px !important;
+}
+
+.custom-scroll-container::-webkit-scrollbar-thumb {
+  background: #007ec4 !important; 
+  border-radius: 10px !important;
+  border: 2px solid #f1f1f1 !important;
+}
+
+.custom-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #005a8d !important; 
+}
+
+/* Make resize handles highly visible */
+th[data-colname] {
+  position: relative;
+}
+
+th[data-colname]::after {
+  content: '⋮';
+  position: absolute;
+  right: 4px;
+  bottom: 50%;
+  transform: translateY(50%);
+  font-size: 16px;
+  color: #999;
+  pointer-events: none;
+  font-weight: bold;
+}
+
 .box-com {
   position: relative;
   word-wrap: break-word;
@@ -624,6 +670,7 @@ img {
   padding: 30px;
   border: 1px solid #f3f3f3;
   margin: 0 0 20px 0;
+  max-width: 100%;
 }
 .box-drk {
 }
@@ -2378,4 +2425,15 @@ a.ui-button:active,
   min-height: 250px !important;
   position: relative !important;
   z-index: 9 !important;
+}
+
+/* Fix for dropdowns being hidden behind subsequent rows */
+.rdt_TableRow:hover,
+.rdt_TableRow:has(.dropdown-menu.show),
+.rdt_TableRow:has(.dropdown.show),
+tr:hover,
+tr:has(.dropdown-menu.show),
+tr:has(.dropdown.show) {
+  z-index: 9999 !important;
+  position: relative !important;
 }

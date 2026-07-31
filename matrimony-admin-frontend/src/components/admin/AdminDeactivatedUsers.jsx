@@ -149,6 +149,7 @@ const AdminDeactivatedUsers = () => {
     },
     {
       name: "AV ID",
+      width: "100px",
       selector: row => row.agwid || "N/A",
       sortable: true,
       cell: row => <span className="fw-bold text-primary">{row.agwid || "N/A"}</span>,
@@ -156,6 +157,7 @@ const AdminDeactivatedUsers = () => {
     },
     {
       name: "CREATED AT",
+      width: "100px",
       selector: row => row.createdAt ? new Date(row.createdAt).getTime() : 0,
       sortable: true,
       format: row => row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "N/A",
@@ -163,6 +165,7 @@ const AdminDeactivatedUsers = () => {
     },
     {
       name: "REASON",
+      minWidth: "200px",
       selector: row => row.deactivationReason || "No reason provided",
       sortable: true,
       cell: row => (
@@ -173,12 +176,14 @@ const AdminDeactivatedUsers = () => {
     },
     {
       name: "DEACTIVATED ON",
+      width: "140px",
       selector: row => row.deactivatedAt ? new Date(row.deactivatedAt).getTime() : 0,
       sortable: true,
       format: row => row.deactivatedAt ? new Date(row.deactivatedAt).toLocaleDateString() : "N/A",
     },
     {
       name: "ACTION",
+      width: "180px",
       cell: row => (
         <div className="d-flex gap-2">
           <button

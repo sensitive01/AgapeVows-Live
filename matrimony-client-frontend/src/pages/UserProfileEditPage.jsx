@@ -1918,29 +1918,43 @@ const UserProfileEditPage = () => {
     e.preventDefault();
 
     const missingFields = [];
-    if (!formData.profileCreatedFor) missingFields.push({ label: "Profile Created By", name: "profileCreatedFor" });
-    if (!formData.gender) missingFields.push({ label: "Gender", name: "gender" });
-    if (!formData.dateOfBirth) missingFields.push({ label: "Date of Birth", name: "dateOfBirth" });
-    if (!formData.age) missingFields.push({ label: "Age", name: "age" });
-    if (!formData.bodyType) missingFields.push({ label: "Body Type", name: "bodyType" });
-    if (!formData.physicalStatus) missingFields.push({ label: "Physical Status", name: "physicalStatus" });
-    if (!formData.complexion) missingFields.push({ label: "Complexion", name: "complexion" });
-    if (!formData.height) missingFields.push({ label: "Height", name: "height" });
-    if (!formData.weight) missingFields.push({ label: "Weight", name: "weight" });
-    if (!formData.motherTongue) missingFields.push({ label: "Mother Tongue", name: "motherTongue" });
-    if (!formData.caste) missingFields.push({ label: "Caste", name: "caste" });
-    if (!formData.maritalStatus) missingFields.push({ label: "Marital Status", name: "maritalStatus" });
-    if (!formData.eatingHabits) missingFields.push({ label: "Eating Habits", name: "eatingHabits" });
-    if (!formData.drinkingHabits) missingFields.push({ label: "Drinking Habits", name: "drinkingHabits" });
-    if (!formData.smokingHabits) missingFields.push({ label: "Smoking Habits", name: "smokingHabits" });
+    const isInvalid = (val) => !val || val === "Other" || val === "Others";
 
-    if (!formData.fathersName) missingFields.push({ label: "Father's Name", name: "fathersName" });
-    if (!formData.mothersName) missingFields.push({ label: "Mother's Name", name: "mothersName" });
-    if (!formData.denomination) missingFields.push({ label: "Denomination", name: "denomination" });
-    if (!formData.contactPersonName) missingFields.push({ label: "Contact Person Name", name: "contactPersonName" });
-    if (!formData.relationship) missingFields.push({ label: "Relationship with Contact Person", name: "relationship" });
-    if (!formData.contactEmail) missingFields.push({ label: "Contact Email", name: "contactEmail" });
-    if (!formData.contactPhone) missingFields.push({ label: "Contact Number", name: "contactPhone" });
+    if (isInvalid(formData.profileCreatedFor)) missingFields.push({ label: "Profile Created By", name: "profileCreatedFor" });
+    if (isInvalid(formData.gender)) missingFields.push({ label: "Gender", name: "gender" });
+    if (isInvalid(formData.dateOfBirth)) missingFields.push({ label: "Date of Birth", name: "dateOfBirth" });
+    if (isInvalid(formData.age)) missingFields.push({ label: "Age", name: "age" });
+    if (isInvalid(formData.bodyType)) missingFields.push({ label: "Body Type", name: "bodyType" });
+    if (isInvalid(formData.physicalStatus)) missingFields.push({ label: "Physical Status", name: "physicalStatus" });
+    if (isInvalid(formData.complexion)) missingFields.push({ label: "Complexion", name: "complexion" });
+    if (isInvalid(formData.height)) missingFields.push({ label: "Height", name: "height" });
+    if (isInvalid(formData.weight)) missingFields.push({ label: "Weight", name: "weight" });
+    if (isInvalid(formData.motherTongue)) missingFields.push({ label: "Mother Tongue", name: "motherTongue" });
+    if (isInvalid(formData.caste)) missingFields.push({ label: "Caste", name: "caste" });
+    if (isInvalid(formData.maritalStatus)) missingFields.push({ label: "Marital Status", name: "maritalStatus" });
+    if (isInvalid(formData.eatingHabits)) missingFields.push({ label: "Eating Habits", name: "eatingHabits" });
+    if (isInvalid(formData.drinkingHabits)) missingFields.push({ label: "Drinking Habits", name: "drinkingHabits" });
+    if (isInvalid(formData.smokingHabits)) missingFields.push({ label: "Smoking Habits", name: "smokingHabits" });
+
+    if (isInvalid(formData.fathersName)) missingFields.push({ label: "Father's Name", name: "fathersName" });
+    if (isInvalid(formData.mothersName)) missingFields.push({ label: "Mother's Name", name: "mothersName" });
+    if (isInvalid(formData.denomination)) missingFields.push({ label: "Denomination", name: "denomination" });
+    if (isInvalid(formData.contactPersonName)) missingFields.push({ label: "Contact Person Name", name: "contactPersonName" });
+    if (isInvalid(formData.relationship)) missingFields.push({ label: "Relationship with Contact Person", name: "relationship" });
+    if (isInvalid(formData.contactEmail)) missingFields.push({ label: "Contact Email", name: "contactEmail" });
+    if (isInvalid(formData.contactPhone)) missingFields.push({ label: "Contact Number", name: "contactPhone" });
+    
+    // Also enforce "Other" specification for non-mandatory fields if they selected "Other"
+    if (formData.churchActivity === "Other" || formData.churchActivity === "Others") missingFields.push({ label: "Church Activity (Please specify)", name: "churchActivity" });
+    if (formData.education === "Other" || formData.education === "Others") missingFields.push({ label: "Highest Education (Please specify)", name: "education" });
+    if (formData.additionalEducation === "Other" || formData.additionalEducation === "Others") missingFields.push({ label: "Additional Education (Please specify)", name: "additionalEducation" });
+    if (formData.employmentType === "Other" || formData.employmentType === "Others") missingFields.push({ label: "Employment Type (Please specify)", name: "employmentType" });
+    if (formData.occupation === "Other" || formData.occupation === "Others") missingFields.push({ label: "Occupation (Please specify)", name: "occupation" });
+    if (formData.fathersOccupation === "Other" || formData.fathersOccupation === "Others") missingFields.push({ label: "Father's Occupation (Please specify)", name: "fathersOccupation" });
+    if (formData.fathersProfession === "Other" || formData.fathersProfession === "Others") missingFields.push({ label: "Father's Profession (Please specify)", name: "fathersProfession" });
+    if (formData.mothersOccupation === "Other" || formData.mothersOccupation === "Others") missingFields.push({ label: "Mother's Occupation (Please specify)", name: "mothersOccupation" });
+    if (formData.mothersProfession === "Other" || formData.mothersProfession === "Others") missingFields.push({ label: "Mother's Profession (Please specify)", name: "mothersProfession" });
+
     if (!formData.currentDoorNo || !formData.currentLocality || !formData.currentCountry || !formData.currentState || !formData.currentDistrict) {
       missingFields.push({ label: "Current Address", name: "currentCountry" });
     }

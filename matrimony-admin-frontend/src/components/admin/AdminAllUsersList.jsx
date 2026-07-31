@@ -232,7 +232,7 @@ const AdminAllUsersList = () => {
       name: "S.NO",
       selector: (row, index) => index + 1,
       sortable: false,
-      width: "80px",
+      width: "45px",
       center: true,
     },
     {
@@ -264,8 +264,8 @@ const AdminAllUsersList = () => {
           <div style={{ minWidth: 0 }}>
             <h6 className="mb-0 fw-bold text-truncate" style={{ maxWidth: '250px' }}>{row.userName}</h6>
             <small className="text-muted text-truncate d-block" style={{ maxWidth: '250px' }}>{row.userEmail}</small>
+            <small className="text-muted text-truncate d-block" style={{ maxWidth: '250px' }}>{formatPhoneNumber(row.userMobile)}</small>
             <div className="d-md-none">
-              <small className="text-muted d-block text-truncate" style={{ maxWidth: '250px' }}>{formatPhoneNumber(row.userMobile)}</small>
               <small className="text-muted d-lg-none text-truncate" style={{ maxWidth: '250px' }}>{row.city}</small>
             </div>
           </div>
@@ -274,31 +274,58 @@ const AdminAllUsersList = () => {
     },
     {
       name: "AV ID",
-      selector: row => row.agwid || "N/A",
+      width: "100px",
+      selector: row => row.agwid || "N/A", 
       sortable: true,
       cell: row => <span className="fw-bold text-primary">{row.agwid || "N/A"}</span>,
     },
     {
-      name: "PHONE", width: "140px",
-      selector: row => formatPhoneNumber(row.userMobile),
-      sortable: true,
-      hide: "md",
-    },
-    {
       name: "CITY",
+      width: "120px",
       selector: row => row.city,
       sortable: true,
       hide: "lg",
     },
     {
-      name: "CREATED AT", width: "135px",
+      name: "CREATED AT", width: "100px",
       selector: row => row.createdAt ? new Date(row.createdAt).getTime() : 0,
       sortable: true,
       format: row => row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "N/A",
       center: true,
     },
     {
+      name: "PLAN",
+      width: "140px",
+      cell: row => {
+        let planName = "No plan";
+        if (row.paymentDetails && row.paymentDetails.length > 0) {
+          const activePlans = row.paymentDetails.filter(p => new Date(p.subscriptionValidTo) > new Date() && p.subscriptionStatus === "Active");
+          if (activePlans.length > 0) {
+            activePlans.sort((a, b) => new Date(b.subscriptionValidFrom) - new Date(a.subscriptionValidFrom));
+            planName = activePlans[0].subscriptionType || "Paid";
+          }
+        }
+        return <span className={`badge ${planName === 'No plan' ? 'bg-secondary text-white' : 'bg-success text-white'}`} style={{ fontSize: '12px', padding: '5px 8px', letterSpacing: '0.5px' }}>{planName}</span>;
+      },
+      center: true,
+    },
+    {
+      name: "VERIFICATION",
+      width: "130px",
+      cell: row => {
+        const isVerified = row.idVerificationStatus === "Verified";
+        return (
+          <span className={`badge ${isVerified ? 'bg-primary text-white' : 'bg-warning text-dark'}`} style={{ fontSize: '12px', padding: '5px 8px' }}>
+            <i className={`fa ${isVerified ? 'fa-check-circle' : 'fa-exclamation-circle'} me-1`} style={{ color: 'inherit' }}></i>
+            {isVerified ? 'Verified' : 'Unverified'}
+          </span>
+        );
+      },
+      center: true,
+    },
+    {
       name: "VIEW PROFILE",
+      width: "130px",
       cell: row => (
         <button
           className="btn btn-sm btn-outline-primary rounded-pill px-2 py-1"
@@ -317,6 +344,7 @@ const AdminAllUsersList = () => {
     },
     {
       name: "MORE",
+      width: "80px",
       cell: (row, index) => (
         <div className={`dropdown ${index >= 2 ? "dropup" : ""}`}>
           <button
@@ -499,108 +527,26 @@ const AdminAllUsersList = () => {
                 </div>
               </div>
             ) : (
-              <div>
-                <CustomTable itemsPerPage={10}
-                  columns={columns}
-                  data={filteredUsers}
-                  pagination
-                  paginationRowsPerPageOptions={[5, 10, 15, 20]}
-                  paginationPerPage={5}
-                  highlightOnHover
-                  customStyles={customStyles}
-                  noDataComponent={
-                    <div className="text-center py-5">
-                      <i className="fa fa-search fa-3x text-muted mb-3"></i>
-                      <h5 className="text-muted">No users found</h5>
-                      <p className="text-muted">Try adjusting your search or filter criteria</p>
-                    </div>
-                  }
-                />
-              </div>
+              <CustomTable itemsPerPage={10}
+                columns={columns}
+                data={filteredUsers}
+                pagination
+                paginationRowsPerPageOptions={[5, 10, 15, 20]}
+                paginationPerPage={5}
+                highlightOnHover
+                customStyles={customStyles}
+                noDataComponent={
+                  <div className="text-center py-5">
+                    <i className="fa fa-search fa-3x text-muted mb-3"></i>
+                    <h5 className="text-muted">No users found</h5>
+                    <p className="text-muted">Try adjusting your search or filter criteria</p>
+                  </div>
+                }
+              />
             )}
           </div>
         </div>
       </div>
-
-      <style>{`
-        .cursor-pointer {
-          cursor: pointer;
-        }
-
-        .table th {
-          font-weight: 600;
-          font-size: 13px;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          color: #6c757d;
-          background-color: #f8f9fa;
-          padding: 15px;
-        }
-
-        .table td {
-          font-size: 14px;
-          vertical-align: middle;
-          padding: 15px;
-        }
-
-        .table {
-          border: none;
-        }
-
-        .dropdown-menu {
-          box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-          border: 1px solid rgba(0, 0, 0, 0.15);
-          border-radius: 0.375rem;
-        }
-
-        .dropdown-item:hover {
-          background-color: #f8f9fa;
-        }
-
-        .table-responsive::-webkit-scrollbar {
-          width: 6px;
-        }
-
-        .table-responsive::-webkit-scrollbar-track {
-          background: #f1f1f1;
-          border-radius: 3px;
-        }
-
-        .table-responsive::-webkit-scrollbar-thumb {
-          background: #c1c1c1;
-          border-radius: 3px;
-        }
-
-        .table-responsive::-webkit-scrollbar-thumb:hover {
-          background: #a8a8a8;
-        }
-
-        .rdt_TableRow:focus-within {
-          z-index: 11 !important;
-          position: relative;
-        }
-
-        .badge {
-          font-size: 11px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          padding: 4px 8px;
-        }
-
-        @media (max-width: 768px) {
-          .table th,
-          .table td {
-            padding: 8px;
-            font-size: 12px;
-          }
-
-          .badge {
-            font-size: 10px;
-            padding: 2px 6px;
-          }
-        }
-      `}</style>
     </NewLayout>
   );
 };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import NewLayout from "./layout/NewLayout";
-import { getVerifiedIdUsers, verifyIdProof } from "../../api/service/adminServices";
+import { getVerifiedIdUsers, verifyIdProof, toggleUserRestrictionAPI } from "../../api/service/adminServices";
 import { useNavigate, Link } from "react-router-dom";
 import { confirmAction, showAlert } from "../../utils/alertService";
 import CustomTable from "./common/CustomTable";
@@ -47,6 +47,40 @@ export default function AdminVerifiedIdUsers() {
     setFilteredUsers(filtered);
   }, [searchTerm, users]);
 
+  const handleToggleRestriction = async (id, isRestricted) => {
+    const action = isRestricted ? "restrict" : "unrestrict";
+    const confirmed = await confirmAction({
+      title: `${isRestricted ? "Restrict" : "Unrestrict"} Profile?`,
+      text: `Are you sure you want to ${action} this user?`,
+      icon: "warning",
+      confirmButtonText: `Yes, ${action}`,
+    });
+
+    if (!confirmed) return;
+
+    try {
+      const response = await toggleUserRestrictionAPI(id, isRestricted);
+      if (response.status === 200) {
+        showAlert({
+          title: "Success",
+          text: `User profile ${action}ed successfully!`,
+          icon: "success",
+        });
+        
+        setUsers(users.map(user => 
+          user._id === id ? { ...user, isRestricted } : user
+        ));
+      }
+    } catch (error) {
+      console.error("Error toggling restriction:", error);
+      showAlert({
+        title: "Error",
+        text: "Error updating status.",
+        icon: "error",
+      });
+    }
+  };
+
   const columns = [
     {
       name: "S.No",
@@ -59,7 +93,6 @@ export default function AdminVerifiedIdUsers() {
       name: "User Details",
       selector: row => row.userName,
       sortable: true,
-      width: "320px",
       minWidth: "280px",
       wrap: true,
       cell: row => (
@@ -141,26 +174,94 @@ export default function AdminVerifiedIdUsers() {
       center: true,
     },
     {
-      name: "Actions",
-      width: "120px",
+      name: "Plan Name",
+      width: "140px",
+      cell: row => {
+        let planName = "No plan";
+        if (row.paymentDetails && row.paymentDetails.length > 0) {
+          const activePlans = row.paymentDetails.filter(p => new Date(p.subscriptionValidTo) > new Date() && p.subscriptionStatus === "Active");
+          if (activePlans.length > 0) {
+             activePlans.sort((a,b) => new Date(b.subscriptionValidFrom) - new Date(a.subscriptionValidFrom));
+             planName = activePlans[0].subscriptionType || "Paid";
+          }
+        }
+        return <span className={`badge ${planName === 'No plan' ? 'bg-secondary text-white' : 'bg-success text-white'}`} style={{ fontSize: '13px', padding: '6px 10px', letterSpacing: '0.5px' }}>{planName}</span>;
+      },
+      center: true,
+    },
+    {
+      name: "Profile",
+      width: "100px",
       cell: row => (
-        <div className="d-flex flex-column gap-2 align-items-center">
+        <Link
+          to={`/admin/new-user/${row._id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-sm btn-outline-primary"
+          title="View Profile"
+        >
+          <i className="fa fa-user me-1"></i> View
+        </Link>
+      ),
+      center: true,
+    },
+    {
+      name: "Actions",
+      width: "80px",
+      allowOverflow: true,
+      cell: row => (
+        <div className="dropdown text-center">
           <button
-            className="btn btn-sm btn-primary rounded-pill px-3 w-100 text-light"
-            disabled={processingUsers.has(row._id)}
-            onClick={() => handleUndoVerification(row._id)}
+            className="btn btn-sm btn-outline-secondary"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            style={{ borderRadius: "50%", width: "35px", height: "35px", padding: 0, display: "inline-flex", alignItems: "center", justifyContent: "center" }}
           >
-            {processingUsers.has(row._id) ? "..." : "Undo"}
+            <i className="fa fa-ellipsis-v"></i>
           </button>
-          <Link
-            to={`/admin/new-user/${row._id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-sm btn-outline-primary px-2 py-1 w-100"
-            style={{ fontSize: "12px" }}
-          >
-            <i className="fa fa-user me-1"></i> Profile
-          </Link>
+            <ul className="dropdown-menu dropdown-menu-end shadow-sm" style={{ zIndex: 9999 }}>
+              <li>
+                <a
+                  className="dropdown-item text-secondary"
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.open(`/admin/billing-info/${row._id}`, '_blank');
+                  }}
+                >
+                  <i className="fa fa-credit-card me-2" style={{ border: "none", width: "auto", height: "auto", padding: 0, borderRadius: 0, lineHeight: "inherit" }}></i>
+                  Billing Info
+                </a>
+              </li>
+              <li>
+                <a
+                  className={`dropdown-item ${row.isRestricted ? 'text-success' : 'text-warning'}`}
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleToggleRestriction(row._id, !row.isRestricted);
+                  }}
+                >
+                  <i className={`fa ${row.isRestricted ? 'fa-unlock' : 'fa-lock'} me-2`} style={{ border: "none", width: "auto", height: "auto", padding: 0, borderRadius: 0, lineHeight: "inherit" }}></i>
+                  {row.isRestricted ? 'Unrestrict' : 'Restrict'}
+                </a>
+              </li>
+              <li>
+                <a
+                  className="dropdown-item text-danger"
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if(!processingUsers.has(row._id)) handleUndoVerification(row._id);
+                  }}
+                  style={{ opacity: processingUsers.has(row._id) ? 0.5 : 1, cursor: processingUsers.has(row._id) ? "not-allowed" : "pointer" }}
+                >
+                  <i className="fa fa-undo me-2" style={{ border: "none", width: "auto", height: "auto", padding: 0, borderRadius: 0, lineHeight: "inherit" }}></i>
+                  {processingUsers.has(row._id) ? "Processing..." : "Undo Verification"}
+                </a>
+              </li>
+            </ul>
         </div>
       ),
       center: true,

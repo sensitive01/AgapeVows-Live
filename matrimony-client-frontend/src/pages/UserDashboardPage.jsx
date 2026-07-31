@@ -24,7 +24,7 @@ import { useProfileNavigation } from "../hooks/useProfileNavigation";
 
 const UserDashboardPage = () => {
   const navigate = useNavigate();
-  const { navigateToProfile, renderLimitPopup } = useProfileNavigation();
+  const { navigateToProfile, renderLimitPopup, executeIfUnrestricted } = useProfileNavigation();
   const userId = localStorage.getItem("userId");
   const [profileMatches, setProfileMatches] = useState([]);
   const [allProfiles, setAllProfiles] = useState([]);
@@ -219,6 +219,26 @@ const UserDashboardPage = () => {
     }
   };
 
+  const handleSendInterest = async (agwid) => {
+    executeIfUnrestricted(async () => {
+      try {
+        const response = await userSendInterestRequest(userId, agwid);
+        
+        if (response.status === 200) {
+          toast.success(response.data.message || "Interest request sent successfully", {
+            position: "top-center",
+            autoClose: 3000,
+          });
+        }
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Failed to send interest request", {
+          position: "top-center",
+          autoClose: 3000,
+        });
+      }
+    });
+  };
+
   const fetchProfileMatches = async () => {
     if (!userId) return;
     try {
@@ -298,10 +318,11 @@ const UserDashboardPage = () => {
   };
 
   const handleProfileClick = (targetUser, e) => {
-    if (!userId) {
-      navigate("/user/user-login");
-      return;
-    }
+    executeIfUnrestricted(() => {
+      if (!userId) {
+        navigate("/user/user-login");
+        return;
+      }
 
     const myActivePlan = userInfo?.paymentDetails?.find(
       (p) =>
@@ -353,7 +374,8 @@ const UserDashboardPage = () => {
       }
     }
 
-    navigateToProfile(targetUser._id, userId, e);
+      navigateToProfile(targetUser._id, userId, e);
+    });
   };
 
   // Initialize components on first load
@@ -584,7 +606,7 @@ const UserDashboardPage = () => {
                                   <div
                                     className="db-new-pro"
                                     style={{ position: "relative", paddingTop: "10px", cursor: "pointer" }}
-                                    onClick={(e) => handleProfileClick(profile, e)}
+                                    onClick={(e) => executeIfUnrestricted(() => handleProfileClick(profile, e))}
                                   >
                                     {/* ✅ Badges - TOP LEFT */}
                                     <style>

@@ -103,7 +103,7 @@ const AdminContactUpdateRequests = () => {
       name: "User Details",
       selector: row => row.userName,
       sortable: true,
-      minWidth: "150px",
+      minWidth: "250px",
       cell: row => (
         <div className="d-flex align-items-center">
           <img
@@ -127,7 +127,8 @@ const AdminContactUpdateRequests = () => {
     },
     {
       name: "Current Contact",
-      center: true, width:"280px",
+      center: true,
+      minWidth:"250px",
       cell: row => (
         <div>
           {row.requestedMobile && <div><strong>Mobile:</strong> {formatPhoneNumber(row.userMobile)}</div>}
@@ -136,7 +137,8 @@ const AdminContactUpdateRequests = () => {
       )
     },
     {
-      name: "Requested Update",width:"280px",
+      name: "Requested Update",
+      minWidth:"250px",
       center: true,
       cell: row => (
         <div className="text-primary fw-bold">

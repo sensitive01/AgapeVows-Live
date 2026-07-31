@@ -33,6 +33,7 @@
 
 .main-content {
   flex: 1;
+  min-width: 0;
   padding: 20px;
   background-color: #f9f9f9;
   min-height: calc(100vh - 80px);
@@ -47,11 +48,13 @@
 .main {
   display: flex;
   flex: 1;
+  min-width: 0;
 }
 
 .incon.row {
   display: flex;
   width: 100%;
+  min-width: 0;
 }
 
 .pan-lhs.ad-menu-main {

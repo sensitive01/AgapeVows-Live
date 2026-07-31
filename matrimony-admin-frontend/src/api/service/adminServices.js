@@ -130,6 +130,11 @@ export const getVerifiedIdUsers = async () => {
   return await adminInstance.get(`/get-verified-id-users`);
 };
 
+// Toggle User Restriction
+export const toggleUserRestrictionAPI = async (userId, isRestricted) => {
+  return await adminInstance.put(`/toggle-restriction/${userId}`, { isRestricted });
+};
+
 // Verify Mobile Phone
 export const verifyMobile = async (userId, isVerified) => {
   return await adminInstance.put(`/verify-mobile/${userId}`, { isVerified });
