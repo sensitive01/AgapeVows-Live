@@ -176,7 +176,7 @@ const UserSettingsPage = () => {
       if (response.status === 200) {
         toast.success("Your profile has been deactivated successfully.");
         localStorage.clear();
-        navigate("/user/user-login");
+        navigate("/sign-in");
       }
     } catch (error) {
       toast.error("Failed to deactivate profile.");

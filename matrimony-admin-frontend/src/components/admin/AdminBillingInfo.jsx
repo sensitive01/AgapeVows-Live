@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import NewLayout from "./layout/NewLayout";
 import CustomTable from "./common/CustomTable";
 import { getUserById, emailUserInvoice } from "../../api/service/adminServices";
-import profImages from "/assets/images/profiles/1.jpg";
+import defaultProfileImg from "/assets/images/defaultProfileImg.avif";
 
 const AdminBillingInfo = () => {
   const { id } = useParams();
@@ -11,6 +11,7 @@ const AdminBillingInfo = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [emailing, setEmailing] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
 
   const handleEmailInvoice = async () => {
     if (!user || !user.isAnySubscriptionTaken) {
@@ -38,7 +39,13 @@ const AdminBillingInfo = () => {
       try {
         const response = await getUserById(id);
         if (response.status === 200) {
-          setUser(response.data.data);
+          const userData = response.data.data;
+          setUser(userData);
+          if (userData && userData.paymentDetails && userData.paymentDetails.length > 0) {
+            // Pick the most recent active plan (last in the array) to match "Current Membership"
+            const activePlan = [...userData.paymentDetails].reverse().find(p => p.subscriptionStatus === "Active") || userData.paymentDetails[userData.paymentDetails.length - 1];
+            setSelectedPlan(activePlan);
+          }
         }
       } catch (error) {
         console.error("Error fetching user billing info:", error);
@@ -176,7 +183,7 @@ const AdminBillingInfo = () => {
                 <div className="p-4 bg-light rounded-4 h-100 text-center shadow-sm border border-white">
                   <div className="position-relative d-inline-block mb-3">
                     <img
-                      src={user.profileImage || profImages}
+                      src={user.profileImage || defaultProfileImg}
                       alt={user.userName}
                       className="rounded-circle border border-4 border-white shadow-sm"
                       style={{ width: "130px", height: "130px", objectFit: "cover" }}
@@ -211,6 +218,24 @@ const AdminBillingInfo = () => {
                       {user.isAnySubscriptionTaken ? (user.paymentDetails?.[user.paymentDetails.length - 1]?.subscriptionType || 'Premium Member') : 'Free Member'}
                     </span>
                   </div>
+
+                  {selectedPlan && (
+                    <div className="mt-3 p-3 bg-white rounded-4 border shadow-sm text-start">
+                      <h6 className="fw-bold mb-3 text-primary border-bottom pb-2">Plan Usage Details</h6>
+                      <div className="d-flex justify-content-between mb-2 small">
+                        <span className="text-muted">Profile Views:</span>
+                        <span className="fw-semibold">{selectedPlan.profilesViewedCount || 0} / {String(selectedPlan.maxProfiles).toLowerCase() === "unlimited" || parseInt(selectedPlan.maxProfiles) >= 999999 ? "Unlimited" : selectedPlan.maxProfiles || 0}</span>
+                      </div>
+                      <div className="d-flex justify-content-between mb-2 small">
+                        <span className="text-muted">Interests Sent:</span>
+                        <span className="fw-semibold">{selectedPlan.interestSentCount || 0} / {String(selectedPlan.maxSendInterest).toLowerCase() === "unlimited" || parseInt(selectedPlan.maxSendInterest) >= 999999 ? "Unlimited" : selectedPlan.maxSendInterest || 0}</span>
+                      </div>
+                      <div className="d-flex justify-content-between small">
+                        <span className="text-muted">Contacts Viewed:</span>
+                        <span className="fw-semibold">{selectedPlan.contactViewCount || 0} / {String(selectedPlan.maxViewContact).toLowerCase() === "unlimited" || parseInt(selectedPlan.maxViewContact) >= 999999 ? "Unlimited" : selectedPlan.maxViewContact || 0}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -242,7 +267,9 @@ const AdminBillingInfo = () => {
                         pagination
                         paginationRowsPerPageOptions={[5, 10, 15, 20]}
                         paginationPerPage={5}
-                        highlightOnHover={false}
+                        highlightOnHover={true}
+                        pointerOnHover={true}
+                        onRowClicked={(row) => setSelectedPlan(row)}
                         customStyles={customStyles}
                       />
                     </div>

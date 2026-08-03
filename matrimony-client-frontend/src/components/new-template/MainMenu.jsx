@@ -235,7 +235,7 @@ export default function MainMenu() {
                                   <a href="#!" onClick={openLoginPopup}>Login</a>
                                 </li>
                                 <li>
-                                  <a href="/user/user-sign-up">Sign-up</a>
+                                  <a href="/register-free">Sign-up</a>
                                 </li>
                                 <li>
                                   <a href="photo-gallery.html">Photo gallery</a>
@@ -360,7 +360,7 @@ export default function MainMenu() {
                           <a href="#!" onClick={openLoginPopup}>Login</a>
                         </li>
                         <li>
-                          <a href="/user/user-sign-up">Sign-up</a>
+                          <a href="/register-free">Sign-up</a>
                         </li>
                         <li>
                           <a href="plans.html">Pricing plans</a>
@@ -375,7 +375,7 @@ export default function MainMenu() {
                     <a href="#!" className="desk-menu" onClick={openLoginPopup}>Login</a>
                   </li>
                   <li>
-                    <a href="/user/user-sign-up">Register</a>
+                    <a href="/register-free">Register</a>
                   </li>
                   <li className="smenu-pare">
                     <span className="smenu">Dashboard</span>
@@ -487,7 +487,7 @@ export default function MainMenu() {
               <a href="#!" onClick={openLoginPopup}>Login</a>
             </li>
             <li>
-              <a href="/user/user-sign-up">Sign-up</a>
+              <a href="/register-free">Sign-up</a>
             </li>
             <li>
               <a href="photo-gallery.html">Photo gallery</a>
@@ -634,7 +634,7 @@ export default function MainMenu() {
               <a href="#!" onClick={openLoginPopup}>Login</a>
             </li>
             <li>
-              <a href="/user/user-sign-up">Sign-up</a>
+              <a href="/register-free">Sign-up</a>
             </li>
             <li>
               <a href="plans.html">Pricing plans</a>

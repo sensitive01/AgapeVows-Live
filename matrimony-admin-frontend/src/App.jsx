@@ -78,6 +78,13 @@ function App() {
 
     window.addEventListener("keydown", handleKeyDown);
 
+    // Disable Right Click (Context Menu)
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+      return false;
+    };
+    window.addEventListener("contextmenu", handleContextMenu);
+
     // CSS to disable Text Selection & Print
     const style = document.createElement("style");
     style.innerHTML = `
@@ -93,6 +100,7 @@ function App() {
     document.head.appendChild(style);
 
     return () => {
+      window.removeEventListener("contextmenu", handleContextMenu);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("storage", handleStorageChange);
       if (document.head.contains(style)) {

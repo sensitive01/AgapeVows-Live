@@ -249,7 +249,7 @@ const ForgotPassword = () => {
                       <h1>{step === 1 ? "Forgot Password" : "Verify OTP"}</h1>
                       <p>
                         Remember your password?{" "}
-                        <a href="#!" onClick={(e) => { e.preventDefault(); navigate('/user/user-login'); }}>Login</a>
+                        <a href="#!" onClick={(e) => { e.preventDefault(); navigate('/sign-in'); }}>Login</a>
                       </p>
                     </div>
                     <div className="form-login">

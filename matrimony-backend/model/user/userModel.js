@@ -178,6 +178,7 @@ const userSchema = new mongoose.Schema(
 
       jobType: { type: String }, // legacy
       companyName: { type: String },
+      workLocation: { type: String },
 
       annualIncome: { type: String },
       salary: { type: String }, // legacy

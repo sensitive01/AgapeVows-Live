@@ -226,7 +226,7 @@ const UserSideBar = ({ sidebarTop = "40px" }) => {
     { path: "/user/blocked-profiles-page", icon: "fa fa-ban", label: "Blocked" },
     { path: "/user/user-plan-page", icon: "fa fa-credit-card", label: "Plan" },
     { path: "/user/user-settings-page", icon: "fa fa-cog", label: "Settings" },
-    { path: "/user/user-login", icon: "fa fa-sign-out", label: "Logout", danger: true },
+    { path: "/sign-in", icon: "fa fa-sign-out", label: "Logout", danger: true },
   ];
 
   const styles = {

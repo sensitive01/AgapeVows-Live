@@ -129,6 +129,7 @@ const getAllUsersData = async (req, res) => {
           deactivatedAt: 1,
           idVerificationStatus: 1,
           paymentDetails: 1,
+          isRestricted: 1,
         }
       )
       .sort({ createdAt: -1 });
@@ -171,6 +172,7 @@ const getPaidUsersData = async (req, res) => {
           "paymentDetails.subscriptionAmount": 1,
           "paymentDetails.subscriptionStatus": 1,
           "paymentDetails.subscriptionTransactionDate": 1,
+          isRestricted: 1,
         }
       )
       .sort({ createdAt: -1 });
@@ -496,6 +498,7 @@ const getUnverifiedIdProofUsers = async (req, res) => {
         $match: {
           idVerificationStatus: { $ne: "Verified" },
           isDeleted: false,
+          isProfileCompleted: true,
         },
       },
       {
@@ -556,6 +559,7 @@ const getVerifiedIdProofUsers = async (req, res) => {
         $match: {
           idVerificationStatus: "Verified",
           isDeleted: false,
+          isProfileCompleted: true,
         },
       },
       {

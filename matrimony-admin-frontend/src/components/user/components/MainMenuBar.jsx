@@ -226,7 +226,7 @@ const MainMenuBar = () => {
                   <a href="plans.html">Plans</a>
                 </li>
                 <li>
-                  <a href="/user/user-sign-up">Register</a>
+                  <a href="/register-free">Register</a>
                 </li>
 
                 <li className="smenu-pare">

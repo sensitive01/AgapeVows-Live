@@ -83,8 +83,8 @@ import SEOHelmet from "./components/common/SEOHelmet";
 function SEOManager() {
   const location = useLocation();
   const privatePaths = [
-    '/user/user-login',
-    '/user/user-sign-up',
+    '/sign-in',
+    '/register-free',
     '/user/user-dashboard-page',
     '/user/user-profile-page',
     '/user/user-settings-page',
@@ -133,7 +133,7 @@ const ProfileCompletionGuard = ({ children }) => {
     const isProfileCompleted = localStorage.getItem("isProfileCompleted") === "true";
 
     const publicPaths = [
-      '/', '/user/user-login', '/user/user-sign-up',
+      '/', '/sign-in', '/register-free',
       '/help-support', '/show-searched-result', '/forgot-password',
       '/contact-us', '/about-us', '/faq', '/events', '/blogs',
       '/safety-security', '/success-stories'
@@ -211,7 +211,7 @@ function App() {
       document.cookie = "browser_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
       // Redirect to login
-      window.location.href = "/user/user-login";
+      window.location.href = "/sign-in";
     };
 
     const resetInactivityTimer = () => {
@@ -278,6 +278,13 @@ function App() {
 
     window.addEventListener("keydown", handleKeyDown);
 
+    // Disable Right Click (Context Menu)
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+      return false;
+    };
+    window.addEventListener("contextmenu", handleContextMenu);
+
     // CSS to disable Text Selection & Print
     const style = document.createElement("style");
     style.innerHTML = `
@@ -293,6 +300,7 @@ function App() {
     document.head.appendChild(style);
 
     return () => {
+      window.removeEventListener("contextmenu", handleContextMenu);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("storage", handleStorageChange);
       activityEvents.forEach((event) => window.removeEventListener(event, resetInactivityTimer));
@@ -317,8 +325,8 @@ function App() {
               {/* <Route path="/" element={<UserHomePage />} /> */}
               <Route path="/" element={<NewHomePageComponent />} />
 
-              <Route path="/user/user-login" element={<UserLoginPage />} />
-              <Route path="/user/user-sign-up" element={<UserSignUp />} />
+              <Route path="/sign-in" element={<UserLoginPage />} />
+              <Route path="/register-free" element={<UserSignUp />} />
 
               <Route path="/user/user-wedding-page" element={<UserWedding />} />
               <Route

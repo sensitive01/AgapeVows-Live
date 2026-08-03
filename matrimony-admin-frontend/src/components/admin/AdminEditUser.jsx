@@ -24,8 +24,13 @@ const getCitiesList = (countryName, stateName) => {
   if (!stateCode) return [];
   let cities = City.getCitiesOfState(countryCode, stateCode).map(city => city.name);
   if (stateName === "Karnataka") {
-    cities = cities.filter(city => !city.toLowerCase().includes("bengaluru") && !city.toLowerCase().includes("bangalore"));
-    cities.push("Bangalore");
+    cities = cities.filter(city => 
+      !city.toLowerCase().includes("bengaluru") && 
+      !city.toLowerCase().includes("bangalore") && 
+      !city.toLowerCase().includes("dakshina")
+    );
+    cities.push("Bangalore (Bengaluru)");
+    cities.push("Dakshina Kannada (Mangalore)");
     if (!cities.includes("Hubballi")) cities.push("Hubballi");
     if (!cities.includes("Vijayanagara")) cities.push("Vijayanagara");
     cities.sort();
@@ -263,6 +268,7 @@ const AdminEditUser = () => {
     occupation: "",
     position: "",
     companyName: "",
+    workLocation: "",
     annualIncome: "",
 
     // --- Lifestyle ---
@@ -430,7 +436,8 @@ const AdminEditUser = () => {
 
           if (userData.profileImage) setProfileImagePreview(userData.profileImage);
           if (userData.additionalImages?.length > 0) {
-            setAdditionalImagePreviews(userData.additionalImages.map(url => ({ url, isExisting: true })));
+            const validImages = userData.additionalImages.filter(url => url && typeof url === "string" && url.trim() !== "");
+            setAdditionalImagePreviews(validImages.map(url => ({ url, isExisting: true })));
           }
         }
       } catch (err) {
@@ -777,6 +784,7 @@ const AdminEditUser = () => {
                 {renderField("Position", "position", "text", null, "6")}
                 {renderField("Occupation", "occupation", "text", DROPDOWN_OPTIONS.occupation, "6")}
                 {renderField("Company Name", "companyName", "text", null, "6")}
+                {renderField("Work Location (City)", "workLocation", "text", null, "6", false, true)}
                 {renderField("Annual Income", "annualIncome", "text", DROPDOWN_OPTIONS.annualIncome, "6")}
               </FormSection>
 

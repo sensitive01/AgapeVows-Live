@@ -176,7 +176,7 @@ const UserAllProfilePage = () => {
 
   const shortListProfile = async (user) => {
     if (!userId) {
-      window.location.href = "/user/user-login";
+      window.location.href = "/sign-in";
       return;
     }
     try {
@@ -194,7 +194,7 @@ const UserAllProfilePage = () => {
   const handleViewProfile = (e, targetUser) => {
     e.preventDefault();
     if (!userId) {
-      window.location.href = "/user/user-login"; // Simple redirect for now
+      window.location.href = "/sign-in"; // Simple redirect for now
       return;
     }
 

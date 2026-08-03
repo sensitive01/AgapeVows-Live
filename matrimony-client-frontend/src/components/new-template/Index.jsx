@@ -418,7 +418,7 @@ export default function Index() {
                               <a href="#!" onClick={openLoginPopup}>Login</a>
                             </li>
                             <li>
-                              <a href="/user/user-sign-up">Sign-up</a>
+                              <a href="/register-free">Sign-up</a>
                             </li>
                             <li>
                               <a href="photo-gallery.html">Photo gallery</a>
@@ -546,7 +546,7 @@ export default function Index() {
                       <a href="#!" onClick={openLoginPopup}>Login</a>
                     </li>
                     <li>
-                      <a href="/user/user-sign-up">Sign-up</a>
+                      <a href="/register-free">Sign-up</a>
                     </li>
                     <li>
                       <a href="plans.html">Pricing plans</a>
@@ -558,7 +558,7 @@ export default function Index() {
                 <a href="plans.html">Plans</a>
               </li>
               <li>
-                <a href="/user/user-sign-up">Register</a>
+                <a href="/register-free">Register</a>
               </li>
               <li className="smenu-pare">
                 <span className="smenu">Dashboard</span>
@@ -672,7 +672,7 @@ export default function Index() {
           <a href="#!" onClick={openLoginPopup}>Login</a>
         </li>
         <li>
-          <a href="/user/user-sign-up">Sign-up</a>
+          <a href="/register-free">Sign-up</a>
         </li>
         <li>
           <a href="photo-gallery.html">Photo gallery</a>
@@ -819,7 +819,7 @@ export default function Index() {
           <a href="#!" onClick={openLoginPopup}>Login</a>
         </li>
         <li>
-          <a href="/user/user-sign-up">Sign-up</a>
+          <a href="/register-free">Sign-up</a>
         </li>
         <li>
           <a href="plans.html">Pricing plans</a>
@@ -1965,10 +1965,10 @@ export default function Index() {
                 fringilla.Lorem Ipsum is simply dummy text of the printing and
                 typesetting industry.
               </p>
-              <a href="/user/user-sign-up" className="cta-3" style={{ border: '2px solid #ffffff', background: '#ffffff', color: '#58219f' }}>
+              <a href="/register-free" className="cta-3" style={{ border: '2px solid #ffffff', background: '#ffffff', color: '#58219f' }}>
                 Register Now
               </a>
-              <a href="/user/user-sign-up" className="cta-4" style={{ color: '#ffffff', borderColor: '#ffffff' }}>
+              <a href="/register-free" className="cta-4" style={{ color: '#ffffff', borderColor: '#ffffff' }}>
                 Help &amp; Support
               </a>
             </div>
@@ -2047,7 +2047,7 @@ export default function Index() {
         <p>
           Company name Site - Trusted by over thousands of Boys &amp; Girls for
           successfull marriage.{" "}
-          <a href="/user/user-sign-up" className="btn btn-primary btn-sm">
+          <a href="/register-free" className="btn btn-primary btn-sm">
             Join us today !
           </a>
         </p>

@@ -834,7 +834,7 @@ const UserLoginPage = () => {
                       <h4>Start for free</h4>
                       <h1>Sign in to Matrimony</h1>
                       <p>
-                        Not a member? <a href="/user/user-login">Sign up now</a>
+                        Not a member? <a href="/sign-in">Sign up now</a>
                       </p>
                     </div>
                     <div className="form-login">

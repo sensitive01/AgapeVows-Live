@@ -148,7 +148,7 @@ const BasicInfomation = ({
                 style={{ marginTop: "10px" }}
               >
                 <div className="row">
-                  {additionalImagePreviews.map((image, index) => (
+                  {additionalImagePreviews.filter(img => (img?.url || img) !== "").map((image, index) => (
                     <div
                       key={index}
                       className="col-md-4"

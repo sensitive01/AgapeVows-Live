@@ -490,7 +490,7 @@ const UserPlanSelection = () => {
 
                   <div style={{ display: "flex", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
                     <button
-                      onClick={() => navigate('/user/user-login')}
+                      onClick={() => navigate('/sign-in')}
                       style={{
                         padding: "12px 40px",
                         fontSize: "1rem",
@@ -512,7 +512,7 @@ const UserPlanSelection = () => {
                     </button>
 
                     <button
-                      onClick={() => navigate('/user/user-sign-up')}
+                      onClick={() => navigate('/register-free')}
                       style={{
                         padding: "12px 40px",
                         fontSize: "1rem",

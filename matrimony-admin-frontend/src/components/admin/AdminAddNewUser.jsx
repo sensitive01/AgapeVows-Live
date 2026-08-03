@@ -27,8 +27,13 @@ const getCitiesList = (countryName, stateName) => {
   if (!stateCode) return [];
   let cities = City.getCitiesOfState(countryCode, stateCode).map(city => city.name);
   if (stateName === "Karnataka") {
-    cities = cities.filter(city => !city.toLowerCase().includes("bengaluru") && !city.toLowerCase().includes("bangalore"));
-    cities.push("Bangalore");
+    cities = cities.filter(city => 
+      !city.toLowerCase().includes("bengaluru") && 
+      !city.toLowerCase().includes("bangalore") && 
+      !city.toLowerCase().includes("dakshina")
+    );
+    cities.push("Bangalore (Bengaluru)");
+    cities.push("Dakshina Kannada (Mangalore)");
     if (!cities.includes("Hubballi")) cities.push("Hubballi");
     if (!cities.includes("Vijayanagara")) cities.push("Vijayanagara");
     cities.sort();
@@ -272,6 +277,7 @@ const AdminAddNewUser = () => {
     occupation: "",
     position: "",
     companyName: "",
+    workLocation: "",
     annualIncome: "",
 
     // --- Lifestyle ---
@@ -591,7 +597,8 @@ const AdminAddNewUser = () => {
       occupation: "Software Engineer",
       position: "Senior Lead",
       companyName: "Tech Corp",
-      annualIncome: "1200000",
+      workLocation: "Bangalore",
+      annualIncome: "50 Thousand - 1 Lakh",
 
       // --- Lifestyle ---
       exercise: "Regularly",
@@ -710,6 +717,7 @@ const AdminAddNewUser = () => {
         occupation: "Occupation",
         position: "Position",
         companyName: "Company Name",
+        workLocation: "Work Location (City)",
         annualIncome: "Annual Income",
         exercise: "Exercise",
         hobbies: "Hobbies",
@@ -1126,6 +1134,7 @@ const AdminAddNewUser = () => {
                 <InputField label="Position" name="position" formData={formData} handleChange={handleChange} />
                 <InputField label="Occupation" name="occupation" options={DROPDOWN_OPTIONS.occupation} formData={formData} handleChange={handleChange} />
                 <InputField label="Company Name" name="companyName" formData={formData} handleChange={handleChange} />
+                <InputField label="Work Location (City)" name="workLocation" formData={formData} handleChange={handleChange} required={true} />
                 <InputField label="Annual Income" name="annualIncome" options={DROPDOWN_OPTIONS.annualIncome} formData={formData} handleChange={handleChange} />
               </FormSection>
 

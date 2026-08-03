@@ -40,8 +40,19 @@ const getDistrictsForState = (countryName, stateName, allCountries) => {
 };
 
 const getImageUrl = (url) => {
-  if (!url) return url;
+  if (!url || url === "null" || url === "undefined" || url === "[object Object]") return "";
+  
+  if (typeof url === "object") {
+    url = url.url || url.path || "";
+  }
+  
+  if (typeof url !== "string" || url === "[object Object]") return "";
+
   if (url.startsWith("http") || url.startsWith("data:") || url.startsWith("blob:")) return url;
+  
+  // Normalize backslashes for Windows paths
+  url = url.replace(/\\/g, "/");
+  
   const baseUrl = import.meta.env.VITE_BASE_ROUTE || "";
   return `${baseUrl.replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
 };
@@ -81,9 +92,9 @@ const BasicInfomation = ({
     additionalImagesInputRef.current?.click();
   };
 
-  const imagePreviews = Array.isArray(additionalImagePreviews)
+  const imagePreviews = (Array.isArray(additionalImagePreviews)
     ? additionalImagePreviews
-    : [];
+    : []).filter(preview => getImageUrl(preview?.url || preview) !== "");
 
   const styles = {
     sectionContainer: {
@@ -880,8 +891,10 @@ const UserProfileEditPage = () => {
           <div style="font-family: 'Inter', sans-serif; color: #333; padding: 10px;">
             <h2 style="color: #4b1e7a; font-size: 26px; font-weight: 700; text-align: center; margin-bottom: 15px; margin-top: 0;">Welcome to AgapeVows!</h2>
             <div style="text-align: center; font-size: 15px; line-height: 1.6; margin-bottom: 20px;">
-              We're delighted to have you join our community.<br/>
-              You've been given <span style="color: #4b1e7a; font-weight: 700;">FREE access</span> to our <span style="color: #4b1e7a; font-weight: 700;">Welcome Plan</span>,<br/> a premium membership valid for <span style="color: #4b1e7a; font-weight: 700;">60 days</span>.
+              We're delighted to have you join our community.<br/><br/>
+              Please <strong>complete your profile</strong> and <strong>profile verification</strong> to<br/>
+              activate your <span style="color: #4b1e7a; font-weight: 700;">FREE Welcome Plan</span>,<br/>
+              a premium membership valid for <span style="color: #4b1e7a; font-weight: 700;">60 days</span>.
             </div>
 
             <div style="background-color: #f8f5fb; border-radius: 12px; padding: 20px 25px; margin-bottom: 25px;">
@@ -937,7 +950,7 @@ const UserProfileEditPage = () => {
          `,
         showCloseButton: true,
         showConfirmButton: true,
-        confirmButtonText: 'OK',
+        confirmButtonText: 'PROCEED',
         confirmButtonColor: '#4b1e7a',
         width: '600px',
         padding: '1rem',
@@ -1052,6 +1065,7 @@ const UserProfileEditPage = () => {
     occupation: "",
     position: "",
     companyName: "",
+    workLocation: "",
     annualIncome: "",
 
     exercise: "",
@@ -1408,6 +1422,7 @@ const UserProfileEditPage = () => {
             occupation: userData.occupation || "",
             position: userData.position || "",
             companyName: userData.companyName || "",
+            workLocation: userData.workLocation || "",
             annualIncome: userData.annualIncome || "",
             hobbies: parseMulti(userData.hobbies),
             interests: userData.interests || "",
@@ -1691,12 +1706,17 @@ const UserProfileEditPage = () => {
           // Set additional images
           // ===========================
           if (userData.additionalImages && userData.additionalImages.length > 0) {
-            const existingImages = userData.additionalImages.map((url) => ({
-              url,
-              isExisting: true,
-            }));
-            setAdditionalImagePreviews(existingImages);
-            setExistingAdditionalImages(userData.additionalImages);
+            const validImages = userData.additionalImages.filter(
+              (url) => url && typeof url === "string" && url.trim() !== ""
+            );
+            if (validImages.length > 0) {
+              const existingImages = validImages.map((url) => ({
+                url,
+                isExisting: true,
+              }));
+              setAdditionalImagePreviews(existingImages);
+              setExistingAdditionalImages(validImages);
+            }
           }
 
 
@@ -1957,6 +1977,10 @@ const UserProfileEditPage = () => {
 
     if (!formData.currentDoorNo || !formData.currentLocality || !formData.currentCountry || !formData.currentState || !formData.currentDistrict) {
       missingFields.push({ label: "Current Address", name: "currentCountry" });
+    }
+
+    if (isInvalid(formData.workLocation)) {
+      missingFields.push({ label: "Work Location (City)", name: "workLocation" });
     }
 
     if (missingFields.length > 0) {
@@ -2883,7 +2907,7 @@ const UserProfileEditPage = () => {
                           onChange={handleInputChange}
                           options={[
                             "Never Drinks",
-                            "Drinks Socially",
+                            "Drinks Occasionally",
                             "Drinks Regularly",
                           ]}
                         />
@@ -3359,6 +3383,14 @@ const UserProfileEditPage = () => {
                         onChange={handleInputChange}
                       />
                       <FormInput
+                        label="Work Location (City)"
+                        name="workLocation"
+                        value={formData.workLocation}
+                        onChange={handleInputChange}
+                        placeholder="Enter your work location city"
+                        required
+                      />
+                      <FormInput
                         label="Annual Income"
                         name="annualIncome"
                         type="select"
@@ -3713,7 +3745,7 @@ const UserProfileEditPage = () => {
                         options={[
                           "Any",
                           "Never Drinks",
-                          "Drinks Socially",
+                          "Drinks Occasionally",
                           "Drinks Regularly",
                         ]}
                       />

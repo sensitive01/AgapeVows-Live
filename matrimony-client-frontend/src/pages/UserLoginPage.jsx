@@ -256,7 +256,7 @@ const UserLoginPage = () => {
               <div className="text-center pb-0">
                 <p className="text-sm text-gray-600 font-medium">
                   Don't have an account?{" "}
-                  <Link to="/user/user-sign-up" className="font-bold text-[#58219f] hover:text-[#471b80] transition-colors">
+                  <Link to="/register-free" className="font-bold text-[#58219f] hover:text-[#471b80] transition-colors">
                     Register Now
                   </Link>
                 </p>

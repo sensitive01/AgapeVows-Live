@@ -79,7 +79,7 @@ const DenominationMatrimony = () => {
                   Through our <strong>{formattedName}</strong> services, AgapeVows simplifies this process. You no longer have to sift through thousands of incompatible profiles. Our advanced matchmaking algorithm prioritizes your denominational preference, presenting you with matches that align perfectly with your spiritual requirements.
                 </p>
                 <div className="mt-8">
-                  <a href="/user/user-sign-up" className="inline-flex items-center text-[#5c2a9d] font-bold hover:underline text-lg">
+                  <a href="/register-free" className="inline-flex items-center text-[#5c2a9d] font-bold hover:underline text-lg">
                     Start your spiritual matchmaking journey <FaCheckCircle className="ml-2" />
                   </a>
                 </div>
@@ -185,7 +185,7 @@ const DenominationMatrimony = () => {
                   </p>
                 </div>
                 <div className="md:w-1/3 flex justify-center md:justify-end">
-                  <a href="/user/user-sign-up" className="bg-white text-[#5c2a9d] font-bold py-4 px-8 rounded-full hover:bg-gray-100 transition-colors text-lg shadow-lg">
+                  <a href="/register-free" className="bg-white text-[#5c2a9d] font-bold py-4 px-8 rounded-full hover:bg-gray-100 transition-colors text-lg shadow-lg">
                     Join Free Today
                   </a>
                 </div>

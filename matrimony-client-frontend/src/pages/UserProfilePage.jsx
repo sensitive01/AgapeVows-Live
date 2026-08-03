@@ -594,6 +594,7 @@ const UserProfilePage = () => {
         "occupation",
         "position",
         "companyName",
+        "workLocation",
         "annualIncome",
       ],
       contact: [
@@ -1366,6 +1367,10 @@ const UserProfilePage = () => {
                     <InfoRow
                       label="Company Name"
                       value={userInfo?.companyName}
+                    />
+                    <InfoRow
+                      label="Work Location (City)"
+                      value={userInfo?.workLocation}
                     />
                     <InfoRow
                       label="Annual Income"

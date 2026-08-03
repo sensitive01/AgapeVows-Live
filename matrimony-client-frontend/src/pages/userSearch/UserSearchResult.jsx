@@ -69,6 +69,26 @@ const UserSearchResult = () => {
       try {
         // Combine initial search state with current filters
         const { formData, ...restState } = state || {};
+        
+        let transformedFormData = { ...(formData || {}) };
+
+        // Transform formData from BannerAndSearch to match backend fields
+        if (transformedFormData.age && transformedFormData.age.includes("-")) {
+          const [min, max] = transformedFormData.age.split("-");
+          transformedFormData.ageFrom = min;
+          transformedFormData.ageTo = max;
+          delete transformedFormData.age;
+        }
+
+        if (transformedFormData.community && transformedFormData.community !== "Any") {
+          transformedFormData.denomination = transformedFormData.community;
+          delete transformedFormData.community;
+        }
+
+        if (transformedFormData.city && transformedFormData.city !== "Any location") {
+          transformedFormData.districtCity = transformedFormData.city;
+          delete transformedFormData.city;
+        }
 
         // Transform sidebar filters to match backend fields
         const transformedFilters = { ...filterParams };
@@ -89,7 +109,7 @@ const UserSearchResult = () => {
 
         const requestData = {
           ...restState,
-          ...(formData || {}),
+          ...transformedFormData,
           ...transformedFilters,
           userId, // Add userId to request
         };
@@ -143,9 +163,28 @@ const UserSearchResult = () => {
         } else {
           const { formData, ...restState } = state || {};
 
+          let transformedFormData = { ...(formData || {}) };
+
+          if (transformedFormData.age && transformedFormData.age.includes("-")) {
+            const [min, max] = transformedFormData.age.split("-");
+            transformedFormData.ageFrom = min;
+            transformedFormData.ageTo = max;
+            delete transformedFormData.age;
+          }
+
+          if (transformedFormData.community && transformedFormData.community !== "Any") {
+            transformedFormData.denomination = transformedFormData.community;
+            delete transformedFormData.community;
+          }
+
+          if (transformedFormData.city && transformedFormData.city !== "Any location") {
+            transformedFormData.districtCity = transformedFormData.city;
+            delete transformedFormData.city;
+          }
+
           const requestData = {
             ...restState,
-            ...(formData || {}),
+            ...transformedFormData,
             userId, // Add userId
           };
 
@@ -615,7 +654,7 @@ const UserSearchResult = () => {
                 }}
                 onClick={() => {
                   window.scrollTo(0, 0);
-                  navigate("/user/user-login");
+                  navigate("/sign-in");
                 }}
               >
                 Login Now

@@ -51,7 +51,7 @@ const ExploreDropdown = () => {
       bgColor: "bg-gradient-to-br from-yellow-500 to-orange-600",
       image:
         "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=300&h=200&fit=crop",
-      path: "/user/user-sign-up",
+      path: "/register-free",
     },
   ];
 
@@ -286,13 +286,13 @@ const TopHeader = () => {
               ) : (
                 <div className="flex items-center space-x-3">
                   <button
-                    onClick={() => handleNavigate("/user/user-sign-up")}
+                    onClick={() => handleNavigate("/register-free")}
                     className="text-gray-800 hover:text-purple-800 font-medium transition-colors"
                   >
                     REGISTER
                   </button>
                   <button
-                    onClick={() => handleNavigate("/user/user-login")}
+                    onClick={() => handleNavigate("/sign-in")}
                     className="bg-[#7c3aed] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#6d28d9] transition-colors"
                   >
                     LOGIN
@@ -395,7 +395,7 @@ const TopHeader = () => {
                     <div className="space-y-2">
                       <button
                         onClick={() => {
-                          handleNavigate("/user/user-sign-up");
+                          handleNavigate("/register-free");
                           setIsMobileMenuOpen(false);
                         }}
                         className="w-full text-left text-gray-800 hover:text-purple-800 font-medium py-2"
@@ -404,7 +404,7 @@ const TopHeader = () => {
                       </button>
                       <button
                         onClick={() => {
-                          handleNavigate("/user/user-login");
+                          handleNavigate("/sign-in");
                           setIsMobileMenuOpen(false);
                         }}
                         className="w-full bg-[#7c3aed] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#6d28d9] transition-colors"

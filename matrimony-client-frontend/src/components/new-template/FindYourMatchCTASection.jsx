@@ -52,7 +52,7 @@ export default function FindYourMatchCTASection() {
                 </p>
 
                   <a
-                    href="/user/user-sign-up"
+                    href="/register-free"
                     className="cta-3"
                     style={{
                       display: "inline-block",

@@ -90,7 +90,7 @@
 //       if (response.status === 200) {
 //         setSuccess(response.data.message);
 //         setTimeout(() => {
-//           navigate("/user/user-login");
+//           navigate("/sign-in");
 //         }, 2000);
 //       }
 //     } catch (err) {
@@ -173,7 +173,7 @@
 //                       <h1>Reset Password</h1>
 //                       {/* <p>
 //                         Remember your password?{" "}
-//                         <a href="/user/user-login">Login</a>
+//                         <a href="/sign-in">Login</a>
 //                       </p> */}
 //                     </div>
 //                     <div className="form-login">
@@ -401,7 +401,7 @@
 //       if (response.status === 200) {
 //         setSuccess(response.data.message);
 //         setTimeout(() => {
-//           navigate("/user/user-login");
+//           navigate("/sign-in");
 //         }, 2000);
 //       }
 //     } catch (err) {
@@ -631,7 +631,7 @@ const ChangePassword = () => {
       if (isLoggedIn) {
         navigate("/user/user-dashboard-page");
       } else {
-        navigate("/user/user-login");
+        navigate("/sign-in");
       }
     }, 1000);
   }
@@ -715,7 +715,7 @@ const ChangePassword = () => {
                       <h1>Reset Password</h1>
                       {/* <p>
                         Remember your password?{" "}
-                        <a href="/user/user-login">Login</a>
+                        <a href="/sign-in">Login</a>
                       </p> */}
                     </div>
                     <div className="form-login">

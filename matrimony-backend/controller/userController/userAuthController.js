@@ -207,6 +207,7 @@ const completeProfileData = async (req, res) => {
       occupation: req.body.occupation,
       position: req.body.position,
       companyName: req.body.companyName,
+      workLocation: req.body.workLocation,
       annualIncome: req.body.annualIncome,
 
       // legacy mapping
@@ -1422,6 +1423,7 @@ const getSearchedProfileData = async (req, res) => {
       isDeleted: false,
     };
 
+
     if (userId) {
       query._id.$ne = userId;
     }
@@ -1480,6 +1482,8 @@ const getSearchedProfileData = async (req, res) => {
     if (showWithPhoto) {
       query.profileImage = { $exists: true, $ne: "" };
     }
+
+
     const users = await userModel.find(query)
       .select("-userPassword -__v")
       .sort({ createdAt: -1 });
@@ -2269,8 +2273,6 @@ const getAllBlogs = async (req, res) => {
   try {
     const blogs = await Blog.find({ status: "Published" }) // optional filter
       .sort({ isPinned: -1, createdAt: -1 });
-
-    console.log("Fetched Blogs from DB:", JSON.stringify(blogs, null, 2));
 
     res.status(200).json({
       success: true,

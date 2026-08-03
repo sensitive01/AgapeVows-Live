@@ -134,7 +134,7 @@ const MainMenuBar = () => {
                               </h5>
                               <span className="explor-cta">More details</span>
                               <Link
-                                to="/user/user-sign-up"
+                                to="/register-free"
                                 className="fclick"
                               ></Link>
                             </div>
@@ -157,10 +157,10 @@ const MainMenuBar = () => {
                 {isUserActive && (
                   <>
                     <li>
-                      <Link to="/user/user-sign-up">Register</Link>
+                      <Link to="/register-free">Register</Link>
                     </li>
                     <li>
-                      <Link to="/user/user-login">Login</Link>
+                      <Link to="/sign-in">Login</Link>
                     </li>
                   </>
                 )}

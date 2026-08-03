@@ -185,7 +185,20 @@ export default function AdminVerifiedIdUsers() {
              planName = activePlans[0].subscriptionType || "Paid";
           }
         }
-        return <span className={`badge ${planName === 'No plan' ? 'bg-secondary text-white' : 'bg-success text-white'}`} style={{ fontSize: '13px', padding: '6px 10px', letterSpacing: '0.5px' }}>{planName}</span>;
+        return (
+          <div className="d-flex flex-column align-items-center justify-content-center">
+            <span className={`badge ${planName === 'No plan' ? 'bg-secondary' : 'bg-success'} text-white`} style={{ fontSize: '13px', padding: '6px 12px', letterSpacing: '0.5px', borderRadius: '4px' }}>
+              {planName}
+            </span>
+            <span 
+              className={`mt-1 ${row.isRestricted ? 'text-danger fw-bold' : 'text-muted fw-semibold'}`} 
+              style={{ fontSize: '11px', letterSpacing: '0.3px' }}
+            >
+              <i className={`fa ${row.isRestricted ? 'fa-lock' : 'fa-unlock'} me-1`}></i>
+              {row.isRestricted ? 'Restricted' : 'Unrestricted'}
+            </span>
+          </div>
+        );
       },
       center: true,
     },

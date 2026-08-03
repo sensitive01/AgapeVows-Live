@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 
-const CustomTable = ({ columns, data, itemsPerPage = 10, noDataComponent = "No records found.", pagination = true }) => {
+const CustomTable = ({ columns, data, itemsPerPage = 10, noDataComponent = "No records found.", pagination = true, onRowClicked, pointerOnHover }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({ column: null, direction: 'asc' });
   const [columnWidths, setColumnWidths] = useState({});
@@ -193,7 +193,11 @@ const CustomTable = ({ columns, data, itemsPerPage = 10, noDataComponent = "No r
                 const absoluteIndex = pagination ? (currentPage - 1) * itemsPerPage + rowIndex : rowIndex;
 
                 return (
-                  <tr key={row._id || row.id || rowIndex}>
+                  <tr 
+                    key={row._id || row.id || rowIndex}
+                    onClick={() => onRowClicked && onRowClicked(row)}
+                    style={{ cursor: pointerOnHover ? 'pointer' : 'default' }}
+                  >
                     {columns.map((col, colIndex) => {
                       let cellContent;
                       if (col.cell) {

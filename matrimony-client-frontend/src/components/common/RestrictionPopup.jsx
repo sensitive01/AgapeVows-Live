@@ -5,29 +5,34 @@ const RestrictionPopup = ({ onClose }) => {
     const navigate = useNavigate();
 
     return (
-        <div 
-            className="modal show d-block" 
-            tabIndex="-1" 
-            style={{ 
-                backgroundColor: 'rgba(0,0,0,0.5)',
-                backdropFilter: 'blur(3px)'
+        <div
+            className="modal show d-block"
+            tabIndex="-1"
+            style={{
+                backgroundColor: 'rgba(0,0,0,0.5)'
             }}
         >
-            <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '600px' }}>
-                <div className="modal-content shadow-lg" style={{ borderRadius: '16px', padding: '40px 30px', border: 'none', position: 'relative' }}>
+            <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '750px', width: '90%' }}>
+                <div className="modal-content shadow-lg" style={{ 
+                    borderRadius: '8px', 
+                    padding: '40px 30px', 
+                    border: '4px solid #3c3c43', 
+                    position: 'relative',
+                    backgroundColor: 'white'
+                }}>
                     
                     {/* Close Button */}
                     <button 
                         onClick={onClose}
                         style={{ 
                             position: 'absolute', 
-                            top: '12px', 
+                            top: '15px', 
                             right: '15px', 
                             background: 'transparent',
                             border: '1.5px solid #582b8a',
                             borderRadius: '50%',
-                            width: '28px',
-                            height: '28px',
+                            width: '30px',
+                            height: '30px',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -43,21 +48,22 @@ const RestrictionPopup = ({ onClose }) => {
                         <i className="fa fa-times" style={{ pointerEvents: 'none', fontWeight: '100' }}></i>
                     </button>
 
-                    <div className="d-flex flex-column flex-md-row align-items-center mt-3 pt-2">
+                    <div className="d-flex flex-column flex-md-row align-items-center justify-content-center" style={{ width: '100%' }}>
                         
                         {/* Left Side Icon Area */}
                         <div 
-                            className="pe-md-4 me-md-4 mb-4 mb-md-0 d-flex justify-content-center align-items-center" 
+                            className="d-flex justify-content-center align-items-center mb-4 mb-md-0" 
                             style={{ 
-                                borderRight: '2px solid #f0f0f0', 
-                                minWidth: '180px' 
+                                flex: '0 0 auto',
+                                paddingRight: '40px',
+                                borderRight: '1px solid #e0e0e0',
                             }}
                         >
                             <div 
                                 style={{ 
-                                    width: '140px', 
-                                    height: '140px', 
-                                    backgroundColor: '#f6f0fa', 
+                                    width: '130px', 
+                                    height: '130px', 
+                                    backgroundColor: '#f2ebf7', 
                                     borderRadius: '50%', 
                                     display: 'flex', 
                                     justifyContent: 'center', 
@@ -65,58 +71,66 @@ const RestrictionPopup = ({ onClose }) => {
                                     position: 'relative' 
                                 }}
                             >
-                                <i className="fa fa-id-card-o" style={{ fontSize: '4.5rem', color: '#582b8a' }}></i>
+                                <i className="fa fa-address-card" style={{ fontSize: '5rem', color: '#582b8a' }}></i>
                                 
                                 {/* Overlay Shield */}
                                 <div 
                                     style={{ 
                                         position: 'absolute', 
-                                        bottom: '15px', 
-                                        right: '10px', 
+                                        bottom: '8px', 
+                                        right: '-4px', 
                                         backgroundColor: 'white', 
                                         borderRadius: '50%', 
-                                        width: '45px',
-                                        height: '45px',
+                                        width: '46px',
+                                        height: '46px',
                                         display: 'flex',
                                         justifyContent: 'center',
                                         alignItems: 'center',
-                                        padding: '4px'
+                                        padding: '2px',
+                                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                                     }}
                                 >
-                                    <i className="fa fa-shield" style={{ fontSize: '2.5rem', color: '#582b8a' }}></i>
+                                    <div style={{ position: 'relative', display: 'inline-block', lineHeight: 1 }}>
+                                        <i className="fa fa-shield" style={{ fontSize: '2.5rem', color: '#582b8a' }}></i>
+                                        <i className="fa fa-check" style={{ fontSize: '1.1rem', color: 'white', position: 'absolute', top: '48%', left: '50%', transform: 'translate(-50%, -50%)' }}></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Right Side Content Area */}
-                        <div className="text-center text-md-center px-2" style={{ flex: 1 }}>
+                        <div className="text-center d-flex flex-column justify-content-center align-items-center" style={{ flex: 1, paddingLeft: '40px' }}>
                             <p style={{ 
-                                fontSize: '17px', 
+                                fontSize: '16px', 
                                 color: '#4a4a4a', 
-                                lineHeight: '1.6', 
+                                lineHeight: '1.8', 
                                 marginBottom: '25px',
-                                fontWeight: '500'
+                                fontWeight: '400',
+                                textAlign: 'center',
+                                margin: '0 0 25px 0'
                             }}>
-                                Please complete your profile verification to activate your <strong style={{ color: '#582b8a', fontWeight: '800' }}>FREE</strong> Welcome Plan, view member profiles, send interests, view contact numbers, access premium features, and receive the <strong style={{ color: '#582b8a', fontWeight: '800' }}>'Verified'</strong> badge.
+                                <strong style={{ color: '#582b8a', fontWeight: 'bold' }}>Complete your profile verification</strong> to activate your <strong style={{ color: '#582b8a', fontWeight: 'bold' }}>FREE Premium Welcome Plan</strong>, view member profiles, send interests, view contact numbers, access premium features, and to receive the <strong style={{ color: '#582b8a', fontWeight: 'bold' }}>'Verified'</strong> badge.
                             </p>
                             
                             <button
-                                className="btn shadow-sm"
+                                className="btn"
                                 style={{ 
                                     backgroundColor: '#582b8a', 
                                     color: 'white', 
-                                    borderRadius: '8px', 
-                                    padding: '12px 35px', 
-                                    fontWeight: '600',
-                                    fontSize: '16px',
-                                    transition: 'all 0.3s'
+                                    borderRadius: '6px', 
+                                    padding: '12px 30px', 
+                                    fontWeight: '500',
+                                    fontSize: '15px',
+                                    transition: 'all 0.3s',
+                                    border: 'none',
+                                    minWidth: '220px'
                                 }}
                                 onClick={() => {
                                     onClose();
                                     navigate('/user/user-profile-page#id-proof-upload');
                                 }}
-                                onMouseEnter={(e) => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 6px 15px rgba(88, 43, 138, 0.4)'; }}
-                                onMouseLeave={(e) => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)'; }}
+                                onMouseEnter={(e) => { e.target.style.backgroundColor = '#4a2574'; }}
+                                onMouseLeave={(e) => { e.target.style.backgroundColor = '#582b8a'; }}
                             >
                                 Verify My Profile
                             </button>
@@ -131,12 +145,14 @@ const RestrictionPopup = ({ onClose }) => {
                 @media (max-width: 768px) {
                     .d-flex.flex-column.flex-md-row > div:first-child {
                         border-right: none !important;
-                        border-bottom: 2px solid #f0f0f0;
-                        padding-bottom: 20px;
+                        border-bottom: 1px solid #e0e0e0;
+                        padding-bottom: 30px;
                         padding-right: 0 !important;
-                        margin-right: 0 !important;
-                        margin-bottom: 20px !important;
+                        margin-bottom: 30px !important;
                         width: 100%;
+                    }
+                    .d-flex.flex-column.flex-md-row > div:last-child {
+                        padding-left: 0 !important;
                     }
                 }
                 `}

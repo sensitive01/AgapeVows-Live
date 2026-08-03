@@ -200,7 +200,8 @@ const HighlightedProfilesSection = () => {
             }
           }
 
-          let baseProfiles = fetchedProfiles;
+          // Filter out profiles without an image
+          let baseProfiles = fetchedProfiles.filter(p => p.profileImage && p.profileImage.trim() !== "");
           let finalProfiles = [];
 
           // Filter by opposite gender if user is logged in
@@ -223,7 +224,7 @@ const HighlightedProfilesSection = () => {
           }
 
           setAllProfiles(finalProfiles);
-          setFilteredProfiles(finalProfiles.slice(0, 6));
+          setFilteredProfiles(finalProfiles.slice(0, 8));
         }
       } catch (error) {
         console.error("Error fetching highlighted profiles:", error);
@@ -240,7 +241,7 @@ const HighlightedProfilesSection = () => {
       if (selectedDenomination !== "All") {
         result = allProfiles.filter(p => p.denomination === selectedDenomination);
       }
-      setFilteredProfiles(result.slice(0, 6));
+      setFilteredProfiles(result.slice(0, 8));
     }
   }, [selectedDenomination, allProfiles]);
 
@@ -250,7 +251,7 @@ const HighlightedProfilesSection = () => {
     if (userId) {
       navigateToProfile(id, userId, e);
     } else {
-      navigate("/user/user-login");
+      navigate("/sign-in");
     }
   };
 
@@ -269,7 +270,7 @@ const HighlightedProfilesSection = () => {
   ];
 
   return (
-    <section className="pt-24 pb-12 bg-gray-50 overflow-hidden" id="highlighted-profiles-section">
+    <section className="pt-6 pb-12 bg-gray-50 overflow-hidden" id="highlighted-profiles-section">
       {renderLimitPopup()}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-50 rounded-full blur-3xl opacity-50 -z-10 -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
       <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
@@ -323,7 +324,7 @@ const HighlightedProfilesSection = () => {
                       });
                     }
                   } else {
-                    navigate("/user/user-login");
+                    navigate("/sign-in");
                   }
                 }}
                 className="w-full flex items-center justify-center gap-2 font-bold py-3 px-4 rounded-xl shadow-sm transition-all uppercase text-sm tracking-wider mt-6 text-white"
@@ -340,8 +341,8 @@ const HighlightedProfilesSection = () => {
           {/* Right Grid of Profiles */}
           <div className="lg:w-3/4">
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
-                {[...Array(6)].map((_, i) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-pulse">
+                {[...Array(8)].map((_, i) => (
                   <div key={i} className="h-[400px] bg-gray-200 rounded-3xl"></div>
                 ))}
               </div>
@@ -356,7 +357,7 @@ const HighlightedProfilesSection = () => {
                 }} className="mt-4 font-bold underline" style={{ color: 'var(--primary-purple)' }}>Reset Filter</button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {filteredProfiles.map((profile) => (
                   <div
                     key={profile._id}

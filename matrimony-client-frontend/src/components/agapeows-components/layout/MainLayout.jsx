@@ -507,11 +507,11 @@ const MainLayout = () => {
               ) : (
                 <>
                   <a
-                    href="/user/user-sign-up"
+                    href="/register-free"
                     onClick={(e) => {
                       if (!e.ctrlKey) {
                         e.preventDefault();
-                        handleNavigate("/user/user-sign-up");
+                        handleNavigate("/register-free");
                       }
                     }}
                     className="bg-[#58219f] text-white px-6 py-2 rounded-full hover:bg-[#4a1b85] transition-colors font-cormorant font-bold text-[22px] shadow-md shadow-purple-100"
@@ -519,11 +519,11 @@ const MainLayout = () => {
                     Register Free
                   </a>
                   <a
-                    href="/user/user-login"
+                    href="/sign-in"
                     onClick={(e) => {
                       if (!e.ctrlKey) {
                         e.preventDefault();
-                        handleNavigate("/user/user-login");
+                        handleNavigate("/sign-in");
                       }
                     }}
                     className="text-gray-800 hover:text-[#4a2580] font-cormorant font-bold text-[22px]"
@@ -752,7 +752,7 @@ const MainLayout = () => {
                   <div className="space-y-3 px-2 pb-6">
                     <button
                       onClick={() => {
-                        handleNavigate("/user/user-sign-up");
+                        handleNavigate("/register-free");
                         setIsMobileMenuOpen(false);
                       }}
                       className="w-full bg-[#58219f] text-white py-2.5 rounded-lg font-cormorant font-bold text-[22px] hover:bg-[#4a1b85] transition-colors shadow-sm"
@@ -762,7 +762,7 @@ const MainLayout = () => {
                     <button
                       onClick={(e) => {
                         e.preventDefault();
-                        handleNavigate("/user/user-login");
+                        handleNavigate("/sign-in");
                         setIsMobileMenuOpen(false);
                       }}
                       className="w-full text-center text-[#7c3aed] border border-[#7c3aed] font-cormorant font-bold text-[22px] py-2.5 rounded-lg hover:bg-purple-50 transition-colors"

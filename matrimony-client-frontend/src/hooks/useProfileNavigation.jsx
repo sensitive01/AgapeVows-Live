@@ -81,7 +81,22 @@ export const useProfileNavigation = () => {
                 }
             }
 
-            // 2. Check view limit
+            // 2. Check if the user has any active plan
+            if (viewerId) {
+                const userRes = await getUserProfile(viewerId);
+                const userData = userRes?.data?.data || userRes?.data;
+                const hasActivePlan = userData?.paymentDetails?.some(
+                    (p) => p.subscriptionStatus === "Active" && new Date(p.subscriptionValidTo) > new Date()
+                );
+                
+                if (!hasActivePlan) {
+                    setShowRestrictionPopup(true);
+                    setIsChecking(false);
+                    return;
+                }
+            }
+
+            // 3. Check view limit
             await checkProfileViewLimit(profileId, viewerId);
 
             // Limit check passed, we can navigate

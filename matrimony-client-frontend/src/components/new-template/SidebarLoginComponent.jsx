@@ -337,7 +337,7 @@ export default function SidebarLoginComponent({ closePopup }) {
               <h4 style={{ color: '#d4a373', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', marginBottom: '5px', letterSpacing: '1px' }}>Start for free</h4>
               <h1 style={{ fontSize: '30px', fontWeight: '700', color: '#1a1a1a', marginBottom: '10px' }}>Sign in to Matrimony</h1>
               <p style={{ fontSize: '15px', color: '#666' }}>
-                Not a member? <a href="/user/user-sign-up" style={{ color: '#3498db', fontWeight: '700' }}>Sign up now</a>
+                Not a member? <a href="/register-free" style={{ color: '#3498db', fontWeight: '700' }}>Sign up now</a>
               </p>
             </div>
 

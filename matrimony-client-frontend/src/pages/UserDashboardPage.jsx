@@ -287,11 +287,11 @@ const UserDashboardPage = () => {
         });
       }
 
-      if (searchData.community) {
+      if (searchData.community && searchData.community !== "Any") {
         filteredProfiles = filteredProfiles.filter(
           (profile) =>
-            profile.community &&
-            profile.community
+            profile.denomination &&
+            profile.denomination
               .toLowerCase()
               .includes(searchData.community.toLowerCase()),
         );
@@ -320,7 +320,7 @@ const UserDashboardPage = () => {
   const handleProfileClick = (targetUser, e) => {
     executeIfUnrestricted(() => {
       if (!userId) {
-        navigate("/user/user-login");
+        navigate("/sign-in");
         return;
       }
 

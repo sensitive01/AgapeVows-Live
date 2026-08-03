@@ -128,7 +128,7 @@ const LocationMatrimony = () => {
                 ))}
               </div>
               <div className="mt-16">
-                <a href="/user/user-sign-up" className="inline-block bg-white text-[#5c2a9d] font-bold py-4 px-10 rounded-full hover:bg-gray-100 transition-colors shadow-xl text-lg">
+                <a href="/register-free" className="inline-block bg-white text-[#5c2a9d] font-bold py-4 px-10 rounded-full hover:bg-gray-100 transition-colors shadow-xl text-lg">
                   Register Free Today
                 </a>
               </div>
@@ -210,7 +210,7 @@ const LocationMatrimony = () => {
                 Join thousands of Christian singles who are actively looking for a blessed marriage. Don't wait for destiny to knock; take the first step towards your holy matrimony with AgapeVows today.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="/user/user-sign-up" className="bg-[#5c2a9d] hover:bg-purple-700 text-white font-bold py-4 px-8 rounded-full transition-colors text-lg">
+                <a href="/register-free" className="bg-[#5c2a9d] hover:bg-purple-700 text-white font-bold py-4 px-8 rounded-full transition-colors text-lg">
                   Create Free Profile
                 </a>
                 <a href="/about-us" className="bg-transparent border-2 border-white hover:bg-white hover:text-gray-900 text-white font-bold py-4 px-8 rounded-full transition-colors text-lg">

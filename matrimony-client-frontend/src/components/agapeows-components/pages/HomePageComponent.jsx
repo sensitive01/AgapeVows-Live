@@ -240,7 +240,7 @@ const HeroSection = () => {
       });
     } else {
       // ❌ login illa → login + data save
-      navigate("/user/user-login", {
+      navigate("/sign-in", {
         state: {
           from: "/show-searched-result",
           formData: formData, // 🔥 முக்கியம்
@@ -276,7 +276,7 @@ const HeroSection = () => {
     // or "userId"
 
     if (!isLoggedIn) {
-      navigate("/user/user-login");
+      navigate("/sign-in");
       return;
     }
 

@@ -226,6 +226,9 @@ const Footer = ({ paddingTop = '40px' }) => {
             <p style={{ color: "rgba(255, 255, 255, 0.7)", marginBottom: 0, fontSize: "13px", maxWidth: "800px", margin: "0 auto" }}>
               This platform is strictly for matrimonial purposes only and is not a dating or causal relationship platform.
             </p>
+            <p style={{ color: "rgba(255, 255, 255, 0.7)", marginBottom: 0, fontSize: "13px", maxWidth: "800px", margin: "0 auto" }}>
+              Brides must be at least 18 years old, and grooms must be at least 21 years old to register on this platform.
+            </p>
           </div>
         </div>
       </footer>

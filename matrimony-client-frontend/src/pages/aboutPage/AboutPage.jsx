@@ -147,7 +147,7 @@ const AboutPage = () => {
                <h3 className="text-3xl font-cormorant font-semibold tracking-wide mb-4">Ready to find your partner?</h3>
                 <p className="text-white/90 text-[18px] font-source font-normal mb-8">Join thousands of verified Christian singles today.</p>
                <a 
-                href="/user/user-sign-up" 
+                href="/register-free" 
                 className="inline-block bg-white text-[#5c2a9d] px-8 py-3 rounded-lg font-source font-semibold text-[18px] hover:bg-gray-50 transition-colors"
                >
                  Create Your Free Profile

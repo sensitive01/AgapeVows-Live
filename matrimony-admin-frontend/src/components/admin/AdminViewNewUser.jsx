@@ -158,6 +158,7 @@ export default function AdminViewNewUser({ previewUser }) {
                 "occupation",
                 "position",
                 "companyName",
+                "workLocation",
                 "annualIncome",
             ],
             contact: [
@@ -511,6 +512,7 @@ export default function AdminViewNewUser({ previewUser }) {
                         <InfoRow label="Occupation" value={user.occupation} />
                         <InfoRow label="Position" value={user.position} />
                         <InfoRow label="Company Name" value={user.companyName} />
+                        <InfoRow label="Work Location (City)" value={user.workLocation} />
                         <InfoRow label="Annual Income" value={user.annualIncome} />
                     </div>
                 </div>

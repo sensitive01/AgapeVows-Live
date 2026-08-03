@@ -392,10 +392,10 @@ const UserSignUp = () => {
                                   <a href="plans.html">Pricing plans</a>
                                 </li>
                                 <li>
-                                  <a href="/user/user-login">Login</a>
+                                  <a href="/sign-in">Login</a>
                                 </li>
                                 <li>
-                                  <a href="/user/user-sign-up">Sign-up</a>
+                                  <a href="/register-free">Sign-up</a>
                                 </li>
                                 <li>
                                   <a href="photo-gallery.html">Photo gallery</a>
@@ -831,7 +831,7 @@ const UserSignUp = () => {
                       <h4>Start for free</h4>
                       <h1>Sign up to Matrimony</h1>
                       <p>
-                        Already a member? <a href="/user/user-login">Login</a>
+                        Already a member? <a href="/sign-in">Login</a>
                       </p>
                     </div>
                     <div className="form-login">

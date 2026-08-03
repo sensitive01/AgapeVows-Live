@@ -295,7 +295,7 @@ export const DROPDOWN_OPTIONS = {
   ],
   "drinkingHabits": [
     "Never Drinks",
-    "Drinks Socially",
+    "Drinks Occasionally",
     "Drinks Regularly"
   ],
   "smokingHabits": [
@@ -969,7 +969,7 @@ export const DROPDOWN_OPTIONS = {
   "partnerDrinkingHabits": [
     "Any",
     "Never Drinks",
-    "Drinks Socially",
+    "Drinks Occasionally",
     "Drinks Regularly"
   ],
   "partnerSmokingHabits": [

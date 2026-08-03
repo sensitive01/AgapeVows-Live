@@ -36,7 +36,7 @@ const NotFoundPage = () => {
               Return to Homepage
             </button>
             <button
-              onClick={() => navigate('/user/user-sign-up')}
+              onClick={() => navigate('/register-free')}
               className="px-6 py-3 bg-white text-purple-700 border-2 border-purple-700 font-semibold rounded-lg hover:bg-purple-50 transition-colors"
             >
               Create Your Profile

@@ -191,16 +191,8 @@ const UserSignUp = () => {
           });
         };
 
-        if (userData.welcomePlan) {
-          // Instead of showing the modal here, we pass the state to the Edit Profile page
-          // so it shows up right in front of the Edit Profile page.
-          navigateToProfileEdit({ showWelcomePlan: true, welcomePlanData: userData.welcomePlan });
-        } else {
-          showAlert({ title: "Success", text: response.data.message || "Account created successfully!", icon: "success" });
-          setTimeout(() => {
-            navigateToProfileEdit();
-          }, 1500);
-        }
+        // Always pass the state to the Edit Profile page so the Welcome popup shows up
+        navigateToProfileEdit({ showWelcomePlan: true });
       }
     } catch (err) {
       console.error("Signup error:", err);
@@ -461,7 +453,7 @@ const UserSignUp = () => {
                 <div className="text-center pb-0 mt-0">
                   <p className="text-sm text-gray-600 font-medium mb-0">
                     Already have an account?{" "}
-                    <Link to="/user/user-login" className="font-bold text-[#58219f] hover:text-[#471b80] transition-colors">
+                    <Link to="/sign-in" className="font-bold text-[#58219f] hover:text-[#471b80] transition-colors">
                       Sign In
                     </Link>
                   </p>

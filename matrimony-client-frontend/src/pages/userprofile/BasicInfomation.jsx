@@ -16,7 +16,18 @@ const BasicInfomation = ({
 
   const getImageUrl = (url) => {
     if (!url) return url;
+    
+    if (typeof url === "object") {
+      url = url.url || url.path || "";
+    }
+    
+    if (typeof url !== "string") return "";
+
     if (url.startsWith("http") || url.startsWith("data:") || url.startsWith("blob:")) return url;
+    
+    // Normalize backslashes for Windows paths
+    url = url.replace(/\\/g, "/");
+    
     const baseUrl = import.meta.env.VITE_BASE_ROUTE || "";
     return `${baseUrl.replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
   };

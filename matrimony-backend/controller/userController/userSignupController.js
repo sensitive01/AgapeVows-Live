@@ -119,7 +119,8 @@ const saveSignUpData = async (req, res) => {
     await newUser.save();
 
     let assignedWelcomePlan = null;
-    // Check for active Welcome plan
+    // Check for active Welcome plan (Disabled automatic application per new requirement)
+    /*
     try {
       const welcomePlan = await planModel.findOne({ name: "Welcome plan", status: "Active" });
       if (welcomePlan) {
@@ -184,6 +185,7 @@ const saveSignUpData = async (req, res) => {
     } catch (planErr) {
       console.error("Error assigning welcome plan:", planErr);
     }
+    */
 
     const token = jwt.sign(
       { userId: newUser._id },

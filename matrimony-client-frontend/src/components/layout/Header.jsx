@@ -205,11 +205,11 @@
 //     localStorage.removeItem("userData");
 //     localStorage.removeItem("userType");
 //     setIsLoggedIn(false);
-//     navigate("/user/user-login");
+//     navigate("/sign-in");
 //   };
 
 //   const handleLogin = () => {
-//     navigate("/user/user-login");
+//     navigate("/sign-in");
 //     setIsMenuOpen(false);
 //   };
 
@@ -724,7 +724,7 @@
 //                 alignItems: "center",
 //                 justifyContent: "center",
 //                 padding: "12px 20px",
-//                 backgroundColor: isActive("/user/user-login") || isActive("/user/user-dashboard-page") ? "rgba(255,255,255,0.2)" : "transparent",
+//                 backgroundColor: isActive("/sign-in") || isActive("/user/user-dashboard-page") ? "rgba(255,255,255,0.2)" : "transparent",
 //                 color: "#fff",
 //                 border: "1px solid rgba(255,255,255,0.3)",
 //                 fontSize: "16px",
