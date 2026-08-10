@@ -4,7 +4,11 @@ import { ChevronDown, Check, X } from "lucide-react";
 const SearchableSelect = ({ options, value, onChange, placeholder, name, disabled = false, isMulti = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [focusedIndex, setFocusedIndex] = useState(-1);
   const dropdownRef = useRef(null);
+  const displayRef = useRef(null);
+  const inputRef = useRef(null);
+  const optionsListRef = useRef(null);
 
   // Filter options based on search term
   const filteredOptions = (options || []).filter((option) => {
@@ -43,6 +47,21 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
     }
   };
 
+  // Reset focus when search term changes or dropdown opens
+  useEffect(() => {
+    setFocusedIndex(filteredOptions.length > 0 ? 0 : -1);
+  }, [searchTerm, isOpen]);
+
+  // Scroll focused item into view
+  useEffect(() => {
+    if (isOpen && focusedIndex >= 0 && optionsListRef.current) {
+      const focusedElement = optionsListRef.current.children[focusedIndex];
+      if (focusedElement) {
+        focusedElement.scrollIntoView({ block: "nearest" });
+      }
+    }
+  }, [focusedIndex, isOpen]);
+
   // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -56,11 +75,9 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const displayRef = useRef(null);
-
   const handleSelect = (e, option) => {
-    e.stopPropagation();
-    if (disabled) return;
+    e?.stopPropagation();
+    if (disabled || !option) return;
     const optValue = typeof option === "string" ? option : option.value;
     
     if (isMulti) {
@@ -84,8 +101,8 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
       }
 
       onChange({ target: { name, value: newValues } });
-      // Do not close dropdown on multi-select generally, only for exclusive options above
-      displayRef.current?.focus();
+      // Keep dropdown open and keep focus on input so user can select more
+      if (inputRef.current) inputRef.current.focus();
     } else {
       onChange({ target: { name, value: optValue } });
       setIsOpen(false);
@@ -99,7 +116,16 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
   };
 
   return (
-    <div ref={dropdownRef} style={{ position: "relative", width: "100%", zIndex: isOpen ? 1010 : 1 }}>
+    <div 
+      ref={dropdownRef} 
+      onBlur={(e) => {
+        if (!dropdownRef.current?.contains(e.relatedTarget)) {
+          setIsOpen(false);
+          setSearchTerm("");
+        }
+      }}
+      style={{ position: "relative", width: "100%", zIndex: isOpen ? 1010 : 1 }}
+    >
       {/* Selected Value Display */}
       <div
         ref={displayRef}
@@ -109,10 +135,19 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
           if (!disabled) setIsOpen(!isOpen);
         }}
         onKeyDown={(e) => {
-          if (!disabled && (e.key === "Enter" || e.key === " ")) {
+          if (disabled) return;
+          if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown") {
             e.preventDefault();
             e.stopPropagation();
-            setIsOpen(!isOpen);
+            setIsOpen(true);
+          } else if (e.key.length === 1 && /[a-zA-Z0-9]/.test(e.key)) {
+            // User started typing directly while focused
+            e.preventDefault();
+            e.stopPropagation();
+            setSearchTerm(e.key);
+            setIsOpen(true);
+          } else if (e.key === "Escape") {
+            setIsOpen(false);
           }
         }}
         style={{
@@ -211,16 +246,27 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
           {/* Search Input */}
           <div style={{ padding: "8px", borderBottom: "1px solid #e5e7eb" }}>
             <input
+              ref={inputRef}
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onClick={(e) => e.stopPropagation()}
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
+                if (e.key === "ArrowDown") {
                   e.preventDefault();
-                  if (filteredOptions.length > 0) {
-                    handleSelect(e, filteredOptions[0]);
+                  setFocusedIndex((prev) => Math.min(prev + 1, filteredOptions.length - 1));
+                } else if (e.key === "ArrowUp") {
+                  e.preventDefault();
+                  setFocusedIndex((prev) => Math.max(prev - 1, 0));
+                } else if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (focusedIndex >= 0 && focusedIndex < filteredOptions.length) {
+                    handleSelect(e, filteredOptions[focusedIndex]);
                   }
+                } else if (e.key === "Escape") {
+                  e.preventDefault();
+                  setIsOpen(false);
+                  setTimeout(() => displayRef.current?.focus(), 10);
                 }
               }}
               placeholder="Search..."
@@ -240,6 +286,7 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
 
           {/* Options List */}
           <div
+            ref={optionsListRef}
             style={{
               overflowY: "auto",
               maxHeight: "250px",
@@ -247,13 +294,12 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
           >
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option, index) => {
-                const optValue =
-                  typeof option === "string" ? option : option.value;
-                const optLabel =
-                  typeof option === "string" ? option : option.label;
+                const optValue = typeof option === "string" ? option : option.value;
+                const optLabel = typeof option === "string" ? option : option.label;
                 const isSelected = isMulti 
                   ? Array.isArray(value) && value.includes(optValue)
                   : String(optValue) === String(value);
+                const isFocused = index === focusedIndex;
 
                 return (
                   <div
@@ -262,26 +308,20 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
                     style={{
                       padding: "10px 14px",
                       cursor: "pointer",
-                      background: isSelected ? "#f3f4f6" : "#fff",
+                      background: isFocused ? "#f3f4f6" : (isSelected ? "#f5f3ff" : "#fff"), 
+                      fontWeight: isSelected ? "600" : "400", // Bold for selected
                       fontSize: "14px",
-                      color: "#374151",
+                      color: isSelected ? "#5c2a9d" : "#374151", // Brand color for selected
                       transition: "background 0.15s ease",
                       borderBottom: "1px solid #f9fafb",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between"
                     }}
-                    onMouseEnter={(e) => {
-                      if (!isSelected)
-                        e.currentTarget.style.background = "#f9fafb";
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isSelected)
-                        e.currentTarget.style.background = "#fff";
-                    }}
+                    onMouseEnter={() => setFocusedIndex(index)}
                   >
                     <span>{optLabel}</span>
-                    {isSelected && isMulti && <Check size={16} color="#5c2a9d" />}
+                    {isSelected && <Check size={16} color="#5c2a9d" />}
                   </div>
                 );
               })

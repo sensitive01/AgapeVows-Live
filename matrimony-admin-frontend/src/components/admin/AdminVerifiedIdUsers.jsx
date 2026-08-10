@@ -94,19 +94,18 @@ export default function AdminVerifiedIdUsers() {
       selector: row => row.userName,
       sortable: true,
       minWidth: "280px",
-      wrap: true,
       cell: row => (
-        <div className="d-flex align-items-center py-2" style={{ wordBreak: "break-word", minWidth: "250px" }}>
+        <div className="d-flex align-items-center py-2" style={{ minWidth: 0, width: "100%" }}>
           <img
             src={row.profileImage || "/assets/images/user-placeholder.png"}
             alt=""
-            style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", marginRight: "10px" }}
+            style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", marginRight: "10px", flexShrink: 0 }}
             onError={(e) => e.target.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
           />
-          <div className="text-start" style={{ minWidth: 0 }}>
-            <div className="fw-bold">{row.userName}</div>
-            <small className="text-muted d-block">{row.userEmail}</small>
-            <small className="text-info fw-bold d-block">{row.agwid || "N/A"}</small>
+          <div className="text-start" style={{ minWidth: 0, overflow: "hidden", width: "100%" }}>
+            <div className="fw-bold text-truncate" title={row.userName}>{row.userName}</div>
+            <small className="text-muted d-block text-truncate" title={row.userEmail}>{row.userEmail}</small>
+            <small className="text-info fw-bold d-block text-truncate" title={row.agwid}>{row.agwid || "N/A"}</small>
           </div>
         </div>
       )
@@ -116,10 +115,9 @@ export default function AdminVerifiedIdUsers() {
       selector: row => row.idProofType || "N/A",
       sortable: true,
       center: true,
-      width: "110px",
-      wrap: true,
+      width: "120px",
       cell: row => (
-        <div style={{ wordBreak: "break-word" }}>
+        <div title={row.idProofType || "N/A"} style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%" }}>
           {row.idProofType || "N/A"}
         </div>
       )
@@ -129,10 +127,9 @@ export default function AdminVerifiedIdUsers() {
       selector: row => row.idProofNumber || "N/A",
       sortable: true,
       center: true,
-      width: "120px",
-      wrap: true,
+      width: "130px",
       cell: row => (
-        <div style={{ wordBreak: "break-word" }}>
+        <div title={row.idProofNumber || "N/A"} style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%" }}>
           {row.idProofNumber || "N/A"}
         </div>
       )

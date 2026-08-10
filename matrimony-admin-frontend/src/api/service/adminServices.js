@@ -28,7 +28,7 @@ export const createSubadmin = async (data) => {
 };
 
 export const getAllSubadmins = async () => {
-  return await adminInstance.get(`/get-all-subadmins`);
+  return await adminInstance.get(`/get-all-subadmins?t=${new Date().getTime()}`);
 };
 
 export const updateSubadmin = async (id, data) => {
@@ -43,7 +43,7 @@ export const deleteSubadmin = async (id) => {
    MASTER DATA MANAGEMENT
 ========================== */
 export const getAllMasterData = async () => {
-  return await adminInstance.get(`/get-all-master-data`);
+  return await adminInstance.get(`/get-all-master-data?t=${new Date().getTime()}`);
 };
 
 export const addMasterData = async (data) => {
@@ -67,7 +67,7 @@ export const getAllUserData = async () => {
 
 // Get Paid Users
 export const getPaidUserData = async () => {
-  return await adminInstance.get(`/paid-users-data`);
+  return await adminInstance.get(`/paid-users-data?t=${new Date().getTime()}`);
 };
 
 // Soft Delete User
@@ -107,7 +107,7 @@ export const restoreUserById = async (userId) => {
 
 // Get Single User
 export const getUserById = async (userId) => {
-  return await adminInstance.get(`/get-user/${userId}`);
+  return await adminInstance.get(`/get-user/${userId}?t=${new Date().getTime()}`);
 };
 
 // Update User
@@ -122,12 +122,12 @@ export const verifyIdProof = async (userId, status) => {
 
 // Get Unverified ID Users
 export const getUnverifiedIdUsers = async () => {
-  return await adminInstance.get(`/get-unverified-id-users`);
+  return await adminInstance.get(`/get-unverified-id-users?t=${new Date().getTime()}`);
 };
 
 // Get Verified ID Users
 export const getVerifiedIdUsers = async () => {
-  return await adminInstance.get(`/get-verified-id-users`);
+  return await adminInstance.get(`/get-verified-id-users?t=${new Date().getTime()}`);
 };
 
 // Toggle User Restriction
@@ -180,7 +180,7 @@ export const uploadUserImagesAdmin = async (userId, formData) => {
 ========================== */
 
 export const getAllPlanData = async () => {
-  return await adminInstance.get(`/get-all-plan-data`);
+  return await adminInstance.get(`/get-all-plan-data?t=${new Date().getTime()}`);
 };
 
 export const addNewPlanData = async (planData) => {
@@ -201,7 +201,7 @@ export const changePlanStatus = async (planId, planStatus) => {
 ========================== */
 
 export const getAllEvents = async () => {
-  return await adminInstance.get(`/get-all-events`);
+  return await adminInstance.get(`/get-all-events?t=${new Date().getTime()}`);
 };
 
 export const addNewEvent = async (eventData) => {
@@ -221,11 +221,11 @@ export const deleteEventData = async (eventId) => {
 };
 
 export const getDeletedUsers = async () => {
-  return await adminInstance.get(`/deleted-users`);
+  return await adminInstance.get(`/deleted-users?t=${new Date().getTime()}`);
 };
 
 export const getDeactivatedUsers = async () => {
-  return await adminInstance.get(`/deactivated-users`);
+  return await adminInstance.get(`/deactivated-users?t=${new Date().getTime()}`);
 };
 
 // Delete Additional Images (Admin)
@@ -245,7 +245,7 @@ export const deleteAdditionalImagesByAdmin = async (userId, imagesToDelete) => {
 // Get User Info (Admin)
 export const getUserInfoByAdmin = async (userId) => {
   try {
-    const response = await adminInstance.get(`/get-user-info/${userId}`);
+    const response = await adminInstance.get(`/get-user-info/${userId}?t=${new Date().getTime()}`);
     return response;
   } catch (error) {
     console.error("Admin: Error fetching user info:", error);
@@ -278,7 +278,7 @@ export const savePersonalInfoByAdmin = async (formData, userId) => {
 
 // Get All Blogs
 export const getAllBlogs = async () => {
-  return await adminInstance.get(`/get-all-blogs`);
+  return await adminInstance.get(`/get-all-blogs?t=${new Date().getTime()}`);
 };
 
 // Add New Blog

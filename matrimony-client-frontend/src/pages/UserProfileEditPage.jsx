@@ -41,18 +41,18 @@ const getDistrictsForState = (countryName, stateName, allCountries) => {
 
 const getImageUrl = (url) => {
   if (!url || url === "null" || url === "undefined" || url === "[object Object]") return "";
-  
+
   if (typeof url === "object") {
     url = url.url || url.path || "";
   }
-  
+
   if (typeof url !== "string" || url === "[object Object]") return "";
 
   if (url.startsWith("http") || url.startsWith("data:") || url.startsWith("blob:")) return url;
-  
+
   // Normalize backslashes for Windows paths
   url = url.replace(/\\/g, "/");
-  
+
   const baseUrl = import.meta.env.VITE_BASE_ROUTE || "";
   return `${baseUrl.replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
 };
@@ -1130,6 +1130,7 @@ const UserProfileEditPage = () => {
   const [showVisibilityOptions, setShowVisibilityOptions] = useState(false);
   const [showUnsavedModal, setShowUnsavedModal] = useState(false);
   const [pendingNav, setPendingNav] = useState(null);
+  const hasPushedDummyState = useRef(false);
 
 
   const [idProofFile, setIdProofFile] = useState(null);
@@ -1941,6 +1942,7 @@ const UserProfileEditPage = () => {
     const isInvalid = (val) => !val || val === "Other" || val === "Others";
 
     if (isInvalid(formData.profileCreatedFor)) missingFields.push({ label: "Profile Created By", name: "profileCreatedFor" });
+    if (isInvalid(formData.name)) missingFields.push({ label: "Name", name: "name" });
     if (isInvalid(formData.gender)) missingFields.push({ label: "Gender", name: "gender" });
     if (isInvalid(formData.dateOfBirth)) missingFields.push({ label: "Date of Birth", name: "dateOfBirth" });
     if (isInvalid(formData.age)) missingFields.push({ label: "Age", name: "age" });
@@ -1963,7 +1965,7 @@ const UserProfileEditPage = () => {
     if (isInvalid(formData.relationship)) missingFields.push({ label: "Relationship with Contact Person", name: "relationship" });
     if (isInvalid(formData.contactEmail)) missingFields.push({ label: "Contact Email", name: "contactEmail" });
     if (isInvalid(formData.contactPhone)) missingFields.push({ label: "Contact Number", name: "contactPhone" });
-    
+
     // Also enforce "Other" specification for non-mandatory fields if they selected "Other"
     if (formData.churchActivity === "Other" || formData.churchActivity === "Others") missingFields.push({ label: "Church Activity (Please specify)", name: "churchActivity" });
     if (formData.education === "Other" || formData.education === "Others") missingFields.push({ label: "Highest Education (Please specify)", name: "education" });
@@ -2149,7 +2151,7 @@ const UserProfileEditPage = () => {
         // Optional: navigate after update
         setTimeout(() => {
           navigate(`/user/user-dashboard-page`, { state: { profileJustCompleted: true } });
-        }, 500);
+        }, 1500);
       } else {
         let errorMessage = response.data?.message || "Error updating profile. Please try again.";
         if (response.data?.error) {
@@ -2182,6 +2184,14 @@ const UserProfileEditPage = () => {
   // Warn user about unsaved changes
   // ========================
   useEffect(() => {
+    if (hasUnsavedChanges && !hasPushedDummyState.current) {
+      window.history.pushState(null, "", window.location.pathname);
+      hasPushedDummyState.current = true;
+    } else if (!hasUnsavedChanges && hasPushedDummyState.current) {
+      window.history.back();
+      hasPushedDummyState.current = false;
+    }
+
     // 1. Handle native browser refresh/close
     const handleBeforeUnload = (e) => {
       if (hasUnsavedChanges) {
@@ -2212,12 +2222,22 @@ const UserProfileEditPage = () => {
       }
     };
 
+    // 3. Handle browser back button (popstate)
+    const handlePopState = (e) => {
+      if (!hasUnsavedChanges) return;
+      hasPushedDummyState.current = false;
+      setShowUnsavedModal(true);
+      setPendingNav('BACK');
+    };
+
     window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("popstate", handlePopState);
     // Use capture phase to intercept before React Router Link handles the click
     document.addEventListener("click", handleGlobalClick, { capture: true });
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("popstate", handlePopState);
       document.removeEventListener("click", handleGlobalClick, { capture: true });
     };
   }, [hasUnsavedChanges]);
@@ -2603,7 +2623,15 @@ const UserProfileEditPage = () => {
                         max={new Date().toISOString().split('T')[0]}
                         onClick={(e) => {
                           if (!isDobReadOnly && typeof e.target.showPicker === 'function') {
-                            e.target.showPicker();
+                            const rect = e.target.getBoundingClientRect();
+                            const clickX = e.clientX - rect.left;
+                            if (clickX > 120) {
+                              try {
+                                e.target.showPicker();
+                              } catch (err) {
+                                console.error(err);
+                              }
+                            }
                           }
                         }}
                       />
@@ -4165,7 +4193,14 @@ const UserProfileEditPage = () => {
             <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
               <button
                 type="button"
-                onClick={() => setShowUnsavedModal(false)}
+                onClick={() => {
+                  setShowUnsavedModal(false);
+                  if (pendingNav === 'BACK') {
+                    window.history.pushState(null, "", window.location.pathname);
+                    hasPushedDummyState.current = true;
+                  }
+                  setPendingNav(null);
+                }}
                 style={{ padding: "12px 24px", background: "#f3f4f6", color: "#374151", border: "none", borderRadius: "8px", fontWeight: "600", fontSize: "15px", cursor: "pointer", flex: 1, transition: "background 0.2s" }}
                 onMouseEnter={(e) => e.target.style.background = "#e5e7eb"}
                 onMouseLeave={(e) => e.target.style.background = "#f3f4f6"}
@@ -4177,8 +4212,11 @@ const UserProfileEditPage = () => {
                 onClick={() => {
                   setShowUnsavedModal(false);
                   setHasUnsavedChanges(false);
+                  hasPushedDummyState.current = false;
                   setTimeout(() => {
-                    if (pendingNav) {
+                    if (pendingNav === 'BACK') {
+                      navigate(-1);
+                    } else if (pendingNav) {
                       try {
                         const url = new URL(pendingNav);
                         if (url.origin === window.location.origin) {

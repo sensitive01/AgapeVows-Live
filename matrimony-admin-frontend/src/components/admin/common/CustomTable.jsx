@@ -173,6 +173,7 @@ const CustomTable = ({ columns, data, itemsPerPage = 10, noDataComponent = "No r
                   {/* Custom Full-Height Resize Handle */}
                   <div
                     onMouseDown={(e) => handleResizeStart(e, col.name)}
+                    onClick={(e) => e.stopPropagation()}
                     style={{
                       position: "absolute",
                       top: 0,

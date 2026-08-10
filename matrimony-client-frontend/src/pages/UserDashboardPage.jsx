@@ -38,6 +38,7 @@ const UserDashboardPage = () => {
   const [activePlan, setActivePlan] = useState(null);
   const [planLoading, setPlanLoading] = useState(true);
   const location = useLocation();
+  const [refreshCounter, setRefreshCounter] = useState(0);
 
   useEffect(() => {
     if (location.state?.purchaseSuccess && location.state?.planDetails) {
@@ -103,6 +104,14 @@ const UserDashboardPage = () => {
       // Clear the state so it doesn't pop up again on refresh
       window.history.replaceState({}, document.title);
     }
+
+    // Force a delayed refetch if profile was just completed to avoid stale data race condition
+    if (location.state?.profileJustCompleted) {
+      setTimeout(() => {
+        setRefreshCounter((prev) => prev + 1);
+      }, 1500);
+      window.history.replaceState({}, document.title);
+    }
   }, [location.state]);
 
 
@@ -143,7 +152,7 @@ const UserDashboardPage = () => {
       }
     };
     fetchData();
-  }, [userId]);
+  }, [userId, refreshCounter]);
 
   const destroySlider = () => {
     if (
@@ -223,7 +232,7 @@ const UserDashboardPage = () => {
     executeIfUnrestricted(async () => {
       try {
         const response = await userSendInterestRequest(userId, agwid);
-        
+
         if (response.status === 200) {
           toast.success(response.data.message || "Interest request sent successfully", {
             position: "top-center",
@@ -324,55 +333,55 @@ const UserDashboardPage = () => {
         return;
       }
 
-    const myActivePlan = userInfo?.paymentDetails?.find(
-      (p) =>
-        p.subscriptionStatus === "Active" &&
-        new Date(p.subscriptionValidTo) > new Date()
-    );
+      const myActivePlan = userInfo?.paymentDetails?.find(
+        (p) =>
+          p.subscriptionStatus === "Active" &&
+          new Date(p.subscriptionValidTo) > new Date()
+      );
 
-    const myCanViewRaw = myActivePlan?.canViewProfiles || "All Profiles";
-    const myCanView = myCanViewRaw.toString().trim().toLowerCase();
+      const myCanViewRaw = myActivePlan?.canViewProfiles || "All Profiles";
+      const myCanView = myCanViewRaw.toString().trim().toLowerCase();
 
-    const targetActivePlan = targetUser?.paymentDetails?.find(
-      (p) =>
-        p.subscriptionStatus === "Active" &&
-        new Date(p.subscriptionValidTo) > new Date()
-    );
+      const targetActivePlan = targetUser?.paymentDetails?.find(
+        (p) =>
+          p.subscriptionStatus === "Active" &&
+          new Date(p.subscriptionValidTo) > new Date()
+      );
 
-    const targetPlanName = targetActivePlan?.subscriptionType?.toLowerCase() || "";
+      const targetPlanName = targetActivePlan?.subscriptionType?.toLowerCase() || "";
 
-    const isTargetPlatinumOrGold =
-      targetPlanName.includes("platinum") ||
-      targetPlanName.includes("gold") ||
-      targetPlanName.includes("golden");
+      const isTargetPlatinumOrGold =
+        targetPlanName.includes("platinum") ||
+        targetPlanName.includes("gold") ||
+        targetPlanName.includes("golden");
 
-    if (!myCanView.includes("all")) {
-      if (myCanView === "only basic" && targetPlanName && !targetPlanName.includes("basic")) {
-        toast.error("Your plan only allows viewing Basic profiles. Please upgrade to access other profiles.", {
-          position: "top-center",
-          autoClose: 30000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "colored",
-        });
-        return;
+      if (!myCanView.includes("all")) {
+        if (myCanView === "only basic" && targetPlanName && !targetPlanName.includes("basic")) {
+          toast.error("Your plan only allows viewing Basic profiles. Please upgrade to access other profiles.", {
+            position: "top-center",
+            autoClose: 30000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
+          return;
+        }
+
+        if (myCanView === "only premium" && isTargetPlatinumOrGold) {
+          toast.error("Upgrade your plan to view Platinum and Golden Membership profiles.", {
+            position: "top-center",
+            autoClose: 30000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
+          return;
+        }
       }
-
-      if (myCanView === "only premium" && isTargetPlatinumOrGold) {
-        toast.error("Upgrade your plan to view Platinum and Golden Membership profiles.", {
-          position: "top-center",
-          autoClose: 30000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "colored",
-        });
-        return;
-      }
-    }
 
       navigateToProfile(targetUser._id, userId, e);
     });
@@ -380,13 +389,6 @@ const UserDashboardPage = () => {
 
   // Initialize components on first load
   useEffect(() => {
-    const hasReloaded = sessionStorage.getItem("userDashboardReloaded");
-    if (!hasReloaded) {
-      sessionStorage.setItem("userDashboardReloaded", "true");
-      window.location.reload();
-      return;
-    }
-
     const initializeComponents = () => {
       if (typeof window.$ !== "undefined") {
         window.$(".count").each(function () {

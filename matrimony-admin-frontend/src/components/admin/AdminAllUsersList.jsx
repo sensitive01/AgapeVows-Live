@@ -8,13 +8,15 @@ import CustomTable from "./common/CustomTable";
 import { formatPhoneNumber } from '../../utils/formatters';
 
 
-
 const AdminAllUsersList = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [photoFilter, setPhotoFilter] = useState("all");
+  const [genderFilter, setGenderFilter] = useState("all");
+  const [verifiedFilter, setVerifiedFilter] = useState("all");
+  const [planFilter, setPlanFilter] = useState("all");
   const [openDropdown, setOpenDropdown] = useState(null);
   const [adminRole, setAdminRole] = useState("superadmin");
   const [adminPermissions, setAdminPermissions] = useState([]);
@@ -52,15 +54,26 @@ const AdminAllUsersList = () => {
       try {
         const response = await getAllUserData();
         if (response.status === 200) {
-          const mappedUsers = response.data.data.map((user) => ({
-            ...user,
-            city: user.city || "N/A",
-            planStart: user.planStart || "N/A",
-            expiryDate: user.expiryDate || "N/A",
-            payment: user.payment || "Pending",
-            planType: user.planType || "Basic",
-            profileImg: user.profileImage || "",
-          }));
+          const mappedUsers = response.data.data.map((user) => {
+            let planName = "No plan";
+            if (user.paymentDetails && user.paymentDetails.length > 0) {
+              const activePlans = user.paymentDetails.filter(p => new Date(p.subscriptionValidTo) > new Date() && p.subscriptionStatus === "Active");
+              if (activePlans.length > 0) {
+                activePlans.sort((a, b) => new Date(b.subscriptionValidFrom) - new Date(a.subscriptionValidFrom));
+                planName = activePlans[0].subscriptionType || "Paid";
+              }
+            }
+            return {
+              ...user,
+              city: user.city || "N/A",
+              planStart: user.planStart || "N/A",
+              expiryDate: user.expiryDate || "N/A",
+              payment: user.payment || "Pending",
+              planType: user.planType || "Basic",
+              profileImg: user.profileImage || "",
+              activePlanName: planName
+            };
+          });
           setUsers(mappedUsers);
           setFilteredUsers(mappedUsers);
         }
@@ -89,11 +102,34 @@ const AdminAllUsersList = () => {
         matchesPhoto = !user.profileImage || user.profileImage === "";
       }
 
-      return matchesSearch && matchesPhoto;
+      let matchesGender = true;
+      if (genderFilter !== "all") {
+        matchesGender = (user.gender || "").toLowerCase() === genderFilter;
+      }
+
+      let matchesVerified = true;
+      if (verifiedFilter !== "all") {
+        const isVerified = user.idVerificationStatus === "Verified";
+        matchesVerified = verifiedFilter === "verified" ? isVerified : !isVerified;
+      }
+
+      let matchesPlan = true;
+      if (planFilter !== "all") {
+        const hasPlan = user.activePlanName && user.activePlanName !== "No plan";
+        if (planFilter === "paid") {
+          matchesPlan = hasPlan;
+        } else if (planFilter === "free") {
+          matchesPlan = !hasPlan;
+        } else {
+          matchesPlan = user.activePlanName?.toLowerCase() === planFilter.toLowerCase();
+        }
+      }
+
+      return matchesSearch && matchesPhoto && matchesGender && matchesVerified && matchesPlan;
     });
 
     setFilteredUsers(filtered);
-  }, [users, searchTerm, photoFilter]);
+  }, [users, searchTerm, photoFilter, genderFilter, verifiedFilter, planFilter]);
 
 
   const getInitials = (name) => {
@@ -281,13 +317,22 @@ const AdminAllUsersList = () => {
     },
     {
       name: "CITY",
-      width: "120px",
+      width: "140px",
       selector: row => row.city,
       sortable: true,
       hide: "lg",
+      cell: row => (
+        <div 
+          title={row.city}
+          style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%" }}
+        >
+          {row.city}
+        </div>
+      )
     },
     {
-      name: "CREATED AT", width: "100px",
+      name: "CREATED AT", 
+      width: "110px",
       selector: row => row.createdAt ? new Date(row.createdAt).getTime() : 0,
       sortable: true,
       format: row => row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "N/A",
@@ -297,14 +342,7 @@ const AdminAllUsersList = () => {
       name: "PLAN",
       width: "140px",
       cell: row => {
-        let planName = "No plan";
-        if (row.paymentDetails && row.paymentDetails.length > 0) {
-          const activePlans = row.paymentDetails.filter(p => new Date(p.subscriptionValidTo) > new Date() && p.subscriptionStatus === "Active");
-          if (activePlans.length > 0) {
-            activePlans.sort((a, b) => new Date(b.subscriptionValidFrom) - new Date(a.subscriptionValidFrom));
-            planName = activePlans[0].subscriptionType || "Paid";
-          }
-        }
+        const planName = row.activePlanName || "No plan";
         return (
           <div className="d-flex flex-column align-items-center justify-content-center">
             <span className={`badge ${planName === 'No plan' ? 'bg-secondary' : 'bg-success'} text-white`} style={{ fontSize: '12px', padding: '5px 10px', letterSpacing: '0.5px', borderRadius: '4px' }}>
@@ -508,8 +546,8 @@ const AdminAllUsersList = () => {
             </div>
 
             {/* Search and Filter Controls */}
-            <div className="d-flex justify-content-between align-items-center mb-3 gap-3">
-              <div className="form-group mb-0" style={{ flex: "0 1 350px" }}>
+            <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
+              <div className="form-group mb-0" style={{ flex: "1 1 300px" }}>
                 <input
                   type="text"
                   className="form-control"
@@ -518,18 +556,65 @@ const AdminAllUsersList = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <div className="d-flex align-items-center mb-0">
-                <span className="me-2 fw-bold text-muted" style={{ whiteSpace: "nowrap" }}>Filter:</span>
+              <div className="d-flex flex-wrap align-items-center gap-2 mb-0">
+                <span className="me-1 fw-bold text-muted" style={{ whiteSpace: "nowrap" }}>Filter:</span>
                 <select
-                  className="form-control"
+                  className="form-control form-control-sm"
                   value={photoFilter}
                   onChange={(e) => setPhotoFilter(e.target.value)}
-                  style={{ minWidth: "160px" }}
+                  style={{ width: "auto" }}
                 >
                   <option value="all">All Photos</option>
                   <option value="with_photo">With Photo</option>
                   <option value="without_photo">Without Photo</option>
                 </select>
+                <select
+                  className="form-control form-control-sm"
+                  value={genderFilter}
+                  onChange={(e) => setGenderFilter(e.target.value)}
+                  style={{ width: "auto" }}
+                >
+                  <option value="all">All Genders</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </select>
+                <select
+                  className="form-control form-control-sm"
+                  value={verifiedFilter}
+                  onChange={(e) => setVerifiedFilter(e.target.value)}
+                  style={{ width: "auto" }}
+                >
+                  <option value="all">All Users</option>
+                  <option value="verified">Verified</option>
+                  <option value="unverified">Unverified</option>
+                </select>
+                <select
+                  className="form-control form-control-sm"
+                  value={planFilter}
+                  onChange={(e) => setPlanFilter(e.target.value)}
+                  style={{ width: "auto" }}
+                >
+                  <option value="all">All Plans</option>
+                  <option value="No plan">No Plan</option>
+                  <option value="Basic">Basic</option>
+                  <option value="Premium">Premium</option>
+                  <option value="Platinum">Platinum</option>
+                  <option value="Golden membership">Golden membership</option>
+                  <option value="Welcome plan">Welcome plan</option>
+                </select>
+                <button
+                  className="btn btn-outline-secondary btn-sm ms-1"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setPhotoFilter("all");
+                    setGenderFilter("all");
+                    setVerifiedFilter("all");
+                    setPlanFilter("all");
+                  }}
+                  title="Clear Filters"
+                >
+                  <i className="fa fa-refresh"></i>
+                </button>
               </div>
             </div>
 

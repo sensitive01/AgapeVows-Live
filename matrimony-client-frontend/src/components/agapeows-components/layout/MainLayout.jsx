@@ -165,11 +165,14 @@ const MainLayout = () => {
   const [userImage, setUserImage] = useState(
     localStorage.getItem("userImage") || null,
   );
-  const [isUserActive, setIsUserActive] = useState(Boolean(userId));
+  const isUserActive = Boolean(userId);
   const [isHelpDropdownVisible, setIsHelpDropdownVisible] = useState(false);
 
   useEffect(() => {
-  }, []);
+    // Re-evaluate local storage values when path changes
+    setUserName(localStorage.getItem("userName"));
+    setUserImage(localStorage.getItem("userImage") || null);
+  }, [location.pathname]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -193,11 +196,10 @@ const MainLayout = () => {
     if (userId) {
       fetchData();
     }
-  }, [userId]);
+  }, [userId, location.pathname]);
 
   const handleLogOut = () => {
     localStorage.clear();
-    setIsUserActive(false);
     window.location.href = "/";
   };
 
@@ -514,7 +516,11 @@ const MainLayout = () => {
                         handleNavigate("/register-free");
                       }
                     }}
-                    className="bg-[#58219f] text-white px-6 py-2 rounded-full hover:bg-[#4a1b85] transition-colors font-cormorant font-bold text-[22px] shadow-md shadow-purple-100"
+                    className={
+                      location.pathname === "/sign-in"
+                        ? "text-gray-800 hover:text-[#4a2580] font-cormorant font-bold text-[22px]"
+                        : "bg-[#58219f] text-white px-6 py-2 rounded-full hover:bg-[#4a1b85] transition-colors font-cormorant font-bold text-[22px] shadow-md shadow-purple-100"
+                    }
                   >
                     Register Free
                   </a>
@@ -526,7 +532,11 @@ const MainLayout = () => {
                         handleNavigate("/sign-in");
                       }
                     }}
-                    className="text-gray-800 hover:text-[#4a2580] font-cormorant font-bold text-[22px]"
+                    className={
+                      location.pathname === "/sign-in"
+                        ? "bg-[#58219f] text-white px-6 py-2 rounded-full hover:bg-[#4a1b85] transition-colors font-cormorant font-bold text-[22px] shadow-md shadow-purple-100"
+                        : "text-gray-800 hover:text-[#4a2580] font-cormorant font-bold text-[22px]"
+                    }
                   >
                     Login
                   </a>
@@ -749,13 +759,18 @@ const MainLayout = () => {
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-3 px-2 pb-6">
+                  <div className="space-y-3 px-2 pb-4">
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
                         handleNavigate("/register-free");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full bg-[#58219f] text-white py-2.5 rounded-lg font-cormorant font-bold text-[22px] hover:bg-[#4a1b85] transition-colors shadow-sm"
+                      className={
+                        location.pathname === "/sign-in"
+                          ? "w-full text-center text-[#7c3aed] border border-[#7c3aed] font-cormorant font-bold text-[22px] py-2.5 rounded-lg hover:bg-purple-50 transition-colors"
+                          : "w-full bg-[#58219f] text-white py-2.5 rounded-lg font-cormorant font-bold text-[22px] hover:bg-[#4a1b85] transition-colors shadow-sm"
+                      }
                     >
                       Register Free
                     </button>
@@ -765,7 +780,11 @@ const MainLayout = () => {
                         handleNavigate("/sign-in");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full text-center text-[#7c3aed] border border-[#7c3aed] font-cormorant font-bold text-[22px] py-2.5 rounded-lg hover:bg-purple-50 transition-colors"
+                      className={
+                        location.pathname === "/sign-in"
+                          ? "w-full bg-[#58219f] text-white py-2.5 rounded-lg font-cormorant font-bold text-[22px] hover:bg-[#4a1b85] transition-colors shadow-sm"
+                          : "w-full text-center text-[#7c3aed] border border-[#7c3aed] font-cormorant font-bold text-[22px] py-2.5 rounded-lg hover:bg-purple-50 transition-colors"
+                      }
                     >
                       Login
                     </button>

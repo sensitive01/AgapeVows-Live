@@ -2530,14 +2530,21 @@ const uploadIdProof = async (req, res) => {
 
     const { idProofType, idProofNumber } = req.body;
 
+    const updateData = {
+      idProofDocument: result.secure_url,
+      idVerificationStatus: "Uploaded",
+    };
+
+    if (idProofType !== undefined) {
+      updateData.idProofType = idProofType;
+    }
+    if (idProofNumber !== undefined) {
+      updateData.idProofNumber = idProofNumber;
+    }
+
     const updatedUser = await userModel.findByIdAndUpdate(
       userId,
-      {
-        idProofDocument: result.secure_url,
-        idProofType: idProofType || "",
-        idProofNumber: idProofNumber || "",
-        idVerificationStatus: "Uploaded",
-      },
+      updateData,
       { new: true }
     );
 

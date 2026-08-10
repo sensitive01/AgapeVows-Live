@@ -150,7 +150,7 @@ const ProfileCompletionGuard = ({ children }) => {
         showAlert({
           title: "Please Complete Your Profile",
           html: `<div style="margin-top: -8px; font-size: 17px; color: #111; font-weight: bold;">
-                   Please fill all the mandatory<span style="color: red;">*</span> details to continue.
+                   Please fill all the mandatory<span style="color: red;"> *</span> details to continue.
                  </div>`,
           icon: "warning"
         });

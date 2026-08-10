@@ -98,14 +98,14 @@ const AdminContactUpdateRequests = () => {
   };
 
   const columns = [
-    { name: "S.No", selector: (row, index) => index + 1, sortable: false, width: "70px", center: true },
+    { name: "S.No", selector: (row, index) => index + 1, sortable: false, width: "50px", center: true },
     {
       name: "User Details",
       selector: row => row.userName,
       sortable: true,
       minWidth: "250px",
       cell: row => (
-        <div className="d-flex align-items-center">
+        <div className="d-flex align-items-center py-2" style={{ minWidth: 0, width: "100%" }}>
           <img
             src={row.profileImage || "/assets/images/user-placeholder.png"}
             alt="Profile"
@@ -114,13 +114,14 @@ const AdminContactUpdateRequests = () => {
               height: "40px",
               borderRadius: "50%",
               objectFit: "cover",
-              marginRight: "10px"
+              marginRight: "10px",
+              flexShrink: 0
             }}
             onError={(e) => e.target.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
           />
-          <div className="text-start" style={{ minWidth: 0 }}>
-            <div className="fw-bold text-truncate" style={{ maxWidth: '250px' }}>{row.userName || "User"}</div>
-            <small className="text-muted text-truncate d-block" style={{ maxWidth: '250px' }}>{row.agwid}</small>
+          <div className="text-start" style={{ minWidth: 0, overflow: "hidden", width: "100%" }}>
+            <div className="fw-bold text-truncate" title={row.userName || "User"}>{row.userName || "User"}</div>
+            <small className="text-muted text-truncate d-block" title={row.agwid}>{row.agwid}</small>
           </div>
         </div>
       )
@@ -128,11 +129,11 @@ const AdminContactUpdateRequests = () => {
     {
       name: "Current Contact",
       center: true,
-      minWidth:"250px",
+      minWidth:"280px",
       cell: row => (
-        <div>
-          {row.requestedMobile && <div><strong>Mobile:</strong> {formatPhoneNumber(row.userMobile)}</div>}
-          {row.requestedEmail && <div><strong>Email:</strong> {row.userEmail}</div>}
+        <div style={{ minWidth: 0, width: "100%", overflow: "hidden" }}>
+          {row.requestedMobile && <div className="text-truncate" title={`Mobile: ${formatPhoneNumber(row.userMobile)}`}><strong>Mobile:</strong> {formatPhoneNumber(row.userMobile)}</div>}
+          {row.requestedEmail && <div className="text-truncate" title={`Email: ${row.userEmail}`}><strong>Email:</strong> {row.userEmail}</div>}
         </div>
       )
     },
@@ -141,14 +142,14 @@ const AdminContactUpdateRequests = () => {
       minWidth:"250px",
       center: true,
       cell: row => (
-        <div className="text-primary fw-bold">
-          {row.requestedMobile && <div>{row.requestedMobile}</div>}
-          {row.requestedEmail && <div>{row.requestedEmail}</div>}
+        <div className="text-primary fw-bold" style={{ minWidth: 0, width: "100%", overflow: "hidden" }}>
+          {row.requestedMobile && <div className="text-truncate" title={row.requestedMobile}>{row.requestedMobile}</div>}
+          {row.requestedEmail && <div className="text-truncate" title={row.requestedEmail}>{row.requestedEmail}</div>}
         </div>
       )
     },
     {
-      name: "Created At",width:"150px",
+      name: "Created At",width:"130px",
       selector: row => row.createdAt,
       sortable: true,
       center: true,
@@ -157,7 +158,7 @@ const AdminContactUpdateRequests = () => {
     {
       name: "Actions",
       center: true,
-      minWidth: "180px",
+      minWidth: "120px",
       cell: row => (
         <div className="d-flex justify-content-center gap-2">
           <button
