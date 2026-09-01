@@ -300,6 +300,14 @@ const updateUser = async (req, res) => {
     const { id } = req.params;
     const updatedData = { ...req.body, isProfileCompleted: true };
 
+    if (updatedData.password) {
+      updatedData.userPassword = await bcrypt.hash(updatedData.password, 10);
+      delete updatedData.password;
+    } else {
+      // Do not update the password if a new one is not provided
+      delete updatedData.userPassword;
+    }
+
     const updatedUser = await userModel.findOneAndUpdate(
       { _id: id, isDeleted: false },
       updatedData,
