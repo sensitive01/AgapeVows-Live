@@ -83,8 +83,6 @@ import SEOHelmet from "./components/common/SEOHelmet";
 function SEOManager() {
   const location = useLocation();
   const privatePaths = [
-    '/sign-in',
-    '/register-free',
     '/user/user-dashboard-page',
     '/user/user-profile-page',
     '/user/user-settings-page',
