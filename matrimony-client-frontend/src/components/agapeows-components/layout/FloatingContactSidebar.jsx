@@ -192,7 +192,7 @@ const FloatingContactSidebar = () => {
 
           {/* WhatsApp Section */}
           <a
-            href="https://wa.me/919663796699"
+            href="https://wa.me/918197507551"
             target="_blank"
             rel="noopener noreferrer"
             onMouseEnter={() => setHoveredBtn('whatsapp')}
@@ -215,7 +215,7 @@ const FloatingContactSidebar = () => {
 
           {/* Phone Section */}
           <a
-            href="tel:+919663796699"
+            href="tel:+918197507551"
             onMouseEnter={() => setHoveredBtn('phone')}
             onMouseLeave={() => setHoveredBtn(null)}
             className={`bg-purple-600 text-white flex items-center justify-end p-3 transition-all duration-300 h-[60px] rounded-bl-xl overflow-hidden ${hoveredBtn === 'phone' ? 'w-[180px]' : 'w-[50px]'

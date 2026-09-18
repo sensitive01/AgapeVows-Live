@@ -253,7 +253,7 @@ const UserSignUp = () => {
                 Need help registering?
               </h3>
               <p className="text-[20px] text-[#4a2580] font-normal opacity-90 leading-snug">
-                Download our Profile Template <a href="/Profile-template.docx" download="Profile-Template.docx" target="_blank" rel="noopener noreferrer" className="font-semibold underline">here</a>. Complete it with your details and email it along with your latest photos to <a href="mailto:profiles@agapevows.com" className="font-semibold underline">profiles@agapevows.com</a>, or send it to us on WhatsApp at <a href="https://wa.me/919663796699" className="font-semibold underline">+91 96637 96699</a>. Our team will create your profile and help you get started.
+                Download our Profile Template <a href="/Profile-template.docx" download="Profile-Template.docx" target="_blank" rel="noopener noreferrer" className="font-semibold underline">here</a>. Complete it with your details and email it along with your latest photos to <a href="mailto:profiles@agapevows.com" className="font-semibold underline">profiles@agapevows.com</a>, or send it to us on WhatsApp at <a href="https://wa.me/918197507551" className="font-semibold underline">+91 81975 07551</a>. Our team will create your profile and help you get started.
               </p>
             </div>
 

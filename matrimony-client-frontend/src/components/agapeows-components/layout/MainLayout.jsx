@@ -261,7 +261,7 @@ const MainLayout = () => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 text-white">
                 <Phone className="w-4 h-4 !text-white" />
-                <span className="!text-white font-medium">+91 96637 96699</span>
+                <span className="!text-white font-medium">+91 81975 07551</span>
               </div>
               <div className="flex items-center space-x-2 text-white">
                 <Mail className="w-4 h-4 !text-white" />

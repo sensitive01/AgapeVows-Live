@@ -175,9 +175,9 @@ export default function Index() {
         <div className="rhs">
           <ul>
             <li>
-              <a href="tel:+9704462944">
+              <a href="tel:+918197507551">
                 <i className="fa fa-phone" aria-hidden="true" />
-                &nbsp;+91 96637 96699
+                &nbsp;+91 81975 07551
               </a>
             </li>
             <li>

@@ -187,7 +187,7 @@ const TermsOfUse = () => {
             <strong>Contact Address:</strong><br />
             ½ A, 1st Cross, Thimmaiah Garden,<br />
             RT Nagar, Bengaluru – 560032<br />
-            <strong>Phone:</strong> +91 96637 96699
+            <strong>Phone:</strong> +91 81975 07551
           </p>
           <p className="mb-4 text-gray-700">AgapeVows reserves the right to update its contact information and address details from time to time.</p>
           <p className="mb-4 text-gray-700 font-medium">By registering on AgapeVows and continuing to use the Platform, you acknowledge that you have read, understood, and agreed to these Terms &amp; Conditions and all policies referenced herein.</p>

@@ -22,13 +22,13 @@ const MenuPopUp1 = () => {
           <li>
             <a href="#!">
               <i className="fa fa-phone" aria-hidden="true" />
-              +91 96637 96699
+              +91 81975 07551
             </a>
           </li>
           <li>
             <a href="#!">
               <i className="fa fa-whatsapp" aria-hidden="true" />
-              +91 96637 96699
+              +91 81975 07551
             </a>
           </li>
           <li>

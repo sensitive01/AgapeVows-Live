@@ -119,7 +119,7 @@ const Footer = ({ paddingTop = '40px' }) => {
               </div>
               <div>
                 <div style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '2px' }}>Call Us</div>
-                <div style={{ fontSize: '16px', fontWeight: '600', color: '#fff' }}>+91 96637 96699</div>
+                <div style={{ fontSize: '16px', fontWeight: '600', color: '#fff' }}>+91 81975 07551</div>
               </div>
             </div>
 

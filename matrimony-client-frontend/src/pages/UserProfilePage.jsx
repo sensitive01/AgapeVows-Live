@@ -379,7 +379,7 @@ const DocumentVerificationSection = ({ userInfo, onUploadSuccess }) => {
           </ul>
           <div style={{ marginTop: "auto", textAlign: "left", width: "100%", fontSize: "0.85rem", color: "#888" }}>
             <p className="mb-1"><i className="fa fa-envelope me-2" style={{ color: "#5c2a9d" }}></i> profiles@agapevows.com</p>
-            <p className="mb-0"><i className="fa fa-phone me-2" style={{ color: "#5c2a9d" }}></i> +91 96637-96699</p>
+            <p className="mb-0"><i className="fa fa-phone me-2" style={{ color: "#5c2a9d" }}></i> +91 81975 07551</p>
           </div>
         </div>
 
