@@ -10,13 +10,11 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
   const inputRef = useRef(null);
   const optionsListRef = useRef(null);
 
-  // Filter options based on search term
   const filteredOptions = (options || []).filter((option) => {
     const optionLabel = typeof option === "string" ? option : (option?.label || "");
     return optionLabel.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
-  // Get display value
   const getDisplayValue = () => {
     if (isMulti) {
       if (!Array.isArray(value) || value.length === 0) return "";
@@ -47,12 +45,10 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
     }
   };
 
-  // Reset focus when search term changes or dropdown opens
   useEffect(() => {
     setFocusedIndex(filteredOptions.length > 0 ? 0 : -1);
   }, [searchTerm, isOpen]);
 
-  // Scroll focused item into view
   useEffect(() => {
     if (isOpen && focusedIndex >= 0 && optionsListRef.current) {
       const focusedElement = optionsListRef.current.children[focusedIndex];
@@ -62,7 +58,6 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
     }
   }, [focusedIndex, isOpen]);
 
-  // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -101,14 +96,12 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
       }
 
       onChange({ target: { name, value: newValues } });
-      // Keep dropdown open and keep focus on input so user can select more
       if (inputRef.current) inputRef.current.focus();
     } else {
       onChange({ target: { name, value: optValue } });
       setIsOpen(false);
       setSearchTerm("");
       
-      // Delay focus restoration slightly to ensure dropdown is fully closed
       setTimeout(() => {
         displayRef.current?.focus();
       }, 10);
@@ -141,7 +134,6 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
             e.stopPropagation();
             setIsOpen(true);
           } else if (e.key.length === 1 && /[a-zA-Z0-9]/.test(e.key)) {
-            // User started typing directly while focused
             e.preventDefault();
             e.stopPropagation();
             setSearchTerm(e.key);
@@ -304,14 +296,17 @@ const SearchableSelect = ({ options, value, onChange, placeholder, name, disable
                 return (
                   <div
                     key={index}
-                    onClick={(e) => handleSelect(e, option)}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      handleSelect(e, option);
+                    }}
                     style={{
                       padding: "10px 14px",
                       cursor: "pointer",
                       background: isFocused ? "#f3f4f6" : (isSelected ? "#f5f3ff" : "#fff"), 
-                      fontWeight: isSelected ? "600" : "400", // Bold for selected
+                      fontWeight: isSelected ? "600" : "400",
                       fontSize: "14px",
-                      color: isSelected ? "#5c2a9d" : "#374151", // Brand color for selected
+                      color: isSelected ? "#5c2a9d" : "#374151", 
                       transition: "background 0.15s ease",
                       borderBottom: "1px solid #f9fafb",
                       display: "flex",
