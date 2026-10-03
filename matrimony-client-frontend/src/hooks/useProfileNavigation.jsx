@@ -25,6 +25,19 @@ export const useProfileNavigation = () => {
                     setShowRestrictionPopup(true);
                     return;
                 }
+                const hasActivePlan = userData?.paymentDetails?.some(
+                    (p) => p.subscriptionStatus === "Active" && new Date(p.subscriptionValidTo) > new Date()
+                );
+                
+                if (!hasActivePlan) {
+                    if (userData?.idVerificationStatus !== 'Verified') {
+                        setShowRestrictionPopup(true);
+                    } else {
+                        setUpgradePopupType('premium');
+                        setShowUpgradePopup(true);
+                    }
+                    return;
+                }
             }
             action();
         } catch (err) {
@@ -90,7 +103,12 @@ export const useProfileNavigation = () => {
                 );
                 
                 if (!hasActivePlan) {
-                    setShowRestrictionPopup(true);
+                    if (userData?.idVerificationStatus !== 'Verified') {
+                        setShowRestrictionPopup(true);
+                    } else {
+                        setUpgradePopupType('premium');
+                        setShowUpgradePopup(true);
+                    }
                     setIsChecking(false);
                     return;
                 }
