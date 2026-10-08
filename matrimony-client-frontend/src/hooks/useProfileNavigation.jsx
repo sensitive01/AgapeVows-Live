@@ -64,11 +64,7 @@ export const useProfileNavigation = () => {
                     const userRes = await getUserProfile(viewerId);
                     const userData = userRes?.data?.data || userRes?.data;
                     
-                    if (userData?.isRestricted) {
-                        setShowRestrictionPopup(true);
-                        setIsChecking(false);
-                        return;
-                    }
+
 
                     if (userData?.profileVisibility === 'Hidden') {
                         Swal.fire({
@@ -94,25 +90,8 @@ export const useProfileNavigation = () => {
                 }
             }
 
-            // 2. Check if the user has any active plan
-            if (viewerId) {
-                const userRes = await getUserProfile(viewerId);
-                const userData = userRes?.data?.data || userRes?.data;
-                const hasActivePlan = userData?.paymentDetails?.some(
-                    (p) => p.subscriptionStatus === "Active" && new Date(p.subscriptionValidTo) > new Date()
-                );
-                
-                if (!hasActivePlan) {
-                    if (userData?.idVerificationStatus !== 'Verified') {
-                        setShowRestrictionPopup(true);
-                    } else {
-                        setUpgradePopupType('premium');
-                        setShowUpgradePopup(true);
-                    }
-                    setIsChecking(false);
-                    return;
-                }
-            }
+            // 2. We allow users to view profiles regardless of plan or verification status.
+            // The restriction will be enforced on the buttons inside the profile view.
 
             // 3. Check view limit
             await checkProfileViewLimit(profileId, viewerId);
@@ -125,16 +104,11 @@ export const useProfileNavigation = () => {
                 navigate(`/profile-more-details/${profileId}`);
             }
         } catch (err) {
-            if (err.response?.status === 403) {
-                // If the error message mentions Platinum/Gold, we can adjust type if needed, 
-                // but default limit popup shows upgrade message.
-                // You can add logic here if you want 'premium' vs 'limit' distinction.
-                // Currently, `checkProfileViewLimit` returns specific messages, but let's stick to standard limit popup.
-                setUpgradePopupType('limit');
-                setShowUpgradePopup(true);
+            console.error("Error checking limit, but allowing view anyway", err);
+            if (e && (e.ctrlKey || e.metaKey)) {
+                const newTab = window.open(`/profile-more-details/${profileId}`, '_blank');
+                if (newTab) newTab.focus();
             } else {
-                // Fallback: If network error or other, just navigate and let the MoreDetails page handle it
-                console.error("Error checking limit", err);
                 navigate(`/profile-more-details/${profileId}`);
             }
         } finally {

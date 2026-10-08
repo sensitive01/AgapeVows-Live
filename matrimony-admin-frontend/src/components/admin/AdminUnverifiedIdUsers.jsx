@@ -345,7 +345,7 @@ export default function AdminUnverifiedIdUsers() {
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Search by AVID, name, email, or phone..."
+                  placeholder="Search by AGVID, name, email, or phone..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />

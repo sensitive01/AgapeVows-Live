@@ -148,7 +148,7 @@ const AdminDeactivatedUsers = () => {
       ),
     },
     {
-      name: "AV ID",
+      name: "AGV ID",
       width: "100px",
       selector: row => row.agwid || "N/A",
       sortable: true,

@@ -89,18 +89,37 @@ const SearchDropdown = ({
   );
 };
 
+const optimizeImageUrl = (url) => {
+  if (!url || typeof url !== 'string') return url;
+  if (url.includes('res.cloudinary.com') && !url.includes('/w_')) {
+    return url.replace('/upload/', '/upload/w_400,h_400,c_fill,q_auto,f_auto/');
+  }
+  return url;
+};
+
 const ProfileImage = ({ profile }) => {
   const [hasError, setHasError] = useState(false);
-  const imgSrc = profile.profileImage || defaultProfileImg;
+  const [isLoaded, setIsLoaded] = useState(false);
+  const rawSrc = profile.profileImage || defaultProfileImg;
+  const imgSrc = hasError ? defaultProfileImg : optimizeImageUrl(rawSrc);
   const isDefault = hasError || !profile.profileImage;
-  const blurClass = !localStorage.getItem("userId") ? "blur-[8px]" : "blur-none";
 
   return (
     <>
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-gray-200 animate-pulse z-0 flex items-center justify-center">
+          <svg className="w-10 h-10 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+             <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+          </svg>
+        </div>
+      )}
+
       <img
         src={imgSrc}
         alt={profile.userName}
-        className={`w-full h-full scale-110 group-hover:scale-105 transition-transform duration-500 ${blurClass}`}
+        loading="lazy"
+        onLoad={() => setIsLoaded(true)}
+        className={`w-full h-full scale-110 group-hover:scale-105 transition-all duration-500 blur-none ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         style={{
           objectFit: isDefault ? 'contain' : 'cover',
           objectPosition: isDefault ? 'center' : 'top',
@@ -200,8 +219,15 @@ const HighlightedProfilesSection = () => {
             }
           }
 
-          // Filter out profiles without an image
-          let baseProfiles = fetchedProfiles.filter(p => p.profileImage && p.profileImage.trim() !== "");
+          // Filter out profiles without an image and age must be under 35
+          let baseProfiles = fetchedProfiles.filter(p => {
+            if (!p.profileImage || p.profileImage.trim() === "") return false;
+            if (!p.dateOfBirth) return false;
+            const birthDate = new Date(p.dateOfBirth);
+            const difference = Date.now() - birthDate.getTime();
+            const age = new Date(difference).getUTCFullYear() - 1970;
+            return age < 35;
+          });
           let finalProfiles = [];
 
           // Filter by opposite gender if user is logged in
@@ -373,7 +399,7 @@ const HighlightedProfilesSection = () => {
                     <div className="p-2.5 flex-grow bg-white">
                       <div className="flex flex-col gap-0.5">
                         <div className="flex justify-between items-center">
-                          <span className="font-bold text-base leading-none" style={{ color: '#46047cff' }}>{profile.agwid || "AV0000"}</span>
+                          <span className="font-bold text-base leading-none" style={{ color: '#46047cff' }}>{profile.agwid || "AGV0000"}</span>
                           <span className="text-[11px] px-2 py-0.5 rounded font-bold uppercase" style={{ color: '#46047cff', backgroundColor: 'rgba(107, 33, 168, 0.05)' }}>
                             {profile.denomination || "Christian"}
                           </span>

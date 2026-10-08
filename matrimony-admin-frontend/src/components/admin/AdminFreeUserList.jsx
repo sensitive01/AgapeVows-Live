@@ -170,7 +170,7 @@ const AdminFreeUserList = () => {
       ),
     },
     {
-        name: "AVID",
+        name: "AGVID",
         selector: row => row.agwid,
         sortable: true,
         width: "130px",
@@ -321,7 +321,7 @@ const AdminFreeUserList = () => {
                   <input
                     type="text"
                     className="form-control bg-transparent border-0 shadow-none ps-2"
-                    placeholder="Search by AVID, name, email, or mobile..."
+                    placeholder="Search by AGVID, name, email, or mobile..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />

@@ -185,7 +185,7 @@ const AdminDeletedUsers = () => {
       ),
     },
     {
-      name: "AV ID",width:"120px",
+      name: "AGV ID",width:"120px",
       selector: row => row.agwid || "N/A",
       sortable: true,
       cell: row => <span className="fw-bold text-primary">{row.agwid || "N/A"}</span>,

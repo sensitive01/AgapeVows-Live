@@ -279,7 +279,7 @@ const AdminIncompleteUsers = () => {
       ),
     },
     {
-      name: "AV ID",
+      name: "AGV ID",
       width: "100px",
       selector: row => row.agwid || "N/A",
       sortable: true,
@@ -482,7 +482,7 @@ const AdminIncompleteUsers = () => {
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Search by AVID, name, email, or phone..."
+                  placeholder="Search by AGVID, name, email, or phone..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />

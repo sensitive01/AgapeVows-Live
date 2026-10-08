@@ -254,12 +254,27 @@ const UserDashboardPage = () => {
       setLoading(true);
       const response = await newProfileMatch(userId);
 
+      let fetchedMatches = [];
       if (response.status === 200) {
-        setProfileMatches(response.data.matches);
-        setAllProfiles(response.data.matches);
+        fetchedMatches = response.data.matches || [];
       } else if (Array.isArray(response)) {
-        setProfileMatches(response);
-        setAllProfiles(response);
+        fetchedMatches = response;
+      }
+      
+      if (fetchedMatches.length > 0) {
+        // Sort so profiles under age 35 are first
+        const sortedMatches = [...fetchedMatches].sort((a, b) => {
+          const ageA = parseInt(a.age) || 999;
+          const ageB = parseInt(b.age) || 999;
+          const aIsUnder35 = ageA < 35;
+          const bIsUnder35 = ageB < 35;
+          
+          if (aIsUnder35 && !bIsUnder35) return -1;
+          if (!aIsUnder35 && bIsUnder35) return 1;
+          return 0;
+        });
+        setProfileMatches(sortedMatches);
+        setAllProfiles(sortedMatches);
       } else {
         setProfileMatches([]);
         setAllProfiles([]);
@@ -327,7 +342,6 @@ const UserDashboardPage = () => {
   };
 
   const handleProfileClick = (targetUser, e) => {
-    executeIfUnrestricted(() => {
       if (!userId) {
         navigate("/sign-in");
         return;
@@ -384,7 +398,6 @@ const UserDashboardPage = () => {
       }
 
       navigateToProfile(targetUser._id, userId, e);
-    });
   };
 
   // Initialize components on first load
@@ -608,7 +621,7 @@ const UserDashboardPage = () => {
                                   <div
                                     className="db-new-pro"
                                     style={{ position: "relative", paddingTop: "10px", cursor: "pointer" }}
-                                    onClick={(e) => executeIfUnrestricted(() => handleProfileClick(profile, e))}
+                                    onClick={(e) => handleProfileClick(profile, e)}
                                   >
                                     {/* ✅ Badges - TOP LEFT */}
                                     <style>

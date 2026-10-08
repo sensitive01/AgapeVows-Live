@@ -1963,8 +1963,7 @@ const UserProfileEditPage = () => {
     if (isInvalid(formData.denomination)) missingFields.push({ label: "Denomination", name: "denomination" });
     if (isInvalid(formData.contactPersonName)) missingFields.push({ label: "Contact Person Name", name: "contactPersonName" });
     if (isInvalid(formData.relationship)) missingFields.push({ label: "Relationship with Contact Person", name: "relationship" });
-    if (isInvalid(formData.contactEmail)) missingFields.push({ label: "Contact Email", name: "contactEmail" });
-    if (isInvalid(formData.contactPhone)) missingFields.push({ label: "Contact Number", name: "contactPhone" });
+    if (isInvalid(formData.contactPhone)) missingFields.push({ label: "Phone Number", name: "contactPhone" });
 
     // Also enforce "Other" specification for non-mandatory fields if they selected "Other"
     if (formData.churchActivity === "Other" || formData.churchActivity === "Others") missingFields.push({ label: "Church Activity (Please specify)", name: "churchActivity" });
@@ -3247,15 +3246,7 @@ const UserProfileEditPage = () => {
                       />
 
                       <FormInput
-                        label="Contact Email"
-                        name="contactEmail"
-                        required
-                        type="email"
-                        value={formData.contactEmail}
-                        onChange={handleInputChange}
-                      />
-                      <FormInput
-                        label="Contact Number"
+                        label="Phone Number"
                         name="contactPhone"
                         required
                         type="tel"

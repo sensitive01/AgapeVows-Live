@@ -22,7 +22,7 @@ const generateAgwid = async () => {
       const randomNumber = Math.floor(Math.random() * 1000000);
       const paddedNumber = randomNumber.toString().padStart(6, "0");
 
-      agwid = `AV${paddedNumber}`;
+      agwid = `AGV${paddedNumber}`;
 
       const existingUser = await userModel.findOne({ agwid });
       if (!existingUser) {
@@ -126,7 +126,7 @@ const saveSignUpData = async (req, res) => {
       if (welcomePlan) {
         assignedWelcomePlan = welcomePlan;
         // Auto-assign welcome plan
-        const orderId = `AV${Math.floor(100000 + Math.random() * 900000)}`;
+        const orderId = `AGV${Math.floor(100000 + Math.random() * 900000)}`;
         const payment = new paymentModel({
           userId: newUser._id,
           razorpayPaymentId: "free_welcome",

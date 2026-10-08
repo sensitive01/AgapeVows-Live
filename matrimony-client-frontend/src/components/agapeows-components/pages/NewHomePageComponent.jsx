@@ -12,6 +12,7 @@ import BlogSection from "../../new-template/BlogSection";
 import FooterSection from "../../new-template/FooterSection";
 import SEOHelmet from "../../common/SEOHelmet";
 import KeywordsSection from "../../new-template/KeywordsSection";
+import landingPageBanner from "../../../assets/images/landing-page4.jpg"; // Import new banner image
 
 const NewHomePageComponent = () => {
   return (
@@ -27,7 +28,19 @@ const NewHomePageComponent = () => {
       <div className="pt-12">
         {/* SEO Copy Section - Matching Screenshot */}
         <HeroSearchSection />
-        <div className="w-full relative overflow-hidden bg-[#faf8fc] pt-14 pb-6 sm:pt-16 sm:pb-8 border-b border-purple-100 mt-8">
+        
+        {/* New Banner Image placed right after Hero */}
+        <div className="w-full bg-white pt-16 pb-8">
+          <div className="max-w-[1300px] mx-auto px-4 sm:px-8 lg:px-12">
+            <img 
+              src={landingPageBanner} 
+              alt="AgapeVows Banner" 
+              className="w-full h-auto rounded-2xl shadow-md object-cover" 
+            />
+          </div>
+        </div>
+
+        <div className="w-full relative overflow-hidden bg-[#faf8fc] pt-12 pb-6 sm:pt-16 sm:pb-8 border-b border-purple-100">
           {/* Subtle wavy decorative background using SVG data URI for the left and right edges */}
           <div className="absolute inset-0 opacity-40 pointer-events-none" style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M-100,50 Q150,150 200,0 T500,50' fill='none' stroke='%2358219f' stroke-width='0.5' stroke-opacity='0.5'/%3E%3Cpath d='M-100,80 Q150,180 200,30 T500,80' fill='none' stroke='%2358219f' stroke-width='0.5' stroke-opacity='0.4'/%3E%3Cpath d='M-100,110 Q150,210 200,60 T500,110' fill='none' stroke='%2358219f' stroke-width='0.5' stroke-opacity='0.3'/%3E%3Cpath d='M100%25,50 Qcalc(100%25 - 250px),150 calc(100%25 - 300px),0 Tcalc(100%25 - 600px),50' fill='none' stroke='%2358219f' stroke-width='0.5' stroke-opacity='0.5' transform='scale(-1, 1) translate(-100%25, 0)'/%3E%3Cpath d='M100%25,80 Qcalc(100%25 - 250px),180 calc(100%25 - 300px),30 Tcalc(100%25 - 600px),80' fill='none' stroke='%2358219f' stroke-width='0.5' stroke-opacity='0.4' transform='scale(-1, 1) translate(-100%25, 0)'/%3E%3Cpath d='M100%25,110 Qcalc(100%25 - 250px),210 calc(100%25 - 300px),60 Tcalc(100%25 - 600px),110' fill='none' stroke='%2358219f' stroke-width='0.5' stroke-opacity='0.3' transform='scale(-1, 1) translate(-100%25, 0)'/%3E%3C/svg%3E")`,

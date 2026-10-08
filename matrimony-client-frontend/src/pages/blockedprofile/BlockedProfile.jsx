@@ -123,7 +123,7 @@ const BlockedProfile = () => {
               </div>
               <div className="db-int-pro-2">
                 <h5>
-                  {profile.agwid || "No AV ID"}
+                  {profile.agwid || "No AGV ID"}
                   <span
                     className="badge bg-danger ms-2"
                     style={{ fontSize: "0.7rem" }}

@@ -34,7 +34,7 @@ cloudinary.config({
 
 const generateOrderId = () => {
   const randomNumber = Math.floor(100000 + Math.random() * 900000);
-  return `AV${randomNumber}`;
+  return `AGV${randomNumber}`;
 };
 
 
@@ -1383,7 +1383,7 @@ const getSearchedProfileData = async (req, res) => {
       bnrId
     } = req.body;
 
-    // Handle AV ID search specifically
+    // Handle AGV ID search specifically
     if (searchType === "bnr" && bnrId) {
       const bnrUser = await userModel.findOne({
         agwid: { $regex: new RegExp(`^${bnrId}$`, 'i') },
@@ -1397,7 +1397,7 @@ const getSearchedProfileData = async (req, res) => {
           success: true,
           count: 0,
           data: [],
-          message: "The AV ID you entered is incorrect or does not exist."
+          message: "The AGV ID you entered is incorrect or does not exist."
         });
       }
 
@@ -2197,7 +2197,7 @@ const downloadInvoice = async (req, res) => {
     doc.text(`Name: ${user.userName}`, 55, boxY + 10);
     doc.text(`Email: ${user.userEmail}`, 55, boxY + 28);
     doc.text(`Mobile: ${user.userMobile}`, 55, boxY + 46);
-    doc.text(`AV ID: ${user.agwid}`, 55, boxY + 64);
+    doc.text(`AGV ID: ${user.agwid}`, 55, boxY + 64);
 
     doc.moveDown(5);
 

@@ -542,7 +542,7 @@ const UserSearchResult = () => {
                           <div className="text-center py-5">
                             {state?.searchType === "bnr" ? (
                               <>
-                                <h4 className="text-danger font-weight-bold">The AV ID is incorrect</h4>
+                                <h4 className="text-danger font-weight-bold">The AGV ID is incorrect</h4>
                                 <p className="text-muted mt-2">We couldn't find any profile with the ID "<strong>{state?.bnrId}</strong>".</p>
                               </>
                             ) : (

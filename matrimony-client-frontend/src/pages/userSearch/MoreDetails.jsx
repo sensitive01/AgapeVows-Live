@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { showAlert, confirmAction } from "../../utils/alertService";
 
 import { faChurch, faHeart, faBriefcase, faInfoCircle, faUsers, faAddressCard, faMusic, faVideo, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { useProfileNavigation } from "../../hooks/useProfileNavigation";
 import profImage from "../../assets/images/blue-circle-with-white-user_78370-4707.avif";
 
 // Helper Components
@@ -102,6 +103,7 @@ const MoreDetails = () => {
     gap: "5px",
   };
   const navigate = useNavigate();
+  const { executeIfUnrestricted, renderLimitPopup } = useProfileNavigation();
   const currentUserId = localStorage.getItem("userId");
 
   const [userInfo, setUserInfo] = useState(null);
@@ -404,6 +406,7 @@ const MoreDetails = () => {
 
   return (
     <div className="profile-page">
+      {renderLimitPopup()}
       {/* Header */}
       <div className="fixed-header">
         <LayoutComponent />
@@ -555,7 +558,7 @@ const MoreDetails = () => {
                       color: "#fff",
                       border: "none"
                     }}
-                    onClick={handleRequestPhoto}
+                    onClick={() => executeIfUnrestricted(handleRequestPhoto)}
                   >
                     <i className="fa fa-camera me-2"></i>
                     {isPhotoRequested ? "Photo Requested" : "Request Photo"}
@@ -577,12 +580,9 @@ const MoreDetails = () => {
                     border: "none"
                   }}
                   onClick={(e) => {
-                    if (!isPaidUser) {
-                      setUpgradePopupType('premium');
-                      setShowUpgradePopup(true);
-                      return;
-                    }
-                    handleShowInterestClick();
+                    executeIfUnrestricted(() => {
+                      handleShowInterestClick();
+                    });
                   }}
                 >
                   <i className="fa fa-envelope-o me-2"></i>
@@ -590,7 +590,7 @@ const MoreDetails = () => {
                 </button>
 
                 <button
-                  onClick={handleShortlistClick}
+                  onClick={() => executeIfUnrestricted(handleShortlistClick)}
                   className="shortlist-btn font-cormorant font-bold text-[20px]"
                   style={{
                     width: "100%",
@@ -617,7 +617,7 @@ const MoreDetails = () => {
                 {/* View Contact Information Button moved immediately below profile picture */}
                 {!showContact && (
                   <button
-                    onClick={handleContactClick}
+                    onClick={() => executeIfUnrestricted(handleContactClick)}
                     disabled={isContactLoading}
                     className="view-contact-btn font-cormorant font-bold text-[20px]"
                     style={{
@@ -664,9 +664,7 @@ const MoreDetails = () => {
                       📞 Phone Number: {userInfo?.contactPhone || "Not specified"}
                     </div>
 
-                    <div style={{ ...chipStyle, width: "100%", whiteSpace: "nowrap", overflowX: "auto", fontSize: "calc(0.85rem + 2px)" }}>
-                      📧 Email: {userInfo?.contactEmail || "Not specified"}
-                    </div>
+
                   </div>
                 )}
               </div>
@@ -721,7 +719,7 @@ const MoreDetails = () => {
                   fontVariantNumeric: "lining-nums",
                 }}
               >
-                AV ID: {userInfo?.agwid || "N/A"}
+                AGV ID: {userInfo?.agwid || "N/A"}
                 <div className="d-flex gap-2">
                   {userInfo?.isAnySubscriptionTaken && (
                     <span className="badge rounded-pill text-dark font-source" style={{ backgroundColor: "#facc15", fontSize: '13px', fontWeight: '500', padding: '3px 10px', display: 'flex', alignItems: 'center', gap: '4px', height: 'fit-content' }}>

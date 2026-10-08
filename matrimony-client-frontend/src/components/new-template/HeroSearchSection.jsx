@@ -3,21 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import './HeroSearchSection.css';
 
 // Import assets from new-template location
-import bannerBg from '../../assets/new-template/images/ban-bg.jpg';
-import bannerImg from '../../assets/new-template/images/banner.jpg';
-import coupleImg1 from '../../assets/new-template/images/couples/1.jpg';
-import coupleImg2 from '../../assets/new-template/images/couples/2.jpg';
-import landingPageBg from '../../assets/images/landing-page.png';
-import landingPageBg1 from '../../assets/images/landing-page1.png';
-import landingPageBg2 from '../../assets/images/landing-page2.png';
-import landingPageBg3 from '../../assets/images/landing-page3.png';
-import landingPageBg4 from '../../assets/images/landing-pagee.png';
+import landingPageBg from '../../assets/images/landing-page.jpg';
+import landingPageBg2 from '../../assets/images/landing-page2.jpg';
+import landingPageBg3 from '../../assets/images/landing-page3.jpg';
+import landingPageBg4 from '../../assets/images/landing-pagee.jpg';
 
 const backgroundImages = [
   landingPageBg4,
   landingPageBg,
   landingPageBg2,
-  landingPageBg3
+  landingPageBg3,
 ];
 
 import { useContext } from 'react';
@@ -211,6 +206,8 @@ export default function HeroSearchSection() {
             src={image}
             alt={`Matrimony Landing ${index + 1}`}
             className={`hero-carousel-slide ${index === currentImageIndex ? 'active' : ''}`}
+            loading={index === 0 ? "eager" : "lazy"}
+            fetchpriority={index === 0 ? "high" : "auto"}
           />
         ))}
         <div className="hero-overlay"></div>

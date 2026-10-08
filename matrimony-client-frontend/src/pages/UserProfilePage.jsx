@@ -1392,11 +1392,9 @@ const UserProfilePage = () => {
                       value={userInfo?.relationship}
                     />
                     <InfoRow
-                      label="Mobile Number"
+                      label="Phone Number"
                       value={userInfo?.contactPhone}
                     />
-
-                    <InfoRow label="Email" value={userInfo?.contactEmail} />
 
                     <InfoRow
                       label="Landline"
